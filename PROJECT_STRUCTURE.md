@@ -1,0 +1,27 @@
+/app
+  /article
+    /components
+    /store
+    /types
+    /services
+      management-actions.service.ts
+    actions.routes
+  /globalFeed
+    /components
+      /actions
+    globalActions.routes
+  /shared
+    /components
+      /backendErrorMessages
+        backendErrorMessages.component.ts
+      /indexSearch
+        indexSearch.component.ts
+        /types
+        /store
+        /services
+    /types
+      index.interface.ts
+    /services
+      index.service.ts
+  app.routes
+main.ts
