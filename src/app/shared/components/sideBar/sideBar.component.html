@@ -7,8 +7,10 @@
           <a routerLink="/" class="nav-link">Dash Board</a>
         </li>
         <ng-container *ngIf="data.currentUser">
+          <!-- todo: loop through all actions here to display the list on the sideBar -->
+          <!-- todo: static items as of now-->
           <li class="nav-item">
-            <a routerLink="/articles/new" class="nav-link">
+            <a routerLink="" class="nav-link">
               <i class="ion-compose"></i>
               &nbsp; New Post
             </a>
@@ -17,15 +19,6 @@
             <a routerLink="/settings" class="nav-link">
               <i class="ion-gear-a"></i>
               &nbsp; Settings
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              [routerLink]="['/profiles', data.currentUser.username]"
-              class="nav-link"
-            >
-              <img class="user-pic" [src]="data.currentUser.image" />
-              &nbsp; {{ data.currentUser.username }}
             </a>
           </li>
         </ng-container>    
