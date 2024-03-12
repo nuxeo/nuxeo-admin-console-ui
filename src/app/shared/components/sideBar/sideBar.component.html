@@ -1,18 +1,14 @@
 <ng-container *ngIf="data$ | async as data">
   <nav class="navbar navbar-light">
     <div class="container">
-      <a class="navbar-brand" routerLink="/">Admin Panel</a>
       <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <a routerLink="/" class="nav-link">Dash Board</a>
-        </li>
         <ng-container *ngIf="data.currentUser">
           <!-- todo: loop through all actions here to display the list on the sideBar -->
           <!-- todo: static items as of now-->
           <li class="nav-item">
             <a routerLink="" class="nav-link">
               <i class="ion-compose"></i>
-              &nbsp; New Post
+              &nbsp; Elastic Search
             </a>
           </li>
           <li class="nav-item">
