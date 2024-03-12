@@ -1,7 +1,8 @@
-import { AdminHomeComponent } from './features/admin-home/components/admin-home.component';
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";
+import { AdminHomeComponent } from "./features/admin-home/components/admin-home.component";
+
 export const appRoutes: Route[] = [
   {
     path: "",
