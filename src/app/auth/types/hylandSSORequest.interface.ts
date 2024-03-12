@@ -1,5 +1,5 @@
 export interface HylandSSORequestInterface {
   app: {
-    appID: string
-  }
+    appID: string;
+  };
 }
