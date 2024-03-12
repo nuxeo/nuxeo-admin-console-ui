@@ -1,0 +1,23 @@
+<ng-container *ngIf="data$ | async as data">
+  <nav class="navbar navbar-light">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/">Admin Panel</a>
+      <ul class="nav navbar-nav pull-xs-right">
+        <li class="nav-item">
+          <a routerLink="/" class="nav-link">Dash Board</a>
+        </li>
+        <ng-container *ngIf="data.currentUser === null">
+          <li class="nav-item">
+            <a routerLink="/auth" class="nav-link"> Sign in </a>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </nav>
+
+  <ng-container *ngIf="data.currentUser">
+    <!-- todo: load warning component here -->
+    <admin-warning [getCurrentUser]="data.currentUser"></admin-warning>
+  </ng-container>
+
+</ng-container>

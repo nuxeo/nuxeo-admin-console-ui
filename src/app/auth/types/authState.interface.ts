@@ -1,9 +1,9 @@
-import {BackendErrorsInterface} from 'src/app/shared/types/backendErrors.interface'
-import {AdminUserInterface} from 'src/app/shared/types/adminUser.interface'
+import { BackendErrorsInterface } from "../../shared/types/backendErrors.interface";
+import { AdminUserInterface } from "../../shared/types/adminUser.interface";
 
 export interface AuthStateInterface {
-  isSubmitting: boolean
-  currentUser: AdminUserInterface | null | undefined
-  isLoading: boolean
-  validationErrors: BackendErrorsInterface | null
+  isSubmitting: boolean;
+  currentUser: AdminUserInterface | null | undefined;
+  isLoading: boolean;
+  validationErrors: BackendErrorsInterface | null;
 }
