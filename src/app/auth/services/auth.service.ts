@@ -17,7 +17,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<AdminUserInterface> {
-    const url = environment.apiUrl + '/user'
+    const url = environment.apiUrl + '/user.json'
     return this.http.get<AuthResponseInterface>(url).pipe(map(this.getUser))
   }
 
