@@ -12,7 +12,9 @@ import {TopBarComponent} from './shared/components/topBar/topBar.component'
   imports: [RouterOutlet, SideBarComponent, TopBarComponent],
 })
 export class AdminAppComponent implements OnInit {
-  constructor(private store: Store) {}
+  constructor(
+    private store: Store
+    ) {}
 
   ngOnInit(): void {
     this.store.dispatch(authActions.getCurrentUser())

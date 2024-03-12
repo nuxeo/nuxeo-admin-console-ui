@@ -1,0 +1,11 @@
+{
+    "user": 
+    {
+        "email": "demo@example.com",
+        "token": "demotoken",
+        "username": "demouser",
+        "usertype": "admin",
+        "bio": null,
+        "image": null
+    }
+}
