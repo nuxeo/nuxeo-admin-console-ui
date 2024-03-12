@@ -6,9 +6,6 @@
         <li class="nav-item">
           <a routerLink="/" class="nav-link">Dash Board</a>
         </li>
-        <ng-container *ngIf="data.currentUser">
-          <!-- todo: load warning component here -->
-        </ng-container>
         <ng-container *ngIf="data.currentUser === null">
           <li class="nav-item">
             <a routerLink="/auth" class="nav-link"> Sign in </a>
@@ -17,4 +14,10 @@
       </ul>
     </div>
   </nav>
+
+  <ng-container *ngIf="data.currentUser">
+    <!-- todo: load warning component here -->
+    <admin-warning [getCurrentUser]="data.currentUser"></admin-warning>
+  </ng-container>
+  
 </ng-container>
