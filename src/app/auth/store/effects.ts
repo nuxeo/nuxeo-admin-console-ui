@@ -43,16 +43,16 @@ export const ssoEffect = createEffect(
     persistanceService = inject(PersistanceService)
   ) => {
     return actions$.pipe(
-      ofType(authActions.sso),
+      ofType(authActions.sSO),
       switchMap(({request}) => {
         return authService.sso(request).pipe(
           map((currentUser: AdminUserInterface) => {
             persistanceService.set('accessToken', currentUser.token)
-            return authActions.ssoSuccess({currentUser})
+            return authActions.sSOSuccess({currentUser})
           }),
           catchError((errorResponse: HttpErrorResponse) => {
             return of(
-              authActions.ssoFailure({
+              authActions.sSOFailure({
                 errors: errorResponse.error.errors,
               })
             )
@@ -67,7 +67,7 @@ export const ssoEffect = createEffect(
 export const redirectAfterSSOEffect = createEffect(
   (actions$ = inject(Actions), router = inject(Router)) => {
     return actions$.pipe(
-      ofType(authActions.ssoSuccess),
+      ofType(authActions.sSOSuccess),
       tap(() => {
         router.navigateByUrl('/')
       })
