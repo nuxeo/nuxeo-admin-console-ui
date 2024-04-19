@@ -5,6 +5,7 @@ import {provideRouter} from '@angular/router'
 import {provideEffects} from '@ngrx/effects'
 import {provideState, provideStore} from '@ngrx/store'
 import {provideStoreDevtools} from '@ngrx/store-devtools'
+import 'hammerjs';
 import {AdminAppComponent} from './app/admin-app.component'
 import {appRoutes} from './app/app.routes'
 import {authFeatureKey, authReducer} from './app/auth/store/reducers'
