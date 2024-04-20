@@ -1,13 +1,13 @@
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { combineLatest } from "rxjs";
-import { selectCurrentUser } from "../../../auth/store/reducers";
+import { selectCurrentUser } from "../auth/store/reducers";
 
 @Component({
-  selector: "admin-topbar",
-  templateUrl: "./topBar.component.html",
+  selector: "admin-header",
+  templateUrl: "./admin-header.component.html",
 })
-export class TopBarComponent {
+export class AdminHeaderComponent {
   data$ = combineLatest({
     currentUser: this.store.select(selectCurrentUser),
   });

@@ -1,10 +1,12 @@
+import { AdminMenuComponent } from "./adminMenu/admin-menu.component";
+import { AdminHeaderComponent } from "./adminHeader/admin-header.component";
+import { HomeModule } from "./home/home.module";
+import { HomeComponent } from "./home/components/home.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
 import { BackendErrorMessages } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
 import { WarningComponent } from "./shared/components/warning/warning.component";
-import { SideBarComponent } from "./shared/components/sideBar/sideBar.component";
-import { TopBarComponent } from "./shared/components/topBar/topBar.component";
 import { NgModule } from "@angular/core";
 import { AdminAppComponent } from "./admin-app.component";
 import { AuthInterceptorService } from "./shared/services/auth-interceptor.service";
@@ -23,11 +25,12 @@ import { CommonModule } from "@angular/common";
 @NgModule({
   declarations: [
     AdminAppComponent,
-    TopBarComponent,
-    SideBarComponent,
+    AdminHeaderComponent,
+    AdminMenuComponent,
     WarningComponent,
     BackendErrorMessages,
     HylandSSOManagerComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,6 +46,7 @@ import { CommonModule } from "@angular/common";
     }),
     StoreRouterConnectingModule.forRoot(), // connects Angular Router to Store
     EffectsModule.forRoot(authEffects),
+    HomeModule,
   ],
   providers: [
     {

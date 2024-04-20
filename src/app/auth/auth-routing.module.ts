@@ -5,7 +5,7 @@ import { HylandSSOManagerComponent } from "./components/SSO/hylandSSOManager.com
 
 export const authRoutes: Route[] = [
   {
-    path: "",
+    path: '',
     component: HylandSSOManagerComponent,
   },
 ];
