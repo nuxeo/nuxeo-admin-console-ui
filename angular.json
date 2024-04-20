@@ -26,14 +26,12 @@
                 "output": "./"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": [],
             "i18nPaths": ["src/app"],
             "i18nModules": ["@hyland/ui", "@hyland/ui-shell"],
-            "stylePreprocessorOptions": { 
-              "includePaths": ["node_modules"] 
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
             }
           },
           "configurations": {
@@ -64,6 +62,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
+                },
+                {
+                  "replace": "src/devtools/ngrx-devtools.ts",
+                  "with": "src/devtools/ngrx-devtools.development.ts"
                 }
               ],
               "silentRefresh": true
@@ -94,13 +96,8 @@
           "options": {
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
             "scripts": []
           }
         }
