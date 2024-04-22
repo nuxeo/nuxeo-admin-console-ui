@@ -20,7 +20,10 @@ import { EffectsModule } from "@ngrx/effects";
 import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
 import { ReactiveFormsModule } from "@angular/forms";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from "@angular/common";
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 @NgModule({
   declarations: [
@@ -34,6 +37,7 @@ import { CommonModule } from "@angular/common";
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     RouterModule,
     ReactiveFormsModule,
@@ -47,6 +51,8 @@ import { CommonModule } from "@angular/common";
     StoreRouterConnectingModule.forRoot(), // connects Angular Router to Store
     EffectsModule.forRoot(authEffects),
     HomeModule,
+    MatSidenavModule, 
+    MatButtonModule
   ],
   providers: [
     {
