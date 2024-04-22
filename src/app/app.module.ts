@@ -1,15 +1,15 @@
+import { AdminWarningComponent } from './adminWarning/admin-warning.component';
 import { AdminMenuComponent } from "./adminMenu/admin-menu.component";
 import { AdminHeaderComponent } from "./adminHeader/admin-header.component";
-import { HomeModule } from "./home/home.module";
-import { HomeComponent } from "./home/components/home.component";
+import { HomeModule } from "./admin-home/home.module";
+import { AdminHomeComponent } from "./admin-home/components/admin-home.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
 import { BackendErrorMessages } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
-import { WarningComponent } from "./shared/components/warning/warning.component";
 import { NgModule } from "@angular/core";
 import { AdminAppComponent } from "./admin-app.component";
-import { AuthInterceptorService } from "./shared/services/auth-interceptor.service";
+import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule } from "@angular/router";
@@ -27,10 +27,10 @@ import { CommonModule } from "@angular/common";
     AdminAppComponent,
     AdminHeaderComponent,
     AdminMenuComponent,
-    WarningComponent,
+    AdminWarningComponent,
     BackendErrorMessages,
     HylandSSOManagerComponent,
-    HomeComponent,
+    AdminHomeComponent,
   ],
   imports: [
     BrowserModule,
