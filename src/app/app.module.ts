@@ -24,6 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from "@angular/common";
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     EffectsModule.forRoot(authEffects),
     HomeModule,
     MatSidenavModule, 
-    MatButtonModule
+    MatButtonModule,
+    MatListModule
   ],
   providers: [
     {
