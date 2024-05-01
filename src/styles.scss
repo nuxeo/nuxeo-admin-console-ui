@@ -6,6 +6,7 @@
 @use "sass:map";
 
 @import "@hylandsoftware/hy-ui-icons/index.css";
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 @include hy.typography();
 @include hy.core();

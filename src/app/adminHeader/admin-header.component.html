@@ -1,23 +1,19 @@
-<ng-container *ngIf="data$ | async as data">
-  <nav class="navbar navbar-light">
-    <div class="container">
-      <a class="navbar-brand" routerLink="/">Admin Panel</a>
-      <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <a routerLink="/" class="nav-link">Dash Board</a>
-        </li>
-        <ng-container *ngIf="data.currentUser === null">
-          <li class="nav-item">
-            <a routerLink="/auth" class="nav-link"> Sign in </a>
-          </li>
-        </ng-container>
-      </ul>
-    </div>
-  </nav>
+<mat-toolbar class="admin-header">
+  <div class="admin-header__branding">
+    <button mat-icon-button aria-label="branding icon">
+      <img src="../../assets/images/logo.svg" alt="Nuxeo Logo" />
+    </button>
+    <span class="title-text">Admin console</span>
+  </div>
 
-  <ng-container *ngIf="data.currentUser">
-    <!-- todo: load warning component here -->
-    <admin-warning [getCurrentUser]="data.currentUser"></admin-warning>
-  </ng-container>
-  
-</ng-container>
+  <span class="example-spacer"></span>
+  <button mat-icon-button class="help-icon" aria-label="Help icon">
+    <img src="../../assets/images/help.svg" alt="Help">
+  </button>
+  <button mat-icon-button class="menu-icon" aria-label="Menu icon">
+    <img src="../../assets/images/menu.svg" alt="Menu">
+  </button>
+  <button mat-icon-button class="profile-icon" aria-label="Profile icon">
+    <img src="../../assets/images/user-profile.svg" alt="user profile">
+  </button>
+</mat-toolbar>

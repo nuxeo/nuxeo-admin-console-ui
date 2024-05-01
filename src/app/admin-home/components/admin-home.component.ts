@@ -1,11 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
   selector: "admin-home",
   templateUrl: "./admin-home.component.html",
+  styleUrls: ["./admin-home.component.scss"],
 })
-export class AdminHomeComponent implements OnInit {
-  ngOnInit() {
-    console.log("admin-home works!");
-  }
-}
+export class AdminHomeComponent {}
