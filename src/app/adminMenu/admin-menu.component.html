@@ -1,10 +1,19 @@
-<mat-sidenav-container>
-  <mat-sidenav mode="side" opened class="sidenav">
-    <mat-nav-list>
-      <a mat-list-item *ngFor="let item of navItems" (click)="onClickSelectItem(item.id)" [class.selected]="item.isSelected" >
+<!-- <mat-nav-list class="sidenav">
+      <a mat-list-item *ngFor="let item of navItems" (click)="onClickSelectItem(item.id)" [class.sidenav-list-item-selected]="item.isSelected" >
         <span class="line" [class.selected-line]="item.isSelected"></span>
-        {{ item.name }}
+        <span class="sidenav-list-item-content"> {{ item.name }}</span>
+      </a>
+    </mat-nav-list> -->
+    <mat-nav-list class="sidenav" role="navigation" aria-label="Navigation">
+      <a mat-list-item
+         *ngFor="let item of navItems"
+         (click)="onClickSelectItem(item.id)"
+         (keyup.enter)="onClickSelectItem(item.id)"
+         [class.sidenav-list-item-selected]="item.isSelected"
+         role="menuitem"
+         [attr.aria-selected]="item.isSelected ? 'true' : 'false'"
+         tabindex="0">
+        <span class="line" [class.selected-line]="item.isSelected"></span>
+        <span class="sidenav-list-item-content">{{ item.name }}</span>
       </a>
     </mat-nav-list>
-  </mat-sidenav>
-</mat-sidenav-container>
