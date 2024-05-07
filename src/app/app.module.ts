@@ -23,6 +23,7 @@ import { AdminHomeModule } from "./admin-home/admin-home.module";
 import { AdminWarningComponent } from "./adminWarning/admin-warning.component";
 import { AdminMenuComponent } from "./adminMenu/admin-menu.component";
 import { AdminHeaderComponent } from "./adminHeader/admin-header.component";
+import { AdminBaseLayoutComponent } from './admin-base-layout/components/admin-base-layout.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
@@ -32,6 +33,7 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
+import { AdminBaseLayoutModule } from "./admin-base-layout/admin-base-layout.module";
 
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ import { ngrxDevtools } from "../devtools/ngrx-devtools";
     AdminWarningComponent,
     BackendErrorMessages,
     HylandSSOManagerComponent,
+    AdminBaseLayoutComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +72,7 @@ import { ngrxDevtools } from "../devtools/ngrx-devtools";
     AdminThumbnailGenerationModule,
     AdminPictureRenderGenerationModule,
     AdminVideoRenderGenerationModule,
+    AdminBaseLayoutModule
   ],
   providers: [
     {
