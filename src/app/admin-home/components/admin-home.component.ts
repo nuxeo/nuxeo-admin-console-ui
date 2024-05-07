@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
-import { MatDialog } from '@angular/material/dialog';
-import { AdminWarningComponent } from "src/app/adminWarning/admin-warning.component";
-
+import { MatDialog } from "@angular/material/dialog";
+import { AdminWarningComponent } from "../../adminWarning/admin-warning.component";
 
 @Component({
   selector: "admin-home",
@@ -12,8 +11,13 @@ export class AdminHomeComponent {
 
   ngOnInit() {
     console.log("From Home !");
-    this.dialogService.open(AdminWarningComponent, {
-      data: 'HELLO',
-    });
-}
+    const preference = localStorage.getItem("doNotWarn");
+    if (preference === "true") {
+      console.log("warning check");
+    } else {
+      this.dialogService.open(AdminWarningComponent, {
+        disableClose: true, // Disable closing on clicking outside
+      });
+    }
+  }
 }

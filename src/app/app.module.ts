@@ -1,4 +1,4 @@
-import { AdminWarningComponent } from './adminWarning/admin-warning.component';
+import { AdminWarningComponent } from "./adminWarning/admin-warning.component";
 import { AdminMenuComponent } from "./adminMenu/admin-menu.component";
 import { AdminHeaderComponent } from "./adminHeader/admin-header.component";
 import { HomeModule } from "./admin-home/home.module";
@@ -20,11 +20,17 @@ import { EffectsModule } from "@ngrx/effects";
 import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
 import { ReactiveFormsModule } from "@angular/forms";
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
-import {MatButtonModule} from '@angular/material/button';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import { HyDialogModule } from '@hyland/ui';
+import { MatButtonModule } from "@angular/material/button";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { HyDialogModule } from "@hyland/ui";
+import { FormsModule } from "@angular/forms";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatListModule } from "@angular/material/list";
+import { HyDialogBoxModule } from "@hyland/ui";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -52,9 +58,15 @@ import { HyDialogModule } from '@hyland/ui';
     StoreRouterConnectingModule.forRoot(), // connects Angular Router to Store
     EffectsModule.forRoot(authEffects),
     HomeModule,
-    MatSidenavModule, 
+    MatSidenavModule,
     MatButtonModule,
-    HyDialogModule
+    HyDialogModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatListModule,
+    HyDialogBoxModule,
+    MatFormFieldModule,
+    MatIconModule,
   ],
   providers: [
     {
