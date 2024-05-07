@@ -1,0 +1,49 @@
+.title {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  /* or 143% */
+  letter-spacing: 0.011em;
+}
+
+
+
+#mat-mdc-checkbox-1-input:focus {
+  outline: 2px solid #007bff !important; /* Add outline when the container receives focus */
+}
+
+.footer-content {
+  display: flex;
+  align-items: center; /* Center items vertically */
+}
+
+.checkbox-container {
+  margin-right: auto; /* Push the checkbox to the leftmost side */
+}
+
+.button-container {
+  margin-left: auto; /* Push the button to the rightmost side */
+}
+
+.hy-dialog-box-subheading-caption {
+  padding-top: 15px;
+  font-weight: bold;
+  font-size: medium;
+}
+.dialog-content {
+  padding-bottom: 5px;
+}
+
+.dialog-box {
+  width: 564px;
+}
+
+.subheading {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 23px;
+}

@@ -1,10 +1,32 @@
-<ng-container>
-  <ng-container class="body body-center">
-    <div class="container">
-      <ng-container *ngIf={currentUser}>
-        <!-- todo: load warning component here -->
-        <p>Warning! Read before raising any action from this console....</p>
-      </ng-container>
+<hy-dialog-box class="dialog-box">
+  <hy-dialog-box-header>
+    <hy-dialog-box-title class="title"
+      >Advanced Administration Application</hy-dialog-box-title
+    >
+  </hy-dialog-box-header>
+
+  <hy-dialog-box-content class="dialog-content">
+    <hy-dialog-box-subheading class="subheading">
+      This application provides access to advanced tools that can significantly
+      impact the performance of your instance if not used carefully.
+      <hy-dialog-box-subheading-caption>
+        Proceed with caution.
+      </hy-dialog-box-subheading-caption>
+    </hy-dialog-box-subheading>
+  </hy-dialog-box-content>
+
+  <hy-dialog-box-footer>
+    <div class="checkbox-container">
+      <!-- Use ngModel to bind checkbox value to a property in the component -->
+      <mat-checkbox class="checkbox2" aria-label="do not warn" [(ngModel)]="doNotWarn">Do not warn me again.</mat-checkbox
+      >
     </div>
-  </ng-container>
-</ng-container>
+    <!-- Spacer to push the button to the right -->
+    <div class="button-container">
+      <!-- Add click event listener to the "Continue" button -->
+      <button mat-flat-button color="primary" (click)="onConfirm()">Go</button>
+    </div>
+  </hy-dialog-box-footer>
+
+  
+</hy-dialog-box>

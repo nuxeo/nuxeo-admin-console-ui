@@ -1,3 +1,6 @@
+
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatDialogModule } from "@angular/material/dialog";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule } from "@angular/router";
@@ -5,7 +8,7 @@ import { StoreModule } from "@ngrx/store";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { EffectsModule } from "@ngrx/effects";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -32,6 +35,7 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
+import { HyDialogBoxModule } from "@hyland/ui";
 
 @NgModule({
   declarations: [
@@ -47,7 +51,8 @@ import { ngrxDevtools } from "../devtools/ngrx-devtools";
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule,
-    ReactiveFormsModule,
+    FormsModule,
+   // ReactiveFormsModule,
     CommonModule,
     AppRoutingModule,
     AuthRoutingModule,
@@ -58,9 +63,12 @@ import { ngrxDevtools } from "../devtools/ngrx-devtools";
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(authEffects),
     MatIconModule,
+    MatDialogModule,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,
+    MatCheckboxModule,
+    HyDialogBoxModule,
     AdminHomeModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
