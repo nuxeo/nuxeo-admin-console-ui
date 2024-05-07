@@ -1,22 +1,21 @@
-import { Component, Input, HostListener, ViewEncapsulation } from "@angular/core";
-import { AdminUserInterface } from "../shared/types/adminUser.interface";
+import { Component } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+import { AdminCommonService } from "../shared/services/admin-common.service";
 
 @Component({
   selector: "admin-warning",
   templateUrl: "./admin-warning.component.html",
   styleUrls: ["./admin-warning.component.css"],
- // encapsulation: ViewEncapsulation.None
 })
 export class AdminWarningComponent {
-  @Input() getCurrentUser: AdminUserInterface = {} as AdminUserInterface;
-  public currentUser: AdminUserInterface = {} as AdminUserInterface;
   public doNotWarn: boolean = false;
 
-  constructor(private dialogService: MatDialog) {}
+  constructor(
+    private dialogService: MatDialog,
+    private adminCommonService: AdminCommonService
+  ) {}
 
   ngOnInit(): void {
-    this.currentUser = this.getCurrentUser;
     const preference = localStorage.getItem("doNotWarn");
     if (preference === "true") {
       this.doNotWarn = true;
@@ -28,6 +27,7 @@ export class AdminWarningComponent {
       localStorage.setItem("doNotWarn", "true");
     }
     this.closeDialog();
+    this.adminCommonService.loadApp.emit(true);
   }
 
   closeDialog() {
