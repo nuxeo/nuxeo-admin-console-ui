@@ -23,4 +23,5 @@ export class AdminMenuComponent {
     const selectedItem = this.navItems.find(item => item.id === id);
     console.log('Clicked item details:', this.navItems);
   }
+  
 }

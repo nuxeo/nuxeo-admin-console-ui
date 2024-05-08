@@ -20,7 +20,20 @@
   font-weight: 400 700;
   font-display: swap;
 }
-
+:root {
+//  --sidenav-width: 25%;
+//  --sidenav-height: 94.73vh;
+  --sidenav-bg-color: #212121;
+  --sidenav-list-item-selected-bg-color: black;
+  --sidenav-list-item-content-color: #FFFFFF;
+  --sidenav-list-item-content-font-size: 14px;
+  --sidenav-list-item-content-font-weight: 400;
+  --sidenav-list-item-content-line-height: 20px;
+  --sidenav-list-item-content-letter-spacing: 0.16px;
+  --sidenav-list-item-content-padding: 9px 8px;
+  --selected-line-bg-color: #0C6BD4;
+  --mdc-list-item-height: 36px;
+}
 html,
 body {
   height: 100%;
