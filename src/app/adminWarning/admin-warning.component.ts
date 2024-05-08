@@ -5,7 +5,7 @@ import { MatDialog } from "@angular/material/dialog";
 @Component({
   selector: "admin-warning",
   templateUrl: "./admin-warning.component.html",
-  styleUrls: ["./admin-warning.component.css"],
+  styleUrls: ["./admin-warning.component.scss"],
 })
 export class AdminWarningComponent {
   @Input() getCurrentUser: AdminUserInterface = {} as AdminUserInterface;
