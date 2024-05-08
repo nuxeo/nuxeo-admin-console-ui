@@ -2,11 +2,11 @@ mat-card {
   height: 100%;
   button {
     border-radius: 4px;
-    width: 79px;
-    height: 36px;
+    width: 95px;
+    height: 40px;
     position: absolute;
     bottom: 8%;
-    right: 4%;
+    right: 6%;
   }
 }
 mat-card.mat-mdc-card:not([class*="mat-elevation-z"]) {
