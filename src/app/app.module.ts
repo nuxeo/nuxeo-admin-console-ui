@@ -38,6 +38,7 @@ import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
 import { HyDialogBoxModule } from "@hyland/ui";
 import { AdminBaseLayoutModule } from "./admin-base-layout/admin-base-layout.module";
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { AdminBaseLayoutModule } from "./admin-base-layout/admin-base-layout.mod
     MatButtonModule,
     MatSidenavModule,
     MatCheckboxModule,
+    MatListModule,
     HyDialogBoxModule,
     AdminHomeModule,
     AdminSystemInformationModule,

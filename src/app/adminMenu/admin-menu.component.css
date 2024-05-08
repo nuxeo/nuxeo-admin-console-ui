@@ -1,0 +1,22 @@
+.selected {
+    background-color: gray;
+  }
+  
+  .sidenav-item {
+    position: relative;
+  }
+  
+  .line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 9px;
+    background-color: transparent; 
+    transition: background-color 0.3s ease;
+  }
+  
+  .selected-line {
+    background-color: blue; 
+  }
+  

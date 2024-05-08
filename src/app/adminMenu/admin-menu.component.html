@@ -1,0 +1,10 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let item of navItems" (click)="onClickSelectItem(item.id)" [class.selected]="item.isSelected" >
+        <span class="line" [class.selected-line]="item.isSelected"></span>
+        {{ item.name }}
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+</mat-sidenav-container>
