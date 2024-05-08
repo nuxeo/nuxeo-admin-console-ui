@@ -5,7 +5,7 @@ import { AdminCommonService } from "../shared/services/admin-common.service";
 @Component({
   selector: "admin-warning",
   templateUrl: "./admin-warning.component.html",
-  styleUrls: ["./admin-warning.component.css"],
+  styleUrls: ["./admin-warning.component.scss"],
 })
 export class AdminWarningComponent {
   public doNotWarn: boolean = false;

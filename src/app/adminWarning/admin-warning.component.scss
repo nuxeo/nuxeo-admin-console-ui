@@ -1,17 +1,31 @@
 .title {
   font-family: "Inter";
   font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: 300;
+  font-size: 1.7rem !important;
   line-height: 20px;
   /* or 143% */
   letter-spacing: 0.011em;
 }
 
+:host ::ng-deep hy-dialog-box-subheading .hy-text-subhead {
+  font-weight: 200;
+  font-size: 14px;
+}
+:host ::ng-deep hy-dialog-box-title .mat-title {
+  font-size: x-large;
+}
 
-
-#mat-mdc-checkbox-1-input:focus {
-  outline: 2px solid #007bff !important; /* Add outline when the container receives focus */
+:host
+  ::ng-deep
+  hy-dialog-box-footer
+  .checkbox-container
+  .checkbox2
+  .mdc-form-field
+  .mdc-checkbox
+  .mat-mdc-checkbox-touch-target
+  .mdc-checkbox__native-control {
+  background-color: black;
 }
 
 .footer-content {
