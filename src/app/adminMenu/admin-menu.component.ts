@@ -2,11 +2,11 @@ import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { combineLatest } from "rxjs";
 import { selectCurrentUser } from "../auth/store/reducers";
-import { NAV_ITEMS, NavItem } from "./amin-menu.constants";
+import { NAV_ITEMS, NavItem } from "./admin-menu.constants";
 @Component({
   selector: "admin-menu",
   templateUrl: "./admin-menu.component.html",
-  styleUrls: ['./admin-menu.component.css']
+  styleUrls: ['./admin-menu.component.scss']
 })
 export class AdminMenuComponent {
   constructor(private store: Store) {}
