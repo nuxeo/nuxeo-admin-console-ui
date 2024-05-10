@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { authActions } from "./auth/store/actions";
 import { MatDialog } from "@angular/material/dialog";
-import { AdminWarningComponent } from "./adminWarning/admin-warning.component";
+import { AdminWarningComponent } from "./admin-warning/admin-warning.component";
 
 @Component({
   selector: "admin-app-root",
