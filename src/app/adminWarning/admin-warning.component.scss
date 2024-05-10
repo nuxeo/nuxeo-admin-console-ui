@@ -16,16 +16,18 @@
   font-size: x-large;
 }
 
+:host ::ng-deep hy-dialog-box-subheading-caption {
+  font-size: 14px !important;
+}
+
 :host
   ::ng-deep
   hy-dialog-box-footer
   .checkbox-container
   .checkbox2
   .mdc-form-field
-  .mdc-checkbox
-  .mat-mdc-checkbox-touch-target
-  .mdc-checkbox__native-control {
-  background-color: black;
+  .mdc-label {
+  padding-top: 6px;
 }
 
 .footer-content {
