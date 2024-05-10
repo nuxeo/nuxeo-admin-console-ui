@@ -25,11 +25,10 @@ export class HylandSSOManagerComponent {
     const request: HylandSSORequestInterface = {
       app: { appID: "AdminPanel" },
     };
-    this.store.dispatch(authActions.sSO({ request }));
+    this.store.dispatch(authActions.sso({ request }));
   }
 
   ngOnInit() {
-    console.log("Init SSO");
     this.initSSO();
   }
 }

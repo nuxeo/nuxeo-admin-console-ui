@@ -14,17 +14,17 @@ const authFeature = createFeature({
   name: "auth",
   reducer: createReducer(
     initialState,
-    on(authActions.sSO, (state) => ({
+    on(authActions.sso, (state) => ({
       ...state,
       isSubmitting: true,
       validationErrors: null,
     })),
-    on(authActions.sSOSuccess, (state, action) => ({
+    on(authActions.ssoSuccess, (state, action) => ({
       ...state,
       isSubmitting: false,
       currentUser: action.currentUser,
     })),
-    on(authActions.sSOFailure, (state, action) => ({
+    on(authActions.ssoFailure, (state, action) => ({
       ...state,
       isSubmitting: false,
       validationErrors: action.errors,
