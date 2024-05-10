@@ -5,7 +5,9 @@ import { AdminFullTextReindexModule } from "./features/admin-full-text-reindex/a
 import { AdminElasticSearchReindexModule } from "./features/admin-elastic-search-reindex/admin-elastic-search-reindex.module";
 import { AdminBulkActionMonitoringModule } from "./features/admin-bulk-action-monitoring/admin-bulk-action-monitoring.module";
 import { AdminHomeModule } from "./features/admin-home/admin-home.module";
-import { AdminWarningComponent } from "./admin-warning/admin-warning.component";
+import { AdminHomeComponent } from "./admin-home/components/admin-home.component";
+import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
+import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
@@ -27,9 +29,15 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
-import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
-import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
+import { HyDialogModule } from "@hyland/ui";
+import { FormsModule } from "@angular/forms";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatListModule } from "@angular/material/list";
+import { HyDialogBoxModule } from "@hyland/ui";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
 import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
+import { AdminWarningComponent } from "./adminWarning/admin-warning.component";
 
 @NgModule({
   declarations: [
@@ -39,6 +47,7 @@ import { AdminSystemInformationModule } from "./features/admin-system-informatio
     AdminWarningComponent,
     BackendErrorMessages,
     HylandSSOManagerComponent,
+    AdminHomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +67,13 @@ import { AdminSystemInformationModule } from "./features/admin-system-informatio
     AdminHomeModule,
     MatSidenavModule,
     MatButtonModule,
+    HyDialogModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatListModule,
+    HyDialogBoxModule,
+    MatFormFieldModule,
+    MatIconModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
     AdminElasticSearchReindexModule,
