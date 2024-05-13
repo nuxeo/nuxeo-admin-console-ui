@@ -27,6 +27,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatListModule } from '@angular/material/list';
 import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
 import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
 import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
@@ -58,6 +59,7 @@ import { AdminSystemInformationModule } from "./features/admin-system-informatio
     AdminHomeModule,
     MatSidenavModule,
     MatButtonModule,
+    MatListModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
     AdminElasticSearchReindexModule,
