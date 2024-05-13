@@ -1,22 +1,15 @@
-import {Component, OnInit} from '@angular/core'
-import {RouterOutlet} from '@angular/router'
-import {Store} from '@ngrx/store'
-import {authActions} from './auth/store/actions'
-import {SideBarComponent} from './shared/components/sideBar/sideBar.component'
-import {TopBarComponent} from './shared/components/topBar/topBar.component'
+import { Component, OnInit } from "@angular/core";
+import { Store } from "@ngrx/store";
+import { authActions } from "./auth/store/actions";
 
 @Component({
-  selector: 'admin-app-root',
-  templateUrl: './admin-app.component.html',
-  standalone: true,
-  imports: [RouterOutlet, SideBarComponent, TopBarComponent],
+  selector: "admin-app-root",
+  templateUrl: "./admin-app.component.html",
 })
 export class AdminAppComponent implements OnInit {
-  constructor(
-    private store: Store
-    ) {}
+  constructor(private store: Store) {}
 
   ngOnInit(): void {
-    this.store.dispatch(authActions.getCurrentUser())
+    this.store.dispatch(authActions.getCurrentUser());
   }
 }
