@@ -1,0 +1,64 @@
+.sidenav {
+    height: 100%;
+    background-color: var(--sidenav-bg-color);
+    padding-top: 24px;
+  }
+  
+  .sidenav-list-item-selected {
+    background-color: var(--sidenav-list-item-selected-bg-color);
+  }
+  
+  .sidenav-list-item-content {
+    color: var(--sidenav-list-item-content-color);
+    font-size: 14px;
+    font-weight: 400px;
+    line-height: 20px;
+    letter-spacing: 0.16px;
+    text-align: left;
+    padding: 9px 8px;
+  }
+  
+  .sidenav-list-item:hover {
+    background-color: var(--sidenav-list-item-selected-bg-color);
+  }
+  
+  .sidenav-list-item:focus {
+    background-color: var(--sidenav-list-item-selected-bg-color);
+  }
+  
+  .sidenav-list-item {
+    margin-bottom: 5px;
+  }
+  
+  .sidenav-list-item:hover .line,
+  .sidenav-list-item:hover .selected-line {
+    background-color: var(--selected-line-bg-color);
+  }
+  
+  .sidenav-list-item:focus .line,
+  .sidenav-list-item:focus .selected-line {
+    background-color: var(--selected-line-bg-color);
+  }
+  
+  .selected-sidenav-list-item-content {
+    font-weight: bold;
+    font-size: 13px;
+  }
+  
+  .line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+  }
+  
+  .selected-line {
+    background-color: var(--selected-line-bg-color);
+  }
+  
+  .mdc-list-item.mdc-list-item--with-one-line {
+    height: 36px !important;
+  }
