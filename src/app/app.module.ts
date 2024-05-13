@@ -34,6 +34,7 @@ import { AdminAppComponent } from "./admin-app.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import * as authEffects from "./auth/store/effects";
     MatButtonModule,
     MatSidenavModule,
     AdminHomeModule,
+    MatListModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
     AdminElasticSearchReindexModule,
