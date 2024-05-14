@@ -1,0 +1,56 @@
+.title {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 300;
+  font-size: 1.7rem !important;
+  line-height: 20px;
+  letter-spacing: 0.011em;
+}
+
+:host ::ng-deep hy-dialog-box-subheading .hy-text-subhead {
+  font-weight: 200;
+  font-size: 14px;
+}
+:host ::ng-deep hy-dialog-box-title .mat-title {
+  font-size: x-large;
+}
+
+:host ::ng-deep hy-dialog-box-subheading-caption {
+  font-size: 14px !important;
+}
+
+:host
+  ::ng-deep
+  hy-dialog-box-footer
+  .checkbox-container
+  .checkbox2
+  .mdc-form-field
+  .mdc-label {
+  padding-top: 6px;
+}
+
+.footer-content {
+  display: flex;
+  align-items: center; /* Center items vertically */
+}
+
+.checkbox-container {
+  margin-right: auto; /* Push the checkbox to the leftmost side */
+}
+
+.button-container {
+  margin-left: auto; /* Push the button to the rightmost side */
+}
+
+.hy-dialog-box-subheading-caption {
+  padding-top: 15px;
+  font-weight: bold;
+  font-size: medium;
+}
+.dialog-content {
+  padding-bottom: 5px;
+}
+
+.dialog-box {
+  width: 564px;
+}
