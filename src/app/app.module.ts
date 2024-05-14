@@ -23,13 +23,15 @@ import { authReducer } from "./auth/store/reducers";
 import { EffectsModule } from "@ngrx/effects";
 import * as authEffects from "./auth/store/effects";
 import { ngrxDevtools } from "../devtools/ngrx-devtools";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
 import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
 import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
+import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -45,7 +47,6 @@ import { AdminSystemInformationModule } from "./features/admin-system-informatio
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule,
-    ReactiveFormsModule,
     CommonModule,
     AppRoutingModule,
     AuthRoutingModule,
@@ -65,6 +66,12 @@ import { AdminSystemInformationModule } from "./features/admin-system-informatio
     AdminThumbnailGenerationModule,
     AdminPictureRenderGenerationModule,
     AdminVideoRenderGenerationModule,
+    HyDialogModule,
+    MatSidenavModule,
+    MatButtonModule,
+    HyDialogBoxModule,
+    FormsModule,
+    MatCheckboxModule,
   ],
   providers: [
     {
