@@ -1,0 +1,37 @@
+/* .admin-base-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  &__bottom {
+    display: flex;
+    height: 100%;
+    &---left {
+      flex: 15%;
+      height: 100%;
+    }
+    &---right {
+      flex: 85%;
+    }
+  }
+} */
+
+
+ .admin-base-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+  }
+  .admin-bottom-container{
+    display: flex;
+    height: 100%;
+  }
+  .admin-bottom-left-container{
+    flex:15%;
+    height: 100%;
+  }
+  .admin-bottom-right-container{
+    flex:85%;
+  }
+  
