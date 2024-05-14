@@ -20,7 +20,12 @@
   font-weight: 400 700;
   font-display: swap;
 }
-
+:root {
+  --sidenav-bg-color: #212121;
+  --sidenav-list-item-selected-bg-color: black;
+  --sidenav-list-item-content-color: #FFFFFF;
+  --selected-line-bg-color: #0C6BD4;
+}
 html,
 body {
   height: 100%;

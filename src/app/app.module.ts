@@ -5,14 +5,9 @@ import { StoreModule } from "@ngrx/store";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { EffectsModule } from "@ngrx/effects";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { ReactiveFormsModule } from "@angular/forms";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
-import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatIconModule } from "@angular/material/icon";
-import { MatButtonModule } from "@angular/material/button";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { ngrxDevtools } from "../devtools/ngrx-devtools";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
 import { AdminBaseLayoutModule } from "./layouts/admin-base-layout/admin-base-layout.module";
@@ -22,11 +17,8 @@ import { AdminThumbnailGenerationModule } from "./features/admin-thumbnail-gener
 import { AdminFullTextReindexModule } from "./features/admin-full-text-reindex/admin-full-text-reindex.module";
 import { AdminElasticSearchReindexModule } from "./features/admin-elastic-search-reindex/admin-elastic-search-reindex.module";
 import { AdminBulkActionMonitoringModule } from "./features/admin-bulk-action-monitoring/admin-bulk-action-monitoring.module";
-import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
 import { AdminHomeModule } from "./features/admin-home/admin-home.module";
 import { AdminWarningComponent } from "./shared/components/admin-warning/admin-warning.component";
-import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
-import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
 import { AdminBaseLayoutComponent } from "./layouts/admin-base-layout/components/admin-base-layout.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
 import { BackendErrorMessages } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
@@ -34,6 +26,15 @@ import { AdminAppComponent } from "./admin-app.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
+import { ngrxDevtools } from "../devtools/ngrx-devtools";
+import { ReactiveFormsModule } from "@angular/forms";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatButtonModule } from "@angular/material/button";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatListModule } from '@angular/material/list';
+import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
+import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
+import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import * as authEffects from "./auth/store/effects";
     MatButtonModule,
     MatSidenavModule,
     AdminHomeModule,
+    MatListModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
     AdminElasticSearchReindexModule,
