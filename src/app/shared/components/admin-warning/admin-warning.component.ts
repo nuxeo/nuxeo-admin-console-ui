@@ -1,6 +1,7 @@
 import { Component, Input, HostListener } from "@angular/core";
 import { AdminUserInterface } from "../../types/adminUser.interface";
 import { MatDialog } from "@angular/material/dialog";
+import { AdminCommonService } from "../../services/admin-common.service";
 
 @Component({
   selector: "admin-warning",
@@ -12,7 +13,7 @@ export class AdminWarningComponent {
   public currentUser: AdminUserInterface = {} as AdminUserInterface;
   public doNotWarn: boolean = false;
 
-  constructor(private dialogService: MatDialog) {}
+  constructor(private dialogService: MatDialog, private adminCommonService: AdminCommonService) {}
 
   ngOnInit(): void {
     this.currentUser = this.getCurrentUser;
@@ -27,6 +28,7 @@ export class AdminWarningComponent {
       localStorage.setItem("doNotWarn", "true");
     }
     this.closeDialog();
+    this.adminCommonService.loadApp.emit(true);
   }
 
   closeDialog() {
