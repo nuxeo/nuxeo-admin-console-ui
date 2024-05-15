@@ -1,10 +1,17 @@
-<mat-nav-list class="sidenav" role="navigation" aria-label="Navigation">
-    <a mat-list-item *ngFor="let item of navItems; let i = index" (click)="onClickSelectItem(item.id)"
-        (keyup.enter)="onClickSelectItem(item.id)" class="sidenav-list-item"
-        [class.sidenav-list-item-selected]="item.isSelected" role="menuitem"
-        [attr.aria-selected]="item.isSelected ? 'true' : 'false'" [attr.tabindex]="i + 1">
-        <span class="line" [class.selected-line]="item.isSelected"></span>
-        <span class="sidenav-list-item-content" [class.selected-sidenav-list-item-content]="item.isSelected">{{
-            item.name }}</span>
+<mat-nav-list class="admin-menu" role="navigation" aria-label="navigation">
+    <a mat-list-item 
+       *ngFor="let item of adminMenu; let i = index" 
+       (click)="menuItemSelected(item.id)"
+       (keyup.enter)="menuItemSelected(item.id)" 
+       class="admin-menu__list-item"
+       [ngClass]="{'admin-menu__list-item--selected': item.isSelected}" 
+       role="menuitem"
+       [attr.aria-selected]="item.isSelected ? 'true' : 'false'" 
+       [attr.tabindex]="i + 1">
+        <span class="admin-menu__line" 
+              [ngClass]="{'admin-menu__line--selected': item.isSelected}"></span>
+        
+        <span class="admin-menu__list-item-content" 
+              [ngClass]="{'admin-menu__list-item-content--selected': item.isSelected}">{{ item.name }}</span>
     </a>
 </mat-nav-list>

@@ -66,8 +66,6 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
-    MatSidenavModule,
-    AdminHomeModule,
     MatListModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
