@@ -1,37 +1,36 @@
-import { Component, Input, HostListener } from "@angular/core";
-import { AdminUserInterface } from "../../types/adminUser.interface";
+import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { AdminCommonService } from "../../services/admin-common.service";
+import { PersistenceService } from "../../../shared/services/persistence.service";
+import { AdminCommonService } from "../../../shared/services/admin-common.service";
 
 @Component({
   selector: "admin-warning",
   templateUrl: "./admin-warning.component.html",
   styleUrls: ["./admin-warning.component.scss"],
 })
-export class AdminWarningComponent {
-  @Input() getCurrentUser: AdminUserInterface = {} as AdminUserInterface;
-  public currentUser: AdminUserInterface = {} as AdminUserInterface;
+export class AdminWarningComponent implements OnInit {
   public doNotWarn: boolean = false;
 
-  constructor(private dialogService: MatDialog, private adminCommonService: AdminCommonService) {}
+  constructor(
+    private dialogService: MatDialog,
+    private persistenceService: PersistenceService,
+    private adminCommonService: AdminCommonService
+  ) {}
 
   ngOnInit(): void {
-    this.currentUser = this.getCurrentUser;
-    const preference = localStorage.getItem("doNotWarn");
-    if (preference === "true") {
-      this.doNotWarn = true;
-    }
+    const preference = this.persistenceService.get("doNotWarn");
+    this.doNotWarn = !!preference && preference === "true";
   }
 
-  onConfirm() {
+  onConfirm(): void {
     if (this.doNotWarn) {
-      localStorage.setItem("doNotWarn", "true");
+      this.persistenceService.set("doNotWarn", "true");
     }
     this.closeDialog();
     this.adminCommonService.loadApp.emit(true);
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogService.closeAll();
   }
 }
