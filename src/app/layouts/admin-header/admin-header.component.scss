@@ -1,6 +1,6 @@
 .admin-header {
   background-color: #fff;
-  .example-spacer {
+  &__spacer {
     flex: 1 1 auto;
   }
   &__branding {
@@ -21,17 +21,17 @@
       width: 112px;
       height: 36px;
     }
-  }
-  .title-text {
-    color: #212121;
-    font-size: 20px;
-  }
-  .profile-icon {
-    height: 58px;
-    width: 58px;
-    img {
-      width: 40px;
-      height: 40px;
+    &__title {
+      color: #212121;
+      font-size: 20px;
+    }
+    &__profile-icon {
+      height: 58px;
+      width: 58px;
+      img {
+        width: 40px;
+        height: 40px;
+      }
     }
   }
 }

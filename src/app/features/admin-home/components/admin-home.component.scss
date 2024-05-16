@@ -5,24 +5,15 @@
   height: 100%;
   background-color: #f4f4f4;
   padding: 20px 20px 0px 30px;
-
-  .home-info {
+  &__probes {
     width: 65%;
     height: 60%;
     margin-right: 20px;
     margin-bottom: 20px;
   }
-
-  .home-info:last-child {
+  &__registration-version {
     width: 33%;
     height: 60%;
     margin-right: 0;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .home-info {
-    flex-basis: 100%;
-    margin: 10%;
   }
 }

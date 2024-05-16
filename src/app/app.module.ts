@@ -17,6 +17,7 @@ import { AdminThumbnailGenerationModule } from "./features/admin-thumbnail-gener
 import { AdminFullTextReindexModule } from "./features/admin-full-text-reindex/admin-full-text-reindex.module";
 import { AdminElasticSearchReindexModule } from "./features/admin-elastic-search-reindex/admin-elastic-search-reindex.module";
 import { AdminBulkActionMonitoringModule } from "./features/admin-bulk-action-monitoring/admin-bulk-action-monitoring.module";
+import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
 import { AdminHomeModule } from "./features/admin-home/admin-home.module";
 import { AdminWarningComponent } from "./shared/components/admin-warning/admin-warning.component";
 import { AdminBaseLayoutComponent } from "./layouts/admin-base-layout/components/admin-base-layout.component";
@@ -34,7 +35,6 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatListModule } from "@angular/material/list";
 import { AdminHeaderComponent } from "./layouts/admin-header/admin-header.component";
 import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
-import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
 import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 
