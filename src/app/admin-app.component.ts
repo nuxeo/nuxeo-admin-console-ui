@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { AdminWarningComponent } from "./shared/components/admin-warning/admin-warning.component";
+import { AdminWarningComponent } from "./features/admin-warning/admin-warning.component";
 import { PersistenceService } from "./shared/services/persistence.service";
 import { Subscription } from "rxjs";
 import { AdminCommonService } from "./shared/services/admin-common.service";

@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { PersistenceService } from "../../../shared/services/persistence.service";
-import { AdminCommonService } from "../../../shared/services/admin-common.service";
+import { PersistenceService } from "../../shared/services/persistence.service";
+import { AdminCommonService } from "../../shared/services/admin-common.service";
 
 @Component({
   selector: "admin-warning",

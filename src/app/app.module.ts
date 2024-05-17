@@ -18,7 +18,7 @@ import { AdminFullTextReindexModule } from "./features/admin-full-text-reindex/a
 import { AdminElasticSearchReindexModule } from "./features/admin-elastic-search-reindex/admin-elastic-search-reindex.module";
 import { AdminBulkActionMonitoringModule } from "./features/admin-bulk-action-monitoring/admin-bulk-action-monitoring.module";
 import { AdminHomeModule } from "./features/admin-home/admin-home.module";
-import { AdminWarningComponent } from "./shared/components/admin-warning/admin-warning.component";
+import { AdminWarningComponent } from "./features/admin-warning/admin-warning.component";
 import { AdminBaseLayoutComponent } from "./layouts/admin-base-layout/components/admin-base-layout.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
 import { BackendErrorMessages } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
