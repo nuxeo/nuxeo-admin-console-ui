@@ -36,6 +36,7 @@ import { AdminMenuComponent } from "./layouts/admin-menu/admin-menu.component";
 import { AdminSystemInformationModule } from "./features/admin-system-information/admin-system-information.module";
 import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatButtonModule,
     MatSidenavModule,
     AdminHomeModule,
+    MatListModule,
     AdminSystemInformationModule,
     AdminBulkActionMonitoringModule,
     AdminElasticSearchReindexModule,
