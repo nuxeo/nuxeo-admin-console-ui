@@ -1,5 +1,5 @@
-import { BaseLayoutModule } from './layouts/base-layout/base-layout.module';
-import { BaseLayoutComponent } from './layouts/base-layout/components/base-layout.component';
+import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
+import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule } from "@angular/router";
@@ -37,6 +37,8 @@ import { SystemInformationModule } from "./features/system-information/system-in
 import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
+import { homeReducer } from "./features/home/store/reducers";
+import * as HomeEffects from "./features/home/store/effects";
 
 @NgModule({
   declarations: [
@@ -59,9 +61,10 @@ import { MatListModule } from "@angular/material/list";
     StoreModule.forRoot({
       router: routerReducer,
       auth: authReducer,
+      home: homeReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
