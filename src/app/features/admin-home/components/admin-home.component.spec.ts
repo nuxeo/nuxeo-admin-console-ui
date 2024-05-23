@@ -27,7 +27,7 @@ describe("AdminHomeComponent", () => {
     fixture = TestBed.createComponent(AdminHomeComponent);
     component = fixture.componentInstance;
   });
-  it("should display original title", () => {
+  it("should test if component is created", () => {
     expect(component).toBeTruthy();
   });
 });

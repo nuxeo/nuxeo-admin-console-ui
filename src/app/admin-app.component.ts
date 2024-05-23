@@ -14,9 +14,9 @@ export class AdminAppComponent implements OnInit, OnDestroy {
   loadApp: Boolean = false;
   loadAppSubscription = new Subscription();
   constructor(
-    private dialogService: MatDialog,
-    private persistenceService: PersistenceService,
-    private adminCommonService: AdminCommonService
+    public dialogService: MatDialog,
+    public persistenceService: PersistenceService,
+    public adminCommonService: AdminCommonService
   ) {}
 
   ngOnInit(): void {

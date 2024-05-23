@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { AdminCommonService } from "../../shared/services/admin-common.service";
+import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 
 @Component({
   selector: "admin-warning",
@@ -12,9 +13,10 @@ export class AdminWarningComponent implements OnInit {
   public doNotWarn: boolean = false;
 
   constructor(
-    private dialogService: MatDialog,
-    private persistenceService: PersistenceService,
-    private adminCommonService: AdminCommonService
+    public dialogService: MatDialog,
+    public persistenceService: PersistenceService,
+    public adminCommonService: AdminCommonService,
+    private _hyKeyboardFocusService: HyKeyboardFocusService
   ) {}
 
   ngOnInit(): void {
