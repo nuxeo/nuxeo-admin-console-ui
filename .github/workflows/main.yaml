@@ -3,7 +3,7 @@ name: Main
 on:
   push:
     branches:
-      - Main
+      - main
 
   # Manually trigger the workflow
   workflow_dispatch:
