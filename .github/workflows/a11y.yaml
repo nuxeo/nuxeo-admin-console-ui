@@ -3,12 +3,12 @@ name: A11y
 on:
   pull_request:
     branches:
-      - main
+      - dev
   workflow_call:
     inputs:
       branch:
         description: 'The current branch'
-        default: main
+        default: dev
         type: string
         required: false
     secrets:
@@ -23,9 +23,9 @@ on:
         required: true
 
 env:
-  REFERENCE_BRANCH: main
+  REFERENCE_BRANCH: dev
   NPM_REPOSITORY: https://packages.nuxeo.com/repository/npm-public/
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'main' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
 
 jobs:
   a11y:

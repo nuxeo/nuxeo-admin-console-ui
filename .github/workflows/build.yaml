@@ -1,44 +1,44 @@
-name: Main
+name: Build
 
 on:
   push:
     branches:
-      - main
+      - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
   lint:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
 
   utest:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
     with:
-      branch: main
+      branch: dev
 
   a11y:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/a11y.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/a11y.yaml@dev
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
       PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
     with:
-      branch: main
+      branch: dev
 
   ftest:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/ftest.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/ftest.yaml@dev
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
       PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
     with:
-      branch: main
+      branch: dev
 
   build:
     needs: [lint, utest, a11y, ftest]
