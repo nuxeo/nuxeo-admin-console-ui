@@ -3,12 +3,12 @@ name: Lint
 on:
   pull_request:
     branches:
-      - main
+      - dev
   workflow_call:
     inputs:
       branch:
         description: 'The current branch'
-        default: main
+        default: dev
         type: string
         required: false
     secrets:
@@ -17,7 +17,7 @@ on:
         required: true
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'main' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
 
 jobs:
   lint:
