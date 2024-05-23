@@ -46,55 +46,17 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Determine nuxeo-elements branch to link
-        id: pick_nuxeo_elements_branch
-        run: |
-          if git ls-remote --exit-code --heads https://github.com/nuxeo/nuxeo-elements ${{ env.BRANCH_NAME }}; then
-            echo ::set-output name=branch::${{ env.BRANCH_NAME }}
-          else
-            echo ::set-output name=branch::${{ env.REFERENCE_BRANCH }}
-          fi
-
-      - name: Install Web UI
+      - name: Install Admin Console UI
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
         run: |
           npm install
-          pushd packages/nuxeo-web-ui-ftest
+          pushd packages/nuxeo-admin-console-ui-ftest
           npm install
           popd
           pushd packages/nuxeo-designer-catalog
           npm install
           popd
-
-      - name: Checkout the nuxeo-elements repo
-        uses: actions/checkout@v2
-        with:
-          repository: nuxeo/nuxeo-elements
-          path: nuxeo-elements
-          fetch-depth: 1
-          ref: ${{ steps.pick_nuxeo_elements_branch.outputs.branch }}
-
-      - name: Pack Elements modules
-        run: |
-          pushd nuxeo-elements
-          pushd core
-          echo "ELEMENTS_CORE=$(npm pack 2>&1 | tail -1)" >> $GITHUB_ENV
-          popd
-
-          pushd ui
-          echo "ELEMENTS_UI=$(npm pack 2>&1 | tail -1)" >> $GITHUB_ENV
-          popd
-
-          pushd dataviz
-          echo "ELEMENTS_DATAVIZ=$(npm pack 2>&1 | tail -1)" >> $GITHUB_ENV
-          popd
-
-          pushd testing-helpers
-          echo "ELEMENTS_HELPERS=$(npm pack 2>&1 | tail -1)" >> $GITHUB_ENV
-          popd
-          popd
-
       - name: Add .npmrc
         run: |
           pushd /tmp/_temp/
@@ -106,13 +68,6 @@ jobs:
            @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/
            always-auth=true
           ' >> /tmp/_temp/.npmrc
-
-      - name: Link elements to Web UI
-        run: |
-          npm install --no-package-lock --@nuxeo:registry="${{ env.NPM_REPOSITORY }}" nuxeo-elements/core/${ELEMENTS_CORE}
-          npm install --no-package-lock --@nuxeo:registry="${{ env.NPM_REPOSITORY }}" nuxeo-elements/ui/${ELEMENTS_UI}
-          npm install --no-package-lock --@nuxeo:registry="${{ env.NPM_REPOSITORY }}" nuxeo-elements/dataviz/${ELEMENTS_DATAVIZ}
-          npm install --no-package-lock --@nuxeo:registry="${{ env.NPM_REPOSITORY }}" nuxeo-elements/testing-helpers/${ELEMENTS_HELPERS}
 
       - name: 'Update settings.xml with server configuration'
         run: |
@@ -161,5 +116,5 @@ jobs:
         with:
           name: packages
           path: |
-            plugin/web-ui/marketplace/target/nuxeo-web-ui-marketplace-*.zip
+            plugin/admin-console-ui/marketplace/target/nuxeo-admin-console-ui-marketplace-*.zip
             plugin/itests/marketplace/target/nuxeo-web-ui-marketplace-itests-*.zip
