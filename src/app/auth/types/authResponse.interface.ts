@@ -1,5 +1,5 @@
-import { AdminUserInterface } from "../../shared/types/adminUser.interface";
+import { UserInterface } from "../../shared/types/user.interface";
 
 export interface AuthResponseInterface {
-  user: AdminUserInterface;
+  user: UserInterface;
 }

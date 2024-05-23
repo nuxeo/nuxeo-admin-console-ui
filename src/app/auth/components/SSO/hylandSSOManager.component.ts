@@ -10,7 +10,7 @@ import {
 import { HylandSSORequestInterface } from "../../types/hylandSSORequest.interface";
 
 @Component({
-  selector: "admin-ssomanager",
+  selector: "ssomanager",
   templateUrl: "./hylandSSOManager.component.html",
 })
 export class HylandSSOManagerComponent {
