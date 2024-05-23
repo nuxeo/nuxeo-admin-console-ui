@@ -76,8 +76,10 @@ describe("AppComponent", () => {
   });
 
   it("should set loadApp to true or false based on the value received from the service subscription", () => {
+    component.ngOnInit();
     component.commonService.loadApp.emit(true);
     expect(component.loadApp).toBe(true);
+    component.ngOnInit();
     component.commonService.loadApp.emit(false);
     expect(component.loadApp).toBe(false);
   });
