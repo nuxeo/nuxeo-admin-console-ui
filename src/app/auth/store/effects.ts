@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap, tap } from "rxjs";
 import { PersistenceService } from "../../shared/services/persistence.service";
-import { UserInterface } from "../../shared/types/user.interface";
+import { AdminUserInterface } from "../../shared/types/adminUser.interface";
 import { AuthService } from "../services/auth.service";
 import { authActions } from "./actions";
 
@@ -23,7 +23,7 @@ export const getCurrentUserEffect = createEffect(
           return of(authActions.getCurrentUserFailure());
         }
         return authService.getCurrentUser().pipe(
-          map((currentUser: UserInterface) => {
+          map((currentUser: AdminUserInterface) => {
             return authActions.getCurrentUserSuccess({ currentUser });
           }),
           catchError(() => {
@@ -46,7 +46,7 @@ export const ssoEffect = createEffect(
       ofType(authActions.sso),
       switchMap(({ request }) => {
         return authService.sso(request).pipe(
-          map((currentUser: UserInterface) => {
+          map((currentUser: AdminUserInterface) => {
             persistenceService.set("accessToken", currentUser.token);
             return authActions.ssoSuccess({ currentUser });
           }),
