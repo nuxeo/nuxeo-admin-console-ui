@@ -1,0 +1,17 @@
+<mat-nav-list class="menu-bar" role="navigation" aria-label="navigation">
+    <a mat-list-item 
+       *ngFor="let item of menu; let i = index" 
+       (click)="menuItemSelected(item.id)"
+       (keyup.enter)="menuItemSelected(item.id)" 
+       class="menu-bar__list-item"
+       [ngClass]="{'menu-bar__list-item--selected': item.isSelected}" 
+       role="menuitem"
+       [attr.aria-selected]="item.isSelected ? 'true' : 'false'" 
+      >
+        <span class="menu-bar__line" 
+              [ngClass]="{'menu-bar__line--selected': item.isSelected}"></span>
+        
+        <span class="menu-bar__list-item-content" 
+              [ngClass]="{'menu-bar__list-item-content--selected': item.isSelected}">{{ item.name }}</span>
+    </a>
+</mat-nav-list>
