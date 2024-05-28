@@ -50,7 +50,7 @@ jobs:
         run: npm run build
 
       - name: Zip Build Artifacts
-        run: zip -r build-artifact.zip ./build
+        run: zip -r admin-console-ui.zip ./dist
 
       - name: Upload to Nexus
         env:
@@ -60,5 +60,5 @@ jobs:
           NEXUS_PASSWORD: ${{ env.NEXUS_PASSWORD }}
         run: |
           curl -u $NEXUS_USERNAME:$NEXUS_PASSWORD \
-            --upload-file build-artifact.zip \
-            "$NEXUS_URL/$NEXUS_REPOSITORY/build-artifact.zip"
+            --upload-file admin-console-ui.zip \
+            "$NEXUS_URL/$NEXUS_REPOSITORY/admin-console-ui.zip"
