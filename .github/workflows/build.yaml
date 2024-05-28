@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ env.BRANCH_NAME }}
 
@@ -46,11 +46,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
     
-      - name: Lint and Build
+      - name:  Build
         run: npm run build
 
       - name: Zip Build Artifacts
-        run: zip -r build-artifact.zip ./build
+        run: zip -r admin-console-ui.zip ./dist
 
       - name: Upload to Nexus
         env:
@@ -60,5 +60,5 @@ jobs:
           NEXUS_PASSWORD: ${{ env.NEXUS_PASSWORD }}
         run: |
           curl -u $NEXUS_USERNAME:$NEXUS_PASSWORD \
-            --upload-file build-artifact.zip \
+            --upload-file admin-console-ui.zip \
             "$NEXUS_URL/$NEXUS_REPOSITORY/build-artifact.zip"
