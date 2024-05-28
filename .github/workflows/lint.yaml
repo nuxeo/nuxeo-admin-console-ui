@@ -3,17 +3,17 @@ name: Lint
 on:
   pull_request:
     branches:
-      - DevOps-Testing
+      - Testing
   workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
-        default: DevOps-Testing
+        default: Testing
         type: string
         required: false
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'DevOps-Testing' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
 
 jobs:
   lint:
