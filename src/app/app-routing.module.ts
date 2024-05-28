@@ -5,35 +5,35 @@ import { Route } from "@angular/router";
 export const appRoutes: Route[] = [
   {
     path: "",
-    loadChildren: () => import("./features/admin-home/admin-home.module").then((m) => m.AdminHomeModule),
+    loadChildren: () => import("./features/home/home.module").then((m) => m.HomeModule),
   },
   {
     path: "system-information",
-    loadChildren: () => import("./features/admin-system-information/admin-system-information.module").then((m) => m.AdminSystemInformationModule),
+    loadChildren: () => import("./features/system-information/system-information.module").then((m) => m.SystemInformationModule),
   },
   {
     path: "bulk-action-monitoring",
-    loadChildren: () => import("./features/admin-bulk-action-monitoring/admin-bulk-action-monitoring.module").then((m) => m.AdminBulkActionMonitoringModule),
+    loadChildren: () => import("./features/bulk-action-monitoring/bulk-action-monitoring.module").then((m) => m.BulkActionMonitoringModule),
   },
   {
     path: "elasticsearch-reindex",
-    loadChildren: () => import("./features/admin-elastic-search-reindex/admin-elastic-search-reindex.module").then((m) => m.AdminElasticSearchReindexModule),
+    loadChildren: () => import("./features/elastic-search-reindex/elastic-search-reindex.module").then((m) => m.ElasticSearchReindexModule),
   },
   {
     path: "fulltext-reindex",
-    loadChildren: () => import("./features/admin-full-text-reindex/admin-full-text-reindex.module").then((m) => m.AdminFullTextReindexModule),
+    loadChildren: () => import("./features/full-text-reindex/full-text-reindex.module").then((m) => m.FullTextReindexModule),
   },
   {
     path: "thumbnails-generation",
-    loadChildren: () => import("./features/admin-thumbnail-generation/admin-thumbnail-generation.module").then((m) => m.AdminThumbnailGenerationModule),
+    loadChildren: () => import("./features/thumbnail-generation/thumbnail-generation.module").then((m) => m.ThumbnailGenerationModule),
   },
   {
     path: "picture-renditions-generation",
-    loadChildren: () => import("./features/admin-picture-render-generation/admin-picture-render-generation.module").then((m) => m.AdminPictureRenderGenerationModule),
+    loadChildren: () => import("./features/picture-render-generation/picture-render-generation.module").then((m) => m.PictureRenderGenerationModule),
   },
   {
     path: "video-renditions-generation",
-    loadChildren: () => import("./features/admin-video-render-generation/admin-video-render-generation.module").then((m) => m.AdminVideoRenderGenerationModule),
+    loadChildren: () => import("./features/video-render-generation/video-render-generation.module").then((m) => m.VideoRenderGenerationModule),
   },
   {
     path: "auth",
