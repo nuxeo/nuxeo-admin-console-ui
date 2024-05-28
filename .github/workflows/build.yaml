@@ -3,17 +3,17 @@ name: Build and Publish to Nexus
 on:
   pull_request:
     branches:
-      - DevOps-Testing
+      - Testing
   workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
-        default: DevOps-Testing
+        default: Testing
         type: string
         required: false
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name || 'DevOps-Testing' }}
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name || 'Testing' }}
   NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/ 
   NEXUS_REPOSITORY: npm-public 
   NEXUS_USERNAME: ${{ secrets.PACKAGES_AUTH_USER }} 
