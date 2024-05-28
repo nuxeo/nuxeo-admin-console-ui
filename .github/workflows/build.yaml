@@ -1,4 +1,4 @@
-name: Build and Publish to Nexus
+name: Build and Publish
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ env:
   NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }} 
 
 jobs:
-  lint:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
