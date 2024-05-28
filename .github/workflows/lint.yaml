@@ -1,0 +1,53 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - feat-DEVOPS-281
+  workflow_call:
+    inputs:
+      branch:
+        description: 'The current branch'
+        default: feat-DEVOPS-281
+        type: string
+        required: false
+    secrets:
+      NPM_PACKAGES_TOKEN:
+        description: 'NPM_PACKAGES_TOKEN'
+        required: true
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'feat-DEVOPS-281' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
+          node-version: 20
+          scope: '@nuxeo'
+    
+      - name: Verify Node and npm Version
+        run: |
+            node -v
+            npm -v
+  
+
+      - name: Set Registry Config
+        run: |
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_ADMIN_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
+
+      - name: Install @angular/cli
+        run: npm install -g @angular/cli
+
+      - name: Install @angular/cli
+        run: npm install 
+
