@@ -46,7 +46,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
     
-      - name: Lint and Build
+      - name: Build
         run: npm run build
 
       - name: Zip Build Artifacts
