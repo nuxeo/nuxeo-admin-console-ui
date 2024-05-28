@@ -14,3 +14,5 @@ npm-debug.log
 .java-version
 .vscode
 coverage
+.angular
+package-lock.json

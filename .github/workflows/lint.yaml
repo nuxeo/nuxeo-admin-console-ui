@@ -3,21 +3,17 @@ name: Lint
 on:
   pull_request:
     branches:
-      - main
-  workflow_call:
+      - DevOps-Testing
+  workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
-        default: main
+        default: DevOps-Testing
         type: string
         required: false
-    secrets:
-      NPM_PACKAGES_TOKEN:
-        description: 'NPM_PACKAGES_TOKEN'
-        required: true
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'main' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'DevOps-Testing' }}
 
 jobs:
   lint:
@@ -30,13 +26,26 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
-          node-version: 18
+          node-version: 20
           scope: '@nuxeo'
+    
+      - name: Verify Node and npm Version
+        run: |
+            node -v
+            npm -v
+  
 
-      - name: Install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm install
+      - name: Set Registry Config
+        run: |
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
 
+      - name: Install @angular/cli
+        run: npm install -g @angular/cli
+
+      - name: Install Node
+        run: npm install 
+    
       - name: Lint
         run: npm run lint

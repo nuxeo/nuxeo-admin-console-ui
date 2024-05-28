@@ -1,71 +1,64 @@
-name: Main
+name: Build and Publish to Nexus
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
-
-  # Manually trigger the workflow
+      - DevOps-Testing
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'The current branch'
+        default: DevOps-Testing
+        type: string
+        required: false
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name || 'DevOps-Testing' }}
+  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/ 
+  NEXUS_REPOSITORY: npm-public 
+  NEXUS_USERNAME: ${{ secrets.PACKAGES_AUTH_USER }} 
+  NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }} 
 
 jobs:
   lint:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-
-  utest:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-    with:
-      branch: main
-
-  a11y:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/a11y.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
-      PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
-    with:
-      branch: main
-
-  ftest:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/ftest.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
-      PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
-    with:
-      branch: main
-
-  build:
-    needs: [lint, utest, a11y, ftest]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
-
-      - uses: actions/setup-node@v3
+      - name: Checkout Code
+        uses: actions/checkout@v2
         with:
-          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
-          scope: '@nuxeo'
+          ref: ${{ env.BRANCH_NAME }}
 
-      - uses: actions/setup-java@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
 
-      - name: Prepare environment
+      - name: Set Registry Config
         run: |
-          echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
-          echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
 
-      - name: Get prerelease version
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        run: npm install
+    
+      - name: Lint and Build
+        run: npm run build
+
+      - name: Zip Build Artifacts
+        run: zip -r build-artifact.zip ./build
+
+      - name: Upload to Nexus
+        env:
+          NEXUS_URL: ${{ env.NEXUS_URL }}
+          NEXUS_REPOSITORY: ${{ env.NEXUS_REPOSITORY }}
+          NEXUS_USERNAME: ${{ env.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ env.NEXUS_PASSWORD }}
         run: |
-          git fetch origin --tags
-          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
-          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
-
+          curl -u $NEXUS_USERNAME:$NEXUS_PASSWORD \
+            --upload-file build-artifact.zip \
+            "$NEXUS_URL/$NEXUS_REPOSITORY/build-artifact.zip"

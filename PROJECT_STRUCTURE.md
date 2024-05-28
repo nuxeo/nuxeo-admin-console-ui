@@ -1,27 +1,31 @@
 /app
-  /article
+  /features
     /components
     /store
     /types
     /services
-      management-actions.service.ts
+      actions.service.ts
     actions.routes
-  /globalFeed
+  /indexing
     /components
       /actions
-    globalActions.routes
+    indexActions.routes
+  /imagerendition
+  .
+  .
+  .
   /shared
     /components
       /backendErrorMessages
         backendErrorMessages.component.ts
-      /indexSearch
-        indexSearch.component.ts
+      /sidebar
+        sideBar.component.ts
         /types
         /store
         /services
     /types
-      index.interface.ts
+      adminUser.interface.ts
     /services
-      index.service.ts
+      authinterceptor.service.ts
   app.routes
 main.ts
