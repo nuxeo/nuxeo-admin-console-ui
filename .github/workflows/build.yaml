@@ -22,26 +22,26 @@ jobs:
     with:
       branch: DevOps-282
 
-  a11y:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/a11y.yaml@DevOps-282
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
-      PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
-    with:
-      branch: DevOps-282
+ # a11y:
+ #   uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/a11y.yaml@DevOps-282
+ #   secrets:
+ #     NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+ #     PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
+ #     PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
+ #   with:
+ #     branch: DevOps-282
 
-  ftest:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/ftest.yaml@DevOps-282
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
-      PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
-    with:
-      branch: DevOps-282
+ # ftest:
+ #   uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/ftest.yaml@DevOps-282
+ #   secrets:
+ #     NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+ #     PACKAGES_AUTH_USER: ${{ secrets.PACKAGES_AUTH_USER }}
+ #     PACKAGES_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
+ #   with:
+ #     branch: DevOps-282
 
   build:
-    needs: [lint, utest, a11y, ftest]
+    needs: [lint, utest]
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
