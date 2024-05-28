@@ -3,17 +3,17 @@ name: Lint
 on:
   pull_request:
     branches:
-      - feat-DEVOPS-281
+      - DevOps-Testing
   workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
-        default: feat-DEVOPS-281
+        default: DevOps-Testing
         type: string
         required: false
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'feat-DEVOPS-281' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'DevOps-Testing' }}
 
 jobs:
   lint:
@@ -44,9 +44,8 @@ jobs:
       - name: Install @angular/cli
         run: npm install -g @angular/cli
 
-      - name: Install
+      - name: Install Node
         run: npm install 
     
       - name: Lint
-        run: npm run build
-
+        run: npm run lint
