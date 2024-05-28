@@ -60,5 +60,5 @@ jobs:
           NEXUS_PASSWORD: ${{ env.NEXUS_PASSWORD }}
         run: |
           curl -u $NEXUS_USERNAME:$NEXUS_PASSWORD \
-            --upload-file admin-console-ui.zip \
+            -T admin-console-ui.zip \
             "$NEXUS_URL/$NEXUS_REPOSITORY/build-artifact.zip"
