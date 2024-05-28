@@ -4,17 +4,13 @@ on:
   pull_request:
     branches:
       - feat-DEVOPS-281
-  workflow_call:
+  workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
         default: feat-DEVOPS-281
         type: string
         required: false
-    secrets:
-      NPM_PACKAGES_TOKEN:
-        description: 'NPM_PACKAGES_TOKEN'
-        required: true
 
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'feat-DEVOPS-281' }}
