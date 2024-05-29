@@ -22,7 +22,7 @@ describe("AppComponent", () => {
     set() {}
   }
 
-  class adminCommonServiceStub {
+  class commonServiceStub {
     loadApp = new EventEmitter<Boolean>();
   }
 
@@ -33,7 +33,7 @@ describe("AppComponent", () => {
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },
         { provide: PersistenceService, useClass: persistenceServiceStub },
-        { provide: CommonService, useClass: adminCommonServiceStub },
+        { provide: CommonService, useClass: commonServiceStub },
       ],
     }).compileComponents();
 
@@ -52,7 +52,7 @@ describe("AppComponent", () => {
     it("should open the warning dialog if warning preference is not set", () => {
       spyOn(component.persistenceService, "get").and.returnValue(null);
       let loadAppSubscriptionSpy = spyOn(
-        component.adminCommonService.loadApp,
+        component.commonService.loadApp,
         "subscribe"
       ).and.callThrough();
       component.ngOnInit();
@@ -77,10 +77,10 @@ describe("AppComponent", () => {
 
   it("should set loadApp to true or false based on the value received from the service subscription", () => {
     component.ngOnInit();
-    component.adminCommonService.loadApp.emit(true);
+    component.commonService.loadApp.emit(true);
     expect(component.loadApp).toBe(true);
     component.ngOnInit();
-    component.adminCommonService.loadApp.emit(false);
+    component.commonService.loadApp.emit(false);
     expect(component.loadApp).toBe(false);
   });
 

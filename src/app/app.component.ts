@@ -16,7 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
-    public adminCommonService: CommonService
+    public commonService: CommonService
   ) {}
 
   ngOnInit(): void {
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.dialogService.open(WarningComponent, {
         disableClose: true,
       });
-      this.loadAppSubscription = this.adminCommonService.loadApp.subscribe(
+      this.loadAppSubscription = this.commonService.loadApp.subscribe(
         (load) => {
           this.loadApp = load;
         }

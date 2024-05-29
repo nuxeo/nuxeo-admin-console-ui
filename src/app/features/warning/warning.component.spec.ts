@@ -8,9 +8,9 @@ import {
   TestBed,
 } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
-import { EventEmitter } from "@angular/core";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from "@angular/core";
 
 describe("WarningComponent", () => {
   let component: WarningComponent;
@@ -35,6 +35,7 @@ describe("WarningComponent", () => {
         HyDialogBoxModule,
         MatCheckboxModule,
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },
         { provide: PersistenceService, useClass: persistenceServiceStub },
