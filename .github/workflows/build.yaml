@@ -57,7 +57,7 @@ jobs:
           tar -czvf build/admin-console-1.0.0.tgz -C ./dist .
       - uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
+          name: admin-console-ui
           path: build/admin-console-1.0.0.tgz
       
 
