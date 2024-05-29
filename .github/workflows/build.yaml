@@ -50,11 +50,16 @@ jobs:
     
       - name: Build Angular Project
         run: npm run build
-
-      - name: Zip Build Artifacts
-        run: zip -r admin-console-ui.zip ./dist
+      
+      - name: Archive Distribution Files
+        run: |
+            mkdir -p build
+            tar -czvf build/admin-console-1.0.0.tgz -C ./dist .	
 
       - name: Publish to Nexus
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
+        run: |
+          pushd build
+          npm publish admin-console-1.0.0.tgz --registry=https://packages.nuxeo.com/repository/npm-public/
+          popd
