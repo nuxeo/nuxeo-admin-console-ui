@@ -51,6 +51,9 @@ jobs:
       - name: Build Angular Project
         run: npm run build
 
+      - name: Zip Build Artifacts
+        run: zip -r admin-console-ui.zip ./dist
+
       - name: Publish to Nexus
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
