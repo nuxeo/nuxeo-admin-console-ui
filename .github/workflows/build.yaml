@@ -59,5 +59,11 @@ jobs:
         with:
           name: admin-console-ui
           path: build/admin-console-1.0.0.tgz
-      
 
+      - name: Publish to Nexus
+        env:
+         NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+        run: |
+         pushd packages/nuxeo-admin-console-ui/
+         npm publish admin-console-1.0.0.tgz --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ 
+         popd
