@@ -75,6 +75,9 @@
         },
         "serve": {
           "builder": "@hylandsoftware/hy-ui-devkit:dev-server",
+          "options": {
+            "proxyConfig": "src/proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "browserTarget": "mediumclone_angular:build:production"

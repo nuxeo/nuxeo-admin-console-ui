@@ -19,7 +19,8 @@ export class AuthInterceptorService implements HttpInterceptor {
     const token = this.persistenceService.get("accessToken");
     const req = request.clone({
       setHeaders: {
-        Authorization: token ? `Token ${token}` : "",
+        //TODO: Remove this once proper authentication & login flow is implemented
+        Authorization: "Basic " + btoa("Administrator:Administrator"),
       },
     });
     return next.handle(req);
