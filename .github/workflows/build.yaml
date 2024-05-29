@@ -35,8 +35,11 @@ jobs:
 
       - name: Set Registry Config
         run: |
-          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.PACKAGES_AUTH_TOKEN }}" > ~/.npmrc
-          npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
+            echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.PACKAGES_AUTH_TOKEN }}" > ~/.npmrc
+            npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
+            npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+            npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
+            npm config set registry https://registry.npmjs.org/ --global
       
       - name: Install Angular CLI
         run: npm install -g @angular/cli
