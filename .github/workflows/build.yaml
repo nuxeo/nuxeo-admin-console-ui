@@ -1,9 +1,9 @@
 name: Build and Publish
 
 on:
-  pull_request:
-    branches:
-      - Testing
+  #pull_request:
+  #  branches:
+  #    - Testing
   workflow_dispatch:
     inputs:
       branch:
@@ -51,7 +51,13 @@ jobs:
       - name: Build Angular Project
         run: npm run build
       
-      - name: Archive Distribution Files
+      - name: Archive Distribution Files and Upload Artifact
         run: |
-            mkdir -p build
-            tar -czvf build/admin-console-1.0.0.tgz -C ./dist .	
+          mkdir -p build
+          tar -czvf build/admin-console-1.0.0.tgz -C ./dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: build/admin-console-1.0.0.tgz
+      
+
