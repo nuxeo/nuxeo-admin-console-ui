@@ -1,4 +1,4 @@
-name: Build and Publish 
+name: Build and Publish to Nexus
 
 on:
   pull_request:
@@ -13,18 +13,18 @@ on:
         required: false
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name || 'Testing' }}
-  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/ 
-  NEXUS_REPOSITORY: npm-public 
-  NEXUS_USERNAME: ${{ secrets.PACKAGES_AUTH_USER }} 
-  NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }} 
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
+  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
+  NEXUS_REPOSITORY: npm-public
+  NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
+  NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }}
 
 jobs:
-  Build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           ref: ${{ env.BRANCH_NAME }}
 
@@ -32,33 +32,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
 
       - name: Set Registry Config
         run: |
-          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_TOKEN }} --global
-          npm config set registry https://registry.npmjs.org/ --global
-
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
+          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.PACKAGES_AUTH_TOKEN }}" > ~/.npmrc
+          npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
 
       - name: Install Dependencies
         run: npm install
     
-      - name:  Build
+      - name: Build Angular Project
         run: npm run build
 
-      - name: Zip Build Artifacts
-        run: zip -r admin-console-ui.zip ./dist
-
-      - name: Upload to Nexus
+      - name: Publish to Nexus
         env:
-          NEXUS_URL: ${{ env.NEXUS_URL }}
-          NEXUS_REPOSITORY: ${{ env.NEXUS_REPOSITORY }}
-          NEXUS_USERNAME: ${{ env.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ env.NEXUS_PASSWORD }}
-        run: |
-          curl -u $NEXUS_USERNAME:$NEXUS_PASSWORD \
-            -T admin-console-ui.zip \
-            "$NEXUS_URL/$NEXUS_REPOSITORY/build-artifact.zip"
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_AUTH_TOKEN }}
+        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
