@@ -36,7 +36,57 @@ jobs:
           registry-url: ${{ env.NPM_REPOSITORY }}
           node-version: '20'
           scope: '@nuxeo'
+      
+To include the @hylandsoftware registry configuration in the Setup Node.js step, we can use the actions/setup-node action to set up the primary registry for @nuxeo and then add a separate step to configure the @hylandsoftware registry.
 
+The actions/setup-node action doesn't support multiple registries directly, so we need to configure the additional registry using a separate run step. Here is how you can modify your workflow to achieve this:
+
+yaml
+Copy code
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'The current branch'
+        default: Testing
+        type: string
+        required: false
+      debug:
+          type: boolean
+          description: enable debug
+          default: false
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
+  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
+  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
+  NEXUS_REPOSITORY: npm-public
+  NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - name: Configure Additional Registries
+        run: |
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
+          
       - name: Configure npm for Nexus Authentication
         run: |
           echo "registry=https://packages.nuxeo.com/repository/npm-public/" > ~/.npmrc
