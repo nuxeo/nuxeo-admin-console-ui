@@ -11,9 +11,14 @@ on:
         default: Testing
         type: string
         required: false
+      debug:
+          type: boolean
+          description: enable debug
+          default: false
 
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
+  enabledebug: ${{ inputs.debug  == true && '-vvv' || ''}}
   NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
   NEXUS_REPOSITORY: npm-public
   NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
