@@ -49,9 +49,6 @@ jobs:
         run: |
           npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
 
-      - name: Verify npm Configuration
-        run: cat ~/.npmrc
-
       - name: Install Angular CLI
         run: npm install -g @angular/cli
         env:
