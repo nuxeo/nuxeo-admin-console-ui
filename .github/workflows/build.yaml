@@ -70,5 +70,5 @@ jobs:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
         run: |
          cd build
-         npm publish nuxeo-admin-console-ui.tgz --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ 
+         npm  publish --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ 
          popd
