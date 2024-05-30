@@ -47,7 +47,7 @@ jobs:
 
       - name: Configure npm for Nexus Authentication
         run: |
-          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" >> ~/.npmrc
+          npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
 
       - name: Verify npm Configuration
         run: cat ~/.npmrc
