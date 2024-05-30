@@ -1,51 +1,9 @@
 name: Build and Publish
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'The current branch'
-        default: Testing
-        type: string
-        required: false
-      debug:
-          type: boolean
-          description: enable debug
-          default: false
-
-env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
-  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
-  NPM_REPOSITORY: https://packages.nuxeo.com/repository/npm-public/
-  NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
-  NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }}
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-
-jobs:
-  build-and-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          registry-url: ${{ env.NPM_REPOSITORY }}
-          node-version: '20'
-          scope: '@nuxeo'
-      
-To include the @hylandsoftware registry configuration in the Setup Node.js step, we can use the actions/setup-node action to set up the primary registry for @nuxeo and then add a separate step to configure the @hylandsoftware registry.
-
-The actions/setup-node action doesn't support multiple registries directly, so we need to configure the additional registry using a separate run step. Here is how you can modify your workflow to achieve this:
-
-yaml
-Copy code
-name: Build and Publish
-
-on:
+#pull_request:
+#branches:
+#- Testing
   workflow_dispatch:
     inputs:
       branch:
@@ -86,24 +44,23 @@ jobs:
         run: |
           npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
           npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-          
+
       - name: Configure npm for Nexus Authentication
         run: |
-          echo "registry=https://packages.nuxeo.com/repository/npm-public/" > ~/.npmrc
           echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" >> ~/.npmrc
-          echo "@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/" >> ~/.npmrc
-          echo "@hylandsoftware:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> ~/.npmrc
-
 
       - name: Verify npm Configuration
         run: cat ~/.npmrc
 
       - name: Install Angular CLI
         run: npm install -g @angular/cli
-  
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+
       - name: Install Dependencies
         run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
     
       - name: Build Angular Project
         run: npm run build
