@@ -56,19 +56,9 @@ jobs:
       - name: Build Angular Project
         run: npm run build
       
-      - name: Archive Distribution Files and Upload Artifact
-        run: |
-          mkdir -p build
-          tar -czvf build/nuxeo-admin-console-ui.tgz -C ./dist .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nuxeo-admin-console-ui
-          path: build/nuxeo-admin-console-ui.tgz
-
       - name: Publish to Nexus
         env:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
         run: |
-         cd build
          npm  publish --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ 
          popd
