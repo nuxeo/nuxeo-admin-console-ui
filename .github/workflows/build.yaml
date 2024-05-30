@@ -38,23 +38,22 @@ jobs:
 
       - name: Set Registry Config
         run: |
-            echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" > ~/.npmrc
-            npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
-            npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-            npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-            npm config set registry https://packages.nuxeo.com/repository/npm-public/ --global
-      
+          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" > ~/.npmrc
+          npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
+          npm config set registry https://packages.nuxeo.com/repository/npm-public/ --global
+        
       - name: Install Angular CLI
         run: npm install -g @angular/cli
-  
+          
       - name: Install Dependencies
         run: npm install
-    
+            
       - name: Build Angular Project
         run: npm run build
-      
+              
       - name: Publish to Nexus
         env:
-         NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-        run: |
-         npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-publi
