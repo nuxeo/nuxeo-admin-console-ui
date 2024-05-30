@@ -15,7 +15,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
-  enabledebug: ${{ inputs.debug  == true && '-vvv' || ''}}
+  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
   NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
   NEXUS_REPOSITORY: npm-public
   NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
@@ -36,24 +36,27 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Set Registry Config
+      - name: Configure npm for Nexus Authentication
         run: |
-          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" > ~/.npmrc
-          npm config set @nuxeo:registry https://packages.nuxeo.com/repository/npm-public/ --global
-          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-          npm config set registry https://packages.nuxeo.com/repository/npm-public/ --global
-        
+          echo "registry=https://packages.nuxeo.com/repository/npm-public/" > ~/.npmrc
+          echo "//packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }}" >> ~/.npmrc
+          echo "@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/" >> ~/.npmrc
+          echo "@hylandsoftware:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> ~/.npmrc
+
+      - name: Verify npm Configuration
+        run: cat ~/.npmrc
+
       - name: Install Angular CLI
         run: npm install -g @angular/cli
-          
+  
       - name: Install Dependencies
         run: npm install
-            
+    
       - name: Build Angular Project
         run: npm run build
-              
+      
       - name: Publish to Nexus
+        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-publi
