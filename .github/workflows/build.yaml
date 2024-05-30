@@ -16,8 +16,7 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'Testing' }}
   enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
-  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
-  NEXUS_REPOSITORY: npm-public
+  NPM_REPOSITORY: https://packages.nuxeo.com/repository/npm-public/
   NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
   NEXUS_PASSWORD: ${{ secrets.PACKAGES_AUTH_TOKEN }}
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
@@ -27,14 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH_NAME }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
+          registry-url: ${{ env.NPM_REPOSITORY }}
           node-version: '20'
+          scope: '@nuxeo'
 
       - name: Configure npm for Nexus Authentication
         run: |
@@ -43,6 +44,7 @@ jobs:
           echo "@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/" >> ~/.npmrc
           echo "@hylandsoftware:registry=https://npm.pkg.github.com" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> ~/.npmrc
+
 
       - name: Verify npm Configuration
         run: cat ~/.npmrc
