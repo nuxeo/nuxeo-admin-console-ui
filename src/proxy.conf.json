@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "http://localhost:8080/nuxeo/api",
+    "secure": false,
+    "pathRewrite": { "^/api": "" },
+    "changeOrigin": true
+  }
+}

@@ -1,0 +1,25 @@
+<hy-dialog-box class="warning-dialog">
+    <hy-dialog-box-header>
+        <hy-dialog-box-title class="warning-dialog__title">Advanced Administration Options</hy-dialog-box-title>
+    </hy-dialog-box-header>
+
+    <hy-dialog-box-content class="warning-dialog__content">
+        <hy-dialog-box-subheading>
+            This application provides access to advanced tools that can significantly
+            impact the performance of your instance if not used carefully.
+            <hy-dialog-box-subheading-caption>
+                Proceed with caution.
+            </hy-dialog-box-subheading-caption>
+        </hy-dialog-box-subheading>
+    </hy-dialog-box-content>
+
+    <hy-dialog-box-footer>
+        <div class="warning-dialog__checkbox-container">
+            <mat-checkbox color="primary" [(ngModel)]="doNotWarn">Do not warn me again</mat-checkbox>
+        </div>
+
+        <div class="warning-dialog__button-container">
+            <button mat-flat-button color="primary" (click)="onConfirm()">OK</button>
+        </div>
+    </hy-dialog-box-footer>
+</hy-dialog-box>

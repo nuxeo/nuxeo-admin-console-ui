@@ -1,0 +1,37 @@
+.registration-version {
+  height: 100%;
+}
+
+.registration-version__button {
+  border-radius: 4px;
+  width: 79px;
+  height: 36px;
+  position: absolute;
+  bottom: 8%;
+  right: 4%;
+}
+
+.registration-version--mdc {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 3px 4px rgba(0, 0, 0, 0.12),
+    0px 1px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.registration-version__content {
+  display: block;
+  padding: 0 0 !important;
+  font-size: 20px;
+}
+
+.registration-version__content--first {
+  padding-top: 0;
+}
+
+.registration-version__version {
+  margin-top: 15px;
+}
+
+.registration-version__label {
+  font-weight: bold;
+  margin-right: 10px;
+}
