@@ -1,0 +1,25 @@
+<mat-nav-list class="admin-menu" role="navigation" aria-label="navigation">
+    <a mat-list-item 
+       *ngFor="let item of adminMenu; let i = index" 
+       (click)="menuItemSelected(item.id)"
+       (keyup.enter)="menuItemSelected(item.id)" 
+       class="admin-menu__list-item"
+       [routerLink]="[item.path]" 
+       [routerLinkActive]="['admin-menu__list-item--selected']"
+       [routerLinkActiveOptions]="{exact: true}"
+       role="menuitem"
+       [attr.aria-selected]="item.isSelected ? 'true' : 'false'" 
+       >
+        
+        <span class="admin-menu__line" 
+              [routerLinkActive]="['admin-menu__line--selected']"
+              [routerLinkActiveOptions]="{exact: true}"
+              ></span>
+        
+        <span class="admin-menu__list-item-content" 
+              [routerLinkActiveOptions]="{exact: true}"
+              [routerLinkActive]="['admin-menu__list-item-content--selected']"
+              >{{ item.name }}</span>
+    </a>
+</mat-nav-list>
+
