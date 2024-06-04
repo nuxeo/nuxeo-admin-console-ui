@@ -56,12 +56,12 @@ jobs:
       - name: Install Angular CLI
         run: npm install -g @angular/cli
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GIT_TOKEN }}
 
       - name: Install Dependencies
         run: npm install
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GIT_TOKEN }}
     
       - name: Build Angular Project
         run: npm run build
