@@ -23,6 +23,7 @@ env:
   NEXUS_REPOSITORY: npm-public
   NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
 
 jobs:
   build-and-publish:
