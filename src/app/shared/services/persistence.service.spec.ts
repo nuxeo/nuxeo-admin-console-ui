@@ -3,7 +3,6 @@ import { TestBed } from "@angular/core/testing";
 
 describe("PersistenceService", () => {
   let service: PersistenceService;
-  let getItemSpy: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [PersistenceService] });
@@ -16,7 +15,7 @@ describe("PersistenceService", () => {
 
   describe("should test getting & setting of key value pair in localstorage", () => {
     beforeEach(() => {
-      let store: { [key: string]: any } = {};
+      const store: { [key: string]: any } = {};
       const mockLocalStorage = {
         getItem: (key: string): string => {
           return key in store ? store[key] : null;

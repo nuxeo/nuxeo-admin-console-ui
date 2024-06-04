@@ -16,7 +16,6 @@ export class AuthInterceptorService implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = this.persistenceService.get("accessToken");
     const req = request.clone({
       setHeaders: {
         //TODO: Remove this once proper authentication & login flow is implemented

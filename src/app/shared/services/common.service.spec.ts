@@ -15,6 +15,6 @@ describe("CommonService", () => {
   });
 
   it("should test if loadApp is initialised", () => {
-    expect(service.loadApp).toBeInstanceOf(EventEmitter<Boolean>);
+    expect(service.loadApp).toBeInstanceOf(EventEmitter<boolean>);
   });
 });

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { combineLatest } from "rxjs";
@@ -13,7 +13,7 @@ import { HylandSSORequestInterface } from "../../types/hylandSSORequest.interfac
   selector: "ssomanager",
   templateUrl: "./hylandSSOManager.component.html",
 })
-export class HylandSSOManagerComponent {
+export class HylandSSOManagerComponent implements OnInit {
   data$ = combineLatest({
     isSubmitting: this.store.select(selectIsSubmitting),
     backendErrors: this.store.select(selectValidationErrors),
