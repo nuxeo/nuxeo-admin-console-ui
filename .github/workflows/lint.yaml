@@ -38,7 +38,7 @@ jobs:
       - name: Set Registry Config
         run: |
           npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.NPM_TOKEN }} --global
+          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_TOKEN }} --global
           npm config set registry https://registry.npmjs.org/ --global
 
       - name: Install @angular/cli
