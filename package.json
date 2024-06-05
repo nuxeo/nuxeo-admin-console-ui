@@ -10,7 +10,6 @@
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss}\""
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^16.2.0",
     "@angular/common": "^16.2.0",
