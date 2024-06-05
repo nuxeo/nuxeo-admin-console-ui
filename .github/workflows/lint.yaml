@@ -14,7 +14,6 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
-  NPM_CONFIG_USERCONFIG: /home/runner/.npmrc
 
 jobs:
   lint:
@@ -38,10 +37,9 @@ jobs:
 
       - name: Set Registry Config
         run: |
-            echo "@hylandsoftware:registry=https://npm.pkg.github.com" >> ~/.npmrc
-            echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> ~/.npmrc
-            echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-            cat ~/.npmrc 
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
 
       - name: Install @angular/cli
         run: npm install -g @angular/cli
