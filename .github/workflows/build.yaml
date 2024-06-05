@@ -1,0 +1,71 @@
+name: Build and Publish
+
+on:
+#pull_request:
+#branches:
+#- dev
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'The current branch'
+        default: dev
+        type: string
+        required: false
+      debug:
+          type: boolean
+          description: enable debug
+          default: false
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
+  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
+  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
+  NEXUS_REPOSITORY: npm-public
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Remove .npmrc file if exists
+        run: |
+          if [ -f .npmrc ]; then
+            rm .npmrc
+          fi
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - name: Configure Additional Registries
+        run: |
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
+          npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
+
+      - name: Verify npm Configuration
+        run: cat ~/.npmrc
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        run: npm install
+    
+      - name: Build Angular Project
+        run: npm run build
+      
+      - name: Publish to Nexus
+        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}

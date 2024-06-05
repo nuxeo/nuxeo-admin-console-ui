@@ -19,11 +19,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH_NAME }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
@@ -33,16 +33,13 @@ jobs:
         run: |
             npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
             npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-            
-      - name: Configure npm for Nexus Authentication
-        run: |
-            npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
+            npm config set registry https://registry.npmjs.org/ --global
 
       - name: Install @angular/cli
         run: npm install -g @angular/cli
 
-      - name: Install
+      - name: Install Node
         run: npm install 
     
       - name: Lint
-        run: npm run build
+        run: npm run lint
