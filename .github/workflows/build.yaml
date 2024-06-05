@@ -38,7 +38,7 @@ jobs:
           if [ -f .npmrc ]; then
             rm .npmrc
           fi
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -52,9 +52,6 @@ jobs:
           npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
           npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
           npm config set registry https://registry.npmjs.org/ --global
-
-      - name: Verify npm Configuration
-        run: cat ~/.npmrc
 
       - name: Install Angular CLI
         run: npm install -g @angular/cli
