@@ -139,7 +139,7 @@
       }
     },
     "cli": {
-      "analytics": "7fa2cc0e-3e82-45f7-bedc-bce83c5ba0d7",
       "root": "src"
     }
   }
+}
