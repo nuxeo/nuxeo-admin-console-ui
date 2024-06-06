@@ -45,22 +45,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-    
-      - name: Print Working Directory
-        run: pwd
-
-      - name: List Files in Root
-        run: ls -la
-
-      - name: Verify angular.json exists
-        run: |
-          if [ ! -f angular.json ]; then
-            echo "angular.json file not found in $(pwd)"
-            exit 1
-          fi
-
-      - name: Print angular.json contents
-        run: cat angular.json
 
       - name: Lint
         run: npm run lint
