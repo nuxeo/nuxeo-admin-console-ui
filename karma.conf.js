@@ -5,6 +5,7 @@ module.exports = function(config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
+      require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
@@ -22,12 +23,12 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['ChromeHeadless'],
-    singleRun: false,
+    singleRun: true,
     restartOnFileChange: true,
     customLaunchers: {
       ChromeHeadless: {
         base: 'ChromeHeadless',
-        flags: ['--headless', '--disable-gpu', '--no-sandbox', '--remote-debugging-port=9222']
+        flags: ['--no-sandbox']
       }
     }
   });
