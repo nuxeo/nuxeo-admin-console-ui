@@ -21,23 +21,14 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'],
+    browsers: ['ChromeCustom'], // Use custom Chrome launcher
     singleRun: true,
     restartOnFileChange: true,
     customLaunchers: {
-      ChromeHeadless: {
-        base: 'Chrome',
-        flags: ['--headless', '--no-sandbox']
-      }
-    },
-    // Add Xvfb settings
-    browsers: ['ChromeCustom'],
-    customLaunchers: {
       ChromeCustom: {
         base: 'ChromeHeadless',
-        flags: ['--disable-gpu', '--no-sandbox', '--remote-debugging-port=9222']
+        flags: ['--headless', '--disable-gpu', '--no-sandbox']
       }
-    },
-    singleRun: true
+    }
   });
 };
