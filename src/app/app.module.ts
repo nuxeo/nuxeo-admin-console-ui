@@ -21,7 +21,7 @@ import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bu
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
-import { BackendErrorMessages } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
+import { BackendErrorMessagesComponent } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
 import { AppComponent } from "./app.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { authReducer } from "./auth/store/reducers";
@@ -46,7 +46,7 @@ import * as HomeEffects from "./features/home/store/effects";
     HeaderBarComponent,
     MenuBarComponent,
     WarningComponent,
-    BackendErrorMessages,
+    BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
   ],

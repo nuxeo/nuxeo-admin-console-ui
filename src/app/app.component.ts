@@ -11,7 +11,7 @@ import { WarningComponent } from "./features/warning/warning.component";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  loadApp: Boolean = false;
+  loadApp = false;
   loadAppSubscription = new Subscription();
   constructor(
     public dialogService: MatDialog,

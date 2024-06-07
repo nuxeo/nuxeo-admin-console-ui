@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mediumclone_angular": {
+    "admin_console_ui": {
       "projectType": "application",
       "schematics": {},
       "root": "src",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@hylandsoftware/hy-ui-devkit:browser",
           "options": {
-            "outputPath": "dist/mediumclone_angular",
+            "outputPath": "dist/admin_console_ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -89,10 +89,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "mediumclone_angular:build:production"
+              "browserTarget": "admin_console_ui:build:production"
             },
             "development": {
-              "browserTarget": "mediumclone_angular:build:development"
+              "browserTarget": "admin_console_ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -100,7 +100,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mediumclone_angular:build"
+            "browserTarget": "admin_console_ui:build"
           }
         },
         "test": {
@@ -143,6 +143,6 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": "7fa2cc0e-3e82-45f7-bedc-bce83c5ba0d7"
   }
 }
