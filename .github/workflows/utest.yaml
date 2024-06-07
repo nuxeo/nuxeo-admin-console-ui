@@ -46,10 +46,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Chrome and Xvfb
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable xvfb
+      - name: Install Chrome and Chromedriver
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 120
+          install-chromedriver: true
+
+      - name: Verify Chrome installation
+        run: google-chrome --version
+
 
       - name: Start Xvfb
         run: |
