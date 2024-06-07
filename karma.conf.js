@@ -20,25 +20,20 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: false, // set to false to disable watching files
     browsers: ['ChromeCustom'], // Use custom Chrome launcher
     singleRun: true,
-    restartOnFileChange: true,
+    restartOnFileChange: false, // set to false to disable restart on file change
     customLaunchers: {
       ChromeCustom: {
         base: 'ChromeHeadless',
         flags: ['--headless', '--disable-gpu', '--no-sandbox']
       }
     },
-    // Force exit after tests complete
     browserNoActivityTimeout: 30000,
     captureTimeout: 30000,
     processKillTimeout: 3000,
     browserDisconnectTimeout: 10000,
-    browserDisconnectTolerance: 3,
-    // Ensure Karma exits after tests
-    onExit: function (exitCode) {
-      process.exit(exitCode);
-    }
+    browserDisconnectTolerance: 3
   });
 };
