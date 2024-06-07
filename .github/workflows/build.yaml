@@ -63,6 +63,6 @@ jobs:
         run: npm run build
       
       - name: Publish to Nexus
-        run: npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
+        run: npm publish --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}

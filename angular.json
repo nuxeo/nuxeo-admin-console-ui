@@ -141,5 +141,8 @@
     "cli": {
       "root": "src"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
