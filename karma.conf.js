@@ -21,14 +21,8 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeCustom'], // Use custom Chrome launcher
+    browsers: ['ChromeHeadless'], // Use ChromeHeadless directly
     singleRun: true,
-    restartOnFileChange: true,
-    customLaunchers: {
-      ChromeCustom: {
-        base: 'ChromeHeadless',
-        flags: ['--headless', '--disable-gpu', '--no-sandbox']
-      }
-    }
+    restartOnFileChange: true
   });
 };
