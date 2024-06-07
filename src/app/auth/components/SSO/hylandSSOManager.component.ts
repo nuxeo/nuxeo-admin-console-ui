@@ -19,7 +19,7 @@ export class HylandSSOManagerComponent implements OnInit {
     backendErrors: this.store.select(selectValidationErrors),
   });
 
-  constructor(private fb: FormBuilder, private store: Store) {}
+  constructor(private fb: FormBuilder, private store: Store) { }
 
   initSSO() {
     const request: HylandSSORequestInterface = {

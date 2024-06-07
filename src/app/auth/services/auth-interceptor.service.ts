@@ -10,7 +10,7 @@ import { Observable } from "rxjs";
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
-  constructor(private persistenceService: PersistenceService) {}
+  constructor(private persistenceService: PersistenceService) { }
 
   intercept(
     request: HttpRequest<any>,
