@@ -21,8 +21,24 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'], // Use ChromeHeadless directly
+    browsers: ['ChromeCustom'], // Use custom Chrome launcher
     singleRun: true,
-    restartOnFileChange: true
+    restartOnFileChange: true,
+    customLaunchers: {
+      ChromeCustom: {
+        base: 'ChromeHeadless',
+        flags: ['--headless', '--disable-gpu', '--no-sandbox']
+      }
+    },
+    // Force exit after tests complete
+    browserNoActivityTimeout: 30000,
+    captureTimeout: 30000,
+    processKillTimeout: 3000,
+    browserDisconnectTimeout: 10000,
+    browserDisconnectTolerance: 3,
+    // Ensure Karma exits after tests
+    onExit: function (exitCode) {
+      process.exit(exitCode);
+    }
   });
 };
