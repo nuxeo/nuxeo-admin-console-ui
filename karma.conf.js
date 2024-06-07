@@ -29,6 +29,15 @@ module.exports = function (config) {
         base: 'Chrome',
         flags: ['--headless', '--no-sandbox']
       }
-    }
+    },
+    // Add Xvfb settings
+    browsers: ['ChromeCustom'],
+    customLaunchers: {
+      ChromeCustom: {
+        base: 'ChromeHeadless',
+        flags: ['--disable-gpu', '--no-sandbox', '--remote-debugging-port=9222']
+      }
+    },
+    singleRun: true
   });
 };
