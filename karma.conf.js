@@ -1,4 +1,4 @@
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -20,9 +20,20 @@ module.exports = function(config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
-    singleRun: false,
-    restartOnFileChange: true
+    autoWatch: false, // set to false to disable watching files
+    browsers: ['ChromeCustom'], // Use custom Chrome launcher
+    singleRun: true,
+    restartOnFileChange: false, // set to false to disable restart on file change
+    customLaunchers: {
+      ChromeCustom: {
+        base: 'ChromeHeadless',
+        flags: ['--headless', '--disable-gpu', '--no-sandbox']
+      }
+    },
+    browserNoActivityTimeout: 30000,
+    captureTimeout: 30000,
+    processKillTimeout: 3000,
+    browserDisconnectTimeout: 10000,
+    browserDisconnectTolerance: 3
   });
 };
