@@ -1,3 +1,6 @@
+import { ReindexLaunchedModalComponent } from './shared/components/reindex/reindex-launched-modal/reindex-launched-modal.component';
+import { ReindexErrorModalComponent } from './shared/components/reindex/reindex-error-modal/reindex-error-modal.component';
+import { ReindexConfirmationModalComponent } from './shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -49,6 +52,9 @@ import * as HomeEffects from "./features/home/store/effects";
     BackendErrorMessages,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
+    ReindexConfirmationModalComponent,
+    ReindexErrorModalComponent,
+    ReindexLaunchedModalComponent
   ],
   imports: [
     BrowserModule,
