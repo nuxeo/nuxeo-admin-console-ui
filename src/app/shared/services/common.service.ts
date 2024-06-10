@@ -4,5 +4,5 @@ import { EventEmitter, Injectable } from "@angular/core";
   providedIn: "root",
 })
 export class CommonService {
-  loadApp = new EventEmitter<Boolean>();
+  loadApp = new EventEmitter<boolean>();
 }

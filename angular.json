@@ -3,17 +3,17 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mediumclone_angular": {
+    "admin_console_ui": {
       "projectType": "application",
       "schematics": {},
-      "root": "",
+      "root": "src",
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@hylandsoftware/hy-ui-devkit:browser",
           "options": {
-            "outputPath": "dist/mediumclone_angular",
+            "outputPath": "dist/admin_console_ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -26,12 +26,21 @@
                 "output": "./"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": [],
-            "i18nPaths": ["src/app"],
-            "i18nModules": ["@hyland/ui", "@hyland/ui-shell"],
+            "i18nPaths": [
+              "src/app"
+            ],
+            "i18nModules": [
+              "@hyland/ui",
+              "@hyland/ui-shell"
+            ],
             "stylePreprocessorOptions": {
-              "includePaths": ["node_modules"]
+              "includePaths": [
+                "node_modules"
+              ]
             }
           },
           "configurations": {
@@ -80,10 +89,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "mediumclone_angular:build:production"
+              "browserTarget": "admin_console_ui:build:production"
             },
             "development": {
-              "browserTarget": "mediumclone_angular:build:development"
+              "browserTarget": "admin_console_ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -91,26 +100,49 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mediumclone_angular:build"
+            "browserTarget": "admin_console_ui:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["src/polyfills.ts", "zone.js", "zone.js/testing"],
+            "polyfills": [
+              "src/polyfills.ts",
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "tsconfig.spec.json",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["node_modules"]
+              "includePaths": [
+                "node_modules"
+              ]
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
+    },
+    "cli": {
+      "root": "src"
     }
   },
   "cli": {
-    "analytics": "7fa2cc0e-3e82-45f7-bedc-bce83c5ba0d7"
+    "analytics": "bac8daa6-35ed-405f-89f7-031d9cd916f4"
   }
 }

@@ -19,11 +19,14 @@ describe("AppComponent", () => {
     get() {
       return null;
     }
-    set() {}
+
+    set() {
+      return;
+    }
   }
 
   class commonServiceStub {
-    loadApp = new EventEmitter<Boolean>();
+    loadApp = new EventEmitter<boolean>();
   }
 
   beforeEach(async () => {
@@ -51,7 +54,7 @@ describe("AppComponent", () => {
     });
     it("should open the warning dialog if warning preference is not set", () => {
       spyOn(component.persistenceService, "get").and.returnValue(null);
-      let loadAppSubscriptionSpy = spyOn(
+      const loadAppSubscriptionSpy = spyOn(
         component.commonService.loadApp,
         "subscribe"
       ).and.callThrough();

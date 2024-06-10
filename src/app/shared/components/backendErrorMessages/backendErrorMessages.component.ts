@@ -5,7 +5,7 @@ import { BackendErrorsInterface } from "../../types/backendErrors.interface";
   selector: "mc-backend-error-messages",
   templateUrl: "./backendErrorMessages.component.html",
 })
-export class BackendErrorMessages implements OnInit {
+export class BackendErrorMessagesComponent implements OnInit {
   @Input() backendErrors: BackendErrorsInterface = {};
 
   errorMessages: string[] = [];

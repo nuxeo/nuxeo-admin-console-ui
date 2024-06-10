@@ -19,11 +19,14 @@ describe("WarningComponent", () => {
     get() {
       return null;
     }
-    set() {}
+
+    set() {
+      return;
+    }
   }
 
   class commonServiceStub {
-    loadApp = new EventEmitter<Boolean>();
+    loadApp = new EventEmitter<boolean>();
   }
 
   beforeEach(async () => {

@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --code-coverage"
+    "test": "ng test --code-coverage",
+    "lint": "ng lint",
+    "prepare": "husky"
   },
   "dependencies": {
     "@angular/animations": "^16.2.0",
@@ -31,13 +33,30 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,html}": "npm run lint"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.14",
+    "@angular-eslint/builder": "16.3.1",
+    "@angular-eslint/eslint-plugin": "16.3.1",
+    "@angular-eslint/eslint-plugin-template": "16.3.1",
+    "@angular-eslint/schematics": "16.3.1",
+    "@angular-eslint/template-parser": "16.3.1",
     "@angular/cli": "^16.2.14",
     "@angular/compiler-cli": "^16.2.0",
     "@hylandsoftware/hy-ui-devkit": "^6.0.1",
     "@hylandsoftware/hy-ui-standards": "^6.0.1",
     "@types/jasmine": "~4.3.0",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
+    "@typescript-eslint/parser": "5.62.0",
+    "eslint": "^8.51.0",
+    "husky": "^9.0.11",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -45,6 +64,7 @@
     "karma-coverage-istanbul-reporter": "^3.0.3",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^15.2.5",
     "typescript": "~5.1.3"
   }
 }

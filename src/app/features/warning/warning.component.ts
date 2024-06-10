@@ -10,7 +10,7 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
   styleUrls: ["./warning.component.scss"],
 })
 export class WarningComponent implements OnInit {
-  public doNotWarn: boolean = false;
+  public doNotWarn = false;
 
   constructor(
     public dialogService: MatDialog,
