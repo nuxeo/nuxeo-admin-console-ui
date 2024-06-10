@@ -5,6 +5,9 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ElasticSearchReindexComponent } from "./components/elastic-search-reindex.component";
 import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/elastic-search-reindex-routing.module";
+import { MatTabsModule } from "@angular/material/tabs";
+import { HyMaterialModule } from "@hyland/ui";
+
 @NgModule({
   declarations: [
     ElasticSearchReindexComponent,
@@ -12,6 +15,11 @@ import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/ela
     FolderESReindexComponent,
     NXQLESReindexComponent,
   ],
-  imports: [CommonModule, ElasticSearchReindexRoutingModule],
+  imports: [
+    CommonModule,
+    ElasticSearchReindexRoutingModule,
+    MatTabsModule,
+    HyMaterialModule,
+  ],
 })
 export class ElasticSearchReindexModule {}

@@ -1,1 +1,12 @@
-<p>elastic-search-reindex works!</p>
+<div class="elastic-search-reindex-container">
+    <p>Elastic Search Reindex</p>
+    <div class="elastic-search-reindex-container__tabs-container">
+        <nav mat-tab-nav-bar hyTabGroup [tabPanel]="tabPanel" aria-label="Reindex navigation">
+            <a mat-tab-link *ngFor="let link of links" (click)="activeLink = link" [active]="activeLink == link"
+                [routerLink]="[link.path]" role="menuitem"
+                [attr.aria-selected]="link.isSelected ? 'true' : 'false'"> {{link.label}} </a>
+        </nav>
+        <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+        <router-outlet></router-outlet>
+    </div>
+</div>
