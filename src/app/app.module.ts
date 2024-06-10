@@ -1,6 +1,6 @@
-import { ReindexLaunchedModalComponent } from './shared/components/reindex/reindex-launched-modal/reindex-launched-modal.component';
-import { ReindexErrorModalComponent } from './shared/components/reindex/reindex-error-modal/reindex-error-modal.component';
-import { ReindexConfirmationModalComponent } from './shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component';
+import { ReindexSuccessModalComponent } from "./shared/components/reindex/reindex-success-modal/reindex-success-modal.component";
+import { ReindexErrorModalComponent } from "./shared/components/reindex/reindex-error-modal/reindex-error-modal.component";
+import { ReindexConfirmationModalComponent } from "./shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -42,6 +42,8 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
+import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
+import { reindexReducer } from "./features/elastic-search-reindex/store/reducers";
 
 @NgModule({
   declarations: [
@@ -53,8 +55,8 @@ import * as HomeEffects from "./features/home/store/effects";
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ReindexConfirmationModalComponent,
+    ReindexSuccessModalComponent,
     ReindexErrorModalComponent,
-    ReindexLaunchedModalComponent
   ],
   imports: [
     BrowserModule,
@@ -68,9 +70,10 @@ import * as HomeEffects from "./features/home/store/effects";
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
+      reindex: reindexReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,

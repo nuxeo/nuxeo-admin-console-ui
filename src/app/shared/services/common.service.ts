@@ -5,4 +5,5 @@ import { EventEmitter, Injectable } from "@angular/core";
 })
 export class CommonService {
   loadApp = new EventEmitter<boolean>();
+  reindexDialogClosed = new EventEmitter<boolean>();
 }
