@@ -33,12 +33,6 @@ jobs:
         with:
           ref: ${{ env.BRANCH_NAME }}
 
-      - name: Remove .npmrc file if exists
-        run: |
-          if [ -f .npmrc ]; then
-            rm .npmrc
-          fi
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,18 +40,37 @@ jobs:
           registry-url: ${{ env.NEXUS_URL }}
           scope: '@nuxeo'
 
-      - name: Configure Additional Registries
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      
+      - name: 'Update settings.xml with server configuration'
         run: |
-          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-          npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-          npm config set //packages.nuxeo.com/repository/npm-public/:_authToken=${{ secrets.NPM_ADMIN_TOKEN }} --global
-          npm config set "@nuxeo:registry" "https://packages.nuxeo.com/repository/npm-public" --global
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
 
+      - name: Configure Additional Registries
+        working-directory: nuxeo-admin-console-web/ang-src
+        run: |
+         echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+         
       - name: Install Angular CLI
         run: npm install -g @angular/cli
-
-      - name: Install Dependencies
-        run: npm install
     
       - name: Build Angular Project
-        run: npm run build
+        run: mvn package 
+
+      - name: Verify Package 
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+         echo "List of Files"
+         ls -al
+        

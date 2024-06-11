@@ -1,4 +1,5 @@
 dist
+node
 node_modules
 target
 .env
@@ -16,4 +17,3 @@ npm-debug.log
 coverage
 .angular
 package-lock.json
-.npmrc

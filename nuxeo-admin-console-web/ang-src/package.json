@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --base-href=/nuxeo/admin-console/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage --watch=false",
     "lint": "ng lint",
+    "clean":"npm cache clean --force",
     "prepare": "husky"
   },
   "private": true,

@@ -1,0 +1,17 @@
+<component name="org.nuxeo.admin.console.web.authentication.contrib">
+  
+  <extension point="startURL" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <startURLPattern>
+      <patterns>
+        <pattern>admin-console</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+
+  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <openUrl name="webuiImages">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/admin-console/assets/.*</grantPattern>
+    </openUrl>
+  </extension>
+
+</component>

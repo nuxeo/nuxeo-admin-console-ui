@@ -39,11 +39,14 @@ jobs:
             npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
             npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
             npm config set registry https://registry.npmjs.org/ --global
+
       - name: Install @angular/cli
         run: npm install -g @angular/cli
 
       - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/ang-src
         run: npm install
 
       - name: Lint
+        working-directory: nuxeo-admin-console-web/ang-src
         run: npm run lint
