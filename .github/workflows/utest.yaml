@@ -42,8 +42,10 @@ jobs:
 
       - name: Install @angular/cli
         run: npm install -g @angular/cli
+      
 
       - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/ang-src
         run: npm install
 
       - name: Install Chrome and Chromedriver
@@ -56,5 +58,6 @@ jobs:
         run: google-chrome --version
 
       - name: Unit tests
+        working-directory: nuxeo-admin-console-web/ang-src
         run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm test

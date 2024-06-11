@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Bundle-Version: 0.0.1
+Bundle-Name: Nuxeo Admin Console
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.admin.console.web;singleton:=true
+Nuxeo-Component: OSGI-INF/auth-config.xml
