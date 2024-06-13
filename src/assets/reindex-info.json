@@ -1,0 +1,18 @@
+{
+  "entity-type": "bulkStatus",
+  "commandId": "90037d73-ed19-48cc-a4ad-09f3999cf014",
+  "state": "SCHEDULED",
+  "processed": 0,
+  "error": false,
+  "errorCount": 0,
+  "total": 0,
+  "action": "index",
+  "username": "system",
+  "submitted": "2019-07-26T09:26:08.761Z",
+  "scrollStart": null,
+  "scrollEnd": null,
+  "processingStart": null,
+  "processingEnd": null,
+  "completed": null,
+  "processingMillis": 0
+}
