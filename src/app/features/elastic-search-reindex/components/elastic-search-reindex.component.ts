@@ -1,4 +1,4 @@
-import { ELASTIC_SEARCH_REINDEX_TYPES, ESType } from './../elastic-search-reindex.constants';
+import { ELASTIC_SEARCH_REINDEX_TYPES, ElasticSearchType } from './../elastic-search-reindex.constants';
 import { Component, OnInit } from "@angular/core";
 
 @Component({
@@ -7,7 +7,7 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./elastic-search-reindex.component.scss"],
 })
 export class ElasticSearchReindexComponent implements OnInit {
-  links: ESType[] = ELASTIC_SEARCH_REINDEX_TYPES;
+  links: ElasticSearchType[] = ELASTIC_SEARCH_REINDEX_TYPES;
   activeLink = this.links[0];
   ngOnInit(): void {
     

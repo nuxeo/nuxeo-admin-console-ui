@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://localhost:8080/nuxeo/api",
+    "target": "http://localhost:8080/nuxeo/api/v1",
     "secure": false,
     "pathRewrite": { "^/api": "" },
     "changeOrigin": true
