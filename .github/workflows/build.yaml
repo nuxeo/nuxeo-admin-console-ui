@@ -73,4 +73,11 @@ jobs:
         run: |
          echo "List of Files"
          ls -al
+
+      - name: Publish 
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish nuxeo-admin-console-package-1.0-SNAPSHOT.zip --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ --tag SNAPSHOT-TEST
         
