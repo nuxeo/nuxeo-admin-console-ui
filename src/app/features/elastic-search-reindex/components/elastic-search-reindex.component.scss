@@ -1,7 +1,7 @@
 .elastic-search-reindex-container {
-  background-color: #F4F4F4;
+  background-color: #f4f4f4;
   margin: 0px;
-  padding:20px;
+  padding: 20px;
   height: 100%;
   &__tabs-container {
     background-color: white;
@@ -10,4 +10,7 @@
     margin: 0px;
     padding: 5px;
   }
+}
+nav a span.mdc-tab__content {
+  padding: 0 25px !important;
 }

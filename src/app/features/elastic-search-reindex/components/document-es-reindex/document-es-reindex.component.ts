@@ -2,13 +2,14 @@ import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ELASTIC_SEARCH_MESSAGES } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ReindexConfirmationModalComponent } from "src/app/shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
+import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 
 @Component({
   selector: "document-es-reindex",
@@ -22,7 +23,9 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
+  @Output() pageTitle: EventEmitter<string> = new EventEmitter();
   constructor(
+    private elasticSearchReindexService: ElasticSearchReindexService,
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
@@ -40,6 +43,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+  this.elasticSearchReindexService.pageTitle.next("Reindex a single document");
     this.reindexDialogClosedSubscription =
       this.commonService.reindexDialogClosed.subscribe((isDialogClosed) => {
         if (isDialogClosed) {

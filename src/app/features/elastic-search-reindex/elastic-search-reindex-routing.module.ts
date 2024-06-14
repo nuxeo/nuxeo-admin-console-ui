@@ -13,14 +13,17 @@ export const ElasticSearchReindexRoutes: Route[] = [
     children: [
       {
         path: "document",
+        title: 'Reindex a single document',
         component: DocumentESReindexComponent,
       },
       {
         path: "folder",
+        title: 'Reindex a document and all of its children',
         component: FolderESReindexComponent,
       },
       {
         path: "nxql",
+        title: 'Reindex the results of a NXQL query',
         component: NXQLESReindexComponent,
       },
       { path: "**", redirectTo: "document" },
