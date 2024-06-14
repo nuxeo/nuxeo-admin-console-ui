@@ -90,9 +90,6 @@
         },
         "serve": {
           "builder": "@hylandsoftware/hy-ui-devkit:dev-server",
-          "options": {
-            "proxyConfig": "src/main/app/proxy.conf.json"
-          },
           "configurations": {
             "production": {
               "browserTarget": "admin_console_ui:build:production"
