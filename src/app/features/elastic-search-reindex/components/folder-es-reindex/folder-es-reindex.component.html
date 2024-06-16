@@ -1,1 +1,8 @@
-<p>folder works!</p>
+<form [formGroup]="folderReindexForm" (ngSubmit)="onReindexFormSubmit()" class="folder-es-reindex-container">
+    <mat-form-field hyFormField>
+        <mat-label>Document ID</mat-label>
+        <input matInput placeholder="Document ID" type="text" formControlName="documentID" required>
+        <mat-error *ngIf="folderReindexForm?.get('documentID')?.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" class="folder-es-reindex-container__button">Reindex</button>
+</form>

@@ -1,10 +1,6 @@
-export interface ElasticSearchType {
-  label: string;
-  path: string;
-  isSelected: boolean;
-}
+// export interface ElasticSearchMessages {}
 
-export interface ElasticSearchMessages {}
+import { ElasticSearchType } from "./elastic-search-reindex.interface";
 
 export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "Document", path: "document", isSelected: true },
@@ -12,8 +8,17 @@ export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "NXQL", path: "nxql", isSelected: false },
 ];
 
+export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
+  isConfirmed: 0,
+  isLaunched: 1,
+  isFailed: 2,
+};
+
 export const ELASTIC_SEARCH_MESSAGES = {
   invalidDocIdOrPath: "Please provide a document id or a document path",
+  invalidDocId: "Please provide a document id",
+  reindexWarning:
+    "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
   reindexingLaunched: "Congratulations! Your action is launched with ID",
   copyMonitoringId:
     "Remember to take note of the ID if you want to monitor it later on.",

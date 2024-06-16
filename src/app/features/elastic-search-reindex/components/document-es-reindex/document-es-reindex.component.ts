@@ -10,7 +10,10 @@ import {
   Output,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ELASTIC_SEARCH_MESSAGES } from "../../elastic-search-reindex.constants";
+import {
+  ELASTIC_SEARCH_MESSAGES,
+  ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
+} from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
@@ -55,8 +58,11 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     );
 
     this.reindexDialogClosedSubscription =
-      this.commonService.reindexDialogClosed.subscribe((isDialogClosed) => {
-        if (isDialogClosed) {
+      this.commonService.reindexDialogClosed.subscribe((data) => {
+        if (
+          data?.isClosed &&
+          data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
+        ) {
           this.reindexForm.reset();
         }
       });
@@ -67,7 +73,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           disableClose: true,
           data: {
             type: ELASTIC_SEARCH_MESSAGES.modalType.success,
-            title: `${ELASTIC_SEARCH_MESSAGES.reindexConfirmationModalTitle}`,
+            title: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
             message: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
           },
         });

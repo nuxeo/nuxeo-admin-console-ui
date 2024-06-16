@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialog, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
+import { ELASTIC_SEARCH_REINDEX_MODAL_EVENT } from "src/app/features/elastic-search-reindex/elastic-search-reindex.constants";
 import { CommonService } from "src/app/shared/services/common.service";
 
 @Component({
@@ -25,7 +26,10 @@ export class ReindexConfirmationModalComponent implements OnInit {
 
   closeDialog(): void {
     if (this.data.type === 2) {
-      this.commonService.reindexDialogClosed.emit(true);
+      this.commonService.reindexDialogClosed.emit({
+        isClosed: true,
+        event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched,
+      });
     }
     this.dialogService.closeAll();
   }
