@@ -3,12 +3,8 @@ import { ElasticSearchReindexService } from "../services/elastic-search-reindex.
 import {
   ELASTIC_SEARCH_REINDEX_TYPES,
 } from "./../elastic-search-reindex.constants";
-<<<<<<< HEAD
-import { Component, OnInit } from "@angular/core";
 import { ElasticSearchType } from "../elastic-search-reindex.interface";
-=======
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
->>>>>>> 5668182 (cdref added)
 
 @Component({
   selector: "elastic-search-reindex",
