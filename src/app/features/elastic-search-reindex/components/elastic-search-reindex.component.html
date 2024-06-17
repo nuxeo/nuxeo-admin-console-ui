@@ -1,5 +1,5 @@
 <div class="elastic-search-reindex-container">
-    <p>{{pageTitle}}</p>
+    <p *ngIf="pageTitle">{{pageTitle}}</p>
     <div class="elastic-search-reindex-container__tabs-container">
         <nav mat-tab-nav-bar hyTabGroup [tabPanel]="tabPanel" aria-label="Reindex navigation">
             <a mat-tab-link *ngFor="let tab of searchTabs;" (click)="activeTab=tab" [active]="activeTab == tab"

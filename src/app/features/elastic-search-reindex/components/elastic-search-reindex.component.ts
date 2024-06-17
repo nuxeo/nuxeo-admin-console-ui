@@ -3,8 +3,12 @@ import { ElasticSearchReindexService } from "../services/elastic-search-reindex.
 import {
   ELASTIC_SEARCH_REINDEX_TYPES,
 } from "./../elastic-search-reindex.constants";
+<<<<<<< HEAD
 import { Component, OnInit } from "@angular/core";
 import { ElasticSearchType } from "../elastic-search-reindex.interface";
+=======
+import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
+>>>>>>> 5668182 (cdref added)
 
 @Component({
   selector: "elastic-search-reindex",
@@ -19,12 +23,14 @@ export class ElasticSearchReindexComponent implements OnInit {
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.subscribe((title) => {
       this.pageTitle = title;
+      this.cdref.detectChanges();
     });
   }
 
