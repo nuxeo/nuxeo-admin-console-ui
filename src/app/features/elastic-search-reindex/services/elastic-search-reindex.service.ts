@@ -15,7 +15,29 @@ export class ElasticSearchReindexService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   constructor(private http: HttpClient) {}
 
-  performReindex(DOC_ID: string): Observable<any> {
+  performDocumentReindex(DOC_ID: string): Observable<any> {
+    // const id = '1866799d-dbda-4529-a249-a1742784dbad';
+    return this.http.post<any>(
+      `${this.baseUrl}${this.url}${DOC_ID}${this.suburl}`,
+      {}
+    );
+
+    // return this.http.get<any>(this.jsonFilePath);
+    // return this.http.get<any>(`${this.baseUrl}${this.url}${this.geturl}`); // GET call working
+  }
+
+  performFolderReindex(DOC_ID: string): Observable<any> {
+    // const id = '1866799d-dbda-4529-a249-a1742784dbad';
+    return this.http.post<any>(
+      `${this.baseUrl}${this.url}${DOC_ID}${this.suburl}`,
+      {}
+    );
+
+    // return this.http.get<any>(this.jsonFilePath);
+    // return this.http.get<any>(`${this.baseUrl}${this.url}${this.geturl}`); // GET call working
+  }
+
+  performNXQLReindex(DOC_ID: string): Observable<any> {
     // const id = '1866799d-dbda-4529-a249-a1742784dbad';
     return this.http.post<any>(
       `${this.baseUrl}${this.url}${DOC_ID}${this.suburl}`,
