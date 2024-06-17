@@ -2,9 +2,9 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ElasticSearchReindexService } from "../services/elastic-search-reindex.service";
 import {
   ELASTIC_SEARCH_REINDEX_TYPES,
-  ElasticSearchType,
 } from "./../elastic-search-reindex.constants";
 import { Component, OnInit } from "@angular/core";
+import { ElasticSearchType } from "../elastic-search-reindex.interface";
 
 @Component({
   selector: "elastic-search-reindex",
