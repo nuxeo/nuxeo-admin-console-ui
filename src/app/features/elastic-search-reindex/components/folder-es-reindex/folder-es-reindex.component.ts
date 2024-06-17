@@ -1,6 +1,6 @@
 import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ReindexState } from "../../store/reducers";
+import { FolderReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import {
   Component,
@@ -40,7 +40,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ reindex: ReindexState }>
+    private store: Store<{ reindex: FolderReindexState }>
   ) {
     this.folderReindexForm = this.fb.group({
       documentID: ["", Validators.required],
@@ -63,7 +63,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         if (data?.isClosed) {
           if (data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed) {
             this.store.dispatch(
-              ReindexActions.performReindex({
+              ReindexActions.performFolderReindex({
                 docId: this.folderReindexForm?.get("documentID")?.value,
               })
             );
@@ -118,16 +118,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           message: `${ELASTIC_SEARCH_MESSAGES.reindexWarning}`,
         },
       });
-      /* this.store.dispatch(
-        ReindexActions.performReindex({
-          docId: this.folderReindexForm?.get("documentID")?.value,
-        })
-      ); */
     }
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(ReindexActions.resetReindexState());
+    this.store.dispatch(ReindexActions.resetFolderReindexState());
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
     this.reindexDialogClosedSubscription.unsubscribe();
