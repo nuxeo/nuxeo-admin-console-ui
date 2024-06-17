@@ -1,6 +1,5 @@
 import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import {
   Component,
@@ -20,6 +19,7 @@ import * as ReindexActions from "../../store/actions";
 import { ReindexConfirmationModalComponent } from "src/app/shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { ReindexSuccessModalComponent } from "src/app/shared/components/reindex/reindex-success-modal/reindex-success-modal.component";
+import { NXQLReindexState } from "../../store/reducers";
 @Component({
   selector: "nxql-es-reindex",
   templateUrl: "./nxql-es-reindex.component.html",
@@ -39,7 +39,7 @@ export class NXQLESReindexComponent {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ reindex: ReindexState }>
+    private store: Store<{ reindex: NXQLReindexState }>
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
@@ -62,7 +62,7 @@ export class NXQLESReindexComponent {
         if (data?.isClosed) {
           if (data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed) {
             this.store.dispatch(
-              ReindexActions.performReindex({
+              ReindexActions.performNxqlReindex({
                 docId: this.nxqlReindexForm?.get("nxqlQuery")?.value,
               })
             );
@@ -117,19 +117,13 @@ export class NXQLESReindexComponent {
           message: `${ELASTIC_SEARCH_MESSAGES.reindexWarning}`,
         },
       });
-      /* this.store.dispatch(
-        ReindexActions.performReindex({
-          docId: this.nxqlReindexForm?.get("nxqlQuery")?.value,
-        })
-      ); */
     }
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(ReindexActions.resetReindexState());
+    this.store.dispatch(ReindexActions.resetNxqlReindexState());
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
     this.reindexDialogClosedSubscription.unsubscribe();
   }
-
 }

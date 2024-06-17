@@ -14,9 +14,9 @@ export const loadPerformDocumentReindexEffect = createEffect(
       ofType(ReindexActions.performDocumentReindex),
       switchMap((action) => {
         return elasticSearchReindexService.performDocumentReindex(action?.docId).pipe(
-            tap(() => {
-             throw new Error("Server error occurred")
-            }),
+            // tap(() => {
+            //  throw new Error("Server error occurred")
+            // }),
           map((data) => {
             return ReindexActions.onDocumentReindexSuccess({
               reindexInfo: {
