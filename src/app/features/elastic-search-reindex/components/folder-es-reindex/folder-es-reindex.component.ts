@@ -78,7 +78,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           disableClose: true,
           data: {
             type: ELASTIC_SEARCH_MESSAGES.modalType.success,
-            title: `${ELASTIC_SEARCH_MESSAGES.reindexConfirmationModalTitle}`,
+            title: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
             message: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
           },
         });
