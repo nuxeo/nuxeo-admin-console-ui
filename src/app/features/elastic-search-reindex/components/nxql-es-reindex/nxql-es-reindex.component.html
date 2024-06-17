@@ -1,1 +1,10 @@
-<p>nxql works!</p>
+<form [formGroup]="nxqlReindexForm" (ngSubmit)="onReindexFormSubmit()" class="nxql-es-reindex-container">
+    <mat-form-field hyFormField>
+        <mat-label>NXQL Query</mat-label>
+        <input matInput
+            placeholder="SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'"
+            type="text" formControlName="nxqlQuery" required>
+        <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button">Reindex</button>
+</form>

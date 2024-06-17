@@ -24,7 +24,7 @@ export const performFolderReindex = createAction(
 );
 export const onFolderReindexSuccess = createAction(
   "[Admin] On Folder Reindex Success",
-  props<{ reindexInfo: reindexInfo }>()
+  props<{ folderReindexInfo: reindexInfo }>()
 );
 export const onFolderReindexFailure = createAction(
   "[Admin] On Folder Reindex Failure",
@@ -44,7 +44,7 @@ export const performNxqlReindex = createAction(
 );
 export const onNxqlReindexSuccess = createAction(
   "[Admin] On NXQL Reindex Success",
-  props<{ reindexInfo: reindexInfo }>()
+  props<{ nxqlReindexInfo: reindexInfo }>()
 );
 export const onNxqlReindexFailure = createAction(
   "[Admin] On NXQL Reindex Failure",

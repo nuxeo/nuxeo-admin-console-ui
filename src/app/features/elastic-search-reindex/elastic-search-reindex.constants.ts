@@ -5,7 +5,7 @@ import { ElasticSearchType } from "./elastic-search-reindex.interface";
 export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "Document", path: "document", isSelected: true },
   { label: "Folder", path: "folder", isSelected: false },
-  { label: "NXQL", path: "nxql", isSelected: false },
+  { label: "NXQL Query", path: "nxql", isSelected: false },
 ];
 
 export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
