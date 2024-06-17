@@ -74,10 +74,8 @@ jobs:
          echo "List of Files"
          ls -al
 
-      - name: Publish 
+      - name: Push promoted Admin Console to Connect PREPROD
         working-directory: nuxeo-admin-console-package/target
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm publish nuxeo-admin-console-package-1.0-SNAPSHOT.zip --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ --tag SNAPSHOT-TEST
-        
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-1.0.1-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
