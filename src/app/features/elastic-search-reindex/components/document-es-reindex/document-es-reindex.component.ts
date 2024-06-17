@@ -32,6 +32,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
+  commandId = '';
   @Output() pageTitle: EventEmitter<string> = new EventEmitter();
 
   constructor(
@@ -69,12 +70,16 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
+        this.commandId = data.commandId;
         this.dialogService.open(ReindexConfirmationModalComponent, {
           disableClose: true,
           data: {
             type: ELASTIC_SEARCH_MESSAGES.modalType.success,
-            title: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
-            message: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
+            header: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
+            successMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
+            isConfirmModal: false,
+            closeContinueLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
+            actionId: this.commandId
           },
         });
       }
@@ -87,8 +92,9 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             disableClose: true,
             data: {
               type: ELASTIC_SEARCH_MESSAGES.modalType.error,
-              title: `${ELASTIC_SEARCH_MESSAGES.reindexErrorModalTitle}`,
-              message: `${ELASTIC_SEARCH_MESSAGES.reindexingError} ${error.message}`,
+              header: `${ELASTIC_SEARCH_MESSAGES.reindexErrorModalTitle}`,
+              errorMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingError} ${error.message}`,
+              closeContinueLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
             },
           });
         }

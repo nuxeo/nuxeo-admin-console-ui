@@ -13,21 +13,23 @@ export const loadPerformDocumentReindexEffect = createEffect(
     return actions$.pipe(
       ofType(ReindexActions.performDocumentReindex),
       switchMap((action) => {
-        return elasticSearchReindexService.performDocumentReindex(action?.docId).pipe(
+        return elasticSearchReindexService
+          .performDocumentReindex(action?.docId)
+          .pipe(
             // tap(() => {
-            //  throw new Error("Server error occurred")
+            //   throw new Error("Server error occurred");
             // }),
-          map((data) => {
-            return ReindexActions.onDocumentReindexSuccess({
-              reindexInfo: {
-                commandId: data?.commandId,
-              },
-            });
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return of(ReindexActions.onDocumentReindexFailure({ error }));
-          })
-        );
+            map((data) => {
+              return ReindexActions.onDocumentReindexSuccess({
+                reindexInfo: {
+                  commandId: data?.commandId,
+                },
+              });
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(ReindexActions.onDocumentReindexFailure({ error }));
+            })
+          );
       })
     );
   },
@@ -45,9 +47,9 @@ export const loadPerformFolderReindexEffect = createEffect(
         return elasticSearchReindexService
           .performFolderReindex(action?.docId)
           .pipe(
-            //  tap(() => {
-            //   throw new Error("Server error occurred")
-            //  }),
+            tap(() => {
+              throw new Error("Server error occurred");
+            }),
             map((data) => {
               return ReindexActions.onFolderReindexSuccess({
                 folderReindexInfo: {
@@ -76,9 +78,9 @@ export const loadPerformNxqlReindexEffect = createEffect(
         return elasticSearchReindexService
           .performNXQLReindex(action?.docId)
           .pipe(
-            //  tap(() => {
-            //   throw new Error("Server error occurred")
-            //  }),
+            tap(() => {
+              throw new Error("Server error occurred");
+            }),
             map((data) => {
               return ReindexActions.onNxqlReindexSuccess({
                 nxqlReindexInfo: {

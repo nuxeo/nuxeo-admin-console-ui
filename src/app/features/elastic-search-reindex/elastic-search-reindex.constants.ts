@@ -23,9 +23,14 @@ export const ELASTIC_SEARCH_MESSAGES = {
   copyMonitoringId:
     "Remember to take note of the ID if you want to monitor it later on.",
   reindexConfirmationModalTitle: "Confirm Reindex",
+  abortLabel: "Abort",
+  close: "Close",
+  continue: "Continue",
   reindexSucessModalTitle: "Action launched",
   reindexErrorModalTitle: "An error happened",
   reindexingError: "Your action was not executed due to an error. Details:",
+  impactMessage:
+    "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
   modalType: {
     confirm: 1,
     success: 2,
