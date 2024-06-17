@@ -1,0 +1,65 @@
+<hy-dialog-box>
+  <hy-dialog-box-header>
+    <hy-dialog-box-title>
+      {{
+        data.errorFlag
+          ? "An error happened"
+          : data.completedFlag
+          ? "Action launched"
+          : "Warning"
+      }}
+    </hy-dialog-box-title>
+  </hy-dialog-box-header>
+
+  <hy-dialog-box-content>
+    <div
+      *ngIf="data.confirmationFlag && !data.errorFlag && !data.completedFlag"
+    >
+      <p>
+        <strong>{{ data.impactMessage }}</strong>
+      </p>
+      <!-- <p>
+        This action will impact {{ data.numberOfDocuments }} documents. <br>
+        This action could take approximately {{ data.timeInHumanReadableFormat }}.
+      </p> -->
+      <p>Would you like to continue?</p>
+    </div>
+    <div
+      *ngIf="data.errorFlag && !data.confirmationFlag && !data.completedFlag"
+    >
+      <p>
+        Your action was not executed due to an error. Details: [ERROR MESSAGE
+        RETURNED BY THE SERVER]
+      </p>
+    </div>
+    <div
+      *ngIf="data.completedFlag && !data.confirmationFlag && !data.errorFlag"
+    >
+      <p>
+        Congratulations! Your action is launched with ID {{ data.actionId }}.
+        Remember to take note of the ID if you want to monitor it later on.
+      </p>
+      <button mat-flat-button color="primary" (click)="copyActionId()">
+        Copy action ID
+      </button>
+    </div>
+  </hy-dialog-box-content>
+
+  <hy-dialog-box-footer>
+    <ng-container
+      *ngIf="data.confirmationFlag && !data.errorFlag && !data.completedFlag"
+    >
+      <button mat-stroked-button color="primary" (click)="cancel()">
+        Abort
+      </button>
+      <button mat-flat-button color="primary" (click)="confirm()">
+        {{ data.confirmLabel }}
+      </button>
+    </ng-container>
+    <ng-container
+      *ngIf="!data.confirmationFlag && (data.errorFlag || data.completedFlag)"
+    >
+      <button mat-flat-button color="primary" (click)="confirm()">Close</button>
+    </ng-container>
+  </hy-dialog-box-footer>
+</hy-dialog-box>
