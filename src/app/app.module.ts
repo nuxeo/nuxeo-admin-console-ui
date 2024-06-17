@@ -1,6 +1,6 @@
-import { ReindexSuccessModalComponent } from "./shared/components/reindex/reindex-success-modal/reindex-success-modal.component";
-import { ReindexErrorModalComponent } from "./shared/components/reindex/reindex-error-modal/reindex-error-modal.component";
-import { ReindexConfirmationModalComponent } from "./shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
+import { ReindexModalComponent } from './shared/components/reindex-modal/reindex-modal.component';
+
+
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -58,9 +58,7 @@ import {
     BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
-    ReindexConfirmationModalComponent,
-    ReindexSuccessModalComponent,
-    ReindexErrorModalComponent,
+    ReindexModalComponent
   ],
   imports: [
     BrowserModule,

@@ -2,8 +2,8 @@
     <p *ngIf="pageTitle">{{pageTitle}}</p>
     <div class="elastic-search-reindex-container__tabs-container">
         <nav mat-tab-nav-bar hyTabGroup [tabPanel]="tabPanel" aria-label="Reindex navigation">
-            <a mat-tab-link *ngFor="let tab of searchTabs;" (click)="activeTab=tab" [active]="activeTab == tab"
-                [routerLink]="[tab.path]" role="menuitem" [attr.aria-selected]="tab.isSelected ? 'true' : 'false'">
+            <a mat-tab-link *ngFor="let tab of searchTabs; let i = index" (click)="activeTab=tab" [active]="activeTab == tab"
+                [routerLink]="[tab.path]" [attr.aria-selected]="tab.isSelected ? 'true' : 'false'">
                 {{tab.label}} </a>
         </nav>
         <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>

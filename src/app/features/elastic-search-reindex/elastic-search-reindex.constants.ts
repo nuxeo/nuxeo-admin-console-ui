@@ -1,5 +1,3 @@
-// export interface ElasticSearchMessages {}
-
 import { ElasticSearchType } from "./elastic-search-reindex.interface";
 
 export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
@@ -17,6 +15,7 @@ export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
 export const ELASTIC_SEARCH_MESSAGES = {
   invalidDocIdOrPath: "Please provide a document id or a document path",
   invalidDocId: "Please provide a document id",
+  invalidNXQLQuery: "Please provide a valid NXQL query",
   reindexWarning:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
   reindexingLaunched: "Congratulations! Your action is launched with ID",
@@ -36,4 +35,5 @@ export const ELASTIC_SEARCH_MESSAGES = {
     success: 2,
     error: 3,
   },
+  hint: "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>[NXQL documentation]</a>",
 };

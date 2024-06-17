@@ -16,9 +16,9 @@ export const loadPerformDocumentReindexEffect = createEffect(
         return elasticSearchReindexService
           .performDocumentReindex(action?.docId)
           .pipe(
-            // tap(() => {
-            //   throw new Error("Server error occurred");
-            // }),
+              /* tap(() => {
+              throw new Error("Server error occurred");
+            }), */ 
             map((data) => {
               return ReindexActions.onDocumentReindexSuccess({
                 reindexInfo: {
@@ -47,9 +47,9 @@ export const loadPerformFolderReindexEffect = createEffect(
         return elasticSearchReindexService
           .performFolderReindex(action?.docId)
           .pipe(
-            tap(() => {
+             /* tap(() => {
               throw new Error("Server error occurred");
-            }),
+            }), */ 
             map((data) => {
               return ReindexActions.onFolderReindexSuccess({
                 folderReindexInfo: {
@@ -76,11 +76,11 @@ export const loadPerformNxqlReindexEffect = createEffect(
       ofType(ReindexActions.performNxqlReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performNXQLReindex(action?.docId)
+          .performNXQLReindex(action?.nxqlQuery)
           .pipe(
-            tap(() => {
+            /* tap(() => {
               throw new Error("Server error occurred");
-            }),
+            }), */ 
             map((data) => {
               return ReindexActions.onNxqlReindexSuccess({
                 nxqlReindexInfo: {

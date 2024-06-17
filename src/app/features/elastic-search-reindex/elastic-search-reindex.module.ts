@@ -8,6 +8,7 @@ import { ElasticSearchReindexComponent } from "./components/elastic-search-reind
 import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/elastic-search-reindex-routing.module";
 import { MatTabsModule } from "@angular/material/tabs";
 import { HyFormContainerModule, HyMaterialModule } from "@hyland/ui";
+import { HyMaterialTabsModule } from "@hyland/ui/material";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -29,6 +30,7 @@ import { MatInputModule } from "@angular/material/input";
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    HyMaterialTabsModule
   ],
 })
 export class ElasticSearchReindexModule {}

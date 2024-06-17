@@ -1,3 +1,4 @@
+import { SafeHtml } from '@angular/platform-browser';
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -15,7 +16,7 @@ export class ElasticSearchReindexService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   constructor(private http: HttpClient) {}
 
-  performDocumentReindex(DOC_ID: string): Observable<any> {
+  performDocumentReindex(DOC_ID: string | null ): Observable<any> {
     // const id = '1866799d-dbda-4529-a249-a1742784dbad';
     return this.http.post<any>(
       `${this.baseUrl}${this.url}/${DOC_ID}${this.suburl}`,
@@ -26,14 +27,14 @@ export class ElasticSearchReindexService {
     // return this.http.get<any>(`${this.baseUrl}${this.url}${this.geturl}`); // GET call working
   }
 
-  performFolderReindex(DOC_ID: string): Observable<any> {
+  performFolderReindex(DOC_ID: string | null ): Observable<any> {
     return this.http.post<any>(
       `${this.baseUrl}${this.url}/${DOC_ID}${this.suburl}`,
       {}
     );
   }
 
-  performNXQLReindex(nxqlQuery: string): Observable<any> {
+  performNXQLReindex(nxqlQuery: string | null ): Observable<any> {
     return this.http.post<any>(
       `${this.baseUrl}${this.url}${this.suburl}?query=${nxqlQuery}`,
       {}

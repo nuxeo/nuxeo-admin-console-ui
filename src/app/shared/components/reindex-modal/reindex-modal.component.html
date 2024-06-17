@@ -1,0 +1,56 @@
+<hy-dialog-box>
+  <hy-dialog-box-header>
+    <hy-dialog-box-title>
+      {{data.header}}
+    </hy-dialog-box-title>
+  </hy-dialog-box-header>
+
+  <hy-dialog-box-content>
+    <div *ngIf="data.isConfirmModal">
+      <p>
+        <strong>{{ data.impactMessage }}</strong>
+      </p>
+      <p>
+        Would you like to continue?
+      </p>
+      <!-- <p>
+        This action will impact {{ data.numberOfDocuments }} documents. <br>
+        This action could take approximately {{ data.timeInHumanReadableFormat }}.
+      </p> -->
+
+    </div>
+    <div *ngIf="data.errorMessage">
+      <p>
+        {{data.errorMessage}}
+      </p>
+    </div>
+    <div *ngIf="data.successMessage">
+      <p>
+        {{data.successMessage}}
+      </p>
+      <button mat-flat-button color="primary" (click)="copyActionId()">
+        Copy action ID
+      </button>
+    </div>
+  </hy-dialog-box-content>
+
+  <hy-dialog-box-footer>
+
+    <div *ngIf="data.isConfirmModal; else closeBtn">
+      <button mat-stroked-button color="primary" (click)="abort()">
+        {{ data.abortLabel }}
+      </button>
+
+      <button mat-flat-button color="primary" (click)="continue()">
+        {{ data.continueLabel }}
+      </button>
+    </div>
+
+    <ng-template #closeBtn>
+      <button mat-flat-button color="primary" (click)="close()">
+        {{ data.closeLabel }}
+      </button>
+    </ng-template>
+
+  </hy-dialog-box-footer>
+</hy-dialog-box>

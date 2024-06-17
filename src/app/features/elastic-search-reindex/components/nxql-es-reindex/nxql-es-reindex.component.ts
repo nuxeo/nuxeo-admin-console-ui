@@ -1,3 +1,4 @@
+import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
 import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
@@ -7,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  SecurityContext,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
@@ -16,10 +18,9 @@ import {
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
-import { ReindexConfirmationModalComponent } from "src/app/shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
-import { ReindexSuccessModalComponent } from "src/app/shared/components/reindex/reindex-success-modal/reindex-success-modal.component";
 import { NXQLReindexState } from "../../store/reducers";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 @Component({
   selector: "nxql-es-reindex",
   templateUrl: "./nxql-es-reindex.component.html",
@@ -32,7 +33,8 @@ export class NXQLESReindexComponent {
   reindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
-  commandId = '';
+  commandId = "";
+  hint: SafeHtml = "";
   @Output() pageTitle: EventEmitter<string> = new EventEmitter();
 
   constructor(
@@ -40,7 +42,8 @@ export class NXQLESReindexComponent {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ nxqlReindex: NXQLReindexState }>
+    private store: Store<{ nxqlReindex: NXQLReindexState }>,
+    private sanitizer: DomSanitizer
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
@@ -57,33 +60,24 @@ export class NXQLESReindexComponent {
     this.elasticSearchReindexService.pageTitle.next(
       "Reindex the results of a NXQL query"
     );
-
-    this.reindexDialogClosedSubscription =
-      this.commonService.reindexDialogClosed.subscribe((data) => {
-        if (data?.isClosed) {
-          if (data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed) {
-            this.store.dispatch(
-              ReindexActions.performNxqlReindex({
-                docId: this.nxqlReindexForm?.get("nxqlQuery")?.value,
-              })
-            );
-          }
-          this.nxqlReindexForm.reset();
-        }
-      });
+    this.hint = this.sanitizer.bypassSecurityTrustHtml(
+      ELASTIC_SEARCH_MESSAGES.hint
+    );
 
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        this.dialogService.open(ReindexConfirmationModalComponent, {
+        this.dialogService.open(ReindexModalComponent, {
           disableClose: true,
+          height: "320px",
+          width: "550px",
           data: {
             type: ELASTIC_SEARCH_MESSAGES.modalType.success,
             header: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
             successMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
-            closeContinueLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
-            actionId: this.commandId
-            
+            closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
+            actionId: this.commandId,
+            isSuccessModal: true
           },
         });
       }
@@ -92,13 +86,16 @@ export class NXQLESReindexComponent {
     this.reindexingErrorSubscription = this.reindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.dialogService.open(ReindexConfirmationModalComponent, {
+          this.dialogService.open(ReindexModalComponent, {
             disableClose: true,
+            height: "320px",
+            width: "550px",
             data: {
               type: ELASTIC_SEARCH_MESSAGES.modalType.error,
               header: `${ELASTIC_SEARCH_MESSAGES.reindexErrorModalTitle}`,
               errorMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingError} ${error.message}`,
-              closeContinueLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
+              closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
+              isErrorModal: true
             },
           });
         }
@@ -108,25 +105,52 @@ export class NXQLESReindexComponent {
 
   getErrorMessage(): string | null {
     if (this.nxqlReindexForm.get("nxqlQuery")?.hasError("required")) {
-      return ELASTIC_SEARCH_MESSAGES.invalidDocId;
+      return ELASTIC_SEARCH_MESSAGES.invalidNXQLQuery;
     }
     return null;
   }
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm.valid) {
-      this.dialogService.open(ReindexConfirmationModalComponent, {
-        disableClose: true,
-        data: {
-          type: ELASTIC_SEARCH_MESSAGES.modalType.confirm,
-          header: `${ELASTIC_SEARCH_MESSAGES.reindexConfirmationModalTitle}`,
-          message: `${ELASTIC_SEARCH_MESSAGES.reindexWarning}`,
-          isConfirmModal: true,
-          abortLabel: `${ELASTIC_SEARCH_MESSAGES.abortLabel}`,
-          closeContinueLabel: `${ELASTIC_SEARCH_MESSAGES.continue}`,
-          impactMessage: `${ELASTIC_SEARCH_MESSAGES.impactMessage}`
-        },
-      });
+      const dialogRef = this.dialogService.open(
+        ReindexModalComponent,
+        {
+          disableClose: true,
+          height: "320px",
+          width: "550px",
+          data: {
+            type: ELASTIC_SEARCH_MESSAGES.modalType.confirm,
+            header: `${ELASTIC_SEARCH_MESSAGES.reindexConfirmationModalTitle}`,
+            message: `${ELASTIC_SEARCH_MESSAGES.reindexWarning}`,
+            isConfirmModal: true,
+            abortLabel: `${ELASTIC_SEARCH_MESSAGES.abortLabel}`,
+            continueLabel: `${ELASTIC_SEARCH_MESSAGES.continue}`,
+            impactMessage: `${ELASTIC_SEARCH_MESSAGES.impactMessage}`,
+          },
+        }
+      );
+
+      this.reindexDialogClosedSubscription = dialogRef
+        .afterClosed()
+        .subscribe((data) => {
+          if (data?.isClosed) {
+            if (
+              data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed
+            ) {
+              const sanitizedInput = this.sanitizer.sanitize(
+                SecurityContext.HTML,
+                this.nxqlReindexForm?.get("nxqlQuery")?.value
+              );
+              this.store.dispatch(
+                ReindexActions.performNxqlReindex({
+                  nxqlQuery: sanitizedInput,
+                })
+              );
+              this.nxqlReindexForm.reset();
+            }
+            document.getElementById("nxqlQuery")?.focus();
+          }
+        });
     }
   }
 

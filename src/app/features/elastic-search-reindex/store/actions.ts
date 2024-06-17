@@ -1,9 +1,10 @@
+import { SafeValue } from '@angular/platform-browser';
 import { createAction, props } from "@ngrx/store";
 import { reindexInfo } from "../elastic-search-reindex.interface";
 
 export const performDocumentReindex = createAction(
   "[Admin] Perform Reindex",
-  props<{ docId: string }>()
+  props<{ docId: string | null  }>()
 );
 export const onDocumentReindexSuccess = createAction(
   "[Admin] Perform Reindex Success",
@@ -20,7 +21,7 @@ export const resetDocumentReindexState = createAction("[Admin] Reset Reindex Sta
 
 export const performFolderReindex = createAction(
   "[Admin] Perform Folder Reindex",
-  props<{ docId: string }>()
+  props<{ docId: string | null  }>()
 );
 export const onFolderReindexSuccess = createAction(
   "[Admin] On Folder Reindex Success",
@@ -40,7 +41,7 @@ export const resetFolderReindexState = createAction(
 
 export const performNxqlReindex = createAction(
   "[Admin] Perform NXQL Reindex",
-  props<{ docId: string }>()
+  props<{ nxqlQuery: string | null }>()
 );
 export const onNxqlReindexSuccess = createAction(
   "[Admin] On NXQL Reindex Success",
