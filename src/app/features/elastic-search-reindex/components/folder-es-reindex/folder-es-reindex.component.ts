@@ -130,5 +130,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.store.dispatch(ReindexActions.resetReindexState());
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
+    this.reindexDialogClosedSubscription.unsubscribe();
   }
 }
