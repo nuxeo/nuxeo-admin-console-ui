@@ -23,7 +23,8 @@ jobs:
       if: github.event_name == 'pull_request'
       run: echo "This is a PR. You can set up version handling for PRs here."
     
-    - name: Delete promoted Admin Console to Connect PREPROD
+    - name: Delete test promoted Admin Console to Connect PREPROD
+      if: github.event_name == 'workflow_dispatch'
       env:
         CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
       run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -X DELETE  "$CONNECT_PREPROD_URL/site/marketplace/delete/nuxeo-admin-console-ui-package-${{ github.event.inputs.version }}"
