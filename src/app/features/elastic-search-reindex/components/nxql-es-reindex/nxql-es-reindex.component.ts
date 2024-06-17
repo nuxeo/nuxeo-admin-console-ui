@@ -39,16 +39,16 @@ export class NXQLESReindexComponent {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ reindex: NXQLReindexState }>
+    private store: Store<{ nxqlReindex: NXQLReindexState }>
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
     });
     this.reindexingDone$ = this.store.pipe(
-      select((state) => state.reindex?.reindexInfo)
+      select((state) => state.nxqlReindex?.nxqlReindexInfo)
     );
     this.reindexingError$ = this.store.pipe(
-      select((state) => state.reindex?.error)
+      select((state) => state.nxqlReindex?.error)
     );
   }
 

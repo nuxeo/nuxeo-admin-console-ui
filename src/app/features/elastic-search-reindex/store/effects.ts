@@ -50,7 +50,7 @@ export const loadPerformFolderReindexEffect = createEffect(
             //  }),
             map((data) => {
               return ReindexActions.onFolderReindexSuccess({
-                reindexInfo: {
+                folderReindexInfo: {
                   commandId: data?.commandId,
                 },
               });
@@ -81,7 +81,7 @@ export const loadPerformNxqlReindexEffect = createEffect(
             //  }),
             map((data) => {
               return ReindexActions.onNxqlReindexSuccess({
-                reindexInfo: {
+                nxqlReindexInfo: {
                   commandId: data?.commandId,
                 },
               });

@@ -28,9 +28,9 @@ import { ReindexSuccessModalComponent } from "src/app/shared/components/reindex/
 })
 export class FolderESReindexComponent implements OnInit, OnDestroy {
   folderReindexForm: FormGroup;
-  reindexingDone$: Observable<reindexInfo>;
+  folderReindexingDone$: Observable<reindexInfo>;
   reindexingError$: Observable<any>;
-  reindexingDoneSubscription = new Subscription();
+  folderReindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   @Output() pageTitle: EventEmitter<string> = new EventEmitter();
@@ -40,16 +40,16 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ reindex: FolderReindexState }>
+    private store: Store<{ folderReindex: FolderReindexState }>
   ) {
     this.folderReindexForm = this.fb.group({
       documentID: ["", Validators.required],
     });
-    this.reindexingDone$ = this.store.pipe(
-      select((state) => state.reindex?.reindexInfo)
+    this.folderReindexingDone$ = this.store.pipe(
+      select((state) => state.folderReindex?.folderReindexInfo)
     );
     this.reindexingError$ = this.store.pipe(
-      select((state) => state.reindex?.error)
+      select((state) => state.folderReindex?.error)
     );
   }
 
@@ -72,7 +72,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
+    this.folderReindexingDoneSubscription = this.folderReindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.dialogService.open(ReindexConfirmationModalComponent, {
           disableClose: true,
@@ -123,7 +123,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetFolderReindexState());
-    this.reindexingDoneSubscription.unsubscribe();
+    this.folderReindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
     this.reindexDialogClosedSubscription.unsubscribe();
   }

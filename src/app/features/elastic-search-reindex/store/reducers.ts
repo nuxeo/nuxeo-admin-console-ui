@@ -20,14 +20,14 @@ export const initialDocumentState: DocumentReindexState = {
 /* Folder */
 
 export interface FolderReindexState {
-  reindexInfo: {
+  folderReindexInfo: {
     commandId: string | null;
   };
   error: any;
 }
 
 export const initialFolderReindexState: FolderReindexState = {
-  reindexInfo: {
+  folderReindexInfo: {
     commandId: null,
   },
   error: null,
@@ -36,14 +36,14 @@ export const initialFolderReindexState: FolderReindexState = {
 /* NXQL */
 
 export interface NXQLReindexState {
-  reindexInfo: {
+  nxqlReindexInfo: {
     commandId: string | null;
   };
   error: any;
 }
 
 export const initialNXQLReindexState: NXQLReindexState = {
-  reindexInfo: {
+  nxqlReindexInfo: {
     commandId: null,
   },
   error: null,
@@ -84,10 +84,10 @@ export const folderReindexReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(ReindexActions.onFolderReindexSuccess, (state, { reindexInfo }) => ({
+  on(ReindexActions.onFolderReindexSuccess, (state, { folderReindexInfo }) => ({
     ...state,
-    reindexInfo: {
-      commandId: reindexInfo?.commandId,
+    folderReindexInfo: {
+      commandId: folderReindexInfo?.commandId,
     },
   })),
   on(ReindexActions.onFolderReindexFailure, (state, { error }) => ({
@@ -96,7 +96,7 @@ export const folderReindexReducer = createReducer(
   })),
   on(ReindexActions.resetFolderReindexState, (state) => ({
     ...state,
-    reindexInfo: {
+    folderReindexInfo: {
       commandId: null,
     },
     error: null,
@@ -111,10 +111,10 @@ export const nxqlReindexReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(ReindexActions.onNxqlReindexSuccess, (state, { reindexInfo }) => ({
+  on(ReindexActions.onNxqlReindexSuccess, (state, { nxqlReindexInfo }) => ({
     ...state,
-    reindexInfo: {
-      commandId: reindexInfo?.commandId,
+    nxqlReindexInfo: {
+      commandId: nxqlReindexInfo?.commandId,
     },
   })),
   on(ReindexActions.onNxqlReindexFailure, (state, { error }) => ({
@@ -123,7 +123,7 @@ export const nxqlReindexReducer = createReducer(
   })),
   on(ReindexActions.resetNxqlReindexState, (state) => ({
     ...state,
-    reindexInfo: {
+    nxqlReindexInfo: {
       commandId: null,
     },
     error: null,
