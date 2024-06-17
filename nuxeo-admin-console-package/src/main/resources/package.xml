@@ -4,8 +4,10 @@
   <description>
     <p>Nuxeo Admin console UI is a standard base web application for Nuxeo admin users.</p>
   </description>
-  <home-page>http://localhost:8080/nuxeo/admin-console</home-page>
+  <home-page>https://github.com/nuxeo/nuxeo-admin-console-ui</home-page>
   <vendor>nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
   <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
   <license>Apache License, Version 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>

@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.admin.console</groupId>
   <artifactId>admin-console</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>Admin console</name>
   <description>admin-console</description>
   <packaging>pom</packaging>
