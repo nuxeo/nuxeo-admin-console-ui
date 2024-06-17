@@ -1,6 +1,5 @@
 import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import {
   Component,
@@ -19,6 +18,7 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ReindexConfirmationModalComponent } from "src/app/shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
+import { DocumentReindexState } from "../../store/reducers";
 
 @Component({
   selector: "document-es-reindex",
@@ -39,7 +39,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private commonService: CommonService,
     private fb: FormBuilder,
-    private store: Store<{ reindex: ReindexState }>
+    private store: Store<{ reindex: DocumentReindexState }>
   ) {
     this.reindexForm = this.fb.group({
       documentID: ["", Validators.required],
@@ -103,10 +103,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  onReindexFormubmit(): void {
+  onReindexFormSubmit(): void {
     if (this.reindexForm.valid) {
       this.store.dispatch(
-        ReindexActions.performReindex({
+        ReindexActions.performDocumentReindex({
           docId: this.reindexForm?.get("documentID")?.value,
         })
       );
@@ -114,7 +114,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(ReindexActions.resetReindexState());
+    this.store.dispatch(ReindexActions.resetDocumentReindexState());
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
   }

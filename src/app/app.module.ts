@@ -43,7 +43,11 @@ import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
-import { reindexReducer } from "./features/elastic-search-reindex/store/reducers";
+import {
+  folderReindexReducer,
+  nxqlReindexReducer,
+  reindexReducer,
+} from "./features/elastic-search-reindex/store/reducers";
 
 @NgModule({
   declarations: [
@@ -71,6 +75,8 @@ import { reindexReducer } from "./features/elastic-search-reindex/store/reducers
       auth: authReducer,
       home: homeReducer,
       reindex: reindexReducer,
+      folderReindex: folderReindexReducer,
+      nxqlReindex: nxqlReindexReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),
