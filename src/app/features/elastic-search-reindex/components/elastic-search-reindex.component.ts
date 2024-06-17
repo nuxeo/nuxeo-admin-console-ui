@@ -4,7 +4,7 @@ import {
   ELASTIC_SEARCH_REINDEX_TYPES,
   ElasticSearchType,
 } from "./../elastic-search-reindex.constants";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
 
 @Component({
   selector: "elastic-search-reindex",
@@ -19,12 +19,14 @@ export class ElasticSearchReindexComponent implements OnInit {
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.subscribe((title) => {
       this.pageTitle = title;
+      this.cdref.detectChanges();
     });
   }
 
