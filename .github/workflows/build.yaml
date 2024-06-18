@@ -74,6 +74,13 @@ jobs:
          echo "List of Files"
          ls -al
 
+      - name: Publish on packages.nuxeo.com
+        working-directory: nuxeo-admin-console-web/ang-src
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --registry https://packages.nuxeo.com/repository/npm-public/
+
       - name: Push promoted Admin Console to Connect PREPROD
         working-directory: nuxeo-admin-console-package/target
         env:
