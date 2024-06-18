@@ -27,6 +27,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,

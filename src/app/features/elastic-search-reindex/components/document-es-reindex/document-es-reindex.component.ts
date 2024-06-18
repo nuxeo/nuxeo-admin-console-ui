@@ -1,12 +1,7 @@
-import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
+import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  SecurityContext,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -32,6 +27,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -58,24 +54,21 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        const dialogRef = this.dialogService.open(
-          ReindexModalComponent,
-          {
-            disableClose: true,
-            height: "320px",
-            width: "550px",
-            data: {
-              type: ELASTIC_SEARCH_LABELS.modalType.success,
-              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-              successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
-              isConfirmModal: false,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-              commandId: this.commandId,
-              copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
-              isSuccessModal: true
-            },
-          }
-        );
+        const dialogRef = this.dialogService.open(ReindexModalComponent, {
+          disableClose: true,
+          height: "320px",
+          width: "550px",
+          data: {
+            type: ELASTIC_SEARCH_LABELS.modalType.success,
+            header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+            successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+            isConfirmModal: false,
+            closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+            commandId: this.commandId,
+            copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+            isSuccessModal: true,
+          },
+        });
 
         this.reindexDialogClosedSubscription = dialogRef
           .afterClosed()
@@ -103,7 +96,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
               errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError} ${error.message}`,
               closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-              isErrorModal: true
+              isErrorModal: true,
             },
           });
         }

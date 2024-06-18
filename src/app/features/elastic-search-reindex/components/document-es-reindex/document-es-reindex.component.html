@@ -1,8 +1,28 @@
-<form [formGroup]="reindexForm" (ngSubmit)="onReindexFormSubmit()" class="document-es-reindex-container">
-    <mat-form-field hyFormField>
-        <mat-label>Document ID or Path</mat-label>
-        <input matInput placeholder="Document ID or path" type="text" formControlName="documentID" id="documentID" required>
-        <mat-error *ngIf="reindexForm?.get('documentID')?.invalid">{{getErrorMessage()}}</mat-error>
-    </mat-form-field>
-    <button mat-flat-button color="primary" type="submit" class="document-es-reindex-container__button">Reindex</button>
+<form
+  [formGroup]="reindexForm"
+  (ngSubmit)="onReindexFormSubmit()"
+  class="document-es-reindex-container"
+>
+  <mat-form-field hyFormField>
+    <mat-label>{{ ELASTIC_SEARCH_LABELS.documentIdPlaceholder }}</mat-label>
+    <input
+      matInput
+      placeholder="{{ ELASTIC_SEARCH_LABELS.documentIdPlaceholder }}"
+      type="text"
+      formControlName="documentID"
+      id="documentID"
+      required
+    />
+    <mat-error *ngIf="reindexForm?.get('documentID')?.invalid">{{
+      getErrorMessage()
+    }}</mat-error>
+  </mat-form-field>
+  <button
+    mat-flat-button
+    color="primary"
+    type="submit"
+    class="document-es-reindex-container__button"
+  >
+    {{ ELASTIC_SEARCH_LABELS.reIndex }}
+  </button>
 </form>

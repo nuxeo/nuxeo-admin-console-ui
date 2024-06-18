@@ -38,4 +38,8 @@ export const ELASTIC_SEARCH_LABELS = {
     error: 3,
   },
   hint: "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>[NXQL documentation]</a>",
+  documentIdPlaceholder: "Document ID or Path",
+  documentId: "Document ID",
+  reIndex: "Reindex",
+  nxqlQuery: "NXQL Query",
 };

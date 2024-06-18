@@ -35,6 +35,7 @@ export class NXQLESReindexComponent {
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
   hintSanitized: SafeHtml = "";
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   @Output() pageTitle: EventEmitter<string> = new EventEmitter();
 
   constructor(
