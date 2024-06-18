@@ -28,6 +28,8 @@ export const ELASTIC_SEARCH_LABELS = {
   reindexSucessModalTitle: "Action launched",
   reindexErrorModalTitle: "An error happened",
   reindexingError: "Your action was not executed due to an error. Details:",
+  continueConfirmation: "Would you like to continue?",
+  copyActionId: "Copy action ID",
   impactMessage:
     "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
   modalType: {

@@ -71,6 +71,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               isConfirmModal: false,
               closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
               commandId: this.commandId,
+              copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
               isSuccessModal: true
             },
           }

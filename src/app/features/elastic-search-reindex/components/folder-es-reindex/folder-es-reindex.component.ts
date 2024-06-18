@@ -64,6 +64,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
               successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
               closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
               commandId: this.commandId,
+              copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
               isSuccessModal: true,
             },
           });
@@ -111,6 +112,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
           continueLabel: `${ELASTIC_SEARCH_LABELS.continue}`,
           impactMessage: `${ELASTIC_SEARCH_LABELS.impactMessage}`,
+          confirmContinue: `${ELASTIC_SEARCH_LABELS.continueConfirmation}`,
         },
       });
       this.reindexDialogClosedSubscription = dialogRef
