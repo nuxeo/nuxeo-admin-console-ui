@@ -1,11 +1,11 @@
-<hy-dialog-box>
-  <hy-dialog-box-header>
-    <hy-dialog-box-title>
+<hy-dialog-box class="hy-dialog-box">
+  <hy-dialog-box-header class="hy-dialog-box__header">
+    <hy-dialog-box-title class="hy-dialog-box__title">
       {{ data.header }}
     </hy-dialog-box-title>
   </hy-dialog-box-header>
 
-  <hy-dialog-box-content>
+  <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.isConfirmModal">
       <p>
         <strong>{{ data.impactMessage }}</strong>
@@ -29,12 +29,14 @@
     </div>
   </hy-dialog-box-content>
 
-  <hy-dialog-box-footer>
-    <div *ngIf="data.isConfirmModal; else closeBtn" class="button-group">
+  <hy-dialog-box-footer class="hy-dialog-box__footer">
+    <div
+      *ngIf="data.isConfirmModal; else closeBtn"
+      class="hy-dialog-box__button-group"
+    >
       <button mat-stroked-button color="primary" (click)="abort()">
         {{ data.abortLabel }}
       </button>
-
       <button mat-flat-button color="primary" (click)="continue()">
         {{ data.continueLabel }}
       </button>
