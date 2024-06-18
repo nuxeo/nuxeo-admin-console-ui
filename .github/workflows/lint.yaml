@@ -47,6 +47,9 @@ jobs:
         working-directory: nuxeo-admin-console-web/ang-src
         run: npm install
 
-      - name: Lint
+      - name: Publish on packages.nuxeo.com
         working-directory: nuxeo-admin-console-web/ang-src
-        run: npm run lint
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --registry https://packages.nuxeo.com/repository/npm-public/
