@@ -1,19 +1,11 @@
-import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
-import { CommonService } from "./../../../../shared/services/common.service";
+import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
 import { MatDialog } from "@angular/material/dialog";
 import { FolderReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  SecurityContext,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
-  ELASTIC_SEARCH_MESSAGES,
+  ELASTIC_SEARCH_LABELS,
   ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -35,12 +27,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
-  @Output() pageTitle: EventEmitter<string> = new EventEmitter();
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     public dialogService: MatDialog,
-    private commonService: CommonService,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
     private sanitizer: DomSanitizer
@@ -69,12 +59,12 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             height: "320px",
             width: "550px",
             data: {
-              type: ELASTIC_SEARCH_MESSAGES.modalType.success,
-              header: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
-              successMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
-              closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
-              actionId: this.commandId,
-              isSuccessModal: true
+              type: ELASTIC_SEARCH_LABELS.modalType.success,
+              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+              successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+              commandId: this.commandId,
+              isSuccessModal: true,
             },
           });
         }
@@ -88,11 +78,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             height: "320px",
             width: "550px",
             data: {
-              type: ELASTIC_SEARCH_MESSAGES.modalType.error,
-              header: `${ELASTIC_SEARCH_MESSAGES.reindexErrorModalTitle}`,
-              errorMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingError} ${error.message}`,
-              closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
-              isErrorModal: true
+              type: ELASTIC_SEARCH_LABELS.modalType.error,
+              header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError} ${error.message}`,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+              isErrorModal: true,
             },
           });
         }
@@ -101,31 +91,28 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   getErrorMessage(): string | null {
-    if (this.folderReindexForm.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_MESSAGES.invalidDocId;
+    if (this.folderReindexForm?.get("documentID")?.hasError("required")) {
+      return ELASTIC_SEARCH_LABELS.invalidDocId;
     }
     return null;
   }
 
   onReindexFormSubmit(): void {
-    if (this.folderReindexForm.valid) {
-      const dialogRef = this.dialogService.open(
-        ReindexModalComponent,
-        {
-          disableClose: true,
-          height: "320px",
-          width: "550px",
-          data: {
-            type: ELASTIC_SEARCH_MESSAGES.modalType.confirm,
-            header: `${ELASTIC_SEARCH_MESSAGES.reindexConfirmationModalTitle}`,
-            message: `${ELASTIC_SEARCH_MESSAGES.reindexWarning}`,
-            isConfirmModal: true,
-            abortLabel: `${ELASTIC_SEARCH_MESSAGES.abortLabel}`,
-            continueLabel: `${ELASTIC_SEARCH_MESSAGES.continue}`,
-            impactMessage: `${ELASTIC_SEARCH_MESSAGES.impactMessage}`
-          },
-        }
-      );
+    if (this.folderReindexForm?.valid) {
+      const dialogRef = this.dialogService.open(ReindexModalComponent, {
+        disableClose: true,
+        height: "320px",
+        width: "550px",
+        data: {
+          type: ELASTIC_SEARCH_LABELS.modalType.confirm,
+          header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
+          message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
+          isConfirmModal: true,
+          abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
+          continueLabel: `${ELASTIC_SEARCH_LABELS.continue}`,
+          impactMessage: `${ELASTIC_SEARCH_LABELS.impactMessage}`,
+        },
+      });
       this.reindexDialogClosedSubscription = dialogRef
         .afterClosed()
         .subscribe((data) => {
@@ -139,10 +126,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
               );
               this.store.dispatch(
                 ReindexActions.performFolderReindex({
-                  docId: sanitizedInput,
+                  documentID: sanitizedInput,
                 })
               );
-              this.folderReindexForm.reset();
+              this.folderReindexForm?.reset();
             }
           }
           document.getElementById("documentID")?.focus();

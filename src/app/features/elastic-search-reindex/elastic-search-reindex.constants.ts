@@ -12,7 +12,7 @@ export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
   isFailed: 2,
 };
 
-export const ELASTIC_SEARCH_MESSAGES = {
+export const ELASTIC_SEARCH_LABELS = {
   invalidDocIdOrPath: "Please provide a document id or a document path",
   invalidDocId: "Please provide a document id",
   invalidNXQLQuery: "Please provide a valid NXQL query",

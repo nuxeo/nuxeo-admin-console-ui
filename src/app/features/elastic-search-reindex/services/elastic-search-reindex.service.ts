@@ -1,6 +1,5 @@
-import { SafeHtml } from '@angular/platform-browser';
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { environment } from "../../../../environments/environment";
 
@@ -16,10 +15,10 @@ export class ElasticSearchReindexService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   constructor(private http: HttpClient) {}
 
-  performDocumentReindex(DOC_ID: string | null ): Observable<any> {
+  performDocumentReindex(documentID: string | null ): Observable<any> {
     // const id = '1866799d-dbda-4529-a249-a1742784dbad';
     return this.http.post<any>(
-      `${this.baseUrl}${this.url}/${DOC_ID}${this.suburl}`,
+      `${this.baseUrl}${this.url}/${documentID}${this.suburl}`,
       {}
     );
 
@@ -27,9 +26,9 @@ export class ElasticSearchReindexService {
     // return this.http.get<any>(`${this.baseUrl}${this.url}${this.geturl}`); // GET call working
   }
 
-  performFolderReindex(DOC_ID: string | null ): Observable<any> {
+  performFolderReindex(documentID: string | null ): Observable<any> {
     return this.http.post<any>(
-      `${this.baseUrl}${this.url}/${DOC_ID}${this.suburl}`,
+      `${this.baseUrl}${this.url}/${documentID}${this.suburl}`,
       {}
     );
   }

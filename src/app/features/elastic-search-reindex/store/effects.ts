@@ -14,7 +14,7 @@ export const loadPerformDocumentReindexEffect = createEffect(
       ofType(ReindexActions.performDocumentReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performDocumentReindex(action?.docId)
+          .performDocumentReindex(action?.documentID)
           .pipe(
               /* tap(() => {
               throw new Error("Server error occurred");
@@ -45,7 +45,7 @@ export const loadPerformFolderReindexEffect = createEffect(
       ofType(ReindexActions.performFolderReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performFolderReindex(action?.docId)
+          .performFolderReindex(action?.documentID)
           .pipe(
              /* tap(() => {
               throw new Error("Server error occurred");

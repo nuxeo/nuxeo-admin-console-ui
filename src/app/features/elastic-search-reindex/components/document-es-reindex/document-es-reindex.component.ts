@@ -1,18 +1,15 @@
 import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
-import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import {
   Component,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
   SecurityContext,
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
-  ELASTIC_SEARCH_MESSAGES,
+  ELASTIC_SEARCH_LABELS,
   ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -35,12 +32,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
-  @Output() pageTitle: EventEmitter<string> = new EventEmitter();
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     public dialogService: MatDialog,
-    private commonService: CommonService,
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
     private sanitizer: DomSanitizer
@@ -70,12 +65,12 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             height: "320px",
             width: "550px",
             data: {
-              type: ELASTIC_SEARCH_MESSAGES.modalType.success,
-              header: `${ELASTIC_SEARCH_MESSAGES.reindexSucessModalTitle}`,
-              successMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_MESSAGES.copyMonitoringId}`,
+              type: ELASTIC_SEARCH_LABELS.modalType.success,
+              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+              successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
               isConfirmModal: false,
-              closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
-              actionId: this.commandId,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+              commandId: this.commandId,
               isSuccessModal: true
             },
           }
@@ -88,7 +83,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               data?.isClosed &&
               data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
             ) {
-              this.reindexForm.reset();
+              this.reindexForm?.reset();
             }
             document.getElementById("documentID")?.focus();
           });
@@ -103,10 +98,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             height: "320px",
             width: "550px",
             data: {
-              type: ELASTIC_SEARCH_MESSAGES.modalType.error,
-              header: `${ELASTIC_SEARCH_MESSAGES.reindexErrorModalTitle}`,
-              errorMessage: `${ELASTIC_SEARCH_MESSAGES.reindexingError} ${error.message}`,
-              closeLabel: `${ELASTIC_SEARCH_MESSAGES.close}`,
+              type: ELASTIC_SEARCH_LABELS.modalType.error,
+              header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError} ${error.message}`,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
               isErrorModal: true
             },
           });
@@ -116,21 +111,21 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   getErrorMessage(): string | null {
-    if (this.reindexForm.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_MESSAGES.invalidDocIdOrPath;
+    if (this.reindexForm?.get("documentID")?.hasError("required")) {
+      return ELASTIC_SEARCH_LABELS.invalidDocIdOrPath;
     }
     return null;
   }
 
   onReindexFormSubmit(): void {
-    if (this.reindexForm.valid) {
+    if (this.reindexForm?.valid) {
       const sanitizedInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
         this.reindexForm?.get("documentID")?.value
       );
       this.store.dispatch(
         ReindexActions.performDocumentReindex({
-          docId: sanitizedInput,
+          documentID: sanitizedInput,
         })
       );
     }
@@ -140,5 +135,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.store.dispatch(ReindexActions.resetDocumentReindexState());
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
+    this.reindexDialogClosedSubscription.unsubscribe();
   }
 }

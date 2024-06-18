@@ -1,8 +1,7 @@
-import { HyKeyboardFocusService } from '@hyland/ui/keyboard-focus';
+import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { Router } from "@angular/router";
 import { ActivatedRoute } from "@angular/router";
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
-import { HyDialogService } from "@hyland/ui/dialog";
 import { ElasticSearchType } from "../elastic-search-reindex.interface";
 import { ELASTIC_SEARCH_REINDEX_TYPES } from "../elastic-search-reindex.constants";
 import { ElasticSearchReindexService } from "../services/elastic-search-reindex.service";
@@ -17,7 +16,6 @@ export class ElasticSearchReindexComponent implements OnInit {
   activeTab: ElasticSearchType = this.searchTabs[0];
   pageTitle = "";
   constructor(
-    private dialogService: HyDialogService,
     private elasticSearchReindexService: ElasticSearchReindexService,
     private route: ActivatedRoute,
     private router: Router,
@@ -36,10 +34,5 @@ export class ElasticSearchReindexComponent implements OnInit {
       this.pageTitle = title;
       this.cdref.detectChanges();
     });
-  }
-
-  onTabChange(event: any): void {
-    const tabs = ELASTIC_SEARCH_REINDEX_TYPES.map((type) => type.label);
-    this.router.navigate([tabs[event.index]], { relativeTo: this.route });
   }
 }

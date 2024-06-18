@@ -41,7 +41,7 @@ export class ReindexModalComponent {
   }
 
   copyActionId(): void {
-    navigator.clipboard.writeText(this.data.actionId).then(() => {
+    navigator.clipboard.writeText(this.data.commandId).then(() => {
       alert("Action ID copied to clipboard!");
     });
   }
