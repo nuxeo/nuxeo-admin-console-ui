@@ -132,9 +132,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                   documentID: sanitizedInput,
                 })
               );
-              this.folderReindexForm?.reset();
-            }
+              
+            } 
           }
+          this.folderReindexForm?.reset();
           document.getElementById("documentID")?.focus();
         });
     }
@@ -147,3 +148,4 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.reindexDialogClosedSubscription.unsubscribe();
   }
 }
+
