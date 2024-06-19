@@ -1,4 +1,4 @@
-name: Build
+name: Build and Release
 
 on:
   pull_request:
@@ -12,9 +12,21 @@ on:
         type: string
         required: false
       debug:
-          type: boolean
-          description: enable debug
-          default: false
+        type: boolean
+        description: enable debug
+        default: false
+      version:
+        type: string
+        description: 'Version to check out'
+        required: true
+      dryRun:
+        type: string
+        description: 'Dry run flag'
+        required: true
+      referenceBranch:
+        type: string
+        description: 'Reference branch for the version bump'
+        required: true
 
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
@@ -22,7 +34,7 @@ env:
   NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
   NEXUS_REPOSITORY: npm-public
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-  GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
 
 jobs:
   build-and-publish:
@@ -58,6 +70,75 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-    
+
       - name: Build Angular Project
         run: npm run build
+
+      - name: Checkout Version Branch
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ github.event.inputs.version }}
+
+      - name: Set Git Config
+        run: |
+          git config user.name "nuxeo-webui-jx-bot"
+          git config user.email "webui@hyland.com"
+
+      - run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+
+      - name: Update Nuxeo-Admin-Console-ui version to ${{ env.VERSION }}
+        run: npm version $VERSION --no-git-tag-version
+
+      - name: Tag Nuxeo-Admin-Console-ui v${{ env.VERSION }}
+        run: |
+          git commit -a -m "Release $VERSION"
+          git tag -a v$VERSION -m "Release $VERSION"
+
+      - name: Push Tag
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: git push origin v$VERSION
+
+      - name: Create GitHub release v${{ env.VERSION }}
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+
+      - name: Publish to Nexus Repository (dry run)
+        if: ${{ github.event.inputs.dryRun == 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+        run: npm publish --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/ --dry-run
+
+      - name: Publish to Nexus Repository
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+        run: npm publish --@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public/
+
+      - name: Checkout Reference Branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_ADMIN_TOKEN }}
+          ref: ${{ github.event.inputs.referenceBranch }}
+
+      - name: Determine New Version
+        run: |
+          if [ "${{ github.event.inputs.referenceBranch }}" == "dev" ]; then
+            NEW_VERSION=$(npx semver -i minor $VERSION)-SNAPSHOT
+          else
+            NEW_VERSION=$(npx semver -i patch $VERSION)-SNAPSHOT
+          fi
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Align Reference Branch on Next Version ${{ env.NEW_VERSION }}
+        run: |
+          npm version $NEW_VERSION --no-git-tag-version
+          git commit -a -m "Update to $NEW_VERSION"
+
+      - name: Push Changes
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: git push origin ${{ github.event.inputs.referenceBranch }}
