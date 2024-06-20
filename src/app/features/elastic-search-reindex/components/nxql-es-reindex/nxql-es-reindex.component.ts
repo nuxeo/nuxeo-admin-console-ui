@@ -1,20 +1,9 @@
 import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
-import { CommonService } from "./../../../../shared/services/common.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  SecurityContext,
-} from "@angular/core";
+import { Component, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  ELASTIC_SEARCH_LABELS,
-  ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
-} from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
@@ -28,20 +17,23 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 })
 export class NXQLESReindexComponent {
   nxqlReindexForm: FormGroup;
-  reindexingDone$: Observable<reindexInfo>;
-  reindexingError$: Observable<any>;
-  reindexingDoneSubscription = new Subscription();
-  reindexingErrorSubscription = new Subscription();
+  nxqlReindexingDone$: Observable<reindexInfo>;
+  nxqlReindexingError$: Observable<any>;
+  nxqlReindexingDoneSubscription = new Subscription();
+  nxqlReindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   commandId = "";
   hintSanitized: SafeHtml = "";
-  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
-  @Output() pageTitle: EventEmitter<string> = new EventEmitter();
+  confirmDialogClosedSubscription = new Subscription();
+  successDialogClosedSubscription = new Subscription();
+  errorDialogClosedSubscription = new Subscription();
+  successDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  confirmDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     public dialogService: MatDialog,
-    private commonService: CommonService,
     private fb: FormBuilder,
     private store: Store<{ nxqlReindex: NXQLReindexState }>,
     private sanitizer: DomSanitizer
@@ -49,10 +41,10 @@ export class NXQLESReindexComponent {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
     });
-    this.reindexingDone$ = this.store.pipe(
+    this.nxqlReindexingDone$ = this.store.pipe(
       select((state) => state.nxqlReindex?.nxqlReindexInfo)
     );
-    this.reindexingError$ = this.store.pipe(
+    this.nxqlReindexingError$ = this.store.pipe(
       select((state) => state.nxqlReindex?.error)
     );
   }
@@ -65,30 +57,44 @@ export class NXQLESReindexComponent {
       ELASTIC_SEARCH_LABELS.hint
     );
 
-    this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
-      if (data?.commandId) {
-        this.commandId = data.commandId;
-        this.dialogService.open(ReindexModalComponent, {
-          disableClose: true,
-          height: "320px",
-          width: "550px",
-          data: {
-            type: ELASTIC_SEARCH_LABELS.modalType.success,
-            header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-            successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
-            closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-            commandId: this.commandId,
-            copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
-            isSuccessModal: true,
-          },
-        });
-      }
-    });
+    this.nxqlReindexingDoneSubscription = this.nxqlReindexingDone$.subscribe(
+      (data) => {
+        if (data?.commandId) {
+          this.commandId = data.commandId;
+          this.successDialogRef = this.dialogService.open(
+            ReindexModalComponent,
+            {
+              disableClose: true,
+              height: "320px",
+              width: "550px",
+              data: {
+                type: ELASTIC_SEARCH_LABELS.modalType.success,
+                header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+                successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+                closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+                commandId: this.commandId,
+                copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+                isSuccessModal: true,
+              },
+            }
+          );
 
-    this.reindexingErrorSubscription = this.reindexingError$.subscribe(
+          this.successDialogClosedSubscription = this.successDialogRef
+            .afterClosed()
+            .subscribe((data) => {
+              if (data?.isClosed) {
+                this.nxqlReindexForm?.reset();
+                document.getElementById("nxqlQuery")?.focus();
+              }
+            });
+        }
+      }
+    );
+
+    this.nxqlReindexingErrorSubscription = this.nxqlReindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.dialogService.open(ReindexModalComponent, {
+          this.errorDialogRef = this.dialogService.open(ReindexModalComponent, {
             disableClose: true,
             height: "320px",
             width: "550px",
@@ -100,6 +106,14 @@ export class NXQLESReindexComponent {
               isErrorModal: true,
             },
           });
+          this.errorDialogClosedSubscription = this.errorDialogRef
+            .afterClosed()
+            .subscribe((data) => {
+              if (data?.isClosed) {
+                this.nxqlReindexForm?.reset();
+                document.getElementById("nxqlQuery")?.focus();
+              }
+            });
         }
       }
     );
@@ -114,7 +128,7 @@ export class NXQLESReindexComponent {
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm.valid) {
-      const dialogRef = this.dialogService.open(ReindexModalComponent, {
+      this.confirmDialogRef = this.dialogService.open(ReindexModalComponent, {
         disableClose: true,
         height: "320px",
         width: "550px",
@@ -130,25 +144,19 @@ export class NXQLESReindexComponent {
         },
       });
 
-      this.reindexDialogClosedSubscription = dialogRef
+      this.confirmDialogClosedSubscription = this.confirmDialogRef
         .afterClosed()
         .subscribe((data) => {
           if (data?.isClosed) {
-            if (
-              data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed
-            ) {
-              const sanitizedInput = this.sanitizer.sanitize(
-                SecurityContext.HTML,
-                this.nxqlReindexForm?.get("nxqlQuery")?.value
-              );
-              this.store.dispatch(
-                ReindexActions.performNxqlReindex({
-                  nxqlQuery: sanitizedInput,
-                })
-              );
-              this.nxqlReindexForm?.reset();
-            }
-            document.getElementById("nxqlQuery")?.focus();
+            const sanitizedInput = this.sanitizer.sanitize(
+              SecurityContext.HTML,
+              this.nxqlReindexForm?.get("nxqlQuery")?.value
+            );
+            this.store.dispatch(
+              ReindexActions.performNxqlReindex({
+                nxqlQuery: sanitizedInput,
+              })
+            );
           }
         });
     }
@@ -156,8 +164,11 @@ export class NXQLESReindexComponent {
 
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetNxqlReindexState());
-    this.reindexingDoneSubscription.unsubscribe();
-    this.reindexingErrorSubscription.unsubscribe();
+    this.nxqlReindexingDoneSubscription.unsubscribe();
+    this.nxqlReindexingErrorSubscription.unsubscribe();
     this.reindexDialogClosedSubscription.unsubscribe();
+    this.confirmDialogClosedSubscription.unsubscribe();
+    this.successDialogClosedSubscription.unsubscribe();
+    this.errorDialogClosedSubscription.unsubscribe();
   }
 }
