@@ -1,4 +1,4 @@
-name: Build
+name: Main
 
 on:
   pull_request:
@@ -64,8 +64,8 @@ jobs:
         run: |
          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
          
-      # - name: Install Angular CLI
-      #   run: npm install -g @angular/cli
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
   
       - name: Get Current Realease Vesrion
         working-directory: nuxeo-admin-console-web/ang-src
@@ -75,9 +75,7 @@ jobs:
 
       - name: Update Realease Version Markeplace package
         run: |
-         find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"1.0.0"'/'"$NEW_VERSION"'/g' {} \;
-         echo "current verion: $CURRENT_VERSION , new version: $NEW_VERSION"
-         cat pom.xml
+         find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"$CURRENT_VERSION"'/'"$NEW_VERSION"'/g' {} \;        
          
       - name: Update Realease Version Npm package
         working-directory: nuxeo-admin-console-web/ang-src
@@ -85,18 +83,18 @@ jobs:
           npm version $NEW_VERSION
           cat package.json
       
-      # - name: Build Angular Project
-      #   run: mvn package 
+      - name: Build Angular Project
+        run: mvn package 
 
-      # - name: Publish on packages.nuxeo.com
-      #   working-directory: nuxeo-admin-console-web/ang-src
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   run: |
-      #     npm publish --registry https://packages.nuxeo.com/repository/npm-public/
+      - name: Publish on packages.nuxeo.com
+        working-directory: nuxeo-admin-console-web/ang-src
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --registry https://packages.nuxeo.com/repository/npm-public/
 
-      # - name: Push promoted Admin Console to Connect PREPROD
-        # working-directory: nuxeo-admin-console-package/target
-        # env:
-        #   CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
-        # run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-$NEW_VERSION-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+      - name: Push promoted Admin Console to Connect PREPROD
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-$NEW_VERSION-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
