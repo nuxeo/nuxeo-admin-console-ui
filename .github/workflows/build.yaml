@@ -23,6 +23,8 @@ env:
   NEXUS_REPOSITORY: npm-public
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
   GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
+  NEW_VERSION: "2.0.0"
+
 
 jobs:
   build-and-publish:
@@ -74,6 +76,22 @@ jobs:
          echo "List of Files"
          ls -al
 
+
+      - name: Get Current Realease Vesrion
+        run: |
+          echo "CURRENT_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
+
+
+      - name: Update Realease Version Markeplace package
+        run: |
+         find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"$CURRENT_VERSION"'/'"$NEW_VERSION"'/g' {} \;
+
+      - name: Update Realease Version Npm package
+        working-directory: nuxeo-admin-console-web/ang-src
+        run: |
+          npm version $NEW_VERSION
+
+
       - name: Publish on packages.nuxeo.com
         working-directory: nuxeo-admin-console-web/ang-src
         env:
@@ -85,4 +103,4 @@ jobs:
         working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
-        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-1.0.0-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-$NEW_VERSION-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
