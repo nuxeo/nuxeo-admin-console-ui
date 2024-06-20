@@ -27,7 +27,8 @@ export const ELASTIC_SEARCH_LABELS = {
   continue: "Continue",
   reindexSucessModalTitle: "Action launched",
   reindexErrorModalTitle: "An error occurred",
-  reindexingError: "Your action was not executed due to an error. Details:",
+  reindexingError: "Your action was not executed due to an error. ",
+  errorDetails: "Details:",
   continueConfirmation: "Would you like to continue?",
   copyActionId: "Copy action ID",
   impactMessage:

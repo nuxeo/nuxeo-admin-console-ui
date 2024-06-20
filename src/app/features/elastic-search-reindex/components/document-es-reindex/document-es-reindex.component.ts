@@ -101,7 +101,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             data: {
               type: ELASTIC_SEARCH_LABELS.modalType.error,
               header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError} ${error.message}`,
+              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
+              errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
               closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
               isErrorModal: true,
             },
