@@ -1,3 +1,4 @@
+import { ElasticSearchReindexModalComponent } from './../elastic-search-reindex-modal/elastic-search-reindex-modal.component';
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
