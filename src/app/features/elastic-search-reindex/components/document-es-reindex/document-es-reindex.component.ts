@@ -1,5 +1,5 @@
-import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
-import { MatDialog } from "@angular/material/dialog";
+import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -26,6 +26,13 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
+  confirmDialogClosedSubscription = new Subscription();
+  successDialogClosedSubscription = new Subscription();
+  errorDialogClosedSubscription = new Subscription();
+  successDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  confirmDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+
   commandId = "";
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
 
@@ -54,40 +61,40 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        const dialogRef = this.dialogService.open(ReindexModalComponent, {
-          disableClose: true,
-          height: "320px",
-          width: "550px",
-          data: {
-            type: ELASTIC_SEARCH_LABELS.modalType.success,
-            header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-            successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
-            isConfirmModal: false,
-            closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-            commandId: this.commandId,
-            copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
-            isSuccessModal: true,
-          },
-        });
+        this.successDialogRef = this.dialogService.open(
+          ReindexModalComponent,
+          {
+            disableClose: true,
+            height: "320px",
+            width: "550px",
+            data: {
+              type: ELASTIC_SEARCH_LABELS.modalType.success,
+              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+              successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+              isConfirmModal: false,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+              commandId: this.commandId,
+              copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+              isSuccessModal: true
+            },
+          }
+        );
 
-        this.reindexDialogClosedSubscription = dialogRef
-          .afterClosed()
-          .subscribe((data) => {
-            if (
-              data?.isClosed &&
-              data?.event === ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
-            ) {
-              this.reindexForm?.reset();
-            }
-            document.getElementById("documentID")?.focus();
-          });
+        this.successDialogClosedSubscription = this.successDialogRef
+            .afterClosed()
+            .subscribe((data) => {
+              if (data?.isClosed) {
+                this.reindexForm?.reset();
+                document.getElementById("documentID")?.focus();
+              }
+            });
       }
     });
 
     this.reindexingErrorSubscription = this.reindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.dialogService.open(ReindexModalComponent, {
+          this.errorDialogRef = this.dialogService.open(ReindexModalComponent, {
             disableClose: true,
             height: "320px",
             width: "550px",
@@ -100,6 +107,13 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             },
           });
         }
+        this.errorDialogClosedSubscription = this.errorDialogRef
+            .afterClosed()
+            .subscribe((data) => {
+              if (data?.isClosed) {
+                document.getElementById("documentID")?.focus();
+              }
+            });
       }
     );
   }
@@ -130,5 +144,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingDoneSubscription.unsubscribe();
     this.reindexingErrorSubscription.unsubscribe();
     this.reindexDialogClosedSubscription.unsubscribe();
+    this.successDialogClosedSubscription.unsubscribe();
+    this.errorDialogClosedSubscription.unsubscribe();
   }
 }

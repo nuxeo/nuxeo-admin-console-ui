@@ -105,7 +105,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             .afterClosed()
             .subscribe((data) => {
               if (data?.isClosed) {
-                this.folderReindexForm?.reset();
                 document.getElementById("documentID")?.focus();
               }
             });

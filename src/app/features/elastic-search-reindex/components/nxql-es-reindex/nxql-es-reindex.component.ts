@@ -84,6 +84,10 @@ export class NXQLESReindexComponent {
             .subscribe((data) => {
               if (data?.isClosed) {
                 this.nxqlReindexForm?.reset();
+              //   this.nxqlReindexForm.controls['nxqlQuery'].setErrors(null);
+               //  this.nxqlReindexForm.setErrors(null)
+               // this.nxqlReindexForm.controls['nxqlQuery'].markAsUntouched();
+              //  this.nxqlReindexForm.controls['nxqlQuery'].updateValueAndValidity();
                 document.getElementById("nxqlQuery")?.focus();
               }
             });
@@ -110,7 +114,6 @@ export class NXQLESReindexComponent {
             .afterClosed()
             .subscribe((data) => {
               if (data?.isClosed) {
-                this.nxqlReindexForm?.reset();
                 document.getElementById("nxqlQuery")?.focus();
               }
             });

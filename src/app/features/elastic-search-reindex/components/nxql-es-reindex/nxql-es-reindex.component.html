@@ -19,13 +19,12 @@
     }}</mat-error>
   </mat-form-field>
 
-  <button
-    mat-flat-button
-    color="primary"
-    type="submit"
-    class="nxql-es-reindex-container__button"
-  >
-    {{ ELASTIC_SEARCH_LABELS.reIndex }}
-  </button>
-  <div [innerHTML]="hintSanitized"></div>
+    <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button">Reindex</button>
+    <div [innerHTML]="hintSanitized"></div>
 </form>
+
+
+dirty  {{nxqlReindexForm?.get('nxqlQuery')?.dirty}}<br>
+invalid  {{nxqlReindexForm?.get('nxqlQuery')?.invalid}}<br>
+pristine  {{nxqlReindexForm?.get('nxqlQuery')?.pristine}}<br>
+touched    {{nxqlReindexForm?.get('nxqlQuery')?.touched}}
