@@ -74,7 +74,7 @@ jobs:
 
       - name: Update Realease Version Markeplace package
         env:
-          CURRENT_VERSION: echo $(npx -c 'echo \"$npm_package_version\"')" 
+          CURRENT_VERSION: $(npx -c 'echo \"$npm_package_version\"')" 
           NEW_VERSION: ${{ env.NEW_VERSION }}
         run: |
          find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"1.0.0"'/'"$NEW_VERSION"'/g' {} \;
