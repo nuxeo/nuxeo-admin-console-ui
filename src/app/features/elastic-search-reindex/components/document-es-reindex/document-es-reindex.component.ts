@@ -1,4 +1,3 @@
-import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
@@ -61,7 +60,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        this.successDialogRef = this.dialogService.open(ReindexModalComponent, {
+        this.successDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
           disableClose: true,
           height: "320px",
           width: "550px",
@@ -91,7 +90,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingErrorSubscription = this.reindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.errorDialogRef = this.dialogService.open(ReindexModalComponent, {
+          this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
             disableClose: true,
             height: "320px",
             width: "550px",
@@ -104,14 +103,14 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               isErrorModal: true,
             },
           });
+          this.errorDialogClosedSubscription = this.errorDialogRef
+            ?.afterClosed()
+            ?.subscribe((data) => {
+              if (data?.isClosed) {
+                document.getElementById("documentID")?.focus();
+              }
+            });
         }
-        this.errorDialogClosedSubscription = this.errorDialogRef
-          .afterClosed()
-          .subscribe((data) => {
-            if (data?.isClosed) {
-              document.getElementById("documentID")?.focus();
-            }
-          });
       }
     );
   }

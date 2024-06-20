@@ -1,4 +1,4 @@
-import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
+import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, SecurityContext } from "@angular/core";
@@ -63,7 +63,7 @@ export class NXQLESReindexComponent {
         if (data?.commandId) {
           this.commandId = data.commandId;
           this.successDialogRef = this.dialogService.open(
-            ReindexModalComponent,
+            ElasticSearchReindexModalComponent,
             {
               disableClose: true,
               height: "320px",
@@ -84,11 +84,15 @@ export class NXQLESReindexComponent {
             .afterClosed()
             .subscribe((data) => {
               if (data?.isClosed) {
+                this.nxqlReindexForm.controls["nxqlQuery"].setErrors(null);
+                this.nxqlReindexForm.setErrors(null);
                 this.nxqlReindexForm?.reset();
-                //   this.nxqlReindexForm.controls['nxqlQuery'].setErrors(null);
                 //  this.nxqlReindexForm.setErrors(null)
                 // this.nxqlReindexForm.controls['nxqlQuery'].markAsUntouched();
-                //  this.nxqlReindexForm.controls['nxqlQuery'].updateValueAndValidity();
+                this.nxqlReindexForm.controls[
+                  "nxqlQuery"
+                ].updateValueAndValidity();
+                this.nxqlReindexForm.updateValueAndValidity();
                 document.getElementById("nxqlQuery")?.focus();
               }
             });
@@ -99,7 +103,7 @@ export class NXQLESReindexComponent {
     this.nxqlReindexingErrorSubscription = this.nxqlReindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.errorDialogRef = this.dialogService.open(ReindexModalComponent, {
+          this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
             disableClose: true,
             height: "320px",
             width: "550px",
@@ -133,7 +137,7 @@ export class NXQLESReindexComponent {
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm.valid) {
-      this.confirmDialogRef = this.dialogService.open(ReindexModalComponent, {
+      this.confirmDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
         disableClose: true,
         height: "320px",
         width: "550px",

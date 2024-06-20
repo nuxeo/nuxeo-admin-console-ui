@@ -1,4 +1,4 @@
-import { ReindexModalComponent } from "./shared/components/reindex-modal/reindex-modal.component";
+import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -56,7 +56,7 @@ import {
     BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
-    ReindexModalComponent,
+    ElasticSearchReindexModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
+import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { FolderReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
@@ -58,7 +58,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         if (data?.commandId) {
           this.commandId = data.commandId;
           this.successDialogRef = this.dialogService.open(
-            ReindexModalComponent,
+            ElasticSearchReindexModalComponent,
             {
               disableClose: true,
               height: "320px",
@@ -88,7 +88,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.folderReindexingErrorSubscription =
       this.folderReindexingError$.subscribe((error) => {
         if (error) {
-          this.errorDialogRef = this.dialogService.open(ReindexModalComponent, {
+          this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
             disableClose: true,
             height: "320px",
             width: "550px",
@@ -121,7 +121,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
-      this.confirmDialogRef = this.dialogService.open(ReindexModalComponent, {
+      this.confirmDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
         disableClose: true,
         height: "320px",
         width: "550px",
