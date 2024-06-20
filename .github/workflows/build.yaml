@@ -77,7 +77,8 @@ jobs:
          CURRENT_VERSION=$(npx -c 'echo \"$npm_package_version\"')
          find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"1.0.0"'/'"$NEW_VERSION"'/g' {} \;
          echo "current verion: $CURRENT_VERSION , new version: $NEW_VERSION"
-
+         cat pom.xml
+         
       - name: Update Realease Version Npm package
         working-directory: nuxeo-admin-console-web/ang-src
         run: |
