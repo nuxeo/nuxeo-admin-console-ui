@@ -69,13 +69,13 @@ jobs:
   
       - name: Get Current Realease Vesrion
         run: |
-          echo "CURRENT_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=$(npx -c 'echo \"$npm_package_version\"')" >> $GITHUB_ENV
 
 
       - name: Update Realease Version Markeplace package
         run: |
          find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"1.0.0"'/'"$NEW_VERSION"'/g' {} \;
-         echo current verion: $CURRENT_VERSION , new version: $NEW_VERSION
+         echo "current verion: $CURRENT_VERSION , new version: $NEW_VERSION"
 
       - name: Update Realease Version Npm package
         working-directory: nuxeo-admin-console-web/ang-src
