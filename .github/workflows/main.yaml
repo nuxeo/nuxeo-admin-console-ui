@@ -23,7 +23,7 @@ env:
   NEXUS_REPOSITORY: npm-public
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
   GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
-  NEW_VERSION: "2.0.0"
+  NEW_VERSION: 2.0.0
 
 
 jobs:
@@ -75,6 +75,7 @@ jobs:
       - name: Update Realease Version Markeplace package
         run: |
          pwd
+         echo current version : $CURRENT_VERSION , new version: $NEW_VERSION
          ls
          find . -type f -not -path "./node_modules/*" -regex ".*\.\(sample\|xml\)" -exec sed -i 's/'"$CURRENT_VERSION"'/'"$NEW_VERSION"'/g' {} \;        
          
