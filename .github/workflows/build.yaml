@@ -66,17 +66,7 @@ jobs:
          
       - name: Install Angular CLI
         run: npm install -g @angular/cli
-    
-      - name: Build Angular Project
-        run: mvn package 
-
-      - name: Verify Package 
-        working-directory: nuxeo-admin-console-package/target
-        run: |
-         echo "List of Files"
-         ls -al
-
-
+  
       - name: Get Current Realease Vesrion
         run: |
           echo "CURRENT_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
@@ -90,7 +80,10 @@ jobs:
         working-directory: nuxeo-admin-console-web/ang-src
         run: |
           npm version $NEW_VERSION
-
+          cat package.json
+      
+      - name: Build Angular Project
+        run: mvn package 
 
       - name: Publish on packages.nuxeo.com
         working-directory: nuxeo-admin-console-web/ang-src
