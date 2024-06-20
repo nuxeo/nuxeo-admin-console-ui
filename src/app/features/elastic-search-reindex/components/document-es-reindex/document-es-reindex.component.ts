@@ -1,4 +1,4 @@
-import { ReindexModalComponent } from '../../../../shared/components/reindex-modal/reindex-modal.component';
+import { ReindexModalComponent } from "../../../../shared/components/reindex-modal/reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
@@ -56,38 +56,35 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.next(
-      "Reindex a single document"
+      `${ELASTIC_SEARCH_LABELS.SINGLEDOCREINDEXTITLE}`
     );
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        this.successDialogRef = this.dialogService.open(
-          ReindexModalComponent,
-          {
-            disableClose: true,
-            height: "320px",
-            width: "550px",
-            data: {
-              type: ELASTIC_SEARCH_LABELS.modalType.success,
-              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-              successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
-              isConfirmModal: false,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-              commandId: this.commandId,
-              copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
-              isSuccessModal: true
-            },
-          }
-        );
+        this.successDialogRef = this.dialogService.open(ReindexModalComponent, {
+          disableClose: true,
+          height: "320px",
+          width: "550px",
+          data: {
+            type: ELASTIC_SEARCH_LABELS.modalType.success,
+            header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+            successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+            isConfirmModal: false,
+            closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+            commandId: this.commandId,
+            copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+            isSuccessModal: true,
+          },
+        });
 
         this.successDialogClosedSubscription = this.successDialogRef
-            .afterClosed()
-            .subscribe((data) => {
-              if (data?.isClosed) {
-                this.reindexForm?.reset();
-                document.getElementById("documentID")?.focus();
-              }
-            });
+          .afterClosed()
+          .subscribe((data) => {
+            if (data?.isClosed) {
+              this.reindexForm?.reset();
+              document.getElementById("documentID")?.focus();
+            }
+          });
       }
     });
 
@@ -109,12 +106,12 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           });
         }
         this.errorDialogClosedSubscription = this.errorDialogRef
-            .afterClosed()
-            .subscribe((data) => {
-              if (data?.isClosed) {
-                document.getElementById("documentID")?.focus();
-              }
-            });
+          .afterClosed()
+          .subscribe((data) => {
+            if (data?.isClosed) {
+              document.getElementById("documentID")?.focus();
+            }
+          });
       }
     );
   }

@@ -4,9 +4,7 @@ import { FolderReindexState } from "../../store/reducers";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  ELASTIC_SEARCH_LABELS,
-} from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
@@ -53,7 +51,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.next(
-      "Reindex a document and all of its children"
+      `${ELASTIC_SEARCH_LABELS.FOLDERDOCREINDEXTITLE}`
     );
     this.folderReindexingDoneSubscription =
       this.folderReindexingDone$.subscribe((data) => {

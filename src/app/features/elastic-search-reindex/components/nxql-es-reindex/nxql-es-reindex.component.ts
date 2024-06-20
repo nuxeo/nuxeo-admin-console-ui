@@ -52,7 +52,7 @@ export class NXQLESReindexComponent {
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.next(
-      "Reindex the results of a NXQL query"
+      `${ELASTIC_SEARCH_LABELS.NXQLQUERYREINDEXTITLE}`
     );
     this.hintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       ELASTIC_SEARCH_LABELS.hint
@@ -85,10 +85,10 @@ export class NXQLESReindexComponent {
             .subscribe((data) => {
               if (data?.isClosed) {
                 this.nxqlReindexForm?.reset();
-              //   this.nxqlReindexForm.controls['nxqlQuery'].setErrors(null);
-               //  this.nxqlReindexForm.setErrors(null)
-               // this.nxqlReindexForm.controls['nxqlQuery'].markAsUntouched();
-              //  this.nxqlReindexForm.controls['nxqlQuery'].updateValueAndValidity();
+                //   this.nxqlReindexForm.controls['nxqlQuery'].setErrors(null);
+                //  this.nxqlReindexForm.setErrors(null)
+                // this.nxqlReindexForm.controls['nxqlQuery'].markAsUntouched();
+                //  this.nxqlReindexForm.controls['nxqlQuery'].updateValueAndValidity();
                 document.getElementById("nxqlQuery")?.focus();
               }
             });
