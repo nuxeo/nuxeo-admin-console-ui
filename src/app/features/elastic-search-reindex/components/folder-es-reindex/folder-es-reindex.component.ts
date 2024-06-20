@@ -31,6 +31,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   successDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   confirmDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
