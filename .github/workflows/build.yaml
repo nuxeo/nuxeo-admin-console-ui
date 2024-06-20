@@ -64,8 +64,8 @@ jobs:
         run: |
          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
          
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
+      # - name: Install Angular CLI
+      #   run: npm install -g @angular/cli
   
       - name: Get Current Realease Vesrion
         run: |
@@ -94,7 +94,7 @@ jobs:
       #     npm publish --registry https://packages.nuxeo.com/repository/npm-public/
 
       # - name: Push promoted Admin Console to Connect PREPROD
-        working-directory: nuxeo-admin-console-package/target
-        env:
-          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
-        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-$NEW_VERSION-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+        # working-directory: nuxeo-admin-console-package/target
+        # env:
+        #   CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        # run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@nuxeo-admin-console-package-$NEW_VERSION-SNAPSHOT.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
