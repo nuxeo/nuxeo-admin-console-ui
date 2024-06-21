@@ -21,6 +21,7 @@ export class ElasticSearchReindexModalComponent {
   continue(): void {
     let dialogCloseData = {
       isClosed: true,
+      continue: true,
       event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed,
     };
     this.dialogRef.close(dialogCloseData);
@@ -37,7 +38,12 @@ export class ElasticSearchReindexModalComponent {
   }
 
   abort(): void {
-    this.dialogRef.close(false);
+    let dialogCloseData = {
+      isClosed: true,
+      continue: false,
+      event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed
+    };
+    this.dialogRef.close(dialogCloseData);
   }
 
   copyActionId(): void {

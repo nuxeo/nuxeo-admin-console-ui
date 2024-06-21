@@ -1,7 +1,7 @@
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
-import { Component, SecurityContext } from "@angular/core";
+import { Component, SecurityContext, ChangeDetectorRef } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -37,7 +37,8 @@ export class NXQLESReindexComponent {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ nxqlReindex: NXQLReindexState }>,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdref: ChangeDetectorRef
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
@@ -84,16 +85,17 @@ export class NXQLESReindexComponent {
             .afterClosed()
             .subscribe((data) => {
               if (data?.isClosed) {
-                this.nxqlReindexForm.controls["nxqlQuery"].setErrors(null);
-                this.nxqlReindexForm.setErrors(null);
                 this.nxqlReindexForm?.reset();
-                //  this.nxqlReindexForm.setErrors(null)
-                // this.nxqlReindexForm.controls['nxqlQuery'].markAsUntouched();
+                this.nxqlReindexForm.controls["nxqlQuery"].markAsUntouched();
+                this.nxqlReindexForm.markAsUntouched();
+                this.nxqlReindexForm.controls["nxqlQuery"].markAsPristine();
+                this.nxqlReindexForm.markAsPristine();
                 this.nxqlReindexForm.controls[
                   "nxqlQuery"
                 ].updateValueAndValidity();
                 this.nxqlReindexForm.updateValueAndValidity();
                 document.getElementById("nxqlQuery")?.focus();
+                // this.cdref.detectChanges();
               }
             });
         }
@@ -103,19 +105,22 @@ export class NXQLESReindexComponent {
     this.nxqlReindexingErrorSubscription = this.nxqlReindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
-            disableClose: true,
-            height: "320px",
-            width: "550px",
-            data: {
-              type: ELASTIC_SEARCH_LABELS.modalType.error,
-              header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-              errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
-              isErrorModal: true,
-            },
-          });
+          this.errorDialogRef = this.dialogService.open(
+            ElasticSearchReindexModalComponent,
+            {
+              disableClose: true,
+              height: "320px",
+              width: "550px",
+              data: {
+                type: ELASTIC_SEARCH_LABELS.modalType.error,
+                header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+                errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
+                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
+                closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+                isErrorModal: true,
+              },
+            }
+          );
           this.errorDialogClosedSubscription = this.errorDialogRef
             .afterClosed()
             .subscribe((data) => {
@@ -137,26 +142,29 @@ export class NXQLESReindexComponent {
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm.valid) {
-      this.confirmDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
-        disableClose: true,
-        height: "320px",
-        width: "550px",
-        data: {
-          type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-          header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
-          message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
-          isConfirmModal: true,
-          abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
-          continueLabel: `${ELASTIC_SEARCH_LABELS.continue}`,
-          impactMessage: `${ELASTIC_SEARCH_LABELS.impactMessage}`,
-          confirmContinue: `${ELASTIC_SEARCH_LABELS.continueConfirmation}`,
-        },
-      });
+      this.confirmDialogRef = this.dialogService.open(
+        ElasticSearchReindexModalComponent,
+        {
+          disableClose: true,
+          height: "320px",
+          width: "550px",
+          data: {
+            type: ELASTIC_SEARCH_LABELS.modalType.confirm,
+            header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
+            message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
+            isConfirmModal: true,
+            abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
+            continueLabel: `${ELASTIC_SEARCH_LABELS.continue}`,
+            impactMessage: `${ELASTIC_SEARCH_LABELS.impactMessage}`,
+            confirmContinue: `${ELASTIC_SEARCH_LABELS.continueConfirmation}`,
+          },
+        }
+      );
 
       this.confirmDialogClosedSubscription = this.confirmDialogRef
         .afterClosed()
         .subscribe((data) => {
-          if (data?.isClosed) {
+          if (data?.isClosed && data?.continue) {
             const sanitizedInput = this.sanitizer.sanitize(
               SecurityContext.HTML,
               this.nxqlReindexForm?.get("nxqlQuery")?.value
@@ -166,6 +174,8 @@ export class NXQLESReindexComponent {
                 nxqlQuery: sanitizedInput,
               })
             );
+          } else {
+            document.getElementById("nxqlQuery")?.focus();
           }
         });
     }

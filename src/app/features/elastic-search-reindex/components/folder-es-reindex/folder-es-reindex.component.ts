@@ -140,7 +140,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       this.confirmDialogClosedSubscription = this.confirmDialogRef
         .afterClosed()
         .subscribe((data) => {
-          if (data?.isClosed) {
+          if (data?.isClosed && data?.continue) {
             const sanitizedInput = this.sanitizer.sanitize(
               SecurityContext.HTML,
               this.folderReindexForm?.get("documentID")?.value
@@ -150,6 +150,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                 documentID: sanitizedInput,
               })
             );
+          } else {
+            document.getElementById("documentID")?.focus();
           }
         });
     }
