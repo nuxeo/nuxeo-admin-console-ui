@@ -13,7 +13,7 @@
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
   <target-platform>
     <name>@DISTRIBUTION_NAME@</name>
-    <version>[@NUXEO_PLATFORM_VERSION@,2023.0)</version>
+    <version>[2023,)</version>
   </target-platform>
   <!-- Visibility: PRIVATE | MARKETPLACE | DEV | PUBLIC -->
   <visibility>PUBLIC</visibility>
