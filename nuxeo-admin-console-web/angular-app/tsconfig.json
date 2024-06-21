@@ -28,7 +28,7 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "include": ["src/main/app/main.ts", "src/main/app/polyfills.ts"],
-  "files": ["src/main/app/polyfills.ts"],
-  "styles": ["src/main/app/styles.scss"]
+  "include": ["src/main.ts", "src/polyfills.ts"],
+  "files": ["src/polyfills.ts"],
+  "styles": ["src/styles.scss"]
 }
