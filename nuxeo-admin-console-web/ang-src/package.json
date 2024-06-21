@@ -4,13 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --base-href=/nuxeo/nuxeoadmin/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage --watch=false",
     "lint": "ng lint",
+    "clean":"npm cache clean --force",
     "prepare": "husky"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^16.2.0",
     "@angular/common": "^16.2.0",

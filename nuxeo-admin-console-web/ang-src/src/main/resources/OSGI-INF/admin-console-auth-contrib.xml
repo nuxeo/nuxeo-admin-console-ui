@@ -1,0 +1,10 @@
+<component name="org.nuxeo.admin.console.authentication.angular.nuxeoadmin">
+
+  <extension point="startURL" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <startURLPattern>
+      <patterns>
+        <pattern>app/</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+</component>
