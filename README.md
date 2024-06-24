@@ -33,7 +33,7 @@ registry=https://registry.npmjs.org/
 
 ## Naviagte to Working Directory
 ```bash
-nuxeo-admin-console-web/ang-src
+nuxeo-admin-console-web/angular-app
 ```
 
 ## Install dependencies

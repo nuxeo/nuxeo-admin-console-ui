@@ -2,5 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "Running pre-commit hook..."
+cd nuxeo-admin-console-web/angular-app
 npm run lint
 echo "Linting completed."

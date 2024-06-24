@@ -6,20 +6,20 @@
     "admin_console_ui": {
       "projectType": "application",
       "schematics": {},
-      "root": "src/main/app",
-      "sourceRoot": "src/main/app",
+      "root": "src",
+      "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@hylandsoftware/hy-ui-devkit:browser",
           "options": {
             "outputPath": "dist/admin_console_ui",
-            "index": "src/main/app/index.html",
-            "main": "src/main/app/main.ts",
-            "polyfills": "src/main/app/polyfills.ts",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/main/app/assets",
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "./node_modules/@hyland/ui/assets/public",
@@ -27,11 +27,11 @@
               }
             ],
             "styles": [
-              "src/main/app/styles.scss"
+              "src/styles.scss"
             ],
             "scripts": [],
             "i18nPaths": [
-              "src/main/app/app"
+              "src/app"
             ],
             "i18nModules": [
               "@hyland/ui",
@@ -47,8 +47,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/main/app/environments/environment.development.ts",
-                  "with": "src/main/app/environments/environment.ts"
+                  "replace": "src/environments/environment.development.ts",
+                  "with": "src/environments/environment.ts"
                 }
               ],
               "budgets": [
@@ -75,12 +75,12 @@
               "namedChunks": true,
               "fileReplacements": [
                 {
-                  "replace": "src/main/app/environments/environment.ts",
-                  "with": "src/main/app/environments/environment.development.ts"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
                 },
                 {
-                  "replace": "src/main/app/devtools/ngrx-devtools.ts",
-                  "with": "src/main/app/devtools/ngrx-devtools.development.ts"
+                  "replace": "src/devtools/ngrx-devtools.ts",
+                  "with": "src/devtools/ngrx-devtools.development.ts"
                 }
               ],
               "silentRefresh": true
@@ -110,17 +110,17 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": [
-              "src/main/app/polyfills.ts",
+              "src/polyfills.ts",
               "zone.js",
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
-              "src/main/app/favicon.ico",
-              "src/main/app/assets"
+              "src/favicon.ico",
+              "src/assets"
             ],
             "styles": [
-              "src/main/app/styles.scss"
+              "src/styles.scss"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
@@ -134,15 +134,15 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/main/app/**/*.ts",
-              "src/main/app/**/*.html"
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
       }
     },
     "cli": {
-      "root": "src/main/app"
+      "root": "src"
     }
   },
   "cli": {

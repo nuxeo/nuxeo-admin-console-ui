@@ -13,7 +13,7 @@
   <description />
 
   <properties>
-    <angular.project.location>ang-src</angular.project.location>
+    <angular.project.location>angular-app</angular.project.location>
   </properties>
 
   <build>
