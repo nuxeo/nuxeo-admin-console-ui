@@ -19,7 +19,7 @@ export class ElasticSearchReindexModalComponent {
   ) {}
 
   continue(): void {
-    let dialogCloseData = {
+    const dialogCloseData = {
       isClosed: true,
       continue: true,
       event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed,
@@ -28,7 +28,7 @@ export class ElasticSearchReindexModalComponent {
   }
 
   close(): void {
-    let dialogCloseData = {
+    const dialogCloseData = {
       isClosed: true,
       event: this.data.isSuccessModal
         ? ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
@@ -38,7 +38,7 @@ export class ElasticSearchReindexModalComponent {
   }
 
   abort(): void {
-    let dialogCloseData = {
+    const dialogCloseData = {
       isClosed: true,
       continue: false,
       event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed
@@ -46,7 +46,7 @@ export class ElasticSearchReindexModalComponent {
     this.dialogRef.close(dialogCloseData);
   }
 
-  copyActionId(): void {
+  COPY_ACTION_ID(): void {
     navigator.clipboard.writeText(this.data.commandId).then(() => {
       alert("Action ID copied to clipboard!");
     });

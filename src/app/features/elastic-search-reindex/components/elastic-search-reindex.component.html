@@ -1,12 +1,18 @@
 <div class="elastic-search-reindex-container">
-    <p *ngIf="pageTitle">{{pageTitle}}</p>
+    <h5 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">{{ pageTitle }}</h5>
     <div class="elastic-search-reindex-container__tabs-container">
-        <nav mat-tab-nav-bar hyTabGroup [tabPanel]="tabPanel" aria-label="ElasticSearch Reindexing navigation">
-            <a mat-tab-link *ngFor="let tab of searchTabs;" (click)="activeTab=tab" [active]="activeTab == tab"
-                [routerLink]="[tab.path]" [attr.aria-selected]="tab.isSelected ? 'true' : 'false'">
-                {{tab.label}} </a>
-        </nav>
-        <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+      <nav mat-tab-nav-bar hyTabGroup aria-label="ElasticSearch Reindexing navigation">
+        <a mat-tab-link *ngFor="let tab of searchTabs; let i = index;"
+           [routerLink]="[tab.path]"
+           [active]="activeTab === tab"
+           [attr.aria-selected]="activeTab === tab ? 'true' : 'false'"
+           (click)="activateTab(tab)">
+           {{ tab.label }}
+        </a>
+      </nav>
+      <mat-tab-nav-panel>
         <router-outlet></router-outlet>
+      </mat-tab-nav-panel>
     </div>
-</div>
+  </div>
+  

@@ -53,10 +53,10 @@ export class NXQLESReindexComponent {
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.next(
-      `${ELASTIC_SEARCH_LABELS.NXQLQUERYREINDEXTITLE}`
+      `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );
     this.hintSanitized = this.sanitizer.bypassSecurityTrustHtml(
-      ELASTIC_SEARCH_LABELS.hint
+      ELASTIC_SEARCH_LABELS.HINT
     );
 
     this.nxqlReindexingDoneSubscription = this.nxqlReindexingDone$.subscribe(
@@ -71,11 +71,11 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.success,
-                header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-                successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
-                closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+                header: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
+                successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+                closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 commandId: this.commandId,
-                copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+                COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
                 isSuccessModal: true,
               },
             }
@@ -113,10 +113,10 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.error,
-                header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-                errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
-                closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+                header: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+                errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.ERROR_DETAILS} ${error.message}`,
+                closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 isErrorModal: true,
               },
             }
@@ -135,7 +135,7 @@ export class NXQLESReindexComponent {
 
   getErrorMessage(): string | null {
     if (this.nxqlReindexForm?.get("nxqlQuery")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.invalidNXQLQuery;
+      return ELASTIC_SEARCH_LABELS.INVALID_NXQL_QUERY;
     }
     return null;
   }
@@ -150,13 +150,13 @@ export class NXQLESReindexComponent {
           width: "550px",
           data: {
             type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-            header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
-            message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
+            header: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
+            message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
             isConfirmModal: true,
-            abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
-            continueLabel: `${ELASTIC_SEARCH_LABELS.continue}`,
-            impactMessage: `${ELASTIC_SEARCH_LABELS.impactMessage}`,
-            confirmContinue: `${ELASTIC_SEARCH_LABELS.continueConfirmation}`,
+            ABORT_LABEL: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
+            continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
+            IMPACT_MESSAGE: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
+            confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           },
         }
       );

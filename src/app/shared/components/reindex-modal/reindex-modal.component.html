@@ -8,7 +8,7 @@
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.isConfirmModal">
       <p>
-        <strong>{{ data.IMPACT_MESSAGE }}</strong>
+         {{ data.IMPACT_MESSAGE }}
       </p>
       <p>
         {{ data.confirmContinue }}
@@ -16,9 +16,7 @@
     </div>
     <div *ngIf="data.errorMessage">
       <p>
-        {{ data.errorMessage }}
-      </p>
-      <p>
+        {{ data.errorMessage }}<br />
         {{ data.errorMessageDetails }}
       </p>
     </div>

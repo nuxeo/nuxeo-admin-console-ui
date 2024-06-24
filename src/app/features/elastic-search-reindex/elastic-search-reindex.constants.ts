@@ -13,37 +13,37 @@ export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
 };
 
 export const ELASTIC_SEARCH_LABELS = {
-  invalidDocIdOrPath: "Please provide a document id or a document path",
-  invalidDocId: "Please provide a document id",
-  invalidNXQLQuery: "Please provide a valid NXQL query",
-  reindexWarning:
+  INVALID_DOCID_OR_PATH: "Please provide a document id or a document path",
+  INVALID_DOC_ID: "Please provide a document id",
+  INVALID_NXQL_QUERY: "Please provide a valid NXQL query",
+  REINDEX_WARNING:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
-  reindexingLaunched: "Congratulations! Your action is launched with ID",
-  copyMonitoringId:
+  REINDEXING_LAUNCHED: "Congratulations! Your action is launched with ID",
+  COPY_MONITORING_ID:
     "Remember to take note of the ID if you want to monitor it later on.",
-  reindexConfirmationModalTitle: "Confirm Reindex",
-  abortLabel: "Abort",
-  close: "Close",
-  continue: "Continue",
-  reindexSucessModalTitle: "Action launched",
-  reindexErrorModalTitle: "An error occurred",
-  reindexingError: "Your action was not executed due to an error. ",
-  SINGLEDOCREINDEXTITLE: "Reindex a single document",
-  FOLDERDOCREINDEXTITLE: "Reindex a document and all of its children",
-  NXQLQUERYREINDEXTITLE: "Reindex the results of a NXQL query",
-  errorDetails: "Details:",
-  continueConfirmation: "Would you like to continue?",
-  copyActionId: "Copy action ID",
-  impactMessage:
+  REINDEX_CONFIRMATION_MODAL_TITLE: "Confirm Reindex",
+  ABORT_LABEL: "Abort",
+  CLOSE: "Close",
+  CONTINUE: "Continue",
+  REINDEX_SUCESS_MODAL_TITLE: "Action launched",
+  REINDEX_ERRROR_MODAL_TITLE: "An error occurred",
+  REINDEXING_ERROR: "Your action was not executed due to an error. ",
+  SINGLE_DOC_REINDEX_TITLE: "Reindex a single document",
+  FOLDER_DOC_REINDEX_TITLE: "Reindex a document and all of its children",
+  NXQL_QUERY_REINDEX_TITLE: "Reindex the results of a NXQL query",
+  ERROR_DETAILS: "Details:",
+  CONTINUE_CONFIRMATION: "Would you like to continue?",
+  COPY_ACTION_ID: "Copy action ID",
+  IMPACT_MESSAGE:
     "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
   modalType: {
     confirm: 1,
     success: 2,
     error: 3,
   },
-  documentIdPlaceholder: "Document ID or Path",
-  documentId: "Document ID",
-  reIndex: "Reindex",
-  nxqlQuery: "NXQL Query",
-  hint: "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
+  DOCUMENT_ID_PLACEHOLDER: "Document ID or Path",
+  DOCUMENT_ID: "Document ID",
+  REINDEX: "Reindex",
+  NXQL_QUERY: "NXQL Query",
+  HINT: "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
 };

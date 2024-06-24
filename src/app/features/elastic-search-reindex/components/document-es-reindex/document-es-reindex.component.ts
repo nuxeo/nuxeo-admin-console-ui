@@ -22,7 +22,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 export class DocumentESReindexComponent implements OnInit, OnDestroy {
   reindexForm: FormGroup;
   reindexingDone$: Observable<reindexInfo>;
-  reindexingError$: Observable<any>;
+  REINDEXING_ERROR$: Observable<any>;
   reindexingDoneSubscription = new Subscription();
   reindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
@@ -49,14 +49,14 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingDone$ = this.store.pipe(
       select((state) => state.reindex?.reindexInfo)
     );
-    this.reindexingError$ = this.store.pipe(
+    this.REINDEXING_ERROR$ = this.store.pipe(
       select((state) => state.reindex?.error)
     );
   }
 
   ngOnInit(): void {
     this.elasticSearchReindexService.pageTitle.next(
-      `${ELASTIC_SEARCH_LABELS.SINGLEDOCREINDEXTITLE}`
+      `${ELASTIC_SEARCH_LABELS.SINGLE_DOC_REINDEX_TITLE}`
     );
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
@@ -67,12 +67,12 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           width: "550px",
           data: {
             type: ELASTIC_SEARCH_LABELS.modalType.success,
-            header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
-            successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
+            header: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
+            successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
             isConfirmModal: false,
-            closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+            closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
             commandId: this.commandId,
-            copyActionId: `${ELASTIC_SEARCH_LABELS.copyActionId}`,
+            COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
             isSuccessModal: true,
           },
         });
@@ -88,7 +88,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.reindexingErrorSubscription = this.reindexingError$.subscribe(
+    this.reindexingErrorSubscription = this.REINDEXING_ERROR$.subscribe(
       (error) => {
         if (error) {
           this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
@@ -97,10 +97,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             width: "550px",
             data: {
               type: ELASTIC_SEARCH_LABELS.modalType.error,
-              header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-              errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-              errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
+              header: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+              errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+              errorMessageDetails: `${ELASTIC_SEARCH_LABELS.ERROR_DETAILS} ${error.message}`,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
               isErrorModal: true,
             },
           });
@@ -118,7 +118,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   getErrorMessage(): string | null {
     if (this.reindexForm?.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.invalidDocIdOrPath;
+      return ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH;
     }
     return null;
   }
