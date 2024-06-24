@@ -11,10 +11,6 @@ on:
         default: dev
         type: string
         required: false
-  push:
-    branches:
-     - dev
-  workflow_dispatch:
    
 
 env:
@@ -32,9 +28,13 @@ env:
 jobs:
   lint:
     uses: nuxeo-admin-console-web/.github/workflows/lint.yaml@dev
+    with:
+      branch: ${{ github.head_ref || inputs.branch || 'dev' }}
 
   test:
     uses: nuxeo-admin-console-web/.github/workflows/test.yaml@dev
+    with:
+        branch: ${{ github.head_ref || inputs.branch || 'dev' }}
 
   build:
     needs: [lint, test]
