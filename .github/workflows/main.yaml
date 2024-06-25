@@ -13,7 +13,7 @@ jobs:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
 
   test:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/test.yaml@dev-test
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev-test
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
 
