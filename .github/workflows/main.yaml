@@ -14,18 +14,18 @@ on:
 
 jobs:
   lint:
-    uses: nuxeo-admin-console-web/.github/workflows/lint.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-web/.github/workflows/lint.yaml@feat-NXP-32705-add-main-workflow-to-deploy-package
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
     with:
-      branch: ${{ github.head_ref || inputs.branch || 'dev' }}
+      branch: ${{ github.head_ref || inputs.branch || 'dev' || 'feat-NXP-32705-add-main-workflow-to-deploy-package' }}
 
   test:
-    uses: nuxeo-admin-console-web/.github/workflows/test.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-web/.github/workflows/test.yaml@feat-NXP-32705-add-main-workflow-to-deploy-package
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
     with:
-        branch: ${{ github.head_ref || inputs.branch || 'dev' }}
+        branch: ${{ github.head_ref || inputs.branch || 'dev' || 'feat-NXP-32705-add-main-workflow-to-deploy-package' }}
 
   build:
     needs: [lint, test]
@@ -34,7 +34,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.head_ref || inputs.branch || 'dev' || 'feat-NXP-32705-add-main-workflow-to-deploy-package' }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
