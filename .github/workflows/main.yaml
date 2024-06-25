@@ -1,25 +1,12 @@
 name: Main
 
 on:
-  pull_request:
+  push:
     branches:
-      - dev
-  workflow_call:
-    inputs:
-      branch:
-        description: 'The current branch'
-        default: dev
-        type: string
-        required: false
-   
+      - maintenance-3.1.x
 
-env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
-  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
-  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
-  NEXUS_REPOSITORY: npm-public
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
-  GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
+  # Manually trigger the workflow
+  workflow_dispatch:
 
 # TODO 
 # 1.Versioning 
@@ -28,11 +15,15 @@ env:
 jobs:
   lint:
     uses: nuxeo-admin-console-web/.github/workflows/lint.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
     with:
       branch: ${{ github.head_ref || inputs.branch || 'dev' }}
 
   test:
     uses: nuxeo-admin-console-web/.github/workflows/test.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
     with:
         branch: ${{ github.head_ref || inputs.branch || 'dev' }}
 
