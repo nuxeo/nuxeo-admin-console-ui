@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap, tap, throwError } from "rxjs";
+import { catchError, map, of, switchMap } from "rxjs";
 import * as ReindexActions from "./actions";
 import { ElasticSearchReindexService } from "../services/elastic-search-reindex.service";
 
@@ -16,9 +16,6 @@ export const loadPerformDocumentReindexEffect = createEffect(
         return elasticSearchReindexService
           .performDocumentReindex(action?.documentID)
           .pipe(
-            /*  tap(() => {
-              throw new Error("Server error occurred");
-            }), */
             map((data) => {
               return ReindexActions.onDocumentReindexSuccess({
                 reindexInfo: {
@@ -47,9 +44,6 @@ export const loadPerformFolderReindexEffect = createEffect(
         return elasticSearchReindexService
           .performFolderReindex(action?.documentID)
           .pipe(
-            tap(() => {
-              throw new Error("Server error occurred");
-            }),
             map((data) => {
               return ReindexActions.onFolderReindexSuccess({
                 folderReindexInfo: {
@@ -78,9 +72,6 @@ export const loadPerformNxqlReindexEffect = createEffect(
         return elasticSearchReindexService
           .performNXQLReindex(action?.nxqlQuery)
           .pipe(
-            /* tap(() => {
-              throw new Error("Server error occurred");
-            }), */
             map((data) => {
               return ReindexActions.onNxqlReindexSuccess({
                 nxqlReindexInfo: {

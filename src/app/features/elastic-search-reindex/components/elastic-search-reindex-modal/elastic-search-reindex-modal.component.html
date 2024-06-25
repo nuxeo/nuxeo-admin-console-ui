@@ -10,6 +10,10 @@
       <p>
         <strong>{{ data.impactMessage }}</strong>
       </p>
+      <p>This action will impact {{data.noOfDocs}} documents 
+     
+        & could take approximately {{data.time}}
+      </p>
       <p>
         {{ data.confirmContinue }}
       </p>
@@ -33,10 +37,7 @@
   </hy-dialog-box-content>
 
   <hy-dialog-box-footer class="hy-dialog-box__footer">
-    <div
-      *ngIf="data.isConfirmModal; else closeBtn"
-      class="hy-dialog-box__button-group"
-    >
+    <div *ngIf="data.isConfirmModal; else closeBtn" class="hy-dialog-box__button-group">
       <button mat-stroked-button color="primary" (click)="abort()">
         {{ data.abortLabel }}
       </button>
