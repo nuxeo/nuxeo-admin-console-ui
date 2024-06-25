@@ -14,7 +14,7 @@ on:
     secrets:
       NPM_PACKAGES_TOKEN:
         description: 'NPM_PACKAGES_TOKEN'
-        required: true
+        required: false
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev-test' }}
 
