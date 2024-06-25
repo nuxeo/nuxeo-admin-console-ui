@@ -11,7 +11,13 @@ on:
         default: dev
         type: string
         required: false
-
+    secrets:
+      NPM_PACKAGES_TOKEN:
+        description: 'NPM_PACKAGES_TOKEN'
+        required: true
+      GIT_TOKEN:
+        description: 'GIT_TOKEN'
+        required: true
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
 

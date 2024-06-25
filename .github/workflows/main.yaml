@@ -1,0 +1,74 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  lint:
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+
+  test:
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
+
+      - name: Configure Additional Registries
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+
+      - name: Build Angular Project
+        run: mvn package
+
+      - name: Publish on Pre Prod Marketplace
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+           echo "Publishing on Pre Prod Marketplace"
+           ls
