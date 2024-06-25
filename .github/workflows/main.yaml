@@ -4,22 +4,16 @@ on:
   push:
     branches:
       - dev-test
-
-  # Manually trigger the workflow
   workflow_dispatch:
-
-# TODO 
-# 1.Versioning 
-# 2. Deploy package in PREPROD MARKETPLACE b
 
 jobs:
   lint:
-    uses: nuxeo/nuxeo-admin-console-web/.github/workflows/lint.yaml@dev-test
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev-test
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
 
   test:
-    uses: nuxeo/nuxeo-admin-console-web/.github/workflows/test.yaml@dev-test
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/test.yaml@dev-test
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
 
@@ -55,10 +49,12 @@ jobs:
                 </server>
               </servers>
               </settings>' > ~/.m2/settings.xml
+
       - name: Configure Additional Registries
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
