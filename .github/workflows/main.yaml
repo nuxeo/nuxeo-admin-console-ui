@@ -10,7 +10,7 @@ on:
 
 # TODO 
 # 1.Versioning 
-# 2. Deploy package in PREPROD MARKETPLACE
+# 2. Deploy package in PREPROD MARKETPLACE ets
 
 jobs:
   lint:
@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
 
       - name: Setup Node.js
