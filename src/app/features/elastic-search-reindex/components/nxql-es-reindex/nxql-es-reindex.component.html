@@ -1,10 +1,23 @@
 <form [formGroup]="nxqlReindexForm" (ngSubmit)="onReindexFormSubmit()" class="nxql-es-reindex-container">
-    <mat-form-field hyFormField>
-        <mat-label>NXQL Query</mat-label>
-        <input matInput
-            placeholder="SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'"
-            type="text" formControlName="nxqlQuery" required>
-        <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{getErrorMessage()}}</mat-error>
-    </mat-form-field>
-    <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button">Reindex</button>
+  <mat-form-field hyFormField>
+    <mat-label>{{ ELASTIC_SEARCH_LABELS.NXQL_QUERY }}</mat-label>
+
+    <textarea matInput
+      class="nxql-query-textarea"
+      placeholder="SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'"
+      formControlName="nxqlQuery" id="nxqlQuery" required></textarea>
+    <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{
+      getErrorMessage()
+      }}</mat-error>
+  </mat-form-field>
+
+  <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button">
+    {{ ELASTIC_SEARCH_LABELS.REINDEX }}
+  </button>
+  <div [innerHTML]="hintSanitized"></div>
 </form>
+
+ <!-- dirty  {{nxqlReindexForm?.get('nxqlQuery')?.dirty}}<br>
+invalid  {{nxqlReindexForm?.get('nxqlQuery')?.invalid}}<br>
+pristine  {{nxqlReindexForm?.get('nxqlQuery')?.pristine}}<br>
+touched    {{nxqlReindexForm?.get('nxqlQuery')?.touched}}  -->

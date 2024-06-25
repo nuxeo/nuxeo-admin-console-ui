@@ -1,13 +1,17 @@
 .nxql-es-reindex-container {
-    padding: 16px 0px 0px 16px;
-    &__button {
-      border-radius: 4px !important;
-      width: 110px;
-      height: 45px;
-      position: relative;
-      left: 20px;
-      font-size: 16px;
-      bottom: 3px;
-    }
+  padding: 16px 0px 0px 16px;
+  &__button {
+    border-radius: 4px !important;
+    width: 110px;
+    height: 45px;
+    position: relative;
+    left: 20px;
+    font-size: 16px;
+    bottom: 3px;
   }
-  
+   mat-form-field.hy-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex label.mat-mdc-floating-label {
+   position: relative !important;
+    top: -30px !important;
+   }
+}
+

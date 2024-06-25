@@ -1,10 +1,22 @@
 import { createReducer, on } from "@ngrx/store";
 import * as ReindexActions from "./actions";
 
-/* Single Doc */
-
 export interface DocumentReindexState {
   reindexInfo: {
+    commandId: string | null;
+  };
+  error: any;
+}
+
+export interface FolderReindexState {
+  folderReindexInfo: {
+    commandId: string | null;
+  };
+  error: any;
+}
+
+export interface NXQLReindexState {
+  nxqlReindexInfo: {
     commandId: string | null;
   };
   error: any;
@@ -17,15 +29,6 @@ export const initialDocumentState: DocumentReindexState = {
   error: null,
 };
 
-/* Folder */
-
-export interface FolderReindexState {
-  folderReindexInfo: {
-    commandId: string | null;
-  };
-  error: any;
-}
-
 export const initialFolderReindexState: FolderReindexState = {
   folderReindexInfo: {
     commandId: null,
@@ -33,23 +36,12 @@ export const initialFolderReindexState: FolderReindexState = {
   error: null,
 };
 
-/* NXQL */
-
-export interface NXQLReindexState {
-  nxqlReindexInfo: {
-    commandId: string | null;
-  };
-  error: any;
-}
-
 export const initialNXQLReindexState: NXQLReindexState = {
   nxqlReindexInfo: {
     commandId: null,
   },
   error: null,
 };
-
-/* Single Doc */
 
 export const reindexReducer = createReducer(
   initialDocumentState,
@@ -76,8 +68,6 @@ export const reindexReducer = createReducer(
   }))
 );
 
-/* Folder */
-
 export const folderReindexReducer = createReducer(
   initialFolderReindexState,
   on(ReindexActions.performFolderReindex, (state) => ({
@@ -102,8 +92,6 @@ export const folderReindexReducer = createReducer(
     error: null,
   }))
 );
-
-/* NXQL */
 
 export const nxqlReindexReducer = createReducer(
   initialNXQLReindexState,
