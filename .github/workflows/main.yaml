@@ -11,11 +11,13 @@ jobs:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev-test
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   test:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev-test
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
     needs: [lint, test]
