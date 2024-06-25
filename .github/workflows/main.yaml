@@ -6,8 +6,6 @@ on:
       - dev-test
   workflow_dispatch:
 
-permissions: read-all
-
 jobs:
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev-test
