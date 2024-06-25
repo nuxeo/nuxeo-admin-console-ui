@@ -3,7 +3,7 @@ name: Main
 on:
   push:
     branches:
-      - maintenance-3.1.x
+      - feat-NXP-32705-add-main-workflow-to-deploy-package
 
   # Manually trigger the workflow
   workflow_dispatch:
