@@ -15,8 +15,11 @@ on:
       NPM_PACKAGES_TOKEN:
         description: 'NPM_PACKAGES_TOKEN'
         required: true
-permissions:
-  pull-requests: read
+      GIT_TOKEN:
+        description: 'GIT_TOKEN'
+        required: true
+#permissions:
+#  pull-requests: read
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev-test' }}
 

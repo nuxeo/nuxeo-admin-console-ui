@@ -15,6 +15,9 @@ on:
       NPM_PACKAGES_TOKEN:
         description: 'NPM_PACKAGES_TOKEN'
         required: true
+      GIT_TOKEN:
+        description: 'GIT_TOKEN'
+        required: true
 #permissions:
 #  pull-requests: read
 env:
