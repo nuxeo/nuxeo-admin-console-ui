@@ -1,30 +1,33 @@
 <hy-dialog-box class="hy-dialog-box">
   <hy-dialog-box-header class="hy-dialog-box__header">
     <hy-dialog-box-title class="hy-dialog-box__title">
-      {{ data.header }}
+      {{ data.title }}
     </hy-dialog-box-title>
   </hy-dialog-box-header>
 
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.isConfirmModal">
       <p>
-        <strong>{{ data.impactMessage }}</strong>
+       {{ data.impactMessage }}
       </p>
       <p>This action will impact {{data.noOfDocs}} documents 
      
-        & could take approximately {{data.time}}
+        and could take approximately {{data.time}}. {{ data.confirmContinue }}
       </p>
-      <p>
-        {{ data.confirmContinue }}
-      </p>
+    
     </div>
-    <div *ngIf="data.errorMessage">
-      <p>
+    <div *ngIf="data.isErrorModal">
+      <!-- <p>
         {{ data.errorMessage }}
       </p>
       <p>
         {{ data.errorMessageDetails }}
-      </p>
+      </p> -->
+
+      <p>{{data.errorMessageHeader}}</p>
+      <p>Error Status: {{data.error.status}}</p>
+      <p>Details: {{data.error.message}}</p>
+
     </div>
     <div *ngIf="data.successMessage">
       <p>

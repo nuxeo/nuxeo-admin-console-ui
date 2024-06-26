@@ -34,9 +34,9 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
-  docPath = "";
+  docUid = "";
   noOfDocs = 0;
-  sanitizedUserInput : string | null = '';
+  sanitizedUserInput: string | null = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -74,7 +74,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.success,
-                header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+                title: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
                 successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
                 commandId: this.commandId,
@@ -105,11 +105,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.error,
-                header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-                errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${
-                  error.status ? error.status : ""
-                } ${error.message ? error.message : "Invalid input !"}`,
+                title: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
+                // errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
+                error: error,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
                 isErrorModal: true,
               },
@@ -161,9 +160,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .fetch(userInput)
       .then((doc: any) => {
-        this.docPath = doc.path ? doc.path : "";
-        if (this.docPath) {
-          const requestQuery = `SELECT * FROM Document WHERE ecm:path STARTSWITH '${this.docPath}'`;
+        this.docUid = doc.uid ? doc.uid : "";
+        if (this.docUid) {
+          //  const requestQuery = `SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:uuid='${this.docUid}'`;
+          const requestQuery = `SELECT * FROM Document WHERE ecm:uuid='${this.docUid}'`;
           this.nuxeo
             .repository()
             .query({ query: requestQuery })
@@ -177,7 +177,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                   width: "550px",
                   data: {
                     type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-                    header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
+                    title: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
                     message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
                     isConfirmModal: true,
                     abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
@@ -194,11 +194,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                 .afterClosed()
                 .subscribe((data) => {
                   if (data?.isClosed && data?.continue) {
-                     this.store.dispatch(
+                    this.store.dispatch(
                       ReindexActions.performFolderReindex({
-                        documentID: this.sanitizedUserInput,
+                        documentID: this.docUid,
                       })
-                    ); 
+                    );
                   } else {
                     document.getElementById("documentID")?.focus();
                   }

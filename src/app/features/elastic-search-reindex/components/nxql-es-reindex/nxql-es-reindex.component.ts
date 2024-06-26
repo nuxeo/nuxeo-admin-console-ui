@@ -79,7 +79,7 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.success,
-                header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+                title: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
                 successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
                 commandId: this.commandId,
@@ -121,11 +121,10 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.error,
-                header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-                errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${
-                  error.status ? error.status : ""
-                } ${error.message ? error.message : "Invalid input !"}`,
+                title: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
+                // errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
+                error: error,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
                 isErrorModal: true,
               },
@@ -188,7 +187,7 @@ export class NXQLESReindexComponent {
             width: "550px",
             data: {
               type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-              header: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
+              title: `${ELASTIC_SEARCH_LABELS.reindexConfirmationModalTitle}`,
               message: `${ELASTIC_SEARCH_LABELS.reindexWarning}`,
               isConfirmModal: true,
               abortLabel: `${ELASTIC_SEARCH_LABELS.abortLabel}`,
@@ -205,11 +204,11 @@ export class NXQLESReindexComponent {
           .afterClosed()
           .subscribe((data) => {
             if (data?.isClosed && data?.continue) {
-              /*  this.store.dispatch(
-              ReindexActions.performNxqlReindex({
-                nxqlQuery: sanitizedInput,
-              })
-            ); */
+              this.store.dispatch(
+                ReindexActions.performNxqlReindex({
+                  nxqlQuery: userInput,
+                })
+              );
             } else {
               document.getElementById("nxqlQuery")?.focus();
             }

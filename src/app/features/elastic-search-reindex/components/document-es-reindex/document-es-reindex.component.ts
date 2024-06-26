@@ -89,7 +89,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
             width: "550px",
             data: {
               type: ELASTIC_SEARCH_LABELS.modalType.success,
-              header: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
+              title: `${ELASTIC_SEARCH_LABELS.reindexSucessModalTitle}`,
               successMessage: `${ELASTIC_SEARCH_LABELS.reindexingLaunched} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.copyMonitoringId}`,
               isConfirmModal: false,
               closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
@@ -122,9 +122,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.error,
-                header: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
-                errorMessage: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
-                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
+                title: `${ELASTIC_SEARCH_LABELS.reindexErrorModalTitle}`,
+                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.reindexingError}`,
+                // errorMessageDetails: `${ELASTIC_SEARCH_LABELS.errorDetails} ${error.message}`,
+                error: error,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.close}`,
                 isErrorModal: true,
               },
@@ -166,7 +167,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       .then((doc: any) => {
         this.docPath = doc.path ? doc.path : "";
         const selectStatement = "SELECT * FROM Document WHERE";
-        const requestQuery = `${selectStatement} ecm:path STARTSWITH '${this.docPath}'`;
+        const requestQuery = `${selectStatement} ecm:path='${this.docPath}'`;
         this.store.dispatch(
           ReindexActions.performDocumentReindex({
             documentID: requestQuery,
