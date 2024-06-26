@@ -1,0 +1,128 @@
+name: Promote release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to promote '
+        required: true
+      referenceBranch:
+        description: 'Branch to be updated after the promotion'
+        required: true
+        default: 'dev'
+      dryRun:
+        description: 'Run the workflow without pushing code or publishing artifacts'
+        type: boolean
+        required: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
+          scope: '@nuxeo'
+
+      - uses: actions/checkout@v4
+        with:
+          ref: v${{ github.event.inputs.version }}
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+
+      - name: Update Nuxeo Admin Console version to ${{ env.VERSION }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+            OLD_VERSION=$(npx -c 'echo "$npm_package_version"')
+            npm version $VERSION --no-git-tag-version
+            pushd packages/nuxeo-admin-console-ui/
+            npm version $VERSION --no-git-tag-version
+            popd
+
+            find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|xml\)" -exec sed -i 's/'"$OLD_VERSION"'/'"$VERSION"'/g' {} \;
+            sed -i -e 's/<admin-console-ui.package.version>.*<\/admin-console-ui.package.version>/<admin-console-ui.package.version>${project.version}<\/admin-console-ui.package.version>/g' plugin/admin-console-ui/marketplace/pom.xml
+
+      - name: Perform git release of Nuxeo Web UI ${{ env.VERSION }}
+        run: |
+          git commit -a -m "Release $VERSION"
+          git tag -a v$VERSION -m "Release $VERSION"
+          
+      - if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: git push origin v$VERSION
+
+      - name: Create Github release v${{ env.VERSION }}
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+
+      - name: Publish Nuxeo Admin Console ${{ env.VERSION }}
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        working-directory: nuxeo-admin-console-web/ang-src
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+         npm publish --registry https://packages.nuxeo.com/repository/npm-public
+       
+      - name: Promote Admin Console ${{ github.event.inputs.version }} to ${{ env.VERSION }}
+        env:
+          PACKAGE: nuxeo-admin-console-${{ env.VERSION }} 
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: |
+          PADDED=$(printf '%03d' $(echo ${{ github.event.inputs.version }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{ github.event.inputs.version }} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "$CONNECT_PREPROD_URL/site/marketplace/package/nuxeo-admin-console/download?version=$PADDED_VERSION"
+          unzip -d $PACKAGE $PACKAGE.zip && rm $PACKAGE.zip
+          pushd $PACKAGE
+          sed -i 's/-rc.[0-9]*//' package.xml
+          for f in install/bundles/*.jar; do mv $f $(echo $f | sed -e 's/-rc.[0-9]*//'); done
+          zip -r ../$PACKAGE.zip .
+          popd
+
+      - name: Push promoted Admin Console to Connect PREPROD
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        env:
+          PACKAGE: nuxeo-admin-console-${{ env.VERSION }}
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+
+      - name: Push promoted Web UI to Connect PROD
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        env:
+          PACKAGE: nuxeo-admin-console-${{ env.VERSION }}
+          CONNECT_URL: https://connect.nuxeo.com/nuxeo
+        run: curl -i -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE.zip "$CONNECT_URL/site/marketplace/upload?batch=true"
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_ADMIN_TOKEN }}
+          ref: ${{ github.event.inputs.referenceBranch }}
+
+      - if: ${{ github.event.inputs.referenceBranch == 'dev' }}
+        run: echo "NEW_VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
+
+      - if: ${{ github.event.inputs.referenceBranch != 'dev' }}
+        run: echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
+
+      - name: Align ${{ github.event.inputs.referenceBranch }} branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "OLD_SNAPSHOT=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
+          # bump version to next SNAPSHOT and align on the corresponding Elements release candidate
+          NEW_SNAPSHOT=$NEW_VERSION-SNAPSHOT
+          npm version $NEW_SNAPSHOT --no-git-tag-version
+          pushd packages/nuxeo-admin-console/
+          npm version $NEW_SNAPSHOT --no-git-tag-version
+          popd
+        
+
+
+      
