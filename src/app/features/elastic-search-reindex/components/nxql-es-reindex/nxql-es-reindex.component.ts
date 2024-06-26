@@ -10,6 +10,10 @@ import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { NXQLReindexState } from "../../store/reducers";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+
+// @ts-ignore
+import Nuxeo from "nuxeo";
+
 @Component({
   selector: "nxql-es-reindex",
   templateUrl: "./nxql-es-reindex.component.html",
@@ -31,6 +35,9 @@ export class NXQLESReindexComponent {
   confirmDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
+  nuxeo: any;
+  docPath = "";
+  noOfDocs = 0;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -52,6 +59,7 @@ export class NXQLESReindexComponent {
   }
 
   ngOnInit(): void {
+    this.initiateJSClient();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );
@@ -71,7 +79,7 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.success,
-                header: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
+                title: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
                 successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 commandId: this.commandId,
@@ -113,9 +121,9 @@ export class NXQLESReindexComponent {
               width: "550px",
               data: {
                 type: ELASTIC_SEARCH_LABELS.modalType.error,
-                header: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-                errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-                errorMessageDetails: `${ELASTIC_SEARCH_LABELS.ERROR_DETAILS} ${error.message}`,
+                title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+                error: error,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 isErrorModal: true,
               },
@@ -131,6 +139,20 @@ export class NXQLESReindexComponent {
         }
       }
     );
+  }
+
+  initiateJSClient(): void {
+    // const baseUrl = "http://localhost:4200/nuxeo";
+    /* Creating Nuxeo client */
+
+    this.nuxeo = new Nuxeo({
+      //  baseURL: baseUrl,
+      auth: {
+        method: "basic",
+        username: "Administrator",
+        password: "Administrator",
+      },
+    });
   }
 
   getErrorMessage(): string | null {
@@ -150,7 +172,7 @@ export class NXQLESReindexComponent {
           width: "550px",
           data: {
             type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-            header: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
+            title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
             message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
             isConfirmModal: true,
             ABORT_LABEL: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
@@ -160,25 +182,61 @@ export class NXQLESReindexComponent {
           },
         }
       );
-
-      this.confirmDialogClosedSubscription = this.confirmDialogRef
-        .afterClosed()
-        .subscribe((data) => {
-          if (data?.isClosed && data?.continue) {
-            const sanitizedInput = this.sanitizer.sanitize(
-              SecurityContext.HTML,
-              this.nxqlReindexForm?.get("nxqlQuery")?.value
-            );
-            this.store.dispatch(
-              ReindexActions.performNxqlReindex({
-                nxqlQuery: sanitizedInput,
-              })
-            );
-          } else {
-            document.getElementById("nxqlQuery")?.focus();
-          }
-        });
+      const sanitizedInput = this.sanitizer.sanitize(
+        SecurityContext.HTML,
+        this.nxqlReindexForm?.get("nxqlQuery")?.value
+      );
+      this.fetchNoOfDocs(sanitizedInput);
     }
+  }
+
+  fetchNoOfDocs(userInput: string | null): void {
+    this.nuxeo
+      .repository()
+      .query({ query: userInput })
+      .then((doc: any) => {
+        this.noOfDocs = doc.resultsCount ? doc.resultsCount : 0;
+        this.confirmDialogRef = this.dialogService.open(
+          ElasticSearchReindexModalComponent,
+          {
+            disableClose: true,
+            height: "320px",
+            width: "550px",
+            data: {
+              type: ELASTIC_SEARCH_LABELS.modalType.confirm,
+              title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
+              message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
+              isConfirmModal: true,
+              abortLabel: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
+              continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
+              impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
+              confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
+              noOfDocs: this.noOfDocs,
+              time: `${this.noOfDocs / 2000} s`,
+            },
+          }
+        );
+
+        this.confirmDialogClosedSubscription = this.confirmDialogRef
+          .afterClosed()
+          .subscribe((data) => {
+            if (data?.isClosed && data?.continue) {
+              this.store.dispatch(
+                ReindexActions.performNxqlReindex({
+                  nxqlQuery: userInput,
+                })
+              );
+            } else {
+              document.getElementById("nxqlQuery")?.focus();
+            }
+          });
+      })
+      .catch((err: any) => err.response.json())
+      .then((json: any) => {
+        this.store.dispatch(
+          ReindexActions.onNxqlReindexFailure({ error: json })
+        );
+      });
   }
 
   ngOnDestroy(): void {

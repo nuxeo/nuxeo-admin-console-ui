@@ -1,4 +1,4 @@
-import { ElasticSearchReindexModalComponent } from './../elastic-search-reindex-modal/elastic-search-reindex-modal.component';
+import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { reindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
@@ -13,6 +13,9 @@ import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
 import { DomSanitizer } from "@angular/platform-browser";
+
+// @ts-ignore
+import Nuxeo from "nuxeo";
 
 @Component({
   selector: "document-es-reindex",
@@ -35,6 +38,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   commandId = "";
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
+  nuxeo: any;
+  docPath = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -54,28 +59,46 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     );
   }
 
+  initiateJSClient(): void {
+    // const baseUrl = "http://localhost:4200/nuxeo";
+    /* Creating Nuxeo client */
+
+    this.nuxeo = new Nuxeo({
+      //  baseURL: baseUrl,
+      auth: {
+        method: "basic",
+        username: "Administrator",
+        password: "Administrator",
+      },
+    });
+  }
+
   ngOnInit(): void {
+    this.initiateJSClient();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.SINGLE_DOC_REINDEX_TITLE}`
     );
     this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
       if (data?.commandId) {
         this.commandId = data.commandId;
-        this.successDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
-          disableClose: true,
-          height: "320px",
-          width: "550px",
-          data: {
-            type: ELASTIC_SEARCH_LABELS.modalType.success,
-            header: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
-            successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
-            isConfirmModal: false,
-            closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
-            commandId: this.commandId,
-            COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
-            isSuccessModal: true,
-          },
-        });
+        this.successDialogRef = this.dialogService.open(
+          ElasticSearchReindexModalComponent,
+          {
+            disableClose: true,
+            height: "320px",
+            width: "550px",
+            data: {
+              type: ELASTIC_SEARCH_LABELS.modalType.success,
+              title: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
+              successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+              isConfirmModal: false,
+              closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
+              commandId: this.commandId,
+              COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
+              isSuccessModal: true,
+            },
+          }
+        );
 
         this.successDialogClosedSubscription = this.successDialogRef
           .afterClosed()
@@ -91,19 +114,22 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.reindexingErrorSubscription = this.REINDEXING_ERROR$.subscribe(
       (error) => {
         if (error) {
-          this.errorDialogRef = this.dialogService.open(ElasticSearchReindexModalComponent, {
-            disableClose: true,
-            height: "320px",
-            width: "550px",
-            data: {
-              type: ELASTIC_SEARCH_LABELS.modalType.error,
-              header: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-              errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-              errorMessageDetails: `${ELASTIC_SEARCH_LABELS.ERROR_DETAILS} ${error.message}`,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
-              isErrorModal: true,
-            },
-          });
+          this.errorDialogRef = this.dialogService.open(
+            ElasticSearchReindexModalComponent,
+            {
+              disableClose: true,
+              height: "320px",
+              width: "550px",
+              data: {
+                type: ELASTIC_SEARCH_LABELS.modalType.error,
+                title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+                error: error,
+                closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
+                isErrorModal: true,
+              },
+            }
+          );
           this.errorDialogClosedSubscription = this.errorDialogRef
             ?.afterClosed()
             ?.subscribe((data) => {
@@ -129,12 +155,30 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         SecurityContext.HTML,
         this.reindexForm?.get("documentID")?.value
       );
-      this.store.dispatch(
-        ReindexActions.performDocumentReindex({
-          documentID: sanitizedInput,
-        })
-      );
+      this.triggerReindex(sanitizedInput);
     }
+  }
+
+  triggerReindex(userInput: string | null): void {
+    this.nuxeo
+      .repository()
+      .fetch(userInput)
+      .then((doc: any) => {
+        this.docPath = doc.path ? doc.path : "";
+        const selectStatement = "SELECT * FROM Document WHERE";
+        const requestQuery = `${selectStatement} ecm:path='${this.docPath}'`;
+        this.store.dispatch(
+          ReindexActions.performDocumentReindex({
+            documentID: requestQuery,
+          })
+        );
+      })
+      .catch((err: any) => err.response.json())
+      .then((json: any) => {
+        this.store.dispatch(
+          ReindexActions.onDocumentReindexFailure({ error: json })
+        );
+      });
   }
 
   ngOnDestroy(): void {
