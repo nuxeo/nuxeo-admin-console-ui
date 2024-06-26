@@ -17,4 +17,9 @@
     </filter-mapping>
   </extension>
 
+  <extension target="rewrite#RULE">
+    RewriteCond %{REQUEST_PATH} !-f
+    RewriteRule ^/nuxeoadmin/(.*)$ /nuxeoadmin/ [E=ORIGINAL_PATH:%{REQUEST_PATH}]
+  </extension>
+
 </fragment>
