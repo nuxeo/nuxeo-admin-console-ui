@@ -94,7 +94,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
               isConfirmModal: false,
               closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
               commandId: this.commandId,
-              COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
+              copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
               isSuccessModal: true,
             },
           }
@@ -155,7 +155,16 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         SecurityContext.HTML,
         this.reindexForm?.get("documentID")?.value
       );
-      this.triggerReindex(sanitizedInput);
+      //    this.triggerReindex(sanitizedInput);
+
+   //   const selectStatement = "SELECT *  Document ";
+   //   const requestQuery = `${selectStatement} ecm:uuid (()) '${sanitizedInput}' OR ecm:path = '${sanitizedInput}'`;
+   const requestQuery = sanitizedInput;
+      this.store.dispatch(
+        ReindexActions.performDocumentReindex({
+          requestQuery: requestQuery,
+        })
+      );
     }
   }
 
@@ -169,7 +178,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         const requestQuery = `${selectStatement} ecm:path='${this.docPath}'`;
         this.store.dispatch(
           ReindexActions.performDocumentReindex({
-            documentID: requestQuery,
+            requestQuery: requestQuery,
           })
         );
       })

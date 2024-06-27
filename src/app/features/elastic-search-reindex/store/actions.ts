@@ -3,7 +3,7 @@ import { reindexInfo } from "../elastic-search-reindex.interface";
 
 export const performDocumentReindex = createAction(
   "[Admin] Perform Reindex",
-  props<{ documentID: string | null  }>()
+  props<{ requestQuery: string | null  }>()
 );
 export const onDocumentReindexSuccess = createAction(
   "[Admin] Perform Reindex Success",

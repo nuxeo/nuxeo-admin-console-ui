@@ -14,7 +14,7 @@ export const loadPerformDocumentReindexEffect = createEffect(
       ofType(ReindexActions.performDocumentReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performDocumentReindex(action?.documentID)
+          .performDocumentReindex(action?.requestQuery)
           .pipe(
             map((data) => {
               return ReindexActions.onDocumentReindexSuccess({

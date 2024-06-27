@@ -83,7 +83,7 @@ export class NXQLESReindexComponent {
                 successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
                 closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 commandId: this.commandId,
-                COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
+                copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
                 isSuccessModal: true,
               },
             }
@@ -164,24 +164,6 @@ export class NXQLESReindexComponent {
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm.valid) {
-      this.confirmDialogRef = this.dialogService.open(
-        ElasticSearchReindexModalComponent,
-        {
-          disableClose: true,
-          height: "320px",
-          width: "550px",
-          data: {
-            type: ELASTIC_SEARCH_LABELS.modalType.confirm,
-            title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
-            message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
-            isConfirmModal: true,
-            ABORT_LABEL: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
-            continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
-            IMPACT_MESSAGE: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
-            confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
-          },
-        }
-      );
       const sanitizedInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
         this.nxqlReindexForm?.get("nxqlQuery")?.value
@@ -193,7 +175,7 @@ export class NXQLESReindexComponent {
   fetchNoOfDocs(userInput: string | null): void {
     this.nuxeo
       .repository()
-      .query({ query: userInput })
+      .query({ query: userInput, pageSize:1 })
       .then((doc: any) => {
         this.noOfDocs = doc.resultsCount ? doc.resultsCount : 0;
         this.confirmDialogRef = this.dialogService.open(

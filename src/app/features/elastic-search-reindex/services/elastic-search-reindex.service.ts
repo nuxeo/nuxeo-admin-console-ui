@@ -15,15 +15,20 @@ export class ElasticSearchReindexService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   constructor(private http: HttpClient) {}
 
-  performDocumentReindex(documentID: string | null ): Observable<any> {
+  performDocumentReindex(requestQuery: string | null ): Observable<any> {
     // const id = '1866799d-dbda-4529-a249-a1742784dbad';
    /* return this.http.post<any>(
       `${this.baseUrl}${this.url}/${documentID}${this.suburl}`,
       {}
     ); */
 
+  /*  return this.http.post<any>(
+      `${this.baseUrl}${this.url}${this.suburl}?query=${requestQuery}`,
+      {}
+    ); */
+
     return this.http.post<any>(
-      `${this.baseUrl}${this.url}${this.suburl}?query=${documentID}`,
+      `${this.baseUrl}${this.url}/${requestQuery}${this.suburl}`,
       {}
     );
 

@@ -34,7 +34,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
-  docUid = "";
+  docParentId = "";
   noOfDocs = 0;
   sanitizedUserInput: string | null = "";
 
@@ -79,7 +79,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                 closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
                 commandId: this.commandId,
                 isSuccessModal: true,
-                COPY_ACTION_ID: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
+                copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
               },
             }
           );
@@ -159,13 +159,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .fetch(userInput)
       .then((doc: any) => {
-        this.docUid = doc.uid ? doc.uid : "";
-        if (this.docUid) {
-          //  const requestQuery = `SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:uuid='${this.docUid}'`;
-          const requestQuery = `SELECT * FROM Document WHERE ecm:uuid='${this.docUid}'`;
+        this.docParentId = doc.parentRef ? doc.parentRef : "";
+        if (this.docParentId) {
+          //  const requestQuery = `SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:uuid='${this.docParentId}'`;
+          const requestQuery = `SELECT * FROM Document WHERE ecm:parentId='${this.docParentId}'`;
           this.nuxeo
             .repository()
-            .query({ query: requestQuery })
+            .query({ query: requestQuery, pageSize:1 })
             .then((doc: any) => {
               this.noOfDocs = doc.resultsCount ? doc.resultsCount : 0;
               this.confirmDialogRef = this.dialogService.open(
@@ -179,9 +179,9 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                     title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
                     message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
                     isConfirmModal: true,
-                    ABORT_LABEL: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
+                    abortLabel: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
                     continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
-                    IMPACT_MESSAGE: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
+                    impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
                     confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
                     noOfDocs: this.noOfDocs,
                     time: `${this.noOfDocs / 2000} s`,
@@ -195,7 +195,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
                   if (data?.isClosed && data?.continue) {
                     this.store.dispatch(
                       ReindexActions.performFolderReindex({
-                        documentID: this.docUid,
+                        documentID: this.docParentId,
                       })
                     );
                   } else {
@@ -230,16 +230,16 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       }); */
 
     /* Retrieve root document children */
-    /* this.nuxeo
+     this.nuxeo
       .operation("Document.GetChildren")
-      .input("/")
+      .input( this.docParentId)
       .execute()
       .then(function (docs: any) {
         console.log(docs);
       })
       .catch(function (error: any) {
         console.log(error);
-      }); */
+      }); 
 
     /* Fetch an user */
 
