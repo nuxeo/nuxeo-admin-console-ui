@@ -24,34 +24,27 @@ export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        takeUntil(this.ngUnsubscribe) // Unsubscribe when component is destroyed
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe(() => {
         this.updateActiveTab();
       });
 
     this.elasticSearchReindexService.pageTitle
-      .pipe(
-        takeUntil(this.ngUnsubscribe) // Unsubscribe when component is destroyed
-      )
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((title) => {
         this.pageTitle = title;
-        this.cdRef.detectChanges(); // Trigger change detection manually
+        this.cdRef.detectChanges();
       });
 
-    this.updateActiveTab(); // Ensure the active tab is set on component init
+    this.updateActiveTab();
   }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
-
-  updateActiveTab() {
+  updateActiveTab(): void {
     const currentRoute = this.route.snapshot.firstChild?.routeConfig?.path;
     if (currentRoute) {
       this.activeTab =
@@ -60,7 +53,12 @@ export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
     }
   }
 
-  activateTab(tab: ElasticSearchType) {
+  activateTab(tab: ElasticSearchType): void {
     this.activeTab = tab;
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

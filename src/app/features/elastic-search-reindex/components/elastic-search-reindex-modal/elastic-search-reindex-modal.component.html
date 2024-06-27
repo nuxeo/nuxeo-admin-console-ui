@@ -10,30 +10,23 @@
       <p>
         {{ data.impactMessage }}
       </p>
-      <p>This action will impact {{data.noOfDocs}} documents 
-     
-        and could take approximately {{data.time}}. {{ data.confirmContinue }}
+      <p>This action will impact {{data.documentCount}} documents
+
+        and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
       </p>
-    
+
     </div>
     <div *ngIf="data.isErrorModal">
-      <!-- <p>
-        {{ data.errorMessage }}
-      </p>
-      <p>
-        {{ data.errorMessageDetails }}
-      </p> -->
-
       <p>{{data.errorMessageHeader}}</p>
-      <p>Error Status: {{data.error.status}}</p>
-      <p>Details: {{data.error.message}}</p>
+      <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.status}}</p>
+      <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.message}}</p>
 
     </div>
-    <div *ngIf="data.successMessage">
+    <div *ngIf="data.launchedMessage">
       <p>
-        {{ data.successMessage }}
+        {{ data.launchedMessage }}
       </p>
-      <button mat-flat-button color="primary" (click)="COPY_ACTION_ID()">
+      <button mat-flat-button color="primary" (click)="copyActionId()">
         {{ data.copyActionId }}
       </button>
     </div>

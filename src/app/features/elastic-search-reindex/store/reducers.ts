@@ -49,7 +49,7 @@ export const reindexReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(ReindexActions.onDocumentReindexSuccess, (state, { reindexInfo }) => ({
+  on(ReindexActions.onDocumentReindexLaunch, (state, { reindexInfo }) => ({
     ...state,
     reindexInfo: {
       commandId: reindexInfo?.commandId,
@@ -74,7 +74,7 @@ export const folderReindexReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(ReindexActions.onFolderReindexSuccess, (state, { folderReindexInfo }) => ({
+  on(ReindexActions.onFolderReindexLaunch, (state, { folderReindexInfo }) => ({
     ...state,
     folderReindexInfo: {
       commandId: folderReindexInfo?.commandId,
@@ -99,7 +99,7 @@ export const nxqlReindexReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(ReindexActions.onNxqlReindexSuccess, (state, { nxqlReindexInfo }) => ({
+  on(ReindexActions.onNxqlReindexLaunch, (state, { nxqlReindexInfo }) => ({
     ...state,
     nxqlReindexInfo: {
       commandId: nxqlReindexInfo?.commandId,

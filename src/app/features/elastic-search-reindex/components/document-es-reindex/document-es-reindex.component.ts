@@ -5,7 +5,7 @@ import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
-  ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
+  ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
@@ -13,9 +13,9 @@ import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
 import { DomSanitizer } from "@angular/platform-browser";
-
 // @ts-ignore
 import Nuxeo from "nuxeo";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "document-es-reindex",
@@ -23,23 +23,20 @@ import Nuxeo from "nuxeo";
   styleUrls: ["./document-es-reindex.component.scss"],
 })
 export class DocumentESReindexComponent implements OnInit, OnDestroy {
-  reindexForm: FormGroup;
-  reindexingDone$: Observable<reindexInfo>;
-  REINDEXING_ERROR$: Observable<any>;
-  reindexingDoneSubscription = new Subscription();
-  reindexingErrorSubscription = new Subscription();
+  documentReindexForm: FormGroup;
+  documentReindexingLaunched$: Observable<reindexInfo>;
+  documentReindexingError$: Observable<HttpErrorResponse>;
+  documentReindexingLaunchedSubscription = new Subscription();
+  documentReindexingErrorSubscription = new Subscription();
   reindexDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
-  successDialogClosedSubscription = new Subscription();
+  launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  successDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
+  launchedDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   confirmDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
   errorDialogRef: MatDialogRef<any, any> = {} as MatDialogRef<any, any>;
-
-  commandId = "";
+  nuxeo: Nuxeo;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
-  nuxeo: any;
-  docPath = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -48,23 +45,102 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     private store: Store<{ reindex: DocumentReindexState }>,
     private sanitizer: DomSanitizer
   ) {
-    this.reindexForm = this.fb.group({
-      documentID: ["", Validators.required],
+    this.documentReindexForm = this.fb.group({
+      documentIdentifier: ["", Validators.required],
     });
-    this.reindexingDone$ = this.store.pipe(
+    this.documentReindexingLaunched$ = this.store.pipe(
       select((state) => state.reindex?.reindexInfo)
     );
-    this.REINDEXING_ERROR$ = this.store.pipe(
+    this.documentReindexingError$ = this.store.pipe(
       select((state) => state.reindex?.error)
     );
   }
 
-  initiateJSClient(): void {
-    // const baseUrl = "http://localhost:4200/nuxeo";
-    /* Creating Nuxeo client */
+  ngOnInit(): void {
+    this.initiateJSClient();
+    this.elasticSearchReindexService.pageTitle.next(
+      `${ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE}`
+    );
+    this.documentReindexingLaunchedSubscription =
+      this.documentReindexingLaunched$.subscribe((data) => {
+        if (data?.commandId) {
+          this.showReindexLaunchedModal(data?.commandId);
+        }
+      });
 
+    this.documentReindexingErrorSubscription =
+      this.documentReindexingError$.subscribe((error) => {
+        if (error) {
+        }
+      });
+  }
+
+  showReindexErrorModal(error: any): void {
+    this.errorDialogRef = this.dialogService.open(
+      ElasticSearchReindexModalComponent,
+      {
+        disableClose: true,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        data: {
+          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
+          title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+          error: error,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
+          isErrorModal: true,
+        },
+      }
+    );
+    this.errorDialogClosedSubscription = this.errorDialogRef
+      ?.afterClosed()
+      ?.subscribe((data) => {
+        if (data?.isClosed) {
+          this.onReindexErrorModalClose();
+        }
+      });
+  }
+
+  onReindexErrorModalClose(): void {
+    document.getElementById("documentIdentifier")?.focus();
+  }
+
+  showReindexLaunchedModal(commandId: string | null): void {
+    this.launchedDialogRef = this.dialogService.open(
+      ElasticSearchReindexModalComponent,
+      {
+        disableClose: true,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        data: {
+          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
+          title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
+          launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+          isConfirmModal: false,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
+          commandId,
+          copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL}`,
+          isLaunchedModal: true,
+        },
+      }
+    );
+
+    this.launchedDialogClosedSubscription = this.launchedDialogRef
+      .afterClosed()
+      .subscribe((data) => {
+        if (data?.isClosed) {
+          this.onReindexLaunchedModalClose();
+        }
+      });
+  }
+
+  onReindexLaunchedModalClose(): void {
+    this.documentReindexForm?.reset();
+    document.getElementById("documentIdentifier")?.focus();
+  }
+
+  initiateJSClient(): void {
     this.nuxeo = new Nuxeo({
-      //  baseURL: baseUrl,
       auth: {
         method: "basic",
         username: "Administrator",
@@ -73,96 +149,25 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    this.initiateJSClient();
-    this.elasticSearchReindexService.pageTitle.next(
-      `${ELASTIC_SEARCH_LABELS.SINGLE_DOC_REINDEX_TITLE}`
-    );
-    this.reindexingDoneSubscription = this.reindexingDone$.subscribe((data) => {
-      if (data?.commandId) {
-        this.commandId = data.commandId;
-        this.successDialogRef = this.dialogService.open(
-          ElasticSearchReindexModalComponent,
-          {
-            disableClose: true,
-            height: "320px",
-            width: "550px",
-            data: {
-              type: ELASTIC_SEARCH_LABELS.modalType.success,
-              title: `${ELASTIC_SEARCH_LABELS.REINDEX_SUCESS_MODAL_TITLE}`,
-              successMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_LAUNCHED} ${data?.commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
-              isConfirmModal: false,
-              closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
-              commandId: this.commandId,
-              copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID}`,
-              isSuccessModal: true,
-            },
-          }
-        );
-
-        this.successDialogClosedSubscription = this.successDialogRef
-          .afterClosed()
-          .subscribe((data) => {
-            if (data?.isClosed) {
-              this.reindexForm?.reset();
-              document.getElementById("documentID")?.focus();
-            }
-          });
-      }
-    });
-
-    this.reindexingErrorSubscription = this.REINDEXING_ERROR$.subscribe(
-      (error) => {
-        if (error) {
-          this.errorDialogRef = this.dialogService.open(
-            ElasticSearchReindexModalComponent,
-            {
-              disableClose: true,
-              height: "320px",
-              width: "550px",
-              data: {
-                type: ELASTIC_SEARCH_LABELS.modalType.error,
-                title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-                errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-                error: error,
-                closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE}`,
-                isErrorModal: true,
-              },
-            }
-          );
-          this.errorDialogClosedSubscription = this.errorDialogRef
-            ?.afterClosed()
-            ?.subscribe((data) => {
-              if (data?.isClosed) {
-                document.getElementById("documentID")?.focus();
-              }
-            });
-        }
-      }
-    );
-  }
-
   getErrorMessage(): string | null {
-    if (this.reindexForm?.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH;
+    if (
+      this.documentReindexForm?.get("documentIdentifier")?.hasError("required")
+    ) {
+      return ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
 
   onReindexFormSubmit(): void {
-    if (this.reindexForm?.valid) {
-      const sanitizedInput = this.sanitizer.sanitize(
+    if (this.documentReindexForm?.valid) {
+      const sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
-        this.reindexForm?.get("documentID")?.value
+        this.documentReindexForm?.get("documentIdentifier")?.value
       );
-      //    this.triggerReindex(sanitizedInput);
-
-   //   const selectStatement = "SELECT *  Document ";
-   //   const requestQuery = `${selectStatement} ecm:uuid (()) '${sanitizedInput}' OR ecm:path = '${sanitizedInput}'`;
-   const requestQuery = sanitizedInput;
+      //  this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
       this.store.dispatch(
         ReindexActions.performDocumentReindex({
-          requestQuery: requestQuery,
+          requestQuery: sanitizedUserInput,
         })
       );
     }
@@ -172,10 +177,9 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.nuxeo
       .repository()
       .fetch(userInput)
-      .then((doc: any) => {
-        this.docPath = doc.path ? doc.path : "";
-        const selectStatement = "SELECT * FROM Document WHERE";
-        const requestQuery = `${selectStatement} ecm:path='${this.docPath}'`;
+      .then((document: any) => {
+        const documentPath = document.path ? document.path : "";
+        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${documentPath}'`;
         this.store.dispatch(
           ReindexActions.performDocumentReindex({
             requestQuery: requestQuery,
@@ -183,19 +187,19 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         );
       })
       .catch((err: any) => err.response.json())
-      .then((json: any) => {
+      .then((errorJson: any) => {
         this.store.dispatch(
-          ReindexActions.onDocumentReindexFailure({ error: json })
+          ReindexActions.onDocumentReindexFailure({ error: errorJson })
         );
       });
   }
 
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetDocumentReindexState());
-    this.reindexingDoneSubscription.unsubscribe();
-    this.reindexingErrorSubscription.unsubscribe();
-    this.reindexDialogClosedSubscription.unsubscribe();
-    this.successDialogClosedSubscription.unsubscribe();
-    this.errorDialogClosedSubscription.unsubscribe();
+    this.documentReindexingLaunchedSubscription?.unsubscribe();
+    this.documentReindexingErrorSubscription?.unsubscribe();
+    this.reindexDialogClosedSubscription?.unsubscribe();
+    this.launchedDialogClosedSubscription?.unsubscribe();
+    this.errorDialogClosedSubscription?.unsubscribe();
   }
 }

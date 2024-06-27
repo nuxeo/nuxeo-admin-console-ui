@@ -17,7 +17,7 @@ export const loadPerformDocumentReindexEffect = createEffect(
           .performDocumentReindex(action?.requestQuery)
           .pipe(
             map((data) => {
-              return ReindexActions.onDocumentReindexSuccess({
+              return ReindexActions.onDocumentReindexLaunch({
                 reindexInfo: {
                   commandId: data?.commandId,
                 },
@@ -45,7 +45,7 @@ export const loadPerformFolderReindexEffect = createEffect(
           .performFolderReindex(action?.documentID)
           .pipe(
             map((data) => {
-              return ReindexActions.onFolderReindexSuccess({
+              return ReindexActions.onFolderReindexLaunch({
                 folderReindexInfo: {
                   commandId: data?.commandId,
                 },
@@ -73,7 +73,7 @@ export const loadPerformNxqlReindexEffect = createEffect(
           .performNXQLReindex(action?.nxqlQuery)
           .pipe(
             map((data) => {
-              return ReindexActions.onNxqlReindexSuccess({
+              return ReindexActions.onNxqlReindexLaunch({
                 nxqlReindexInfo: {
                   commandId: data?.commandId,
                 },
