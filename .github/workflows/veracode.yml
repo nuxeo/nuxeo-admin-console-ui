@@ -95,7 +95,7 @@ jobs:
         rm -rf nuxeo-admin-console-web/angular-app/node_modules
        
     - name: Install zip
-      run: apt-get install zip
+      run: sudo apt-get install zip
 
     - name: Zip nuxeo-admin-console
       working-directory: nuxeo-admin-console-web/angular-app
