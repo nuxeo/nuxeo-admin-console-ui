@@ -108,8 +108,8 @@ jobs:
         name: nuxeo-admin-console-ui
         path: nuxeo-admin-console-web/angular-app/nuxeo-admin-console-ui.zip
   
-  sast-scan:
-    needs: sast-scan-build
+  scan:
+    needs: scan-build
     permissions:
       contents: read
       security-events: write
