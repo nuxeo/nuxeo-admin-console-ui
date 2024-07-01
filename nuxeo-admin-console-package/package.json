@@ -1,6 +1,6 @@
 {
     "name": "nuxeo-admin-console-ui-2023",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "scripts": {
       "clean":"npm cache clean --force"
     },

@@ -46,6 +46,23 @@ const authFeature = createFeature({
     on(routerNavigationAction, (state) => ({
       ...state,
       validationErrors: null,
+    })),
+    //on signout
+    on(authActions.getCurrentUserSuccess, (state, { currentUser }) => ({
+      ...state,
+      currentUser,
+    })),
+    on(authActions.getCurrentUserFailure, (state) => ({
+      ...state,
+      currentUser: null,
+    })),
+    on(authActions.signOutSuccess, (state) => ({
+      ...state,
+      currentUser: null,
+    })),
+    on(authActions.signOutFailure, (state, { errors }) => ({
+      ...state,
+      errors,
     }))
   ),
 });
