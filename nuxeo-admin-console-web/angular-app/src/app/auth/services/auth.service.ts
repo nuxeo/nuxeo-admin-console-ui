@@ -27,4 +27,17 @@ export class AuthService {
       .post<AuthResponseInterface>(url, data)
       .pipe(map(this.getUser));
   }
+  // Signout
+  signOut(): Observable<void> {
+    const url = environment.apiUrl + "/logout";
+    return this.http.get<void>(url, {});
+  }
+
+  getUserDetails(): Observable<UserInterface> {
+    const url = environment.apiUrl + "/api/v1/me";
+    return this.http.get<UserInterface>(url);
+  }
 }
+
+
+

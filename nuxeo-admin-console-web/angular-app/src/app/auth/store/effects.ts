@@ -75,3 +75,34 @@ export const redirectAfterSSOEffect = createEffect(
   },
   { functional: true, dispatch: false }
 );
+
+// Sign Out Effect
+export const signOutEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    authService = inject(AuthService),
+    persistenceService = inject(PersistenceService),
+    // router = inject(Router)
+  ) => {
+    return actions$.pipe(
+      ofType(authActions.signOut),
+      switchMap(() => {
+        return authService.signOut().pipe(
+          map(() => {
+            persistenceService.set("accessToken", null);
+            // router.navigateByUrl("/login");
+            return authActions.signOutSuccess();
+          }),
+          catchError((errorResponse: HttpErrorResponse) => {
+            return of(
+              authActions.signOutFailure({
+                errors: errorResponse.error.errors,
+              })
+            );
+          })
+        );
+      })
+    );
+  },
+  { functional: true }
+);

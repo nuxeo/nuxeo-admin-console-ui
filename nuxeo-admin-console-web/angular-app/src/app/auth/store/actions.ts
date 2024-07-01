@@ -13,5 +13,10 @@ export const authActions = createActionGroup({
     "Get current user": emptyProps(),
     "Get current user success": props<{ currentUser: UserInterface }>(),
     "Get current user failure": emptyProps(),
+
+     // Added actions for sign out
+     "Sign out": emptyProps(),
+     "Sign out success": emptyProps(),
+     "Sign out failure": props<{ errors: BackendErrorsInterface }>(),
   },
 });

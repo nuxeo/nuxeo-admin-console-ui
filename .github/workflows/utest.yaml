@@ -53,17 +53,13 @@ jobs:
       - name: Install Dependencies
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
+    
+      - name: Build Angular Project
+        run: mvn package
 
-      - name: Install Chrome and Chromedriver
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 120
-          install-chromedriver: true
-
-      - name: Verify Chrome installation
-        run: google-chrome --version
-
-      - name: Unit tests
-        working-directory: nuxeo-admin-console-web/angular-app
+      - name: Publish to package.nuxeo.com
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm test
+          npm publish registry=https://packages.nuxeo.com/repository/npm-public/ 
