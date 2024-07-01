@@ -1,6 +1,3 @@
-import { ReindexLaunchedModalComponent } from './shared/components/reindex/reindex-launched-modal/reindex-launched-modal.component';
-import { ReindexErrorModalComponent } from './shared/components/reindex/reindex-error-modal/reindex-error-modal.component';
-import { ReindexConfirmationModalComponent } from './shared/components/reindex/reindex-confirmation-modal/reindex-confirmation-modal.component';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -15,12 +12,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
-import { VideoRenderGenerationModule } from "./features/video-render-generation/video-render-generation.module";
-import { PictureRenderGenerationModule } from "./features/picture-render-generation/picture-render-generation.module";
-import { ThumbnailGenerationModule } from "./features/thumbnail-generation/thumbnail-generation.module";
-import { FullTextReindexModule } from "./features/full-text-reindex/full-text-reindex.module";
 import { ElasticSearchReindexModule } from "./features/elastic-search-reindex/elastic-search-reindex.module";
-import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
@@ -36,12 +28,14 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { SystemInformationModule } from "./features/system-information/system-information.module";
 import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
+import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
+import { reindexReducer } from "./features/elastic-search-reindex/store/reducers";
+import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 
 @NgModule({
   declarations: [
@@ -52,9 +46,7 @@ import * as HomeEffects from "./features/home/store/effects";
     BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
-    ReindexConfirmationModalComponent,
-    ReindexErrorModalComponent,
-    ReindexLaunchedModalComponent
+    ElasticSearchReindexModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,22 +60,17 @@ import * as HomeEffects from "./features/home/store/effects";
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
+      reindex: reindexReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,
     HomeModule,
     MatListModule,
-    SystemInformationModule,
-    BulkActionMonitoringModule,
     ElasticSearchReindexModule,
-    FullTextReindexModule,
-    ThumbnailGenerationModule,
-    PictureRenderGenerationModule,
-    VideoRenderGenerationModule,
     BaseLayoutModule,
     HyDialogModule,
     MatSidenavModule,

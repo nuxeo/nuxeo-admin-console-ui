@@ -1,11 +1,5 @@
-<mat-card
-  role="region"
-  aria-label="Registration Version"
-  class="registration-version registration-version--mdc"
->
-  <mat-card-content
-    class="registration-version__content registration-version__content--first"
-  >
+<mat-card role="region" aria-label="Registration Version" class="registration-version registration-version--mdc">
+  <mat-card-content class="registration-version__content registration-version__content--first">
     Registration and Version Info
   </mat-card-content>
   <ng-container *ngIf="versionInfo$ | async as versionInfo">
@@ -18,7 +12,4 @@
       {{ versionInfo.clusterEnabled }}
     </p>
   </ng-container>
-  <button mat-flat-button color="primary" class="registration-version__button">
-    Details
-  </button>
 </mat-card>
