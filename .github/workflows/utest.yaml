@@ -69,8 +69,8 @@ jobs:
         run: mvn package
 
       - name: Publish to package.nuxeo.com
-        working-directory: nuxeo-admin-console-package/target
+        working-directory: nuxeo-admin-console-package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish registry=https://packages.nuxeo.com/repository/npm-public/ 
+          npm publish --registry=https://packages.nuxeo.com/repository/npm-public/ 
