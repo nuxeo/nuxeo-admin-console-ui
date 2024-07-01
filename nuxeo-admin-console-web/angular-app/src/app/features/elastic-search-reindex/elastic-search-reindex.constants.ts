@@ -21,6 +21,7 @@ export const ELASTIC_SEARCH_LABELS = {
   INVALID_DOCID_OR_PATH_ERROR:
     "Please provide a document id or a document path",
   INVALID_DOCID_ERROR: "Please provide a document id",
+  INVALID_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
   REINDEX_WARNING:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
   REINDEX_LAUNCHED: "Congratulations! Your action is launched with ID",
@@ -35,6 +36,7 @@ export const ELASTIC_SEARCH_LABELS = {
   REINDEXING_ERROR: "Your action was not executed due to an error. ",
   DOCUMENT_REINDEX_TITLE: "Reindex a single document",
   FOLDER_REINDEX_TITLE: "Reindex a document and all of its children",
+  NXQL_QUERY_REINDEX_TITLE: "Reindex the results of a NXQL query",
   ERROR_DETAILS: "Details:",
   ERROR_STATUS: "Status:",
   CONTINUE_CONFIRMATION: "Would you like to continue?",
@@ -53,4 +55,9 @@ export const ELASTIC_SEARCH_LABELS = {
   REINDEX_BUTTON_LABEL: "Reindex",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
   SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
+  NXQL_QUERY_PLACEHOLDER:
+    "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'",
+  NXQL_QUERY: "NXQL Query",
+  NXQL_INPUT_HINT:
+    "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
 };

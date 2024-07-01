@@ -26,4 +26,11 @@ export class ElasticSearchReindexService {
       {}
     );
   }
+
+  performNXQLReindex(nxqlQuery: string | null): Observable<reindexInfo> {
+    return this.http.post<any>(
+      `${this.baseUrl}${this.url}${this.suburl}?query=${nxqlQuery}`,
+      {}
+    );
+  }
 }
