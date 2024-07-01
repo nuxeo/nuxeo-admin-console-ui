@@ -2,20 +2,20 @@ import { ElasticSearchType } from "./elastic-search-reindex.interface";
 
 export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "Document", path: "document", isSelected: true },
-  { label: "Folder", path: "folder", isSelected: false },
-  { label: "NXQL Query", path: "nxql", isSelected: false },
+  { label: "Folder", path: "folder", isSelected: false},
+  { label: "NXQL Query", path: "nxql", isSelected: false }
 ];
 
-export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
-  isConfirmed: 0,
-  isLaunched: 1,
-  isFailed: 2,
+export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
+  HEIGHT: "320px",
+  WIDTH: "550px",
 };
 
-export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
-  height: "320px",
-  width: "550px",
-};
+export const ELASTIC_SEARCH_REINDEX_TABS_TITLE = {
+  DOCUMENT: "Reindex a single document",
+  FOLDER: "Reindex a document and all of its children",
+  NXQL_QUERY: "Reindex the results of a NXQL query"
+}
 
 export const ELASTIC_SEARCH_LABELS = {
   INVALID_DOCID_OR_PATH_ERROR:

@@ -12,12 +12,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
-import { VideoRenderGenerationModule } from "./features/video-render-generation/video-render-generation.module";
-import { PictureRenderGenerationModule } from "./features/picture-render-generation/picture-render-generation.module";
-import { ThumbnailGenerationModule } from "./features/thumbnail-generation/thumbnail-generation.module";
-import { FullTextReindexModule } from "./features/full-text-reindex/full-text-reindex.module";
 import { ElasticSearchReindexModule } from "./features/elastic-search-reindex/elastic-search-reindex.module";
-import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
@@ -33,7 +28,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { SystemInformationModule } from "./features/system-information/system-information.module";
 import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
@@ -77,13 +71,7 @@ import { ElasticSearchReindexModalComponent } from "./features/elastic-search-re
     MatSidenavModule,
     HomeModule,
     MatListModule,
-    SystemInformationModule,
-    BulkActionMonitoringModule,
     ElasticSearchReindexModule,
-    FullTextReindexModule,
-    ThumbnailGenerationModule,
-    PictureRenderGenerationModule,
-    VideoRenderGenerationModule,
     BaseLayoutModule,
     HyDialogModule,
     MatSidenavModule,

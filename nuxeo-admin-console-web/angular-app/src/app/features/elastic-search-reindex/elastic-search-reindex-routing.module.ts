@@ -5,7 +5,9 @@ import { ElasticSearchReindexComponent } from "./components/elastic-search-reind
 import { DocumentESReindexComponent } from "./components/document-es-reindex/document-es-reindex.component";
 import { FolderESReindexComponent } from "./components/folder-es-reindex/folder-es-reindex.component";
 import { NXQLESReindexComponent } from "./components/nxql-es-reindex/nxql-es-reindex.component";
+import { ELASTIC_SEARCH_REINDEX_TABS_TITLE } from "./elastic-search-reindex.constants";
 
+const tabsTitle = ELASTIC_SEARCH_REINDEX_TABS_TITLE;
 export const ElasticSearchReindexRoutes: Route[] = [
   {
     path: "",
@@ -13,17 +15,17 @@ export const ElasticSearchReindexRoutes: Route[] = [
     children: [
       {
         path: "document",
-        title: "Reindex a single document",
+        title: tabsTitle.DOCUMENT,
         component: DocumentESReindexComponent,
       },
       {
         path: "folder",
-        title: "Reindex a document and all of its children",
+        title: tabsTitle.FOLDER,
         component: FolderESReindexComponent,
       },
       {
         path: "nxql",
-        title: "Reindex the results of a NXQL query",
+        title: tabsTitle.NXQL_QUERY,
         component: NXQLESReindexComponent,
       },
       { path: "**", redirectTo: "document" },

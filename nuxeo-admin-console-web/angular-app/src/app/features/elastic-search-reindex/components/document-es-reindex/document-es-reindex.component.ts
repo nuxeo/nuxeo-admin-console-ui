@@ -1,4 +1,4 @@
-import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
+import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ELASTIC_SEARCH_LABELS } from "./../../elastic-search-reindex.constants";
 import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
@@ -87,8 +87,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
@@ -101,10 +101,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     );
     this.errorDialogClosedSubscription = this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexErrorModalClose();
-        }
+      ?.subscribe(() => {
+        this.onReindexErrorModalClose();
       });
   }
 
@@ -117,8 +115,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
@@ -134,10 +132,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexLaunchedModalClose();
-        }
+      .subscribe(() => {
+        this.onReindexLaunchedModalClose();
       });
   }
 
