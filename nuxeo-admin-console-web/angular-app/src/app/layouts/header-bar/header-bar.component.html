@@ -7,7 +7,11 @@
   </div>
 
   <span class="header-bar__spacer"></span>
-  <button mat-icon-button class="header-bar__branding__profile-icon" aria-label="Profile icon">
-    <img src="assets/images/user-profile.svg" alt="user profile">
+  <span *ngIf="displayName" class="header-bar__branding__username">
+    {{ displayName}}
+  </span>
+  <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
+    <mat-icon>power_settings_new</mat-icon> Logout
   </button>
+
 </mat-toolbar>

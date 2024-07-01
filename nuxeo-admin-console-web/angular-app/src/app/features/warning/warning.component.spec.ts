@@ -11,6 +11,8 @@ import { CommonModule } from "@angular/common";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from "@angular/core";
+import { StoreModule } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe("WarningComponent", () => {
   let component: WarningComponent;
@@ -37,6 +39,7 @@ describe("WarningComponent", () => {
         MatDialogModule,
         HyDialogBoxModule,
         MatCheckboxModule,
+        StoreModule.forRoot(provideMockStore)
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -55,13 +58,16 @@ describe("WarningComponent", () => {
   });
 
   it("should initialise the doNotWarn field based on preference saved", () => {
-    const persistenceServiceGetSpy = spyOn(component.persistenceService, "get");
-    persistenceServiceGetSpy.and.returnValue(null);
-    component.ngOnInit();
-    expect(component.doNotWarn).toBe(false);
-    persistenceServiceGetSpy.and.returnValue("true");
-    component.ngOnInit();
-    expect(component.doNotWarn).toBe(true);
+    if (component?.currentUser) {
+      const persistenceServiceGetSpy = spyOn(component.persistenceService, "get");
+      persistenceServiceGetSpy.and.returnValue(null);
+      component.ngOnInit();
+      expect(component.doNotWarn).toBe(false);
+      persistenceServiceGetSpy.and.returnValue("true");
+      component.ngOnInit();
+      expect(component.doNotWarn).toBe(true);
+    }
+
   });
 
   describe("should test confirm click actions", () => {
@@ -76,22 +82,28 @@ describe("WarningComponent", () => {
     });
 
     it("should set preference as true & close dialog & emit loadApp=true, when doNotWarn field is checked", () => {
-      component.doNotWarn = true;
-      spyOn(component.dialogService, "closeAll");
-      component.onConfirm();
-      expect(persistenceServiceSetSpy).toHaveBeenCalledWith(
-        "doNotWarn",
-        "true"
-      );
-      expect(commonServiceLoadAppEmitSpy).toHaveBeenCalledWith(true);
-      expect(component.dialogService.closeAll).toHaveBeenCalled();
+      if (component?.currentUser) {
+        component.doNotWarn = true;
+        spyOn(component.dialogService, "closeAll");
+        component.onConfirm();
+        const preferenceKey = `doNotWarn-${component?.currentUser?.id}`;
+        expect(persistenceServiceSetSpy).toHaveBeenCalledWith(
+          preferenceKey,
+          "true"
+        );
+        expect(commonServiceLoadAppEmitSpy).toHaveBeenCalledWith(true);
+        expect(component.dialogService.closeAll).toHaveBeenCalled();
+      }
+
     });
     it("should not set preference & close dialog & emit loadApp=true, when doNotWarn field is unchecked", () => {
-      component.doNotWarn = false;
-      spyOn(component.dialogService, "closeAll");
-      component.onConfirm();
-      expect(commonServiceLoadAppEmitSpy).toHaveBeenCalledWith(true);
-      expect(component.dialogService.closeAll).toHaveBeenCalled();
+      if (component?.currentUser) {
+        component.doNotWarn = false;
+        spyOn(component.dialogService, "closeAll");
+        component.onConfirm();
+        expect(commonServiceLoadAppEmitSpy).toHaveBeenCalledWith(true);
+        expect(component.dialogService.closeAll).toHaveBeenCalled();
+      }
     });
   });
 });

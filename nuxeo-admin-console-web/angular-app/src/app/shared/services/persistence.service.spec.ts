@@ -34,20 +34,20 @@ describe("PersistenceService", () => {
       );
     });
     it("should set key-value pair in localstorage successfully, if there is no error", () => {
-      service.set("doNotWarn", "true");
-      expect(localStorage.getItem("doNotWarn")).toBe('"true"');
+      service.set("doNotWarn-Administrator", "true");
+      expect(localStorage.getItem("doNotWarn-Administrator")).toBe('"true"');
     });
 
     it("should not set key-value pair in localstorage, if there is error", () => {
       spyOn(service, "set").and.callFake(() => {
         throw new Error("");
       });
-      expect(localStorage.getItem("doNotWarn")).toBe(null);
+      expect(localStorage.getItem("doNotWarn-Administrator")).toBe(null);
     });
 
     it("should not return value if getting key-value pair from localstorage thorws an error", () => {
-      localStorage.removeItem("doNotWarn");
-      expect(service.get("doNotWarn")).toBe(null);
+      localStorage.removeItem("doNotWarn-Administrator");
+      expect(service.get("doNotWarn-Administrator")).toBe(null);
     });
   });
 });

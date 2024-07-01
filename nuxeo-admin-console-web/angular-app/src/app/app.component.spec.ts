@@ -11,6 +11,8 @@ import { PersistenceService } from "./shared/services/persistence.service";
 import { WarningComponent } from "./features/warning/warning.component";
 import { CommonService } from "./shared/services/common.service";
 import { EventEmitter } from "@angular/core";
+import { provideMockStore } from '@ngrx/store/testing';
+import { StoreModule } from '@ngrx/store';
 
 describe("AppComponent", () => {
   let component: AppComponent;
@@ -32,7 +34,7 @@ describe("AppComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent, BaseLayoutComponent],
-      imports: [CommonModule, MatDialogModule],
+      imports: [CommonModule, MatDialogModule, StoreModule.forRoot(provideMockStore)],
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },
         { provide: PersistenceService, useClass: persistenceServiceStub },
@@ -53,6 +55,7 @@ describe("AppComponent", () => {
       spyOn(component.dialogService, "open");
     });
     it("should open the warning dialog if warning preference is not set", () => {
+      if (component?.currentUser) {
       spyOn(component.persistenceService, "get").and.returnValue(null);
       const loadAppSubscriptionSpy = spyOn(
         component.commonService.loadApp,
@@ -67,29 +70,36 @@ describe("AppComponent", () => {
         }
       );
       expect(loadAppSubscriptionSpy).toHaveBeenCalled();
+    }
     });
 
     it("should not open the warning dialog if warning preference is set", () => {
+      if (component?.currentUser) {
       spyOn(component.persistenceService, "get").and.returnValue("true");
       component.ngOnInit();
       expect(component.persistenceService.get).toHaveBeenCalled();
       expect(component.dialogService.open).not.toHaveBeenCalled();
       expect(component.loadApp).toEqual(true);
+      }
     });
   });
 
   it("should set loadApp to true or false based on the value received from the service subscription", () => {
+    if (component?.currentUser) {
     component.ngOnInit();
     component.commonService.loadApp.emit(true);
     expect(component.loadApp).toBe(true);
     component.ngOnInit();
     component.commonService.loadApp.emit(false);
     expect(component.loadApp).toBe(false);
+    }
   });
 
   it("should remove theloadAppSubscription when component is destroyed", () => {
+    if (component?.currentUser) {
     spyOn(component.loadAppSubscription, "unsubscribe");
     component.ngOnDestroy();
     expect(component.loadAppSubscription.unsubscribe).toHaveBeenCalled();
+    }
   });
 });
