@@ -1,5 +1,5 @@
-import { ELASTIC_SEARCH_REINDEX_MODAL_EVENT } from '../../elastic-search-reindex.constants';
-import { CommonService } from '../../../../shared/services/common.service';
+import { ELASTIC_SEARCH_LABELS, ELASTIC_SEARCH_REINDEX_MODAL_EVENT } from "../../elastic-search-reindex.constants";
+import { CommonService } from "../../../../shared/services/common.service";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -10,7 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
   styleUrls: ["./elastic-search-reindex-modal.component.scss"],
 })
 export class ElasticSearchReindexModalComponent {
-  isConfirmModal = false;
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   constructor(
     private dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>,
     public commonService: CommonService,
@@ -30,7 +30,7 @@ export class ElasticSearchReindexModalComponent {
   close(): void {
     const dialogCloseData = {
       isClosed: true,
-      event: this.data.isSuccessModal
+      event: this.data.isLaunchedModal
         ? ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
         : ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isFailed,
     };
@@ -41,14 +41,14 @@ export class ElasticSearchReindexModalComponent {
     const dialogCloseData = {
       isClosed: true,
       continue: false,
-      event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed
+      event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed,
     };
     this.dialogRef.close(dialogCloseData);
   }
 
-  COPY_ACTION_ID(): void {
+  copyActionId(): void {
     navigator.clipboard.writeText(this.data.commandId).then(() => {
-      alert("Action ID copied to clipboard!");
+      alert(ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT);
     });
   }
 }

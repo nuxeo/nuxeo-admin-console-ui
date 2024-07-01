@@ -1,4 +1,4 @@
-import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
+
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -46,6 +46,7 @@ import {
   nxqlReindexReducer,
   reindexReducer,
 } from "./features/elastic-search-reindex/store/reducers";
+import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 
 @NgModule({
   declarations: [
@@ -56,7 +57,7 @@ import {
     BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
-    ElasticSearchReindexModalComponent,
+    ElasticSearchReindexModalComponent
   ],
   imports: [
     BrowserModule,

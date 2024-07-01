@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap, tap, throwError } from "rxjs";
+import { catchError, map, of, switchMap } from "rxjs";
 import * as ReindexActions from "./actions";
 import { ElasticSearchReindexService } from "../services/elastic-search-reindex.service";
 
@@ -14,13 +14,10 @@ export const loadPerformDocumentReindexEffect = createEffect(
       ofType(ReindexActions.performDocumentReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performDocumentReindex(action?.documentID)
+          .performDocumentReindex(action?.requestQuery)
           .pipe(
-            /*  tap(() => {
-              throw new Error("Server error occurred");
-            }), */
             map((data) => {
-              return ReindexActions.onDocumentReindexSuccess({
+              return ReindexActions.onDocumentReindexLaunch({
                 reindexInfo: {
                   commandId: data?.commandId,
                 },
@@ -47,11 +44,8 @@ export const loadPerformFolderReindexEffect = createEffect(
         return elasticSearchReindexService
           .performFolderReindex(action?.documentID)
           .pipe(
-            tap(() => {
-              throw new Error("Server error occurred");
-            }),
             map((data) => {
-              return ReindexActions.onFolderReindexSuccess({
+              return ReindexActions.onFolderReindexLaunch({
                 folderReindexInfo: {
                   commandId: data?.commandId,
                 },
@@ -78,11 +72,8 @@ export const loadPerformNxqlReindexEffect = createEffect(
         return elasticSearchReindexService
           .performNXQLReindex(action?.nxqlQuery)
           .pipe(
-            /* tap(() => {
-              throw new Error("Server error occurred");
-            }), */
             map((data) => {
-              return ReindexActions.onNxqlReindexSuccess({
+              return ReindexActions.onNxqlReindexLaunch({
                 nxqlReindexInfo: {
                   commandId: data?.commandId,
                 },
