@@ -8,8 +8,22 @@ export interface DocumentReindexState {
   error: any;
 }
 
+export interface FolderReindexState {
+  folderReindexInfo: {
+    commandId: string | null;
+  };
+  error: any;
+}
+
 export const initialDocumentState: DocumentReindexState = {
   reindexInfo: {
+    commandId: null,
+  },
+  error: null,
+};
+
+export const initialFolderReindexState: FolderReindexState = {
+  folderReindexInfo: {
     commandId: null,
   },
   error: null,
@@ -34,6 +48,31 @@ export const reindexReducer = createReducer(
   on(ReindexActions.resetDocumentReindexState, (state) => ({
     ...state,
     reindexInfo: {
+      commandId: null,
+    },
+    error: null,
+  }))
+);
+
+export const folderReindexReducer = createReducer(
+  initialFolderReindexState,
+  on(ReindexActions.performFolderReindex, (state) => ({
+    ...state,
+    error: null,
+  })),
+  on(ReindexActions.onFolderReindexLaunch, (state, { folderReindexInfo }) => ({
+    ...state,
+    folderReindexInfo: {
+      commandId: folderReindexInfo?.commandId,
+    },
+  })),
+  on(ReindexActions.onFolderReindexFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(ReindexActions.resetFolderReindexState, (state) => ({
+    ...state,
+    folderReindexInfo: {
       commandId: null,
     },
     error: null,

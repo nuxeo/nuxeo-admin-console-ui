@@ -21,7 +21,6 @@ export const ELASTIC_SEARCH_LABELS = {
   INVALID_DOCID_OR_PATH_ERROR:
     "Please provide a document id or a document path",
   INVALID_DOCID_ERROR: "Please provide a document id",
-  INVALID_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
   REINDEX_WARNING:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
   REINDEX_LAUNCHED: "Congratulations! Your action is launched with ID",
@@ -35,7 +34,7 @@ export const ELASTIC_SEARCH_LABELS = {
   REINDEX_ERRROR_MODAL_TITLE: "An error occurred",
   REINDEXING_ERROR: "Your action was not executed due to an error. ",
   DOCUMENT_REINDEX_TITLE: "Reindex a single document",
-  NXQL_QUERY_REINDEX_TITLE: "Reindex the results of a NXQL query",
+  FOLDER_REINDEX_TITLE: "Reindex a document and all of its children",
   ERROR_DETAILS: "Details:",
   ERROR_STATUS: "Status:",
   CONTINUE_CONFIRMATION: "Would you like to continue?",
@@ -53,5 +52,5 @@ export const ELASTIC_SEARCH_LABELS = {
   DOCUMENT_ID: "Document ID",
   REINDEX_BUTTON_LABEL: "Reindex",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
-  SELECT_BASE_QUERY: "SELECT * FROM Document WHERE"
+  SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
 };

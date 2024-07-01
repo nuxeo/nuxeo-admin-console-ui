@@ -19,4 +19,11 @@ export class ElasticSearchReindexService {
       {}
     );
   }
+
+  performFolderReindex(documentID: string | null): Observable<reindexInfo> {
+    return this.http.post<any>(
+      `${this.baseUrl}${this.url}/${documentID}${this.suburl}`,
+      {}
+    );
+  }
 }
