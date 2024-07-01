@@ -164,12 +164,13 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         SecurityContext.HTML,
         this.documentReindexForm?.get("documentIdentifier")?.value
       );
-      //  this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${sanitizedUserInput}'`;
+   //    this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
       this.store.dispatch(
         ReindexActions.performDocumentReindex({
-          requestQuery: sanitizedUserInput,
+          requestQuery
         })
-      );
+      ); 
     }
   }
 
@@ -178,8 +179,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .fetch(userInput)
       .then((document: any) => {
-        const documentPath = document.path ? document.path : "";
-        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${documentPath}'`;
+     //   const documentPath = document.path ? document.path : "";
+        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${userInput}'`;
         this.store.dispatch(
           ReindexActions.performDocumentReindex({
             requestQuery: requestQuery,

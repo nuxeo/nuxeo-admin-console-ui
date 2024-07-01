@@ -7,13 +7,19 @@
 
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.isConfirmModal">
-      <p>
-        {{ data.impactMessage }}
-      </p>
-      <p>This action will impact {{data.documentCount}} documents
+      <div *ngIf="data.documentCount > 0; else noDocument;">
+        <p>
+          {{ data.impactMessage }}
+        </p>
+        <p>This action will impact {{data.documentCount}} documents
 
-        and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
-      </p>
+          and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
+        </p>
+      </div>
+      <ng-template #noDocument>
+        {{ELASTIC_SEARCH_LABELS.NO_DOCUMENTS}}
+      </ng-template>
+
 
     </div>
     <div *ngIf="data.isErrorModal">
@@ -37,7 +43,7 @@
       <button mat-stroked-button color="primary" (click)="abort()">
         {{ data.abortLabel }}
       </button>
-      <button mat-flat-button color="primary" (click)="continue()">
+      <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">
         {{ data.continueLabel }}
       </button>
     </div>

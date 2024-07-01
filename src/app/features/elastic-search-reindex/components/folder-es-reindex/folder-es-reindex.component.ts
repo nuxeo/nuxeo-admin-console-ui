@@ -168,7 +168,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .fetch(userInput)
       .then((doc: any) => {
-        const docParentId = doc?.parentRef ? doc?.parentRef : "";
+        const docParentId = doc?.uid ? doc?.uid : "";
         if (docParentId) {
           const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:parentId='${docParentId}'`;
           this.fetchNoOfDocuments(requestQuery, docParentId);

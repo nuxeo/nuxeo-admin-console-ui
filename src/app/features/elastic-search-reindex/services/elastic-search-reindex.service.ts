@@ -14,13 +14,8 @@ export class ElasticSearchReindexService {
   constructor(private http: HttpClient) {}
 
   performDocumentReindex(requestQuery: string | null): Observable<reindexInfo> {
-    /*  return this.http.post<any>(
-      `${this.baseUrl}${this.url}${this.suburl}?query=${requestQuery}`,
-      {}
-    ); */
-
     return this.http.post<any>(
-      `${this.baseUrl}${this.url}/${requestQuery}${this.suburl}`,
+      `${this.baseUrl}${this.url}${this.suburl}?query=${requestQuery}`,
       {}
     );
   }

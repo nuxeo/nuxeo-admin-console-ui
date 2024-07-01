@@ -48,6 +48,7 @@ export const ELASTIC_SEARCH_LABELS = {
     error: 3,
   },
   REFERENCE_POINT: 2000,
+  NO_DOCUMENTS: "There are no documents to be reindexed.",
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   DOCUMENT_ID: "Document ID",
   REINDEX_BUTTON_LABEL: "Reindex",

@@ -12,6 +12,7 @@ import { FolderESReindexComponent } from "./components/folder-es-reindex/folder-
 import { DocumentESReindexComponent } from "./components/document-es-reindex/document-es-reindex.component";
 import { ElasticSearchReindexComponent } from "./components/elastic-search-reindex.component";
 import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/elastic-search-reindex-routing.module";
+import { ElasticSearchReindexModalComponent } from "./components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/ela
     DocumentESReindexComponent,
     FolderESReindexComponent,
     NXQLESReindexComponent,
+    
   ],
   imports: [
     CommonModule,
