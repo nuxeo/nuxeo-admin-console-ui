@@ -1,7 +1,7 @@
+import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
 import { ELASTIC_SEARCH_LABELS } from "./../../elastic-search-reindex.constants";
 import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
-import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
@@ -49,7 +49,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
     private sanitizer: DomSanitizer,
-    private commonService: CommonService
+    private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.documentReindexForm = this.fb.group({
       documentIdentifier: ["", Validators.required],
@@ -63,7 +63,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.nuxeo = this.commonService.initiateJSClient();
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE}`
     );
