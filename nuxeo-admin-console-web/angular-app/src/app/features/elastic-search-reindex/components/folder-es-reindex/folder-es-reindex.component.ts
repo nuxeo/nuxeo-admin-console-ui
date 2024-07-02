@@ -29,7 +29,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 export class FolderESReindexComponent implements OnInit, OnDestroy {
   folderReindexForm: FormGroup;
   folderReindexingLaunched$: Observable<ReindexInfo>;
-  folderReindexingError$: Observable<HttpErrorResponse>;
+  folderReindexingError$: Observable<HttpErrorResponse | null>;
   folderReindexingLaunchedSubscription = new Subscription();
   folderReindexingErrorSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();

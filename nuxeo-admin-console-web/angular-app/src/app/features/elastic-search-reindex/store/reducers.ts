@@ -20,11 +20,25 @@ export interface FolderReindexState {
   folderReindexInfo: {
     commandId: string | null;
   };
-  error: any;
+  error: HttpErrorResponse | null;
+}
+
+export interface NXQLReindexState {
+  nxqlReindexInfo: {
+    commandId: string | null;
+  };
+  error: HttpErrorResponse | null;
 }
 
 export const initialFolderReindexState: FolderReindexState = {
   folderReindexInfo: {
+    commandId: null,
+  },
+  error: null,
+};
+
+export const initialNXQLReindexState: NXQLReindexState = {
+  nxqlReindexInfo: {
     commandId: null,
   },
   error: null,
@@ -74,6 +88,31 @@ export const folderReindexReducer = createReducer(
   on(ReindexActions.resetFolderReindexState, (state) => ({
     ...state,
     folderReindexInfo: {
+      commandId: null,
+    },
+    error: null,
+  }))
+);
+
+export const nxqlReindexReducer = createReducer(
+  initialNXQLReindexState,
+  on(ReindexActions.performNxqlReindex, (state) => ({
+    ...state,
+    error: null,
+  })),
+  on(ReindexActions.onNxqlReindexLaunch, (state, { nxqlReindexInfo }) => ({
+    ...state,
+    nxqlReindexInfo: {
+      commandId: nxqlReindexInfo?.commandId,
+    },
+  })),
+  on(ReindexActions.onNxqlReindexFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(ReindexActions.resetNxqlReindexState, (state) => ({
+    ...state,
+    nxqlReindexInfo: {
       commandId: null,
     },
     error: null,
