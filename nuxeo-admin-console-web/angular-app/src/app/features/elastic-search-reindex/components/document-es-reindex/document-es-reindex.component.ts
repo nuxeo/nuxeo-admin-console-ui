@@ -64,7 +64,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.nuxeo = this.nuxeoJSClientService.initiateJSClient();
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE}`
     );

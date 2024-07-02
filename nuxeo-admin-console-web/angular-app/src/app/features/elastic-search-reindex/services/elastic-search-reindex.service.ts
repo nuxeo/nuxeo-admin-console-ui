@@ -17,21 +17,21 @@ export class ElasticSearchReindexService {
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.apiUrl}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
       {}
     );
   }
 
   performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.apiUrl}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
       {}
     );
   }
 
   performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.apiUrl}${this.elaticSearchReindexEndpoint}?query=${nxqlQuery}`,
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${nxqlQuery}`,
       {}
     );
   }

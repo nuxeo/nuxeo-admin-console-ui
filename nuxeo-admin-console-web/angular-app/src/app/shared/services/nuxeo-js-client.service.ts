@@ -7,12 +7,20 @@ import Nuxeo from "nuxeo";
   providedIn: "root",
 })
 export class NuxeoJSClientService {
-  baseUrl = '';
-  apiUrl = '';
+  nuxeoInstance: Nuxeo = {};
   initiateJSClient(): Nuxeo {
-    const nuxeoInstance = new Nuxeo();
-    this.apiUrl = nuxeoInstance['_restURL'];
-    this.baseUrl = nuxeoInstance['_baseURL'];
-    return nuxeoInstance;
+    this.nuxeoInstance = new Nuxeo();
+  }
+
+  getBaseUrl(): string {
+    return this.nuxeoInstance["_baseURL"];
+  }
+
+  getApiUrl(): string {
+    return this.nuxeoInstance["_restURL"];
+  }
+
+  getNuxeoInstance(): Nuxeo {
+    return this.nuxeoInstance;
   }
 }

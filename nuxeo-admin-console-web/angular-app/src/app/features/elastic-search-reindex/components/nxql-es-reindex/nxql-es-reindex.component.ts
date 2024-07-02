@@ -82,7 +82,7 @@ export class NXQLESReindexComponent {
   }
 
   ngOnInit(): void {
-    this.nuxeo = this.nuxeoJSClientService.initiateJSClient();
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );

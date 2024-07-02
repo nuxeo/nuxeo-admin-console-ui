@@ -4,6 +4,7 @@ import { PersistenceService } from "./shared/services/persistence.service";
 import { Subscription } from "rxjs";
 import { CommonService } from "./shared/services/common.service";
 import { WarningComponent } from "./features/warning/warning.component";
+import { NuxeoJSClientService } from "./shared/services/nuxeo-js-client.service";
 
 @Component({
   selector: "app",
@@ -16,10 +17,12 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
-    public commonService: CommonService
+    public commonService: CommonService,
+    private nuxeoJsClientService: NuxeoJSClientService
   ) {}
 
   ngOnInit(): void {
+    this.nuxeoJsClientService.initiateJSClient();
     const doNotWarn = !!this.persistenceService.get("doNotWarn");
     if (!doNotWarn) {
       this.dialogService.open(WarningComponent, {
