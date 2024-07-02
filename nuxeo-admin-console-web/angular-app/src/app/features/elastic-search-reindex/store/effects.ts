@@ -42,7 +42,7 @@ export const loadPerformFolderReindexEffect = createEffect(
       ofType(ReindexActions.performFolderReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performFolderReindex(action?.documentID)
+          .performFolderReindex(action?.requestQuery)
           .pipe(
             map((data) => {
               return ReindexActions.onFolderReindexLaunch({
