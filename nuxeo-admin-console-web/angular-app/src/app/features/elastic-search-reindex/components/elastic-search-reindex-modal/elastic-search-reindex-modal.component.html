@@ -40,7 +40,7 @@
 
   <hy-dialog-box-footer class="hy-dialog-box__footer">
     <div *ngIf="data.isConfirmModal; else closeBtn" class="hy-dialog-box__button-group">
-      <button mat-stroked-button color="primary" (click)="abort()">
+      <button mat-stroked-button color="primary" (click)="close()">
         {{ data.abortLabel }}
       </button>
       <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">

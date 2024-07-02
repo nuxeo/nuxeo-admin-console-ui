@@ -6,12 +6,6 @@ export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "NXQL Query", path: "nxql", isSelected: false },
 ];
 
-export const ELASTIC_SEARCH_REINDEX_MODAL_EVENT = {
-  isConfirmed: 0,
-  isLaunched: 1,
-  isFailed: 2,
-};
-
 export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
   height: "320px",
   width: "550px",

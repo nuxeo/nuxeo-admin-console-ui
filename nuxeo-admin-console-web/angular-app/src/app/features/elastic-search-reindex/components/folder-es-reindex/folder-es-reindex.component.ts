@@ -119,9 +119,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.errorDialogClosedSubscription = this.errorDialogRef
       .afterClosed()
       .subscribe((data) => {
-        if (data?.isClosed) {
           this.onReindexErrorModalClose();
-        }
       });
   }
 
@@ -149,10 +147,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     );
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
+      .subscribe(() => {
           this.onReindexLaunchedModalClose();
-        }
       });
   }
 
@@ -291,7 +287,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     documentId: string | null
   ): void {
     const data = modalData as ReindexModalClosedInfo;
-    if (data?.isClosed && data?.continue) {
+    if (data?.continue) {
       const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({

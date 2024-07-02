@@ -1,8 +1,7 @@
-import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
+import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ELASTIC_SEARCH_LABELS } from "./../../elastic-search-reindex.constants";
 import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
-import { CommonService } from "./../../../../shared/services/common.service";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
@@ -34,13 +33,28 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  launchedDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
-  confirmDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
-  errorDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
-  
+  launchedDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
+  confirmDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
+  errorDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
+
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
 
@@ -102,10 +116,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     );
     this.errorDialogClosedSubscription = this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexErrorModalClose();
-        }
+      ?.subscribe(() => {
+        this.onReindexErrorModalClose();
       });
   }
 
@@ -135,10 +147,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexLaunchedModalClose();
-        }
+      .subscribe(() => {
+        this.onReindexLaunchedModalClose();
       });
   }
 
@@ -148,7 +158,9 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   getErrorMessage(): string | null {
-    if (this.documentReindexForm?.get("documentIdentifier")?.hasError("required")) {
+    if (
+      this.documentReindexForm?.get("documentIdentifier")?.hasError("required")
+    ) {
       return ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH_ERROR;
     }
     return null;

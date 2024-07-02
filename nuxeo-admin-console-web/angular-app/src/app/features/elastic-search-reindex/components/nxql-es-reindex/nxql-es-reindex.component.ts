@@ -127,10 +127,8 @@ export class NXQLESReindexComponent {
 
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
+      .subscribe(() => {
           this.onReindexLaunchedModalClose();
-        }
       });
   }
 
@@ -158,10 +156,8 @@ export class NXQLESReindexComponent {
     );
     this.errorDialogClosedSubscription = this.errorDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
+      .subscribe(() => {
           this.onReindexErrorModalClose();
-        }
       });
   }
 
@@ -257,7 +253,7 @@ export class NXQLESReindexComponent {
     data: ReindexModalClosedInfo,
     query: string | null
   ): void {
-    if (data?.isClosed && data?.continue) {
+    if (data?.continue) {
       this.store.dispatch(
         ReindexActions.performNxqlReindex({
           nxqlQuery: query,

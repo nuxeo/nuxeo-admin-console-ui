@@ -1,7 +1,4 @@
-import {
-  ELASTIC_SEARCH_LABELS,
-  ELASTIC_SEARCH_REINDEX_MODAL_EVENT,
-} from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { CommonService } from "../../../../shared/services/common.service";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { Component, Inject } from "@angular/core";
@@ -23,31 +20,15 @@ export class ElasticSearchReindexModalComponent {
   ) {}
 
   continue(): void {
-    const dialogCloseData = {
-      isClosed: true,
+    this.dialogRef.close({
       continue: true,
-      event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed,
-    };
-    this.dialogRef.close(dialogCloseData);
+    });
   }
 
   close(): void {
-    const dialogCloseData = {
-      isClosed: true,
-      event: this.data.isLaunchedModal
-        ? ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isLaunched
-        : ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isFailed,
-    };
-    this.dialogRef.close(dialogCloseData);
-  }
-
-  abort(): void {
-    const dialogCloseData = {
-      isClosed: true,
+    this.dialogRef.close({
       continue: false,
-      event: ELASTIC_SEARCH_REINDEX_MODAL_EVENT.isConfirmed,
-    };
-    this.dialogRef.close(dialogCloseData);
+    });
   }
 
   copyActionId(): void {
