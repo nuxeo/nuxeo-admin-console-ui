@@ -1,3 +1,4 @@
+import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { FolderReindexState } from "../../store/reducers";
@@ -29,7 +30,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 export class FolderESReindexComponent implements OnInit, OnDestroy {
   folderReindexForm: FormGroup;
   folderReindexingLaunched$: Observable<ReindexInfo>;
-  folderReindexingError$: Observable<HttpErrorResponse>;
+  folderReindexingError$: Observable<HttpErrorResponse | null>;
   folderReindexingLaunchedSubscription = new Subscription();
   folderReindexingErrorSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
@@ -64,7 +65,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.folderReindexForm = this.fb.group({
       documentID: ["", Validators.required],
@@ -78,7 +80,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initiateJSClient();
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE}`
     );
@@ -159,15 +161,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     document.getElementById("documentID")?.focus();
   }
 
-  initiateJSClient(): void {
-    this.nuxeo = new Nuxeo({
-      auth: {
-        method: "basic",
-        username: "Administrator",
-        password: "Administrator",
-      },
-    });
-  }
   getErrorMessage(): string | null {
     if (this.folderReindexForm?.get("documentID")?.hasError("required")) {
       return ELASTIC_SEARCH_LABELS.INVALID_DOCID_ERROR;
@@ -196,10 +189,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           "uid" in document
         ) {
           const doc = document as { uid: string };
-          const docParentId = doc?.uid ? doc?.uid : "";
-          if (docParentId) {
-            const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:parentId='${docParentId}'`;
-            this.fetchNoOfDocuments(requestQuery, docParentId);
+          const documentId = doc?.uid ? doc?.uid : "";
+          if (documentId) {
+            const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
+            this.fetchNoOfDocuments(requestQuery, documentId);
           }
         }
       })
@@ -223,7 +216,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  fetchNoOfDocuments(query: string | null, docParentId: string | null): void {
+  fetchNoOfDocuments(query: string | null, documentId: string | null): void {
     this.nuxeo
       .repository()
       .query({ query, pageSize: 1 })
@@ -236,7 +229,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           const documentCount = document.resultsCount
             ? (document.resultsCount as number)
             : 0;
-          this.showConfirmationModal(documentCount, docParentId);
+          this.showConfirmationModal(documentCount, documentId);
         }
       })
       .catch((err: unknown) => {
@@ -261,7 +254,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   showConfirmationModal(
     documentCount: number,
-    docParentId: string | null
+    documentId: string | null
   ): void {
     this.confirmDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
@@ -289,19 +282,20 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.confirmDialogClosedSubscription = this.confirmDialogRef
       .afterClosed()
       .subscribe((data) => {
-        this.onConfirmationModalClose(data, docParentId);
+        this.onConfirmationModalClose(data, documentId);
       });
   }
 
   onConfirmationModalClose(
     modalData: unknown,
-    docParentId: string | null
+    documentId: string | null
   ): void {
     const data = modalData as ReindexModalClosedInfo;
     if (data?.isClosed && data?.continue) {
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({
-          documentID: docParentId,
+          requestQuery
         })
       );
     } else {

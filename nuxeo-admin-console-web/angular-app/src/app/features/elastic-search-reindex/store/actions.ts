@@ -20,7 +20,7 @@ export const resetDocumentReindexState = createAction(
 
 export const performFolderReindex = createAction(
   "[Admin] Perform Folder Reindex",
-  props<{ documentID: string | null }>()
+  props<{ requestQuery: string | null }>()
 );
 export const onFolderReindexLaunch = createAction(
   "[Admin] On Folder Reindex Launch",
@@ -32,4 +32,19 @@ export const onFolderReindexFailure = createAction(
 );
 export const resetFolderReindexState = createAction(
   "[Admin] Reset Folder Reindex State"
+);
+export const performNxqlReindex = createAction(
+  "[Admin] Perform NXQL Reindex",
+  props<{ nxqlQuery: string | null }>()
+);
+export const onNxqlReindexLaunch = createAction(
+  "[Admin] On NXQL Reindex Launch",
+  props<{ nxqlReindexInfo: ReindexInfo }>()
+);
+export const onNxqlReindexFailure = createAction(
+  "[Admin] On NXQL Reindex Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+export const resetNxqlReindexState = createAction(
+  "[Admin] Reset NXQL Reindex State"
 );

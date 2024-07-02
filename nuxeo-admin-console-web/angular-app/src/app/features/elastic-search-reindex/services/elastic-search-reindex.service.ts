@@ -1,3 +1,4 @@
+import { NuxeoJSClientService } from './../../../shared/services/nuxeo-js-client.service';
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -7,22 +8,27 @@ import { ReindexInfo } from "../elastic-search-reindex.interface";
   providedIn: "root",
 })
 export class ElasticSearchReindexService {
-  private url = "/management/elasticsearch";
-  private suburl = "/reindex";
-  baseUrl = "/api";
+  private elaticSearchReindexEndpoint = "management/elasticsearch/reindex";
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private nuxeoJsClientService: NuxeoJSClientService) {}
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.baseUrl}${this.url}${this.suburl}?query=${requestQuery}`,
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
       {}
     );
   }
 
-  performFolderReindex(documentID: string | null): Observable<ReindexInfo> {
+  performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.baseUrl}${this.url}/${documentID}${this.suburl}`,
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
+      {}
+    );
+  }
+
+  performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
+    return this.http.post<ReindexInfo>(
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${nxqlQuery}`,
       {}
     );
   }

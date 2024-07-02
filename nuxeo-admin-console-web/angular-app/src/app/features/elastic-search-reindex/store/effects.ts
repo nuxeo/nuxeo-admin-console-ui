@@ -42,7 +42,7 @@ export const loadPerformFolderReindexEffect = createEffect(
       ofType(ReindexActions.performFolderReindex),
       switchMap((action) => {
         return elasticSearchReindexService
-          .performFolderReindex(action?.documentID)
+          .performFolderReindex(action?.requestQuery)
           .pipe(
             map((data) => {
               return ReindexActions.onFolderReindexLaunch({
@@ -53,6 +53,34 @@ export const loadPerformFolderReindexEffect = createEffect(
             }),
             catchError((error: HttpErrorResponse) => {
               return of(ReindexActions.onFolderReindexFailure({ error }));
+            })
+          );
+      })
+    );
+  },
+  { functional: true }
+);
+
+export const loadPerformNxqlReindexEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    elasticSearchReindexService = inject(ElasticSearchReindexService)
+  ) => {
+    return actions$.pipe(
+      ofType(ReindexActions.performNxqlReindex),
+      switchMap((action) => {
+        return elasticSearchReindexService
+          .performNXQLReindex(action?.nxqlQuery)
+          .pipe(
+            map((data) => {
+              return ReindexActions.onNxqlReindexLaunch({
+                nxqlReindexInfo: {
+                  commandId: data?.commandId,
+                },
+              });
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(ReindexActions.onNxqlReindexFailure({ error }));
             })
           );
       })
