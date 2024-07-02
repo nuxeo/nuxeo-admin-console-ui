@@ -1,4 +1,4 @@
-import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
+import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { FolderReindexState } from "../../store/reducers";
@@ -36,12 +36,27 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  launchedDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
-  confirmDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
-  errorDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
-  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
+  launchedDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
+  confirmDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
+  errorDialogRef: MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  > = {} as MatDialogRef<
+    ElasticSearchReindexModalComponent,
+    ReindexModalClosedInfo
+  >;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
 
@@ -89,8 +104,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
@@ -103,10 +118,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     );
     this.errorDialogClosedSubscription = this.errorDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexErrorModalClose();
-        }
+      .subscribe(() => {
+        this.onReindexErrorModalClose();
       });
   }
 
@@ -119,8 +132,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
@@ -134,10 +147,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     );
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
-      .subscribe((data) => {
-        if (data?.isClosed) {
-          this.onReindexLaunchedModalClose();
-        }
+      .subscribe(() => {
+        this.onReindexLaunchedModalClose();
       });
   }
 
@@ -245,8 +256,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.height,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.width,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
@@ -276,11 +287,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     documentId: string | null
   ): void {
     const data = modalData as ReindexModalClosedInfo;
-    if (data?.isClosed && data?.continue) {
+    if (data?.continue) {
       const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({
-          requestQuery
+          requestQuery,
         })
       );
     } else {
