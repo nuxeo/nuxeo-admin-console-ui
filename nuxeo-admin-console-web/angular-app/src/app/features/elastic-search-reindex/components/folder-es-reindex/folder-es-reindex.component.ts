@@ -36,27 +36,12 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  launchedDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
-  confirmDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
-  errorDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
+  launchedDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
+  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
+  confirmDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
+  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
+  errorDialogRef: MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo> = 
+  {} as MatDialogRef<ElasticSearchReindexModalComponent, ReindexModalClosedInfo>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
 
