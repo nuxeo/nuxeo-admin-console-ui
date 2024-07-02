@@ -17,3 +17,19 @@ export const onDocumentReindexFailure = createAction(
 export const resetDocumentReindexState = createAction(
   "[Admin] Reset Reindex State"
 );
+
+export const performFolderReindex = createAction(
+  "[Admin] Perform Folder Reindex",
+  props<{ requestQuery: string | null }>()
+);
+export const onFolderReindexLaunch = createAction(
+  "[Admin] On Folder Reindex Launch",
+  props<{ folderReindexInfo: ReindexInfo }>()
+);
+export const onFolderReindexFailure = createAction(
+  "[Admin] On Folder Reindex Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+export const resetFolderReindexState = createAction(
+  "[Admin] Reset Folder Reindex State"
+);

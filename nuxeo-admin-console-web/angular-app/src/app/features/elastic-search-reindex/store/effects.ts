@@ -32,3 +32,31 @@ export const loadPerformDocumentReindexEffect = createEffect(
   },
   { functional: true }
 );
+
+export const loadPerformFolderReindexEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    elasticSearchReindexService = inject(ElasticSearchReindexService)
+  ) => {
+    return actions$.pipe(
+      ofType(ReindexActions.performFolderReindex),
+      switchMap((action) => {
+        return elasticSearchReindexService
+          .performFolderReindex(action?.requestQuery)
+          .pipe(
+            map((data) => {
+              return ReindexActions.onFolderReindexLaunch({
+                folderReindexInfo: {
+                  commandId: data?.commandId,
+                },
+              });
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(ReindexActions.onFolderReindexFailure({ error }));
+            })
+          );
+      })
+    );
+  },
+  { functional: true }
+);

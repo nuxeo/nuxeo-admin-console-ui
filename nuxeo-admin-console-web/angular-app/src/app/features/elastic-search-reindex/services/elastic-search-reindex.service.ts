@@ -18,4 +18,11 @@ export class ElasticSearchReindexService {
       {}
     );
   }
+
+  performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
+    return this.http.post<ReindexInfo>(
+      `${this.nuxeoJsClientService.getApiUrl()}${this.elaticSearchReindexEndpoint}?query=${requestQuery}`,
+      {}
+    );
+  }
 }

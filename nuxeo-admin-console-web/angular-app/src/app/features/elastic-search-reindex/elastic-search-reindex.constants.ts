@@ -28,6 +28,7 @@ export const ELASTIC_SEARCH_LABELS = {
   COPY_MONITORING_ID:
     "Remember to take note of the ID if you want to monitor it later on.",
   REINDEX_CONFIRMATION_MODAL_TITLE: "Confirm Reindex",
+  FOLDER_REINDEX_TITLE: "Reindex a document and all of its children",
   ABORT_LABEL: "Abort",
   CLOSE_LABEL: "Close",
   CONTINUE: "Continue",
