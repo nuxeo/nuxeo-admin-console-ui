@@ -1,3 +1,4 @@
+import { NuxeoJSClientService } from './../../../../shared/services/nuxeo-js-client.service';
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {
@@ -66,7 +67,8 @@ export class NXQLESReindexComponent {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ nxqlReindex: NXQLReindexState }>,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
@@ -80,7 +82,7 @@ export class NXQLESReindexComponent {
   }
 
   ngOnInit(): void {
-    this.initiateJSClient();
+    this.nuxeo = this.nuxeoJSClientService.initiateJSClient();
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );
@@ -165,16 +167,6 @@ export class NXQLESReindexComponent {
 
   onReindexErrorModalClose(): void {
     document.getElementById("nxqlQuery")?.focus();
-  }
-
-  initiateJSClient(): void {
-    this.nuxeo = new Nuxeo({
-      auth: {
-        method: "basic",
-        username: "Administrator",
-        password: "Administrator",
-      },
-    });
   }
 
   getErrorMessage(): string | null {

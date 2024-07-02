@@ -20,7 +20,7 @@ export const resetDocumentReindexState = createAction(
 
 export const performFolderReindex = createAction(
   "[Admin] Perform Folder Reindex",
-  props<{ documentID: string | null }>()
+  props<{ requestQuery: string | null }>()
 );
 export const onFolderReindexLaunch = createAction(
   "[Admin] On Folder Reindex Launch",
