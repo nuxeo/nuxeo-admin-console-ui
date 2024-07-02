@@ -1,3 +1,4 @@
+import { NuxeoJSClientService } from './shared/services/nuxeo-js-client.service';
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "./shared/services/persistence.service";
@@ -16,10 +17,12 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
-    public commonService: CommonService
+    public commonService: CommonService,
+    private nuxeoJsClientService: NuxeoJSClientService
   ) {}
 
   ngOnInit(): void {
+    this.nuxeoJsClientService.initiateJSClient();
     const doNotWarn = !!this.persistenceService.get("doNotWarn");
     if (!doNotWarn) {
       this.dialogService.open(WarningComponent, {
