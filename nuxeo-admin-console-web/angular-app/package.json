@@ -54,6 +54,7 @@
     "@hylandsoftware/hy-ui-devkit": "^6.0.1",
     "@hylandsoftware/hy-ui-standards": "^6.0.1",
     "@types/jasmine": "~4.3.0",
+    "@types/node": "^20.14.8",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "eslint": "^8.51.0",
@@ -66,6 +67,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "lint-staged": "^15.2.5",
+    "nuxeo": "^4.0.3",
     "typescript": "~5.1.3"
   }
 }
