@@ -21,7 +21,8 @@ export class ElasticSearchReindexModalComponent {
 
   continue(): void {
     this.dialogRef.close({
-      continue: true
+      continue: true,
+      commandId: this.data?.commandId
     });
   }
 

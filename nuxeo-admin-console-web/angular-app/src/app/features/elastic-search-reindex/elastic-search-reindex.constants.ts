@@ -11,12 +11,6 @@ export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
   WIDTH: "550px",
 };
 
-export const ELASTIC_SEARCH_REINDEX_TABS_TITLE = {
-  DOCUMENT: "Reindex a single document",
-  FOLDER: "Reindex a document and all of its children",
-  NXQL_QUERY: "Reindex the results of a NXQL query"
-}
-
 export const ELASTIC_SEARCH_LABELS = {
   INVALID_DOCID_OR_PATH_ERROR:
     "Please provide a document id or a document path",
@@ -31,6 +25,7 @@ export const ELASTIC_SEARCH_LABELS = {
   ABORT_LABEL: "Abort",
   CLOSE_LABEL: "Close",
   CONTINUE: "Continue",
+  FOLDER_REINDEX_TITLE: "Reindex a document and all of its children",
   REINDEX_LAUNCHED_MODAL_TITLE: "Action launched",
   REINDEX_ERRROR_MODAL_TITLE: "An error occurred",
   REINDEXING_ERROR: "Your action was not executed due to an error. ",
