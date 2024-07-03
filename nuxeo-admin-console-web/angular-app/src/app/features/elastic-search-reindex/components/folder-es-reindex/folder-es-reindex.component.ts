@@ -17,10 +17,10 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "folder-es-reindex",
@@ -59,6 +59,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   >;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
+  spinnerVisible = false;
+  spinnerStatusSubscription: Subscription = new Subscription();
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -97,9 +99,15 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           this.showReindexErrorModal(error);
         }
       });
+
+    this.spinnerStatusSubscription =
+      this.elasticSearchReindexService.spinnerStatus.subscribe((status) => {
+        this.spinnerVisible = status;
+      });
   }
 
   showReindexErrorModal(error: HttpErrorResponse): void {
+    this.elasticSearchReindexService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -124,6 +132,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexErrorModalClose(): void {
+    this.elasticSearchReindexService.spinnerStatus.next(false);
     document.getElementById("documentID")?.focus();
   }
 
@@ -166,6 +175,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
+      this.elasticSearchReindexService.spinnerStatus.next(true);
       const sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
         this.folderReindexForm?.get("documentID")?.value
@@ -193,6 +203,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         }
       })
       .catch((err: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }
@@ -217,6 +228,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .query({ query, pageSize: 1 })
       .then((document: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
@@ -229,6 +241,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         }
       })
       .catch((err: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }
@@ -268,9 +281,9 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
           confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           documentCount,
-          timeTakenToReindex: `${
+          timeTakenToReindex: this.getHumanReadableTime(
             documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
-          }`,
+          ),
         },
       }
     );
@@ -312,6 +325,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     );
   }
 
+  getHumanReadableTime(seconds: number): string {
+    return this.elasticSearchReindexService.secondsToHumanReadable(seconds);
+  }
+
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetFolderReindexState());
     this.folderReindexingLaunchedSubscription?.unsubscribe();
@@ -319,5 +336,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
+    this.spinnerStatusSubscription?.unsubscribe();
   }
 }

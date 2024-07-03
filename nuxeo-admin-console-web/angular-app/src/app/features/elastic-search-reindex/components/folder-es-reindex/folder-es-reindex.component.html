@@ -9,4 +9,11 @@
     <button mat-flat-button color="primary" type="submit" class="folder-es-reindex-container__button">
         {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
     </button>
+    <div class="spinner-overlay" *ngIf="spinnerVisible">
+        <mat-progress-spinner class="custom-spinner" mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
 </form>
+
+  
+
