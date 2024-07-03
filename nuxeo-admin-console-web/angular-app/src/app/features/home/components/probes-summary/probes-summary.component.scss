@@ -9,11 +9,7 @@ mat-card {
     right: 4%;
   }
 }
-mat-card.mat-mdc-card:not([class*="mat-elevation-z"]) {
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 3px 4px rgba(0, 0, 0, 0.12),
-    0px 1px 5px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
+
 .mat-mdc-card-content:first-child {
   padding-top: 0;
 }

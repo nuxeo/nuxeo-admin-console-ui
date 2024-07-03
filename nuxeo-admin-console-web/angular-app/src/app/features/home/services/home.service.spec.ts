@@ -29,7 +29,7 @@ describe("HomeService", () => {
 
   describe("getVersionInfo", () => {
     it("should fetch version info and handle http error", () => {
-      service.getversionInfo().subscribe(
+      service.getVersionInfo().subscribe(
         (data) => {
           expect(data).toEqual(mockVersionInfo);
         },
