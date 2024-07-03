@@ -2,8 +2,8 @@ import { ElasticSearchType } from "./elastic-search-reindex.interface";
 
 export const ELASTIC_SEARCH_REINDEX_TYPES: ElasticSearchType[] = [
   { label: "Document", path: "document", isSelected: true },
-  { label: "Folder", path: "folder", isSelected: false},
-  { label: "NXQL Query", path: "nxql", isSelected: false }
+  { label: "Folder", path: "folder", isSelected: false },
+  { label: "NXQL Query", path: "nxql", isSelected: false },
 ];
 
 export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
@@ -49,5 +49,10 @@ export const ELASTIC_SEARCH_LABELS = {
   REINDEX_BUTTON_LABEL: "Reindex",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
   SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
-  UNEXPECTED_ERROR:"Unexpected error format"
+  UNEXPECTED_ERROR: "Unexpected error format",
+  NXQL_QUERY_PLACEHOLDER:
+    "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'",
+  NXQL_QUERY: "NXQL Query",
+  NXQL_INPUT_HINT:
+    "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
 };

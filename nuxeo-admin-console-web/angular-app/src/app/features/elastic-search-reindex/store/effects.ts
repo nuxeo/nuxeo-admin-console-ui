@@ -59,3 +59,30 @@ export const loadPerformFolderReindexEffect = createEffect(
   },
   { functional: true }
 );
+export const loadPerformNxqlReindexEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    elasticSearchReindexService = inject(ElasticSearchReindexService)
+  ) => {
+    return actions$.pipe(
+      ofType(ReindexActions.performNxqlReindex),
+      switchMap((action) => {
+        return elasticSearchReindexService
+          .performNXQLReindex(action?.nxqlQuery)
+          .pipe(
+            map((data) => {
+              return ReindexActions.onNxqlReindexLaunch({
+                nxqlReindexInfo: {
+                  commandId: data?.commandId,
+                },
+              });
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(ReindexActions.onNxqlReindexFailure({ error }));
+            })
+          );
+      })
+    );
+  },
+  { functional: true }
+);
