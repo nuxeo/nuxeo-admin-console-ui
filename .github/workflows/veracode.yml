@@ -1,0 +1,136 @@
+# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
+
+name: Veracode
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+  workflow_call:
+    inputs:
+      branch:
+        description: 'The branch to Analyze'
+        type: string
+        required: true
+    secrets:
+      PACKAGES_AUTH_USER:
+        description: 'PACKAGES_AUTH_USER'
+        required: true
+      PACKAGES_AUTH_TOKEN:
+        description: 'PACKAGES_AUTH_TOKEN'
+        required: true
+      VERACODE_API_ID:
+        description: 'VERACODE_API_ID'
+        required: true
+      VERACODE_API_KEY:
+        description: 'VERACODE_API_KEY'
+        required: true
+
+env:
+  REFERENCE_BRANCH: dev
+  NPM_REPOSITORY: https://packages.nuxeo.com/repository/npm-public/
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
+
+permissions:
+  contents: read
+
+jobs:
+  scan-build:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - uses: actions/setup-node@v4
+        with:
+          registry-url: ${{ env.NPM_REPOSITORY }}
+          node-version: 20
+          scope: '@nuxeo'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+                <servers>
+                    <server>
+                      <id>maven-internal</id>
+                      <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                      <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                    </server>
+                </servers>
+                </settings>' > ~/.m2/settings.xml
+                
+      - name: Configure Additional Registries
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+    
+      - name: Delete Node Modules
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: rm -rf node_modules
+       
+      - name: Install zip
+        run: sudo apt-get install zip
+
+      - name: Zip nuxeo-admin-console
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: zip -r nuxeo-admin-console-ui.zip *
+
+      - name: Upload ZIP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuxeo-admin-console-ui
+          path: nuxeo-admin-console-web/angular-app/nuxeo-admin-console-ui.zip
+  
+  scan:
+    needs: scan-build
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuxeo-admin-console-ui
+          path: .
+
+      - name: List downloaded artifact
+        run: |
+          ls -l
+          pwd
+
+      - name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@0.2.6
+        with:
+          appname: 'nuxeo-admin-console-ui'
+          createprofile: false
+          filepath: 'nuxeo-admin-console-ui.zip'
+          vid: '${{ secrets.VERACODE_SECRET_API_ID }}'
+          vkey: '${{ secrets.VERACODE_SECRET_KEY }}'
+          sandboxname: 'master'
+          scantimeout: 600
+          include: '*.war, *.zip, *.js, *.html, *.css, *.json'
+          criticality: 'High'
+          includenewmodules: 'true'
+          
