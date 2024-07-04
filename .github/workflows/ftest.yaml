@@ -54,7 +54,9 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
-      - name: Functional Tests
+      - name: Functional Test
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
+          echo "Running functional test, remove this echo once ftest are ready."
           npm run ftest
+      
