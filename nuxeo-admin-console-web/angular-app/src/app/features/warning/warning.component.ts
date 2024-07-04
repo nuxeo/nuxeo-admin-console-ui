@@ -25,7 +25,7 @@ export class WarningComponent implements OnInit {
     private _hyKeyboardFocusService: HyKeyboardFocusService,
     private store: Store<{ auth: AuthStateInterface }>
   ) {
-    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state.auth.currentUser));
+    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
   }
 
   ngOnInit(): void {
