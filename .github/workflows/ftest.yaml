@@ -22,7 +22,7 @@ env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
 
 jobs:
-  utest:
+  ftest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
