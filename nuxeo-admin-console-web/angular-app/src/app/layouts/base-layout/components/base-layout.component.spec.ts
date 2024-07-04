@@ -7,7 +7,7 @@ import { HeaderBarComponent } from "../../header-bar/header-bar.component";
 import { BaseLayoutComponent } from "./base-layout.component";
 import { provideMockStore } from '@ngrx/store/testing';
 import { StoreModule } from '@ngrx/store';
-import { MatIconModule } from "@angular/material/icon";
+import { HyMaterialIconModule } from "@hyland/ui";
 
 import {
   ComponentFixture,
@@ -27,7 +27,7 @@ describe("BaseLayoutComponent", () => {
         HeaderBarComponent,
         MenuBarComponent,
       ],
-      imports: [CommonModule, MatIconModule,RouterModule, MatToolbarModule, MatListModule, MatSidenavModule,StoreModule.forRoot(provideMockStore)],
+      imports: [CommonModule, HyMaterialIconModule,RouterModule, MatToolbarModule, MatListModule, MatSidenavModule,StoreModule.forRoot(provideMockStore)],
       providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
     }).compileComponents();
     fixture = TestBed.createComponent(BaseLayoutComponent);
