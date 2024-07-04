@@ -26,6 +26,18 @@
       color: #212121;
       font-size: 20px;
     }
+    &__username {
+      color: #212121;
+      font-size: 14px;
+      margin-right: 15px;
+      &__skeleton {
+        width: 120px;
+        height: 24px;
+        background-color: rgba(175, 169, 169, 0.432);
+        border-radius: 20px;
+        margin-right: 15px;
+      }
+    }
     &__profile-icon {
       height: 58px !important;
       width: 58px !important;

@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage --watch=false",
     "lint": "ng lint",
-    "clean":"npm cache clean --force",
+    "clean": "npm cache clean --force",
     "prepare": "husky"
   },
   "dependencies": {
