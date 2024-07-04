@@ -17,7 +17,7 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   displayName: string | undefined;
 
   constructor(private store: Store<{ auth: AuthStateInterface }>, private nuxeoJsClientService: NuxeoJSClientService,) {
-    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state.auth.currentUser));
+    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
   }
 
   ngOnInit(): void {

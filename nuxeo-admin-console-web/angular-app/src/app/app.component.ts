@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private nuxeoJsClientService: NuxeoJSClientService,
     private store: Store<{ auth: AuthStateInterface }>
   ) {
-    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state.auth.currentUser));
+    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
   }
 
   ngOnInit(): void {

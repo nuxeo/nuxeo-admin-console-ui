@@ -23,12 +23,12 @@ export class AuthService {
 
   getUser(response: AuthUserResponseInterface): UserInterface {
     return {
-      id: response.id,
+      id: response?.id,
       properties: {
-        firstName: response.properties.firstName,
-        lastName: response.properties.lastName,
-        email: response.properties.email,
-        username: response.properties.username
+        firstName: response?.properties?.firstName,
+        lastName: response?.properties?.lastName,
+        email: response?.properties?.email,
+        username: response?.properties?.username
       }
     };
   }
