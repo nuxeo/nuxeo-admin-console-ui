@@ -12,4 +12,10 @@
         {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
     </button>
     <div [innerHTML]="nxqlQueryHintSanitized"></div>
+    <div class="spinner-overlay" *ngIf="spinnerVisible">
+        <mat-progress-spinner class="custom-spinner" mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
 </form>
+  
+

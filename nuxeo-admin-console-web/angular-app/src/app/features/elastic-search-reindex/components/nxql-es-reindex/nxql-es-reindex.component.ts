@@ -1,11 +1,11 @@
+import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import {
   ReindexModalClosedInfo,
   ReindexInfo,
 } from "../../elastic-search-reindex.interface";
-import { Component, SecurityContext } from "@angular/core";
+import { Component, SecurityContext, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -17,17 +17,18 @@ import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { NXQLReindexState } from "../../store/reducers";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { HttpErrorResponse } from "@angular/common/http";
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "nxql-es-reindex",
   templateUrl: "./nxql-es-reindex.component.html",
   styleUrls: ["./nxql-es-reindex.component.scss"],
 })
-export class NXQLESReindexComponent {
+export class NXQLESReindexComponent implements OnInit, OnDestroy {
   nxqlReindexForm: FormGroup;
   nxqlReindexingLaunched$: Observable<ReindexInfo>;
   nxqlReindexingError$: Observable<HttpErrorResponse | null>;
@@ -61,6 +62,8 @@ export class NXQLESReindexComponent {
   >;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
+  spinnerVisible = false;
+  spinnerStatusSubscription: Subscription = new Subscription();
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -104,9 +107,14 @@ export class NXQLESReindexComponent {
         }
       }
     );
+    this.spinnerStatusSubscription =
+      this.elasticSearchReindexService.spinnerStatus.subscribe((status) => {
+        this.spinnerVisible = status;
+      });
   }
 
   showReindexLaunchedModal(commandId: string | null): void {
+    this.elasticSearchReindexService.spinnerStatus.next(false);
     this.launchedDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -174,6 +182,7 @@ export class NXQLESReindexComponent {
 
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm?.valid) {
+      this.elasticSearchReindexService.spinnerStatus.next(true);
       const sanitizedInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
         this.nxqlReindexForm?.get("nxqlQuery")?.value
@@ -187,6 +196,7 @@ export class NXQLESReindexComponent {
       .repository()
       .query({ query, pageSize: 1 })
       .then((document: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
@@ -199,6 +209,7 @@ export class NXQLESReindexComponent {
         }
       })
       .catch((err: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }
@@ -235,9 +246,9 @@ export class NXQLESReindexComponent {
           impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
           confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           documentCount,
-          timeTakenToReindex: `${
+          timeTakenToReindex: this.getHumanReadableTime(
             documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
-          }`,
+          ),
         },
       }
     );
@@ -275,6 +286,10 @@ export class NXQLESReindexComponent {
       typeof (err as { response: { json: () => Promise<unknown> } }).response
         .json === "function"
     );
+  }
+
+  getHumanReadableTime(seconds: number): string {
+    return this.elasticSearchReindexService.secondsToHumanReadable(seconds);
   }
 
   ngOnDestroy(): void {

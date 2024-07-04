@@ -12,6 +12,7 @@ import { NXQLESReindexComponent } from "./components/nxql-es-reindex/nxql-es-rei
 import { FolderESReindexComponent } from "./components/folder-es-reindex/folder-es-reindex.component";
 import { ElasticSearchReindexComponent } from "./components/elastic-search-reindex.component";
 import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/elastic-search-reindex-routing.module";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { ElasticSearchReindexRoutingModule } from "../elastic-search-reindex/ela
     MatButtonModule,
     HyMaterialTabsModule,
     ElasticSearchReindexRoutingModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ElasticSearchReindexModule {}
