@@ -178,7 +178,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       this.elasticSearchReindexService.spinnerStatus.next(true);
       const sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
-        this.folderReindexForm?.get("documentID")?.value
+        this.folderReindexForm?.get("documentID")?.value?.trim()
       );
       this.buildDocumentCountFetchRequestQuery(sanitizedUserInput);
     }

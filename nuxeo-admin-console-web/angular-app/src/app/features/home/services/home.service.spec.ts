@@ -1,16 +1,23 @@
 import { TestBed } from "@angular/core/testing";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from "@angular/common/http/testing";
 import { HomeService } from "./home.service";
-import { environment } from "../../../../environments/environment";
+import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
 import { versionInfo } from "../../../shared/types/version-info.interface";
 
 describe("HomeService", () => {
   let service: HomeService;
   let httpMock: HttpTestingController;
 
-  const mockVersionInfo: versionInfo = {
-    version: "Nuxeo Platform 2021.45.8",
-    clusterEnabled: true,
+  const mockCapabilitiesResponse: CapabilitiesResponse = {
+    server: {
+      distributionVersion: "Nuxeo Platform 2021.45.8",
+    },
+    cluster: {
+      enabled: true,
+    },
   };
 
   beforeEach(() => {
@@ -23,26 +30,46 @@ describe("HomeService", () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
+  afterEach(() => {
+    httpMock.verify();
+  });
+
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
   describe("getVersionInfo", () => {
-    it("should fetch version info and handle http error", () => {
-      service.getversionInfo().subscribe(
-        (data) => {
-          expect(data).toEqual(mockVersionInfo);
-        },
+    it("should fetch version info", () => {
+      service.getVersionInfo().subscribe((data) => {
+        expect(data).toEqual(mockCapabilitiesResponse);
+      });
+
+      const req = httpMock.expectOne(
+        `${service["nuxeoJsClientService"].getApiUrl()}capabilities`
+      );
+      expect(req.request.method).toBe("GET");
+      req.flush(mockCapabilitiesResponse);
+    });
+
+    it("should handle http error", () => {
+      const errorResponse = {
+        status: 500,
+        statusText: "Server Error",
+      };
+
+      service.getVersionInfo().subscribe(
+        () => fail("expected an error, not version info"),
         (error) => {
           expect(error.status).toBe(500);
           expect(error.statusText).toBe("Server Error");
         }
       );
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/version-info.json`);
-      req.flush(mockVersionInfo);
-      httpMock.verify();
+      const req = httpMock.expectOne(
+        `${service["nuxeoJsClientService"].getApiUrl()}capabilities`
+      );
       expect(req.request.method).toBe("GET");
+      req.flush(null, errorResponse);
     });
   });
 });

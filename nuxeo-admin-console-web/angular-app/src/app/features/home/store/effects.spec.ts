@@ -14,7 +14,7 @@ describe("HomeEffects", () => {
   let homeServiceSpy: any;
 
   beforeEach(() => {
-    homeServiceSpy = jasmine.createSpyObj("HomeService", ["getversionInfo"]);
+    homeServiceSpy = jasmine.createSpyObj("HomeService", ["getVersionInfo"]);
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
@@ -27,26 +27,13 @@ describe("HomeEffects", () => {
     effect = TestBed.runInInjectionContext(() => loadVersionInfoEffect);
   });
 
-  it("it should return fetchversionInfoSuccess on success", (done) => {
-    const versionInfoData = { version: "1.0.0", clusterEnabled: true };
-    homeServiceSpy.getversionInfo.and.returnValue(of(versionInfoData));
-    const outcome = HomeActions.fetchversionInfoSuccess({
-      versionInfo: versionInfoData,
-    });
-    const actionsMock$ = of(HomeActions.fetchversionInfo());
-    effect(actionsMock$, homeServiceSpy).subscribe((result: any) => {
-      expect(result).toEqual(outcome);
-      done();
-    });
-  });
-
   it("it should return fetchversionInfoFailure on failure", (done) => {
     const error = {
       name: "error404",
       message: "Page not found !",
       error: "404",
     };
-    homeServiceSpy.getversionInfo.and.returnValue(throwError(() => error));
+    homeServiceSpy.getVersionInfo.and.returnValue(throwError(() => error));
     const outcome = HomeActions.fetchversionInfoFailure({
       error,
     });

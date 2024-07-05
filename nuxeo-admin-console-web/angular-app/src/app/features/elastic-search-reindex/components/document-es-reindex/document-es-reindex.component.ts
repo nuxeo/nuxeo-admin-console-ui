@@ -170,7 +170,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     if (this.documentReindexForm?.valid) {
       const sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
-        this.documentReindexForm?.get("documentIdentifier")?.value
+        this.documentReindexForm?.get("documentIdentifier")?.value.trim()
       );
       this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
     }

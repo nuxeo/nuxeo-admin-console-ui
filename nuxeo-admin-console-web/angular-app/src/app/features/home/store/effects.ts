@@ -10,12 +10,12 @@ export const loadVersionInfoEffect = createEffect(
     return actions$.pipe(
       ofType(HomeActions.fetchversionInfo),
       switchMap(() => {
-        return homeService.getversionInfo().pipe(
+        return homeService.getVersionInfo().pipe(
           map((data) => {
             return HomeActions.fetchversionInfoSuccess({
               versionInfo: {
-                version: data?.version,
-                clusterEnabled: data?.clusterEnabled,
+                version: data.server?.distributionVersion ?? null,
+                clusterEnabled: data.cluster?.enabled ?? null,
               },
             });
           }),
