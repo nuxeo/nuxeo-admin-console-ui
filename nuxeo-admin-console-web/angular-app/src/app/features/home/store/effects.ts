@@ -14,8 +14,8 @@ export const loadVersionInfoEffect = createEffect(
           map((data) => {
             return HomeActions.fetchversionInfoSuccess({
               versionInfo: {
-                version: data?.version,
-                clusterEnabled: data?.clusterEnabled,
+                version: data.server?.distributionVersion ?? null,
+                clusterEnabled: data.cluster?.enabled ?? null,
               },
             });
           }),

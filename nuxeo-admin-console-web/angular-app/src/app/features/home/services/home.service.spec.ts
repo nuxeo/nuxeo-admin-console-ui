@@ -20,11 +20,6 @@ describe("HomeService", () => {
     },
   };
 
-  const mockVersionInfo: versionInfo = {
-    version: "Nuxeo Platform 2021.45.8",
-    clusterEnabled: true,
-  };
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -46,7 +41,7 @@ describe("HomeService", () => {
   describe("getVersionInfo", () => {
     it("should fetch version info", () => {
       service.getVersionInfo().subscribe((data) => {
-        expect(data).toEqual(mockVersionInfo);
+        expect(data).toEqual(mockCapabilitiesResponse);
       });
 
       const req = httpMock.expectOne(

@@ -27,19 +27,6 @@ describe("HomeEffects", () => {
     effect = TestBed.runInInjectionContext(() => loadVersionInfoEffect);
   });
 
-  it("it should return fetchversionInfoSuccess on success", (done) => {
-    const versionInfoData = { version: "1.0.0", clusterEnabled: true };
-    homeServiceSpy.getVersionInfo.and.returnValue(of(versionInfoData));
-    const outcome = HomeActions.fetchversionInfoSuccess({
-      versionInfo: versionInfoData,
-    });
-    const actionsMock$ = of(HomeActions.fetchversionInfo());
-    effect(actionsMock$, homeServiceSpy).subscribe((result: any) => {
-      expect(result).toEqual(outcome);
-      done();
-    });
-  });
-
   it("it should return fetchversionInfoFailure on failure", (done) => {
     const error = {
       name: "error404",

@@ -168,7 +168,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     if (this.folderReindexForm?.valid) {
       const sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
-        this.folderReindexForm?.get("documentID")?.value
+        this.folderReindexForm?.get("documentID")?.value?.trim()
       );
       this.buildDocumentCountFetchRequestQuery(sanitizedUserInput);
     }
