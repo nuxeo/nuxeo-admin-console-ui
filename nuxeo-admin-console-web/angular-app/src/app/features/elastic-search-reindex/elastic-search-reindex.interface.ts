@@ -36,4 +36,5 @@ export interface ReindexModalData {
   closeLabel: string;
   isLaunchedModal: boolean;
   commandId: string;
+  userInput: string;
 }

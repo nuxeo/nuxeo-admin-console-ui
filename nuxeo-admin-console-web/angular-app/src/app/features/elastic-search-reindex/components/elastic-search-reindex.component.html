@@ -1,7 +1,7 @@
 <div class="elastic-search-reindex-container">
-  <h5 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
+  <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
     {{ pageTitle }}
-  </h5>
+  </h1>
   <div class="elastic-search-reindex-container__tabs-container">
     <nav mat-tab-nav-bar [tabPanel]="tabPanel" aria-label="ElasticSearch Reindexing navigation">
       <a mat-tab-link *ngFor="let tab of searchTabs; let i = index" [routerLink]="[tab.path]"

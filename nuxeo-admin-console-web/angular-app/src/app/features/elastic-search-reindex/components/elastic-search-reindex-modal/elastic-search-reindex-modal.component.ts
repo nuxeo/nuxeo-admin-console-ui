@@ -37,4 +37,8 @@ export class ElasticSearchReindexModalComponent {
       alert(ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT);
     });
   }
+
+  getNoDocumentsMessage(): string | null {
+    return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace("<documentID>", this.data?.userInput);
+  }
 }

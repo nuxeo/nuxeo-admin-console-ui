@@ -61,6 +61,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   nuxeo: Nuxeo;
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
+  sanitizedUserInput: string | null = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -106,7 +107,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  showReindexErrorModal(error: HttpErrorResponse): void {
+  showReindexErrorModal(error?: HttpErrorResponse): void {
     this.elasticSearchReindexService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
@@ -117,8 +118,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-          errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+          errorMessageHeader: error
+            ? `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`
+            : `${ELASTIC_SEARCH_LABELS.NO_DOCUMENTS}`,
           error: error,
+          userInput: this.sanitizedUserInput,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
         },
@@ -176,29 +180,35 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      const sanitizedUserInput = this.sanitizer.sanitize(
+      this.sanitizedUserInput = this.sanitizer.sanitize(
         SecurityContext.HTML,
-        this.folderReindexForm?.get("documentID")?.value?.trim()
+        this.folderReindexForm?.get("documentID")?.value
       );
-      this.buildDocumentCountFetchRequestQuery(sanitizedUserInput);
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.sanitizedUserInput}' OR ecm:ancestorId='${this.sanitizedUserInput}'`;
+      this.fetchNoOfDocuments(requestQuery);
     }
   }
 
-  buildDocumentCountFetchRequestQuery(userInput: string | null): void {
+  
+
+  fetchNoOfDocuments(query: string | null): void {
     this.nuxeo
       .repository()
-      .fetch(userInput)
+      .query({ query, pageSize: 1 })
       .then((document: unknown) => {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
-          "uid" in document
+          "resultsCount" in document
         ) {
-          const doc = document as { uid: string };
-          const documentId = doc?.uid ? doc?.uid : "";
-          if (documentId) {
-            const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
-            this.fetchNoOfDocuments(requestQuery, documentId);
+          const documentCount = document.resultsCount
+            ? (document.resultsCount as number)
+            : 0;
+          if (documentCount === 0) {
+            this.showReindexErrorModal();
+          } else {
+            this.showConfirmationModal(documentCount);
           }
         }
       })
@@ -223,48 +233,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  fetchNoOfDocuments(query: string | null, documentId: string | null): void {
-    this.nuxeo
-      .repository()
-      .query({ query, pageSize: 1 })
-      .then((document: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
-        if (
-          typeof document === "object" &&
-          document !== null &&
-          "resultsCount" in document
-        ) {
-          const documentCount = document.resultsCount
-            ? (document.resultsCount as number)
-            : 0;
-          this.showConfirmationModal(documentCount, documentId);
-        }
-      })
-      .catch((err: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
-        if (this.checkIfErrorHasResponse(err)) {
-          return (
-            err as { response: { json: () => Promise<unknown> } }
-          ).response.json();
-        } else {
-          return Promise.reject(ELASTIC_SEARCH_LABELS.UNEXPECTED_ERROR);
-        }
-      })
-      .then((errorJson: unknown) => {
-        if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
-            ReindexActions.onFolderReindexFailure({
-              error: errorJson as HttpErrorResponse,
-            })
-          );
-        }
-      });
-  }
-
-  showConfirmationModal(
-    documentCount: number,
-    documentId: string | null
-  ): void {
+  showConfirmationModal(documentCount: number): void {
     this.confirmDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -291,17 +260,14 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.confirmDialogClosedSubscription = this.confirmDialogRef
       .afterClosed()
       .subscribe((data) => {
-        this.onConfirmationModalClose(data, documentId);
+        this.onConfirmationModalClose(data);
       });
   }
 
-  onConfirmationModalClose(
-    modalData: unknown,
-    documentId: string | null
-  ): void {
+  onConfirmationModalClose(modalData: unknown): void {
     const data = modalData as ReindexModalClosedInfo;
     if (data?.continue) {
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${documentId}' OR ecm:ancestorId='${documentId}'`;
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.sanitizedUserInput}' OR ecm:ancestorId='${this.sanitizedUserInput}'`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({
           requestQuery,
