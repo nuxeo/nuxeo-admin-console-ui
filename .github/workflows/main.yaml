@@ -69,22 +69,23 @@ jobs:
           echo ${PACKAGE_VERSION} "${PACKAGE_VERSION}"
 
       # - name: Get prerelease version
-        run: |
-          git fetch origin --tags
-          RC_VERSION=$(git tag --sort=taggerdate --list "v${{env.PACKAGE_VERSION}}/-SNAPSHOT*" | tail -1 | tr -d '\n')
-          if [[ ${{env.PACKAGE_VERSION}} == *"-SNAPSHOT" ]]; then
-            NEXT_PACKAGE_VERSION="${{env.PACKAGE_VERSION}}%-SNAPSHOT-rc-0"
-          elif [[ ${{env.PACKAGE_VERSION}} == *"-rc-"* ]]; then
-            base_version=${{env.PACKAGE_VERSION}}%-rc-*
-            rc_number=${{env.PACKAGE_VERSION}}##*-rc-
-            rc_number=$((rc_number + 1))
-            NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
-          else
-            echo "Version format not recognized. Exiting."
-            exit 1
-          fi
-          VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{env.PACKAGE_VERSION}}}  | tr -d '\n')
-          NEXT_PACKAGE_VERSION=${{env.NEXT_PACKAGE_VERSION}}
+      #   run: |
+      #     git fetch origin --tags
+      #     RC_VERSION=$(git tag --sort=taggerdate --list "v${{env.PACKAGE_VERSION}}/-SNAPSHOT*" | tail -1 | tr -d '\n')
+      #     if [[ ${{env.PACKAGE_VERSION}} == *"-SNAPSHOT" ]]; then
+      #       NEXT_PACKAGE_VERSION="${{env.PACKAGE_VERSION}}%-SNAPSHOT-rc-0"
+      #     elif [[ ${{env.PACKAGE_VERSION}} == *"-rc-"* ]]; then
+      #       base_version=${{env.PACKAGE_VERSION}}%-rc-*
+      #       rc_number=${{env.PACKAGE_VERSION}}##*-rc-
+      #       rc_number=$((rc_number + 1))
+      #       NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
+      #     else
+      #       echo "Version format not recognized. Exiting."
+      #       exit 1
+      #     fi
+      #     VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{env.PACKAGE_VERSION}}}  | tr -d '\n')
+      #     NEXT_PACKAGE_VERSION=${{env.NEXT_PACKAGE_VERSION}}
+
       - name: Update versions
         run: |
          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|xml\)" -exec sed -i 's/'"${PACKAGE_VERSION}"'/'"${NEXT_PACKAGE_VERSION}"'/g' {} \;
