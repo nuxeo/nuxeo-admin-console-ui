@@ -22,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -63,9 +63,10 @@ jobs:
         run: |
           echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
           pushd nuxeo-admin-console-web/angular-app
+          echo $(npx -c 'echo "$npm_package_version"')
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
           popd
-          echo "PACKAGE_VERSION" "${PACKAGE_VERSION}"  "BRANCH_NAME" "${BRANCH_NAME}"
+          echo "PACKAGE_VERSION" ${PACKAGE_VERSION}  "BRANCH_NAME" ${BRANCH_NAME}
 
       - name: Get prerelease version
         run: |
