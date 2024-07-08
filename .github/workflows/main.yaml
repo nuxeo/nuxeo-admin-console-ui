@@ -8,11 +8,6 @@ on:
   # Manually trigger the workflow
   workflow_dispatch:
 
-env:
-  BRANCH_NAME: ''
-  PACKAGE_VERSION: ''
-  NEXT_PACKAGE_VERSION: ''
-
 jobs:
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev-test-1
@@ -27,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -68,32 +63,31 @@ jobs:
         run: |
           echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
           pushd nuxeo-admin-console-web/angular-app
-          PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo $(npx -c 'echo "$npm_package_version"')
+          echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION BRANCH_NAME=${GITHUB_HEAD_REF##*/}"
+          echo ${PACKAGE_VERSION} "${PACKAGE_VERSION}"
 
-      - name: Get prerelease version
+      # - name: Get prerelease version
         run: |
           git fetch origin --tags
-          RC_VERSION=$(git tag --sort=taggerdate --list "v${{ env.PACKAGE_VERSION/-SNAPSHOT}*}" | tail -1 | tr -d '\n')
-          if [[ "${{ env.PACKAGE_VERSION }}" == *"-SNAPSHOT" ]]; then
-            NEXT_PACKAGE_VERSION="${{ env.PACKAGE_VERSION%-SNAPSHOT}}-rc-0"
-          elif [[ "${{ env.PACKAGE_VERSION }}" == *"-rc-"* ]]; then
-            base_version=${{ env.PACKAGE_VERSION%-rc-*}}
-            rc_number=${{ env.PACKAGE_VERSION##*-rc-}}
+          RC_VERSION=$(git tag --sort=taggerdate --list "v${{env.PACKAGE_VERSION}}/-SNAPSHOT*" | tail -1 | tr -d '\n')
+          if [[ ${{env.PACKAGE_VERSION}} == *"-SNAPSHOT" ]]; then
+            NEXT_PACKAGE_VERSION="${{env.PACKAGE_VERSION}}%-SNAPSHOT-rc-0"
+          elif [[ ${{env.PACKAGE_VERSION}} == *"-rc-"* ]]; then
+            base_version=${{env.PACKAGE_VERSION}}%-rc-*
+            rc_number=${{env.PACKAGE_VERSION}}##*-rc-
             rc_number=$((rc_number + 1))
             NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
           else
             echo "Version format not recognized. Exiting."
             exit 1
           fi
-          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{ env.PACKAGE_VERSION}}} | tr -d '\n')" >> $GITHUB_ENV
-          echo "NEXT_PACKAGE_VERSION=$NEXT_PACKAGE_VERSION" >> $GITHUB_ENV
-
+          VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{env.PACKAGE_VERSION}}}  | tr -d '\n')
+          NEXT_PACKAGE_VERSION=${{env.NEXT_PACKAGE_VERSION}}
       - name: Update versions
         run: |
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|xml\)" -exec sed -i 's/'"${{ env.PACKAGE_VERSION }}"'/'"${{ env.NEXT_PACKAGE_VERSION }}"'/g' {} \;
+         find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|xml\)" -exec sed -i 's/'"${PACKAGE_VERSION}"'/'"${NEXT_PACKAGE_VERSION}"'/g' {} \;
       
       - name: Install Angular CLI
         run: npm install -g @angular/cli
