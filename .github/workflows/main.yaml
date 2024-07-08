@@ -3,18 +3,20 @@ name: Main
 on:
   push:
     branches:
-      - dev
+      - dev-test-1
+
+  # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
   lint:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev-test-1
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   test:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev-test-1
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
@@ -56,6 +58,12 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Prepare environment
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
 
       - name: Install Angular CLI
         run: npm install -g @angular/cli
