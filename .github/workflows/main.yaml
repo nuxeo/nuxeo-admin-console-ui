@@ -66,7 +66,11 @@ jobs:
           echo $(npx -c 'echo "$npm_package_version"')
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
-          echo "${{env.PACKAGE_VERSION}}" 
+
+      - name: Test
+        run: |
+          echo "${{env.PACKAGE_VERSION}}
+
 
       # - name: Get prerelease version
       #   run: |
