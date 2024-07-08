@@ -60,11 +60,35 @@ jobs:
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
 
       - name: Prepare environment
-        working-directory: nuxeo-admin-console-web/angular-app
         run: |
           echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
+          pushd nuxeo-admin-console-web/angular-app
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
+          popd
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" & "BRANCH_NAME=${BRANCH_NAME}"
 
+      - name: Get prerelease version
+        run: |
+          git fetch origin --tags
+          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
+          if [[ "$PACKAGE_VERSION" == *"-SNAPSHOT" ]]; then
+            NEXT_PACKAGE_VERSION="${PACKAGE_VERSION%-SNAPSHOT}-rc-0"
+          elif [[ "$PACKAGE_VERSION" == *"-rc-"* ]]; then
+            base_version=${PACKAGE_VERSION%-rc-*}
+            rc_number=${PACKAGE_VERSION##*-rc-}
+            rc_number=$((rc_number + 1))
+            NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
+          else
+            echo "Version format not recognized. Exiting."
+            exit 1
+          fi
+          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
+          echo "NEXT_PACKAGE_VERSION=$NEXT_PACKAGE_VERSION" >> $GITHUB_ENV
+
+      - name: Update versions
+        run: |
+         find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|xml\)" -exec sed -i 's/'"${PACKAGE_VERSION}"'/'"${NEXT_PACKAGE_VERSION}"'/g' {} \;
+      
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
@@ -72,8 +96,15 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
-      - name: Build Angular Project
-        run: mvn package
+      # - name: Build Angular Project
+      #   run: mvn package
+
+      - name: Tag
+        run: |
+          git add package-lock.json nuxeo-admin-console-web/angular-app/package-lock.json
+          git commit -a -m "Release ${NEXT_PACKAGE_VERSION}"
+          git tag -a v${NEXT_PACKAGE_VERSION} -m "Release ${NEXT_PACKAGE_VERSION}"
+          git push origin v${NEXT_PACKAGE_VERSION}
 
       - name: Publish on Pre Prod Marketplace
         working-directory: nuxeo-admin-console-package/target
