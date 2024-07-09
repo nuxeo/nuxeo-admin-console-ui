@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "clean": "npm cache clean --force",
     "prepare": "husky",
-    "ally": "ng ally"
+    "ally": "ng add @angular/material"
   },
   "dependencies": {
     "@angular/animations": "^16.2.0",
