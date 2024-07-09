@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "clean": "npm cache clean --force",
     "prepare": "husky",
-    "akky": "ng ally"
+    "ally": "ng ally"
   },
   "dependencies": {
     "@angular/animations": "^16.2.0",
