@@ -4,7 +4,7 @@ import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -12,7 +12,6 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -63,7 +62,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.documentReindexForm = this.fb.group({
@@ -168,11 +166,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      const sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.documentReindexForm?.get("documentIdentifier")?.value.trim()
-      );
-      this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
+      const userInput = this.documentReindexForm
+        ?.get("documentIdentifier")
+        ?.value.trim();
+      this.triggerReindex(userInput);
     }
   }
 

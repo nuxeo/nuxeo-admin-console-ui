@@ -45,7 +45,7 @@ export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
   }
 
   updateActiveTab(): void {
-    const currentRoute = this.route.snapshot.firstChild?.routeConfig?.path;
+    const currentRoute = this.route?.snapshot?.firstChild?.routeConfig?.path;
     if (currentRoute) {
       this.activeTab =
         this.searchTabs.find((tab) => tab.path === currentRoute) ||
