@@ -74,7 +74,6 @@ jobs:
           - name: Get prerelease version
           run: |
             git fetch origin --tags
-            RC_VERSION=$(git tag --sort=taggerdate --list "v${{ env.PACKAGE_VERSION/-SNAPSHOT/}*}" | tail -1 | tr -d '\n')
             if [[ "${{ env.PACKAGE_VERSION }}" == *"-SNAPSHOT" ]]; then
               NEXT_PACKAGE_VERSION="${{ env.PACKAGE_VERSION%-SNAPSHOT}}-rc-0"
             elif [[ "${{ env.PACKAGE_VERSION }}" == *"-rc-"* ]]; then
