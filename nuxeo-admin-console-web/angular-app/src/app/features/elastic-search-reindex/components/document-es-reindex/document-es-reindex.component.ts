@@ -12,7 +12,6 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -63,7 +62,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.documentReindexForm = this.fb.group({
@@ -168,11 +166,10 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      const sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.documentReindexForm?.get("documentIdentifier")?.value.trim()
-      );
-      this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
+      const userInput = this.documentReindexForm
+        ?.get("documentIdentifier")
+        ?.value.trim();
+      this.triggerReindex(userInput);
     }
   }
 
