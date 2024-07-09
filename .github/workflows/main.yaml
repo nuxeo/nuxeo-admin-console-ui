@@ -76,7 +76,7 @@ jobs:
           git fetch origin --tags
           if [[ "${{ env.PACKAGE_VERSION }}" == *"-SNAPSHOT" ]]; then
             NEXT_PACKAGE_VERSION="${{ env.PACKAGE_VERSION}}-rc-0"
-            echo ${{NEXT_PACKAGE_VERSION}} ${NEXT_PACKAGE_VERSION} NEXT_PACKAGE_VERSION
+            echo "${{ env.PACKAGE_VERSION}}-rc-0"
           # elif [[ "${{ env.PACKAGE_VERSION }}" == *"-rc-"* ]]; then
           #   base_version=${{ env.PACKAGE_VERSION%-rc-* }}
           #   rc_number=${{ env.PACKAGE_VERSION##*-rc- }}
