@@ -168,12 +168,15 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      const sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.documentReindexForm?.get("documentIdentifier")?.value.trim()
-      );
-      this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
+      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value;
+      userInput = this.removeLeadingAndTrailingQuotes(userInput).trim();
+      const sanitizedUserInput = this.sanitizer.sanitize(SecurityContext.HTML, userInput) || "";
+      this.triggerReindex(sanitizedUserInput);
     }
+  }
+
+  removeLeadingAndTrailingQuotes(input: string): string {
+    return input.replace(/^['"]+|['"]+$/g, "");
   }
 
   triggerReindex(userInput: string | null): void {
