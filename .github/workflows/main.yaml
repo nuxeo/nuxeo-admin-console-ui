@@ -76,17 +76,18 @@ jobs:
           git fetch origin --tags
           if [[ "${{ env.PACKAGE_VERSION }}" == *"-SNAPSHOT" ]]; then
             NEXT_PACKAGE_VERSION="${{ env.PACKAGE_VERSION}}-rc-0"
-          elif [[ "${{ env.PACKAGE_VERSION }}" == *"-rc-"* ]]; then
-            base_version=${{ env.PACKAGE_VERSION%-rc-* }}
-            rc_number=${{ env.PACKAGE_VERSION##*-rc- }}
-            rc_number=$((rc_number + 1))
-            NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
-          else
-            echo "Version format not recognized. Exiting."
-            exit 1
-          fi
-          echo "NEXT_PACKAGE_VERSION=$NEXT_PACKAGE_VERSION" >> $GITHUB_ENV
-          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{ env.PACKAGE_VERSION }}} | tr -d '\n')" >> $GITHUB_ENV
+            echo ${{NEXT_PACKAGE_VERSION}} ${NEXT_PACKAGE_VERSION} NEXT_PACKAGE_VERSION
+          # elif [[ "${{ env.PACKAGE_VERSION }}" == *"-rc-"* ]]; then
+          #   base_version=${{ env.PACKAGE_VERSION%-rc-* }}
+          #   rc_number=${{ env.PACKAGE_VERSION##*-rc- }}
+          #   rc_number=$((rc_number + 1))
+          #   NEXT_PACKAGE_VERSION="$base_version-rc-$rc_number"
+          # else
+          #   echo "Version format not recognized. Exiting."
+          #   exit 1
+          # fi
+          # echo "NEXT_PACKAGE_VERSION=$NEXT_PACKAGE_VERSION" >> $GITHUB_ENV
+          # echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-${{ env.PACKAGE_VERSION }}} | tr -d '\n')" >> $GITHUB_ENV
     
 
       - name: Update versions
