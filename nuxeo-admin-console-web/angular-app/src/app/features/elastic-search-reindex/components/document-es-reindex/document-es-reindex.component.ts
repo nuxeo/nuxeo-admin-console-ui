@@ -169,9 +169,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       let userInput = this.documentReindexForm
         ?.get("documentIdentifier")
         ?.value.trim();
-        userInput = this.removeLeadingCharacters(userInput);
+      userInput = this.removeLeadingCharacters(userInput);
       this.triggerReindex(userInput);
-      
     }
   }
 
@@ -188,8 +187,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     return input;
   }
 
-  // removeLeadingAndTrailingQuotes(input: string): string {
-  //   return input.replace(/^['"]+|['"]+$/g, "");
 
   triggerReindex(userInput: string | null): void {
     this.nuxeo
