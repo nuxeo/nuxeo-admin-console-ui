@@ -9,7 +9,8 @@
     "test": "ng test --code-coverage --watch=false",
     "lint": "ng lint",
     "clean": "npm cache clean --force",
-    "prepare": "husky"
+    "prepare": "husky",
+    "akky": "ng ally"
   },
   "dependencies": {
     "@angular/animations": "^16.2.0",
