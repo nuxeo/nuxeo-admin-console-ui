@@ -81,7 +81,7 @@ jobs:
 
       - name: Update versions
         run: |
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
+          # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
           PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
           PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
