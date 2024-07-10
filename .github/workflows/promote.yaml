@@ -53,8 +53,12 @@ jobs:
           git commit -a -m "Release $VERSION"
           git tag -a v$VERSION -m "Release $VERSION"
 
-      - if: ${{ github.event.inputs.dryRun == 'false' }}
+      - name: Push git release of Nuxeo Admin Console UI 
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: git push origin v$VERSION
+       
 
       - name: Create Github release v${{ env.VERSION }}
         if: ${{ github.event.inputs.dryRun == 'false' }}
