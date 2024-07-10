@@ -38,14 +38,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          OLD_VERSION=$(npx -c 'echo "$npm_package_version"')
           pushd nuxeo-admin-console-web/angular-app
+          OLD_VERSION=$(npx -c 'echo "$npm_package_version"')
           npm version $VERSION --no-git-tag-version
           popd
 
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\|xml\)" -exec sed -i 's/'"$OLD_VERSION"'/'"$VERSION"'/g' {} \;
           # XXX: undo the padded lock (see WEBUI-140)
-          sed -i -e 's/<webui.package.version>.*<\/webui.package.version>/<webui.package.version>${project.version}<\/webui.package.version>/g' plugin/web-ui/marketplace/pom.xml
+          sed -i -e 's/<nuxeoadmin.package.version>.*<\/nuxeoadmin.package.version>/<nuxeoadmin.package.version>${project.version}<\/nuxeoadmin.package.version>/g' nuxeo-admin-console-package/pom.xml
 
 
       - name: Perform git release of Nuxeo Admin Console UI ${{ env.VERSION }}
