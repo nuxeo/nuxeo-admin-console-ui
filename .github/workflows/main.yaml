@@ -120,10 +120,10 @@ jobs:
            ls
         
       - name: Publish Nuxeo packages
+        working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
-          pushd nuxeo-admin-console-package/target/
           PACKAGE="nuxeo-admin-console-package-${PADDED_VERSION}.zip"
           echo nuxeo-admin-console-package-${PADDED_VERSION}.zip"
           STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
@@ -134,4 +134,3 @@ jobs:
           else
             exit 0
           fi
-          popd
