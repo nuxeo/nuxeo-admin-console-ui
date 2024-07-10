@@ -22,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    # needs: [lint, test]
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -115,9 +115,9 @@ jobs:
         run: |
           rm .npmrc
           echo "
-             @hylandsoftware:registry=https://npm.pkg.github.com
-             @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
-              registry=https://registry.npmjs.org/
+          @hylandsoftware:registry=https://npm.pkg.github.com
+          @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
+          registry=https://registry.npmjs.org/
           " >> .npmrc
 
       - name: Tag

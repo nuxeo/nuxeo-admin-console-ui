@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to promote (e.g.: 24.0.1-rc.2)'
+        description: 'Version to promote (e.g.: 23.0.1-rc.2)'
         required: true
       referenceBranch:
         description: 'Branch to be updated after the promotion'
@@ -12,6 +12,10 @@ on:
         default: 'dev-test-1'
       dryRun:
         description: 'Run the workflow without pushing code or publishing artifacts'
+        type: boolean
+        required: false
+      isMinorRelease:
+        description: "Enhancement Packs(EP's) or Service Packs(SP's) aka Minor Release (eg: 23.1.1 for 1st minor release after 23.1.0)"
         type: boolean
         required: false
 
@@ -127,10 +131,10 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           ref: ${{ github.event.inputs.referenceBranch }}
 
-    #   - if: ${{ github.event.inputs.referenceBranch == 'main' }}
-    #     run: echo "NEW_VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
+      - if: ${{ github.event.inputs.isMinorRelease == 'true' }}
+        run: echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
 
-      - if: ${{ github.event.inputs.referenceBranch != 'main' }}
+      - if: ${{ github.event.inputs.isMinorRelease == 'false' }}
         run: echo "NEW_VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
 
       - name: Align ${{ github.event.inputs.referenceBranch }} branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
