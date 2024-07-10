@@ -166,12 +166,27 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      const userInput = this.documentReindexForm
-        ?.get("documentIdentifier")
-        ?.value.trim();
+      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value;
+      userInput = userInput.trim();
+      userInput = this.removeLeadingCharacters(userInput);
       this.triggerReindex(userInput);
     }
   }
+
+  removeLeadingCharacters(input: string): string {
+    if (input.startsWith("'") && input.endsWith("'")) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith('"') && input.endsWith('"')) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith("'") || input.startsWith('"')) {
+      return input.slice(1);
+    }
+    return input;
+  }
+
+  // regex for reference (/^['"]+/g, "");
 
   triggerReindex(userInput: string | null): void {
     this.nuxeo
