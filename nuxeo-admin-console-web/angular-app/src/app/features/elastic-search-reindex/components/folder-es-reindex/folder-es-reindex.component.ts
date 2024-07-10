@@ -182,7 +182,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       let userInput = this.folderReindexForm?.get("documentID")?.value.trim();
       userInput =  this.removeLeadingCharacters(userInput);
       this.sanitizedUserInput = userInput;
-  
       const requestQuery = this.sanitizedUserInput
         ? `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.sanitizedUserInput}' OR ecm:ancestorId='${this.sanitizedUserInput}'`
         : null;
