@@ -57,4 +57,4 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           echo "Running Ally, remove this echo once Ally configurations are ready."
-        # npm run ally
+         # npm run ally
