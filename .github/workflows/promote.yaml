@@ -18,6 +18,10 @@ on:
 jobs:
   promote:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
     steps:
       - uses: actions/setup-node@v4
         with:
