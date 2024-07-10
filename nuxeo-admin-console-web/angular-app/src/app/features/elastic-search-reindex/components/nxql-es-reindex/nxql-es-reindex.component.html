@@ -1,11 +1,10 @@
 <form [formGroup]="nxqlReindexForm" (ngSubmit)="onReindexFormSubmit()" class="nxql-es-reindex-container">
+    <p id="requiredField"> {{ ELASTIC_SEARCH_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ ELASTIC_SEARCH_LABELS.NXQL_QUERY }}</mat-label>
-        <textarea matInput class="nxql-query-textarea" [placeholder]="ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER"
-            formControlName="nxqlQuery" id="nxqlQuery" required></textarea>
-        <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{
-            getErrorMessage()
-            }}</mat-error>
+        <textarea matInput [placeholder]="ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="nxqlQuery"
+            id="nxqlQuery" required></textarea>
+        <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
 
     <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button">
@@ -17,5 +16,3 @@
         </mat-progress-spinner>
     </div>
 </form>
-  
-
