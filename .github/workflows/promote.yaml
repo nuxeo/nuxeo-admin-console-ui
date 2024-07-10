@@ -58,7 +58,8 @@ jobs:
         env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: git push origin v$VERSION
+        run: |
+          git push https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/nuxeo/nuxeo-admin-console-ui.git v$VERSION
        
 
       - name: Create Github release v${{ env.VERSION }}
