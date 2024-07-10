@@ -22,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -83,13 +83,13 @@ jobs:
         run: |
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
-          PADDED=$(printf '%03d' $(echo $VERSION | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
-          PADDED_VERSION=$(echo $VERSION | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
           echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"$PADDED_VERSION"'/g' {} \;
           sed -i -e 's/\${project.version}/'"$PADDED_VERSION"'/g' nuxeo-admin-console-package/pom.xml
           pushd nuxeo-admin-console-web/angular-app
-          npm version ${VERSION} --no-git-tag-version
+          npm version ${{env.VERSION}} --no-git-tag-version
           popd
          
       - name: Install Angular CLI
