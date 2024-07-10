@@ -124,8 +124,8 @@ jobs:
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
-          PACKAGE="nuxeo-admin-console-package-${PADDED_VERSION}.zip"
-          echo nuxeo-admin-console-package-${PADDED_VERSION}.zip"
+          PACKAGE="nuxeo-admin-console-package-${{env.PADDED_VERSION}}.zip"
+          echo nuxeo-admin-console-package-${{env.PADDED_VERSION}}.zip"
           STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
           cat publish-req.output
           if [[ "$STATUS_CODE" != "200" ]]
