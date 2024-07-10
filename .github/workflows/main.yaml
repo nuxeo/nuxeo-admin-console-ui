@@ -72,7 +72,7 @@ jobs:
         run: |
           git fetch origin --tags
           RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
-          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" ${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
+          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
           echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
       
       - name: Test
