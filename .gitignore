@@ -17,3 +17,4 @@ npm-debug.log
 coverage
 .angular
 .npmrc
+nuxeo-admin-console-web/angular-app/.npmrc
