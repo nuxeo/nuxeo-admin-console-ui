@@ -86,7 +86,13 @@ jobs:
         env:
           PACKAGE: nuxeo-admin-console-ui-package-${{ env.VERSION }}
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
-        run: curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+        run: |
+         pwd
+         ls 
+         pushd ~/work/nuxeo-admin-console-ui/nuxeo-admin-console-ui
+         ls
+         curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE.zip "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"
+         popd
 
       - name: Push promoted Admin Console UI to Connect PROD
         if: ${{ github.event.inputs.dryRun == 'false' }}
