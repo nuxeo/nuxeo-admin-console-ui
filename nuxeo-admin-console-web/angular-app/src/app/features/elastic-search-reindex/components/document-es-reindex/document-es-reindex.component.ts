@@ -4,7 +4,7 @@ import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -12,7 +12,6 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -63,7 +62,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.documentReindexForm = this.fb.group({
@@ -168,16 +166,30 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value;
-      userInput = this.removeLeadingAndTrailingQuotes(userInput).trim();
-      const sanitizedUserInput = this.sanitizer.sanitize(SecurityContext.HTML, userInput) || "";
-      this.triggerReindex(sanitizedUserInput);
+      let userInput = this.documentReindexForm
+        ?.get("documentIdentifier")
+        ?.value.trim();
+        userInput = this.removeLeadingCharacters(userInput);
+      this.triggerReindex(userInput);
+      
     }
   }
 
-  removeLeadingAndTrailingQuotes(input: string): string {
-    return input.replace(/^['"]+|['"]+$/g, "");
+  removeLeadingCharacters(input: string): string {
+    if (input.startsWith("'") && input.endsWith("'")) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith('"') && input.endsWith('"')) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith("'") || input.startsWith('"')) {
+      return input.slice(1);
+    }
+    return input;
   }
+
+  // removeLeadingAndTrailingQuotes(input: string): string {
+  //   return input.replace(/^['"]+|['"]+$/g, "");
 
   triggerReindex(userInput: string | null): void {
     this.nuxeo

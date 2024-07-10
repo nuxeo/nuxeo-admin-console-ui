@@ -16,7 +16,6 @@ import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -68,7 +67,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.folderReindexForm = this.fb.group({
@@ -180,17 +178,34 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      this.sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.folderReindexForm?.get("documentID")?.value
-      );
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.sanitizedUserInput}' OR ecm:ancestorId='${this.sanitizedUserInput}'`;
+  
+      let userInput = this.folderReindexForm?.get("documentID")?.value.trim();
+      console.log(userInput);
+      userInput =  this.removeLeadingCharacters(userInput);
+      console.log(userInput);
+      this.sanitizedUserInput = userInput;
+  
+      const requestQuery = this.sanitizedUserInput
+        ? `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.sanitizedUserInput}' OR ecm:ancestorId='${this.sanitizedUserInput}'`
+        : null;
+  
       this.fetchNoOfDocuments(requestQuery);
     }
   }
-
   
-
+  removeLeadingCharacters(input: string): string {
+    if (input.startsWith("'") && input.endsWith("'")) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith('"') && input.endsWith('"')) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith("'") || input.startsWith('"')) {
+      return input.slice(1);
+    }
+    return input;
+  }
+  
   fetchNoOfDocuments(query: string | null): void {
     this.nuxeo
       .repository()
