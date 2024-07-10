@@ -106,7 +106,7 @@ jobs:
 
       - name: Tag
         run: |
-          git add package-lock.json nuxeo-admin-console-web/angular-app/package-lock.json
+          git add nuxeo-admin-console-web/angular-app/package-lock.json
           git commit -a -m "Release ${{env.VERSION}}"
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
