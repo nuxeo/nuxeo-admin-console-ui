@@ -72,6 +72,7 @@ jobs:
         run: |
           git fetch origin --tags
           RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
+          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" ${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
           echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
       
       - name: Test
@@ -108,6 +109,16 @@ jobs:
           name: packages
           path: |
             nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Delete .npmrc Registrie
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          rm .npmrc
+          echo "
+             @hylandsoftware:registry=https://npm.pkg.github.com
+             @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
+              registry=https://registry.npmjs.org/
+          " >> .npmrc
 
       - name: Tag
         run: |
