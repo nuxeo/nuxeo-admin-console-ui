@@ -25,7 +25,7 @@ jobs:
           node-version: 20
           scope: '@nuxeo'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: v${{ github.event.inputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -95,7 +95,7 @@ jobs:
           CONNECT_URL: https://connect.nuxeo.com/nuxeo
         run: curl -i -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE.zip "$CONNECT_URL/site/marketplace/upload?batch=true"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_ADMIN_TOKEN }}
           ref: ${{ github.event.inputs.referenceBranch }}
