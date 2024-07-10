@@ -180,9 +180,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       this.elasticSearchReindexService.spinnerStatus.next(true);
   
       let userInput = this.folderReindexForm?.get("documentID")?.value.trim();
-      console.log(userInput);
       userInput =  this.removeLeadingCharacters(userInput);
-      console.log(userInput);
       this.sanitizedUserInput = userInput;
   
       const requestQuery = this.sanitizedUserInput
