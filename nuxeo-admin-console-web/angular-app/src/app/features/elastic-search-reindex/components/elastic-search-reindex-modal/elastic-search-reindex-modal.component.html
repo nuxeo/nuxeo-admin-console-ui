@@ -18,12 +18,12 @@
     </div>
 
     <div *ngIf="data.isErrorModal">
-      <p>{{data.errorMessageHeader}}</p>
-      <div *ngIf="data.error">
+      <div *ngIf="data.error else noDocumentsMessage;">
+        <p>{{data.errorMessageHeader}}</p>
         <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.status}}</p>
         <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.message}}</p>
       </div>
-      <ng-template [ngIf]="!data.error">
+      <ng-template #noDocumentsMessage>
         <p>{{getNoDocumentsMessage()}}</p>
       </ng-template>
     </div>

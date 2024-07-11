@@ -22,13 +22,13 @@ export class ElasticSearchReindexModalComponent {
   continue(): void {
     this.dialogRef.close({
       continue: true,
-      commandId: this.data?.commandId
+      commandId: this.data?.commandId,
     });
   }
 
   close(): void {
     this.dialogRef.close({
-      continue: false
+      continue: false,
     });
   }
 
@@ -39,6 +39,9 @@ export class ElasticSearchReindexModalComponent {
   }
 
   getNoDocumentsMessage(): string | null {
-    return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace("<documentID>", this.data?.userInput);
+    return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+      "<documentID>",
+      this.data?.userInput
+    );
   }
 }

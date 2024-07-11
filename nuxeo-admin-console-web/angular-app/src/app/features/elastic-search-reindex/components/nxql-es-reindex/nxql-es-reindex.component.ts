@@ -183,11 +183,8 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      const sanitizedInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim()
-      );
-      this.fetchNoOfDocuments(sanitizedInput);
+      const userInput = this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim();
+      this.fetchNoOfDocuments(userInput);
     }
   }
 

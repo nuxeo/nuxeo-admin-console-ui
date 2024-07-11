@@ -166,8 +166,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value;
-      userInput = userInput.trim();
+      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value?.trim();
       userInput = this.removeLeadingCharacters(userInput);
       this.triggerReindex(userInput);
     }
