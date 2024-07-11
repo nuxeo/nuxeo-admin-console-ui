@@ -11,7 +11,6 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
-import { of } from "rxjs";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
 
 describe("ElasticSearchReindexModalComponent", () => {
@@ -20,12 +19,6 @@ describe("ElasticSearchReindexModalComponent", () => {
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
   class commonServiceStub {
     loadApp = new EventEmitter<boolean>();
-  }
-
-  class MatDialogRefStub {
-    afterClosed() {
-      return of(true);
-    }
   }
 
   const mockDialogData: ReindexModalData = {
@@ -48,6 +41,11 @@ describe("ElasticSearchReindexModalComponent", () => {
   };
 
   beforeEach(async () => {
+    const matDialogRefSpy = jasmine.createSpyObj("MatDialogRef", [
+      "afterClosed",
+      "continue",
+      "close",
+    ]);
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
       imports: [
@@ -58,7 +56,7 @@ describe("ElasticSearchReindexModalComponent", () => {
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },
         { provide: CommonService, useClass: commonServiceStub },
-        { provide: MatDialogRef, useClass: MatDialogRefStub },
+        { provide: MatDialogRef, useValue: matDialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
     }).compileComponents();
@@ -75,7 +73,6 @@ describe("ElasticSearchReindexModalComponent", () => {
   });
 
   it("should emit continue: true & commandId, when user chooses to continue", () => {
-    spyOn(dialogRef, "close");
     component.continue();
     expect(dialogRef.close).toHaveBeenCalledWith({
       continue: true,
@@ -84,14 +81,13 @@ describe("ElasticSearchReindexModalComponent", () => {
   });
 
   it("should emit continue: false when user closes the modal", () => {
-    spyOn(dialogRef, "close");
     component.close();
     expect(dialogRef.close).toHaveBeenCalledWith({
       continue: false,
     });
   });
 
-  it("should display a javascript alert indicating action id to have been copied, on clipboard copy", async() => {
+  it("should display a javascript alert indicating action id to have been copied, on clipboard copy", async () => {
     const clipboardWriteTextSpy = spyOn(
       navigator.clipboard,
       "writeText"
@@ -100,7 +96,9 @@ describe("ElasticSearchReindexModalComponent", () => {
 
     await component.copyActionId();
 
-    expect(clipboardWriteTextSpy).toHaveBeenCalledWith(mockDialogData.commandId);
+    expect(clipboardWriteTextSpy).toHaveBeenCalledWith(
+      mockDialogData.commandId
+    );
     expect(alertSpy).toHaveBeenCalledWith("Action ID copied to clipboard!");
   });
 });
