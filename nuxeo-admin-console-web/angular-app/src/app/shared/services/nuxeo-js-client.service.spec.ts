@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
 
-fdescribe("NuxeoJSClientService", () => {
+describe("NuxeoJSClientService", () => {
   let service: NuxeoJSClientService;
 
   beforeEach(() => {

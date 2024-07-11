@@ -6,7 +6,7 @@ import {
   ReindexInfo,
   ReindexModalClosedInfo,
 } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -16,7 +16,6 @@ import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -67,7 +66,6 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.folderReindexForm = this.fb.group({
@@ -176,11 +174,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      const sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.folderReindexForm?.get("documentID")?.value?.trim()
-      );
-      this.buildDocumentCountFetchRequestQuery(sanitizedUserInput);
+      const userInput = this.folderReindexForm
+        ?.get("documentID")
+        ?.value?.trim();
+      this.buildDocumentCountFetchRequestQuery(userInput);
     }
   }
 

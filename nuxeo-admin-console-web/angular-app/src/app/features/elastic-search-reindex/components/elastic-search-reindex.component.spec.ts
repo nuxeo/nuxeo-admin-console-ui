@@ -2,20 +2,17 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { ElasticSearchReindexComponent } from "./elastic-search-reindex.component";
 import { ElasticSearchReindexService } from "./../services/elastic-search-reindex.service";
 import { MatDialogModule } from "@angular/material/dialog";
-import {
-  ComponentFixture,
-  ComponentFixtureAutoDetect,
-  TestBed
-} from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
-import { BehaviorSubject, Observable, Subject, of } from "rxjs";
+import { BehaviorSubject, Observable, ReplaySubject, of } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 import {
   ActivatedRoute,
   Router,
+  RouterEvent,
   RouterModule,
 } from "@angular/router";
 import { ChangeDetectorRef } from "@angular/core";
@@ -23,6 +20,7 @@ import { ChangeDetectorRef } from "@angular/core";
 describe("ElasticSearchReindexComponent", () => {
   let component: ElasticSearchReindexComponent;
   let fixture: ComponentFixture<ElasticSearchReindexComponent>;
+  let mockCdRef: jasmine.SpyObj<ChangeDetectorRef>;
   class elasticSearchReindexServiceStub {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -59,16 +57,15 @@ describe("ElasticSearchReindexComponent", () => {
     params = of({ id: "123" });
   }
 
-  class mockRouter {
-    navigate = jasmine.createSpy("navigate");
-    events = new Subject();
-  }
-
-  class mockChangeDetectorRef {
-    detectChanges = jasmine.createSpy("detectChanges");
-  }
+  const eventSubject = new ReplaySubject<RouterEvent>(1);
+  const mockRouter = {
+    navigate: jasmine.createSpy("navigate"),
+    events: eventSubject.asObservable(),
+    url: "test/url",
+  };
 
   beforeEach(async () => {
+    mockCdRef = jasmine.createSpyObj("ChangeDetectorRef", ["detectChanges"]);
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexComponent],
       imports: [
@@ -79,7 +76,6 @@ describe("ElasticSearchReindexComponent", () => {
         StoreModule.forRoot(provideMockStore),
       ],
       providers: [
-        { provide: ComponentFixtureAutoDetect, useValue: true },
         {
           provide: ElasticSearchReindexService,
           useClass: elasticSearchReindexServiceStub,
@@ -90,7 +86,7 @@ describe("ElasticSearchReindexComponent", () => {
         },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: ChangeDetectorRef, useValue: mockCdRef },
       ],
     }).compileComponents();
 
