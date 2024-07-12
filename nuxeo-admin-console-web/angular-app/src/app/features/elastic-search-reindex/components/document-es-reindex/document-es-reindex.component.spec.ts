@@ -58,6 +58,14 @@ describe("DocumentESReindexComponent", () => {
     performNXQLReindex() {
       return Observable<ReindexInfo>;
     }
+
+    removeLeadingCharacters() {
+      return "";
+    }
+
+    decodeAndReplaceSingleQuotes() {
+      return "";
+    }
   }
 
   beforeEach(async () => {
@@ -196,20 +204,25 @@ describe("DocumentESReindexComponent", () => {
 
   it("should call triggerReindex with trimmed value when form is valid", () => {
     const triggerReindexSpy = spyOn(component, "triggerReindex");
+    
     component.documentReindexForm = new FormBuilder().group({
-      documentIdentifier: ["  some value  ", Validators.required],
+      documentIdentifier: ["  'some value'  ", Validators.required],
     });
+    spyOn(elasticSearchReindexService, "removeLeadingCharacters").and.returnValue("some value");
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).toHaveBeenCalledWith("some value");
+    expect(elasticSearchReindexService.removeLeadingCharacters).toHaveBeenCalled();
   });
 
   it("should not call triggerReindex when form is invalid", () => {
     const triggerReindexSpy = spyOn(component, "triggerReindex");
+    spyOn(elasticSearchReindexService, "removeLeadingCharacters");
     component.documentReindexForm = new FormBuilder().group({
       documentIdentifier: ["", Validators.required],
     });
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).not.toHaveBeenCalled();
+    expect(elasticSearchReindexService.removeLeadingCharacters).not.toHaveBeenCalled();
   });
 
   it("should dispatch resetDocumentReindexState and unsubscribe from subscriptions on ngOnDestroy", () => {
@@ -281,12 +294,14 @@ describe("DocumentESReindexComponent", () => {
   });
 
   describe("test triggerReindex", () => {
+   
     it("should dispatch performDocumentReindex on successful fetch", async () => {
+      spyOn(elasticSearchReindexService, "decodeAndReplaceSingleQuotes").and.returnValue("/some/path");
       component.nuxeo = {
         repository: jasmine.createSpy().and.returnValue({
           fetch: jasmine
             .createSpy()
-            .and.returnValue(Promise.resolve({ path: "/some/path" })),
+            .and.returnValue(Promise.resolve({ path: "'/some/path'" })),
         }),
       };
       spyOn(store, "dispatch");
@@ -300,9 +315,11 @@ describe("DocumentESReindexComponent", () => {
           requestQuery: `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='/some/path'`,
         })
       );
+      expect(elasticSearchReindexService.decodeAndReplaceSingleQuotes).toHaveBeenCalled();
     });
 
     it("should handle error if fetch fails", async () => {
+      spyOn(elasticSearchReindexService, "decodeAndReplaceSingleQuotes");
       const userInput = "test-input";
       component.nuxeo = {
         repository: jasmine.createSpy().and.returnValue({

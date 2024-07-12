@@ -5,7 +5,7 @@ import {
   ReindexModalClosedInfo,
   ReindexInfo,
 } from "../../elastic-search-reindex.interface";
-import { Component, SecurityContext, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -64,6 +64,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   nuxeo: Nuxeo;
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
+  decodedUserInput = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -183,15 +184,18 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.nxqlReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      const sanitizedInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim()
+      const userInput = this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim();
+      /* decode user input to handle path names that contain spaces, 
+      which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
+      const decodedUserInput = decodeURIComponent(
+        /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
+        this.elasticSearchReindexService.removeLeadingCharacters(userInput)
       );
-      this.fetchNoOfDocuments(sanitizedInput);
+      this.fetchNoOfDocuments(decodedUserInput);
     }
   }
 
-  fetchNoOfDocuments(query: string | null): void {
+  fetchNoOfDocuments(query: string): void {
     this.nuxeo
       .repository()
       .query({ query, pageSize: 1 })
@@ -229,7 +233,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  showConfirmationModal(documentCount: number, query: string | null): void {
+  showConfirmationModal(documentCount: number, query: string): void {
     this.confirmDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -260,14 +264,19 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConfirmationModalClose(
-    data: ReindexModalClosedInfo,
-    query: string | null
-  ): void {
+  onConfirmationModalClose(data: ReindexModalClosedInfo, query: string): void {
     if (data?.continue) {
+      /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
+          for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
+          /default-domain/workspaces/ws1/Harry%5C%27s-file
+          Other special characters are encoded by default by nuxeo js client, but not single quote */
+      this.decodedUserInput = decodeURIComponent(query).replace(
+        /\\'/g,
+        "%5C%27"
+      );
       this.store.dispatch(
         ReindexActions.performNxqlReindex({
-          nxqlQuery: query,
+          nxqlQuery: this.decodedUserInput,
         })
       );
     } else {

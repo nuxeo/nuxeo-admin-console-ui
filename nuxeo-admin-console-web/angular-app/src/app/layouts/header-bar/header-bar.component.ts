@@ -1,10 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { authActions } from '../../auth/store/actions';
-import { Observable, Subscription } from 'rxjs';
-import { AuthStateInterface } from '../../auth/types/authState.interface';
-import { UserInterface } from '../../shared/types/user.interface';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Store, select } from "@ngrx/store";
+import { authActions } from "../../auth/store/actions";
+import { Observable, Subscription } from "rxjs";
+import { AuthStateInterface } from "../../auth/types/authState.interface";
+import { UserInterface } from "../../shared/types/user.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
+import { Router } from "@angular/router";
+
 @Component({
   selector: "header-bar",
   templateUrl: "./header-bar.component.html",
@@ -16,15 +18,23 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   currentUser: UserInterface | null | undefined = undefined;
   displayName: string | undefined;
 
-  constructor(private store: Store<{ auth: AuthStateInterface }>, private nuxeoJsClientService: NuxeoJSClientService,) {
-    this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
+  constructor(
+    private store: Store<{ auth: AuthStateInterface }>,
+    private nuxeoJsClientService: NuxeoJSClientService,
+    private router: Router
+  ) {
+    this.currentUser$ = this.store.pipe(
+      select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser)
+    );
   }
 
   ngOnInit(): void {
-    this.currentUserSubscription = this.currentUser$.subscribe(currentUser => {
-      this.currentUser = currentUser;
-      this.setDisplayName();
-    });
+    this.currentUserSubscription = this.currentUser$.subscribe(
+      (currentUser) => {
+        this.currentUser = currentUser;
+        this.setDisplayName();
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -52,5 +62,9 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
         this.displayName = username;
       }
     }
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(["/home"]);
   }
 }
