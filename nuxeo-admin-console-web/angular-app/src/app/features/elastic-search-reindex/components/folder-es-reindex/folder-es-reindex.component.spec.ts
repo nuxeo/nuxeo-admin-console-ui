@@ -43,7 +43,6 @@ describe("FolderESReindexComponent", () => {
   let mockDialogRef: jasmine.SpyObj<
     MatDialogRef<ElasticSearchReindexModalComponent>
   >;
-  let buildDocumentCountFetchRequestQuerySpy: jasmine.Spy;
 
   class elasticSearchReindexServiceStub {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
@@ -118,10 +117,6 @@ describe("FolderESReindexComponent", () => {
     component.folderReindexForm = TestBed.inject(FormBuilder).group({
       documentID: [""],
     });
-    buildDocumentCountFetchRequestQuerySpy = spyOn(
-      component,
-      "buildDocumentCountFetchRequestQuery"
-    );
     nuxeoJSClientService.nuxeoInstance = {
       repository: jasmine.createSpy().and.returnValue({
         fetch: jasmine.createSpy().and.callFake((input: string) => {
@@ -151,7 +146,7 @@ describe("FolderESReindexComponent", () => {
     } as HttpErrorResponse;
 
     spyOn(component, "onReindexErrorModalClose");
-
+    component.userInput = "123";
     component.showReindexErrorModal(mockError);
 
     expect(dialogService.open).toHaveBeenCalledWith(
@@ -163,8 +158,9 @@ describe("FolderESReindexComponent", () => {
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-          errorMessage: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
           error: mockError,
+          userInput: component.userInput,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
         },
@@ -304,18 +300,12 @@ describe("FolderESReindexComponent", () => {
   });
 
   it("should open the confirmation modal with correct data and subscribe to afterClosed", () => {
-    const documentId = "1234";
     spyOn(component, "getHumanReadableTime").and.returnValue("1 second");
-    const showConfirmationModalSpy = spyOn(
-      component,
-      "showConfirmationModal"
-    ).and.callThrough();
     const onConfirmationModalCloseSpy = spyOn(
       component,
       "onConfirmationModalClose"
     ).and.callThrough();
-    component.showConfirmationModal(2, documentId);
-    expect(showConfirmationModalSpy).toHaveBeenCalledWith(2, documentId);
+    component.showConfirmationModal(2);
     expect(dialogService.open).toHaveBeenCalledWith(
       ElasticSearchReindexModalComponent,
       {
@@ -354,23 +344,5 @@ describe("FolderESReindexComponent", () => {
       elasticSearchReindexService.secondsToHumanReadable
     ).toHaveBeenCalledWith(seconds);
     expect(result).toBe(humanReadableTime);
-  });
-
-  it("should call buildDocumentCountFetchRequestQuery if form is valid", () => {
-    component.folderReindexForm.setValue({
-      documentID: "092726-27252-9992526",
-    });
-    component.onReindexFormSubmit();
-    expect(elasticSearchReindexService.spinnerStatus.value).toBe(true);
-    expect(buildDocumentCountFetchRequestQuerySpy).toHaveBeenCalledWith(
-      "092726-27252-9992526"
-    );
-  });
-
-  it("should not call buildDocumentCountFetchRequestQuery if form is invalid", () => {
-    component.folderReindexForm.setValue({ documentID: "" });
-    component.onReindexFormSubmit();
-    expect(elasticSearchReindexService.spinnerStatus.value).toBe(false);
-    expect(buildDocumentCountFetchRequestQuerySpy).not.toHaveBeenCalled();
   });
 });

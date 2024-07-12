@@ -3,7 +3,8 @@
     <mat-form-field hyFormField>
         <mat-label>{{ ELASTIC_SEARCH_LABELS.NXQL_QUERY }}</mat-label>
         <textarea matInput [placeholder]="ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="nxqlQuery"
-            id="nxqlQuery" required></textarea>
+            id="nxqlQuery" required cdkTextareaAutosize cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="10"></textarea>
         <mat-error *ngIf="nxqlReindexForm?.get('nxqlQuery')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
 

@@ -14,10 +14,6 @@
     left: 20px;
     font-size: 16px;
   }
-  textarea {
-    width: 500px;
-    height: 150px;
-  }
 }
 .spinner-overlay {
   position: fixed;
@@ -40,7 +36,7 @@
 
 mat-form-field.hy-form-field {
   margin-top: 10px;
-  width: 500px;
-  height: 150px;
-  margin-bottom: 45px;
+  margin-bottom: 20px;
+  max-width: 600px;
+  width: 80%;
 }

@@ -166,9 +166,13 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      let userInput = this.documentReindexForm?.get("documentIdentifier")?.value?.trim();
-      userInput = this.removeLeadingCharacters(userInput);
-      this.triggerReindex(userInput);
+      const userInput = this.documentReindexForm
+        ?.get("documentIdentifier")
+        ?.value?.trim();
+      const decodedUserInput = decodeURIComponent(
+        this.removeLeadingCharacters(userInput)
+      );
+      this.triggerReindex(decodedUserInput);
     }
   }
 
@@ -185,8 +189,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     return input;
   }
 
-  // regex for reference (/^['"]+/g, "");
-
   triggerReindex(userInput: string | null): void {
     this.nuxeo
       .repository()
@@ -198,7 +200,11 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           "path" in document
         ) {
           const doc = document as { path: string };
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${doc.path}'`;
+          const decodedPath = decodeURIComponent(doc.path).replaceAll(
+            "'",
+            "%5C%27"
+          );
+          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
           this.store.dispatch(
             ReindexActions.performDocumentReindex({
               requestQuery: requestQuery,

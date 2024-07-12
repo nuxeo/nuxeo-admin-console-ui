@@ -6,7 +6,7 @@ import {
   ReindexInfo,
   ReindexModalClosedInfo,
 } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -60,7 +60,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   nuxeo: Nuxeo;
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
-  userInput: string | null = "";
+  userInput = "";
+  decodedUserInput = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -176,10 +177,14 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   onReindexFormSubmit(): void {
     if (this.folderReindexForm?.valid) {
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      let trimmedInput = this.folderReindexForm?.get("documentID")?.value.trim();
-      this.userInput = this.removeLeadingCharacters(trimmedInput);
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.userInput}' OR ecm:ancestorId='${this.userInput}'`;
-
+      this.userInput = this.removeLeadingCharacters(
+        this.folderReindexForm?.get("documentID")?.value.trim()
+      );
+      this.decodedUserInput = decodeURIComponent(this.userInput).replaceAll(
+        "'",
+        "%5C%27"
+      );
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
       this.fetchNoOfDocuments(requestQuery);
     }
   }
@@ -273,7 +278,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   onConfirmationModalClose(modalData: unknown): void {
     const data = modalData as ReindexModalClosedInfo;
     if (data?.continue) {
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.userInput}' OR ecm:ancestorId='${this.userInput}'`;
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({
           requestQuery,

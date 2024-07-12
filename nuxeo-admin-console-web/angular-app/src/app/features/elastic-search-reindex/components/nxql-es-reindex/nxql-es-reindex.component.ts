@@ -5,7 +5,7 @@ import {
   ReindexModalClosedInfo,
   ReindexInfo,
 } from "../../elastic-search-reindex.interface";
-import { Component, SecurityContext, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
@@ -64,6 +64,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   nuxeo: Nuxeo;
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
+  decodedUserInput = "";
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -188,7 +189,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchNoOfDocuments(query: string | null): void {
+  fetchNoOfDocuments(query: string): void {
     this.nuxeo
       .repository()
       .query({ query, pageSize: 1 })
@@ -226,7 +227,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  showConfirmationModal(documentCount: number, query: string | null): void {
+  showConfirmationModal(documentCount: number, query: string): void {
     this.confirmDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -257,14 +258,12 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  onConfirmationModalClose(
-    data: ReindexModalClosedInfo,
-    query: string | null
-  ): void {
+  onConfirmationModalClose(data: ReindexModalClosedInfo, query: string): void {
     if (data?.continue) {
+      this.decodedUserInput = decodeURIComponent(query).replace(/\\'/g, "%5C%27");
       this.store.dispatch(
         ReindexActions.performNxqlReindex({
-          nxqlQuery: query,
+          nxqlQuery: this.decodedUserInput,
         })
       );
     } else {
