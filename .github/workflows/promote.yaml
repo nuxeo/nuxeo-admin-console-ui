@@ -42,6 +42,9 @@ jobs:
 
       - run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
 
+      - if: ${{ github.event.inputs.isMinorRelease == 'true' }}
+        run: echo "VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
+
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
