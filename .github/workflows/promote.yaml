@@ -18,6 +18,10 @@ on:
         description: "Enhancement Packs(EP's) or Service Packs(SP's) aka Minor Release (eg: 23.1.1 for 1st minor release after 23.1.0)"
         type: boolean
         required: false
+      isLastMinorRelease:
+        description: "Check if last release was minor release"
+        type: boolean
+        required: false
 
 jobs:
   promote:
@@ -42,8 +46,13 @@ jobs:
 
       - run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
 
-      - if: ${{ github.event.inputs.isMinorRelease == 'true' }}
+      - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'true' }}
         run: echo "VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
+      
+      - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'false' }}
+        run: | 
+          echo "VERSION=$(echo $VERSION | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1.$((\2-1)).\3"/e')"
+          echo "VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
 
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
         env:
@@ -93,8 +102,18 @@ jobs:
           curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "$CONNECT_PREPROD_URL/site/marketplace/package/nuxeo-admin-console-ui-package/download?version=$PADDED_VERSION"
           unzip -d $PACKAGE $PACKAGE.zip && rm $PACKAGE.zip
           pushd $PACKAGE
-          sed -i 's/-rc.[0-9]*//' package.xml
-          for f in install/bundles/*.jar; do mv $f $(echo $f | sed -e 's/-rc.[0-9]*//'); done
+          if [ "${{ github.event.inputs.isMinorRelease }}" == "true" ]; then
+           sed -i "s/${{ github.event.inputs.version }}/${{ env.VERSION }}/g" package.xml
+          else
+            sed -i 's/-rc.[0-9]*//' package.xml
+          fi
+          for f in install/bundles/*.jar; do 
+            if [ "${{ github.event.inputs.isMinorRelease }}" == "true" ]; then
+              mv $f $(echo $f | sed -e "s/${{ github.event.inputs.version }}/${{ env.VERSION }}/")
+            else
+              mv $f $(echo $f | sed -e 's/-rc.[0-9]*//')
+            fi
+          done
           zip -r ../$PACKAGE.zip .
           popd
 
