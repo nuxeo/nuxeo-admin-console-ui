@@ -65,9 +65,26 @@ jobs:
       # last release was minor and current is major = >(last release = 23.2.1) 23.2.2-rc.5 => 23.3.0 => snapshot => 23.4.0-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'false' && github.event.inputs.isLastMinorRelease == 'true'}}
         run: |
-          echo "RC_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
-          echo '$RC_VERSION' "->" ${RC_VERSION} "->" ${{env.RC_VERSION}}
-          echo "VERSION=$(npx semver -i minor $RC_VERSION)" >> $GITHUB_ENV
+           # Extract and set RC_VERSION
+            echo "RC_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+            
+            # Debug: Output the RC_VERSION value
+            echo "Extracted RC_VERSION: $(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')"
+            
+            # Source the environment variables to ensure RC_VERSION is available
+            source $GITHUB_ENV
+            
+            # Debug: Verify RC_VERSION is set
+            echo "RC_VERSION environment variable: $RC_VERSION"
+            
+            # Use semver to bump the version
+            NEW_VERSION=$(npx semver -i minor $RC_VERSION)
+            
+            # Debug: Output the new version
+            echo "New Version: $NEW_VERSION"
+            
+            # Set the new version in the GitHub environment
+            echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
         env:
