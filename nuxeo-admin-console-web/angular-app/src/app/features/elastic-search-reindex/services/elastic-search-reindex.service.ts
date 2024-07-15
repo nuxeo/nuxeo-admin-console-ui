@@ -75,7 +75,7 @@ export class ElasticSearchReindexService {
     }
     if (remainingSeconds > 0) {
       humanReadableTime += `${remainingSeconds} second${
-        remainingSeconds > 1 ? "s" : ""
+        remainingSeconds > 0 ? "s" : ""
       }`;
     }
 
