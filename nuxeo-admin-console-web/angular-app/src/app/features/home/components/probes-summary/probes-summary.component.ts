@@ -15,9 +15,9 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   probesData = "ss";
   fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
-  constructor(private store: Store<{ probes: HomeState }>) {
+  constructor(private store: Store<{ home: HomeState }>) {
     this.fetchProbes$ = this.store.pipe(
-      select((state) => state.probes?.probesInfo)
+      select((state) => state.home?.probesInfo)
     );
   }
 
