@@ -33,7 +33,9 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
+          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
+          scope: '@nuxeo'
 
       - uses: actions/checkout@v4
         with:
@@ -41,9 +43,6 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
 
       - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
-
-      - name: Install semver
-        run: npm install -g semver
         
       # Current, previous release, is a majar release.(last release = 23.1.0) 23.2.0-rc.5 =>Relese = > 23.2.0 =>snapshot => 23.3.0-SNAPSHOT
       - if: ${{ github.event.inputs.isMinorRelease == 'false' && github.event.inputs.isLastMinorRelease == 'false' }}
@@ -52,11 +51,9 @@ jobs:
        # current is minor and last was major = >(last relese = 23.2.0) 23.3.0-rc.5 => 23.2.1 => snapshot => 23.3.2-SNAPSHOT
       - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'false' }}
         run: | 
-          ORIGINAL_VERSION='${{ github.event.inputs.version }}'
-          WITHOUT_RC_VERSION=$(echo $ORIGINAL_VERSION | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1.$((\2-1)).\3"/e')
-          DEC_VERSION=$(echo $WITHOUT_RC_VERSION | sed -e 's/-rc.[0-9]*//')
-          NEW_VERSION=echo $(npx semver -i patch $DEC_VERSION)
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "VERSION=$(echo '${{ github.event.inputs.version }}'| sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1.$((\2-1)).\3"/e')" >> $GITHUB_ENV
+          echo "VERSION=$(echo $VERSION | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+          echo "VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
       
       # current and last release was minor = >(last release = 23.2.1) 23.2.2-rc.5 => 23.2.2 => snapshot => 23.2.3-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'true' }}
@@ -66,11 +63,10 @@ jobs:
       # last release was minor and current is major = >(last release = 23.2.1) 23.2.2-rc.5 => 23.3.0 => snapshot => 23.4.0-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'false' && github.event.inputs.isLastMinorRelease == 'true'}}
         run: |
+          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+          echo "VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
           pushd nuxeo-admin-console-web/angular-app
-          echo "ORIGINAL_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
-          NEW_VERSION=echo $(npx semver -i minor $ORIGINAL_VERSION)
-          echo $NEW_VERSION"
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
           popd
 
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
