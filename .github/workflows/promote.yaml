@@ -53,9 +53,20 @@ jobs:
        # current is minor and last was major = >(last relese = 23.2.0) 23.3.0-rc.5 => 23.2.1 => snapshot => 23.3.2-SNAPSHOT
       - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'false' }}
         run: | 
-          echo "VERSION=$(echo '${{ github.event.inputs.version }}'| sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1.$((\2-1)).\3"/e')" >> $GITHUB_ENV
-          echo "VERSION=$(echo $VERSION | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
-          echo "VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
+          # Set initial version based on input
+          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/echo \"\1.$((\2-1)).\3\"/e')" >> $GITHUB_ENV
+          # Source the environment variables
+          source $GITHUB_ENV
+          # Debug: Output the initial VERSION
+          echo "Initial VERSION: $VERSION"
+          # Remove any -rc.x part
+          VERSION=$(echo $VERSION | sed -e 's/-rc.[0-9]*//')
+          # Increment the version
+          NEW_VERSION=$(npx semver -i patch $VERSION)
+          # Set the new version in the GitHub environment
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          # Debug: Output the new version
+          echo "New VERSION: $NEW_VERSION"
       
       # current and last release was minor = >(last release = 23.2.1) 23.2.2-rc.5 => 23.2.2 => snapshot => 23.2.3-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'true' }}
