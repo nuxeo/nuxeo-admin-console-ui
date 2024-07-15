@@ -1,6 +1,6 @@
 {
   "name": "nuxeo-admin-console-ui",
-  "version": "23.2.9-SNAPSHOT",
+  "version": "-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
