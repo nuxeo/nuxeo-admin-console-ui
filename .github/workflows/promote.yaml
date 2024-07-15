@@ -33,9 +33,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
-          scope: '@nuxeo'
 
       - uses: actions/checkout@v4
         with:
