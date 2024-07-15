@@ -58,7 +58,7 @@ jobs:
       # current and last release was minor = >(last release = 23.2.1) 23.2.2-rc.5 => 23.2.2 => snapshot => 23.2.3-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'true' && github.event.inputs.isLastMinorRelease == 'true' }}
         run: | 
-          run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
     
       # last release was minor and current is major = >(last release = 23.2.1) 23.2.2-rc.5 => 23.3.0 => snapshot => 23.4.0-SNAPSHOT    
       - if: ${{ github.event.inputs.isLastMinorRelease == 'true' &&  github.event.inputs.isMinorRelease == 'false'}}
