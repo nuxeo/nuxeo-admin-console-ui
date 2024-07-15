@@ -33,9 +33,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
-          scope: '@nuxeo'
 
       - uses: actions/checkout@v4
         with:
@@ -43,6 +41,10 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
 
       - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+    
+                
+      - name: Install semver
+        run: npm install -g semver
         
       # Current, previous release, is a majar release.(last release = 23.1.0) 23.2.0-rc.5 =>Relese = > 23.2.0 =>snapshot => 23.3.0-SNAPSHOT
       - if: ${{ github.event.inputs.isMinorRelease == 'false' && github.event.inputs.isLastMinorRelease == 'false' }}
@@ -63,11 +65,9 @@ jobs:
       # last release was minor and current is major = >(last release = 23.2.1) 23.2.2-rc.5 => 23.3.0 => snapshot => 23.4.0-SNAPSHOT    
       - if: ${{ github.event.inputs.isMinorRelease == 'false' && github.event.inputs.isLastMinorRelease == 'true'}}
         run: |
-          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
-          echo "VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
-          pushd nuxeo-admin-console-web/angular-app
-          echo "VERSION=$(npx semver -i minor $VERSION)" >> $GITHUB_ENV
-          popd
+          echo "RC_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+          echo $RC_VERSION
+          echo "VERSION=$(npx semver -i minor $RC_VERSION)" >> $GITHUB_ENV
 
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
         env:
