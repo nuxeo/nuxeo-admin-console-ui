@@ -50,5 +50,17 @@ export const homeReducer = createReducer(
   on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
     ...state,
     error,
+  })),
+  on(HomeActions.fetchProbesInfo, (state) => ({
+    ...state,
+    error: null,
+  })),
+  on(HomeActions.fetchProbesInfoSuccess, (state, { probesInfo }) => ({
+    ...state,
+    probesInfo
+  })),
+  on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
+    ...state,
+    error,
   }))
 );
