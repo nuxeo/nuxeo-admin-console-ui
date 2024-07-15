@@ -11,7 +11,8 @@
         <p>
           {{ data.impactMessage }}
         </p>
-        <p>This action will impact {{data.documentCount}} documents
+        <p>This action will impact {{data.documentCount}} 
+          {{data.documentCount === 1 ? 'document' : 'documents'}}
           and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
         </p>
       </div>
