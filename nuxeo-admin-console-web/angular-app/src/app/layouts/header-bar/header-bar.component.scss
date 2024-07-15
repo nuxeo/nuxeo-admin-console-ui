@@ -1,5 +1,6 @@
 .header-bar {
   background-color: #fff;
+  padding-left: 3px;
   &__spacer {
     flex: 1 1 auto;
   }
@@ -8,15 +9,16 @@
     display: flex;
     align-items: baseline;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     button {
-      width: 112px;
-      height: 36px;
+      width: auto;
+      height: auto;
     }
     button:focus,
     button:hover {
       background-color: transparent;
       cursor: pointer;
+      border-radius: 0;
     }
     img {
       width: 112px;
