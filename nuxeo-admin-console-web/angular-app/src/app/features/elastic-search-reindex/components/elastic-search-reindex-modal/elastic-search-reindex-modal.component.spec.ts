@@ -38,6 +38,7 @@ describe("ElasticSearchReindexModalComponent", () => {
     closeLabel: "Close",
     isLaunchedModal: true,
     commandId: "203-11112-38652-990",
+    userInput: "",
   };
 
   beforeEach(async () => {

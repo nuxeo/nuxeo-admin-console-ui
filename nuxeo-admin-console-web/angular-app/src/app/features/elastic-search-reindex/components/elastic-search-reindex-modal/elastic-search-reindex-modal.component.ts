@@ -22,13 +22,13 @@ export class ElasticSearchReindexModalComponent {
   continue(): void {
     this.dialogRef.close({
       continue: true,
-      commandId: this.data?.commandId
+      commandId: this.data?.commandId,
     });
   }
 
   close(): void {
     this.dialogRef.close({
-      continue: false
+      continue: false,
     });
   }
 
@@ -36,5 +36,12 @@ export class ElasticSearchReindexModalComponent {
     navigator.clipboard.writeText(this.data.commandId).then(() => {
       alert(ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT);
     });
+  }
+
+  getNoDocumentsMessage(): string | null {
+    return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+      "<documentID>",
+      this.data?.userInput
+    );
   }
 }

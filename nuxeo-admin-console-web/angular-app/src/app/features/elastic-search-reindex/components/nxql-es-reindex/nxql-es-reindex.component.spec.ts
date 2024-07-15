@@ -63,6 +63,14 @@ describe("NXQLESReindexComponent", () => {
     secondsToHumanReadable() {
       return "";
     }
+
+    removeLeadingCharacters() {
+      return "";
+    }
+
+    decodeAndReplaceSingleQuotes() {
+      return "";
+    }
   }
 
   beforeEach(async () => {

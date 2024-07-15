@@ -168,8 +168,14 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     if (this.documentReindexForm?.valid) {
       const userInput = this.documentReindexForm
         ?.get("documentIdentifier")
-        ?.value.trim();
-      this.triggerReindex(userInput);
+        ?.value?.trim();
+      /* decode user input to handle path names that contain spaces, 
+      which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
+      const decodedUserInput = decodeURIComponent(
+        /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
+        this.elasticSearchReindexService.removeLeadingCharacters(userInput)
+      );
+      this.triggerReindex(decodedUserInput);
     }
   }
 
@@ -184,7 +190,15 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           "path" in document
         ) {
           const doc = document as { path: string };
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${doc.path}'`;
+          /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
+          for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
+          /default-domain/workspaces/ws1/Harry%5C%27s-file
+          Other special characters are encoded by default by nuxeo js client, but not single quote */
+          const decodedPath =
+            this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+              doc.path
+            );
+          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
           this.store.dispatch(
             ReindexActions.performDocumentReindex({
               requestQuery: requestQuery,

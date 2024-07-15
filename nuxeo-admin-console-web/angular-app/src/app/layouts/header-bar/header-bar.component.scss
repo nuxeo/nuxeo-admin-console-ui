@@ -3,6 +3,7 @@
   &__spacer {
     flex: 1 1 auto;
   }
+
   &__branding {
     display: flex;
     align-items: baseline;
@@ -13,10 +14,8 @@
     }
     button:focus,
     button:hover {
-      outline: 0;
       background-color: transparent;
-      cursor: default;
-      --mat-mdc-focus-indicator-display: none;
+      cursor: pointer;
     }
     img {
       width: 112px;

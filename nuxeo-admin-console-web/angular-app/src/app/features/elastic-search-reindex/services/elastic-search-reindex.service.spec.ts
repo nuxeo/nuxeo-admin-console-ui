@@ -103,4 +103,80 @@ describe("ElasticSearchReindexService", () => {
       expect(service.secondsToHumanReadable(2592000)).toBe("1 month");
     });
   });
+
+  describe("removeLeadingCharacters", () => {
+    it("should remove leading and trailing single quotes", () => {
+      const input = "'test string'";
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe("test string");
+    });
+
+    it("should remove leading and trailing double quotes", () => {
+      const input = '"test string"';
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe("test string");
+    });
+
+    it("should remove only the leading single quote if no trailing quote", () => {
+      const input = "'test string";
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe("test string");
+    });
+
+    it("should remove only the leading double quote if no trailing quote", () => {
+      const input = '"test string';
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe("test string");
+    });
+
+    it("should return the original string if there are no leading quotes", () => {
+      const input = "test string";
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe("test string");
+    });
+
+    it("should return the original string if there are mismatched quotes", () => {
+      const input = "'test string\"";
+      const result = service.removeLeadingCharacters(input);
+      expect(result).toBe('test string"');
+    });
+  });
+
+  describe("decodeAndReplaceSingleQuotes", () => {
+    it("should replace all single quotes with %5C%27", () => {
+      const input = "test'string";
+      const expectedOutput = "test%5C%27string";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+
+    it("should decode URI components and replace single quotes", () => {
+      const input = "test%27string%27with%27quotes";
+      const expectedOutput = "test%5C%27string%5C%27with%5C%27quotes";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+
+    it("should handle strings without single quotes", () => {
+      const input = "testStringWithoutQuotes";
+      const expectedOutput = "testStringWithoutQuotes";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+
+    it("should handle empty strings", () => {
+      const input = "";
+      const expectedOutput = "";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+
+    it("should handle strings with only single quotes", () => {
+      const input = "''";
+      const expectedOutput = "%5C%27%5C%27";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+
+    it("should handle strings with encoded characters and single quotes", () => {
+      const input = "%27encoded%27%20characters%27";
+      const expectedOutput = "%5C%27encoded%5C%27 characters%5C%27";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+  });
 });

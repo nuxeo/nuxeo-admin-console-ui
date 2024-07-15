@@ -1,5 +1,11 @@
 .nxql-es-reindex-container {
-  padding: 16px 0px 0px 16px;
+  padding: 10px 0px 0px 10px;
+  #requiredField {
+    font-size: 12px;
+    color: #da1500;
+    font-weight: 400;
+    font-family: "Open Sans";
+  }
   &__button {
     border-radius: 4px !important;
     width: 110px;
@@ -7,7 +13,6 @@
     position: relative;
     left: 20px;
     font-size: 16px;
-    bottom: 3px;
   }
 }
 .spinner-overlay {
@@ -27,4 +32,11 @@
   width: 80px !important;
   height: 80px !important;
   stroke-width: 5px !important;
+}
+
+mat-form-field.hy-form-field {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  max-width: 600px;
+  width: 80%;
 }
