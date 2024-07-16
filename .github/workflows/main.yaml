@@ -54,7 +54,7 @@ jobs:
               </servers>
               </settings>' > ~/.m2/settings.xml
 
-      - name: Configure Additional Registries
+      - name: Configure .npmrc
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
@@ -75,11 +75,6 @@ jobs:
           echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
           echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
       
-      - name: Test
-        run: |
-          echo "${{env.PACKAGE_VERSION}}" ${{env.VERSION}}
-    
-
       - name: Update versions
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
@@ -110,7 +105,7 @@ jobs:
           path: |
             nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
 
-      - name: Delete .npmrc Registrie
+      - name: Delete & Update .npmrc 
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           rm .npmrc
@@ -126,14 +121,8 @@ jobs:
           git commit -a -m "Release ${{env.VERSION}}"
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
-
-      - name: Publish on Pre Prod Marketplace
-        working-directory: nuxeo-admin-console-package/target
-        run: |
-           echo "Publishing on Pre Prod Marketplace"
-           ls
         
-      - name: Publish Nuxeo packages
+      - name: Publish on Pre Prod Marketplace
         working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
