@@ -15,16 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!-- <%@ page trimDirectiveWhitespaces="true" %>
+<!-- 
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="org.nuxeo.common.Environment"%>
-<%@ page import="org.nuxeo.runtime.api.Framework"%>
-<%@ page import="org.nuxeo.ecm.core.api.repository.RepositoryManager"%>
-<%@ page import="org.nuxeo.common.utils.UserAgentMatcher"%>
 
 <%
   String context = request.getContextPath();
-%> -->
+%> 
+-->
 
 <!DOCTYPE html>
 <html lang="">
