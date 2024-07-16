@@ -4,8 +4,8 @@ name: Veracode
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
-
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
   workflow_call:
     inputs:
       branch:
