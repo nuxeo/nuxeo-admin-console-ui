@@ -1,12 +1,13 @@
 import { createReducer, on } from "@ngrx/store";
-import * as HomeActions from "./actions";
+import * as HomeActions from "./actions"; 
+import { HttpErrorResponse } from "@angular/common/http";
 
 export interface HomeState {
   versionInfo: {
     version: string | null;
     clusterEnabled: boolean | null;
   };
-  error: any;
+  error: HttpErrorResponse | null; 
 }
 
 export const initialState: HomeState = {
