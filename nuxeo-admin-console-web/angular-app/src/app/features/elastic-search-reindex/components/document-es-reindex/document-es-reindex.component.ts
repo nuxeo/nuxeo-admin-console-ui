@@ -4,7 +4,7 @@ import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-
 import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
-import { Component, OnDestroy, OnInit, SecurityContext } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -12,7 +12,6 @@ import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { DocumentReindexState } from "../../store/reducers";
-import { DomSanitizer } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -63,7 +62,6 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ reindex: DocumentReindexState }>,
-    private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService
   ) {
     this.documentReindexForm = this.fb.group({
@@ -168,11 +166,16 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   onReindexFormSubmit(): void {
     if (this.documentReindexForm?.valid) {
-      const sanitizedUserInput = this.sanitizer.sanitize(
-        SecurityContext.HTML,
-        this.documentReindexForm?.get("documentIdentifier")?.value.trim()
+      const userInput = this.documentReindexForm
+        ?.get("documentIdentifier")
+        ?.value?.trim();
+      /* decode user input to handle path names that contain spaces, 
+      which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
+      const decodedUserInput = decodeURIComponent(
+        /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
+        this.elasticSearchReindexService.removeLeadingCharacters(userInput)
       );
-      this.triggerReindex(sanitizedUserInput); // TODO: Remove this if api call does not need to be sent with query
+      this.triggerReindex(decodedUserInput);
     }
   }
 
@@ -187,7 +190,15 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           "path" in document
         ) {
           const doc = document as { path: string };
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${doc.path}'`;
+          /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
+          for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
+          /default-domain/workspaces/ws1/Harry%5C%27s-file
+          Other special characters are encoded by default by nuxeo js client, but not single quote */
+          const decodedPath =
+            this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+              doc.path
+            );
+          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
           this.store.dispatch(
             ReindexActions.performDocumentReindex({
               requestQuery: requestQuery,

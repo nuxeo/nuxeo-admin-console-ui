@@ -75,10 +75,29 @@ export class ElasticSearchReindexService {
     }
     if (remainingSeconds > 0) {
       humanReadableTime += `${remainingSeconds} second${
-        remainingSeconds > 1 ? "s" : ""
+        remainingSeconds === 1 ? "" : "s"
       }`;
     }
 
     return humanReadableTime.trim();
+  }
+
+  removeLeadingCharacters(input: string): string {
+    if (input.startsWith("'") && input.endsWith("'")) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith('"') && input.endsWith('"')) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith("'") || input.startsWith('"')) {
+      return input.slice(1);
+    }
+    return input;
+  }
+
+  // tslint:disable-next-line:no-useless-escape
+  decodeAndReplaceSingleQuotes(input: string): string {
+    /* replace & decode all occurences of single & double quotes */
+    return decodeURIComponent(input).replaceAll("'", "%5C%27");
   }
 }

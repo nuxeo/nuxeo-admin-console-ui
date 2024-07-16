@@ -7,32 +7,33 @@
 
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.isConfirmModal">
-      <div *ngIf="data.documentCount > 0; else noDocument;">
+      <div>
         <p>
           {{ data.impactMessage }}
         </p>
-        <p>This action will impact {{data.documentCount}} documents
-
+        <p>This action will impact {{data.documentCount}} 
+          {{data.documentCount === 1 ? 'document' : 'documents'}}
           and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
         </p>
       </div>
-      <ng-template #noDocument>
-        {{ELASTIC_SEARCH_LABELS.NO_DOCUMENTS}}
-      </ng-template>
-
-
     </div>
+
     <div *ngIf="data.isErrorModal">
-      <p>{{data.errorMessageHeader}}</p>
-      <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.status}}</p>
-      <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.message}}</p>
-
+      <div *ngIf="data.error else noDocumentsMessage;">
+        <p>{{data.errorMessageHeader}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.status}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.message}}</p>
+      </div>
+      <ng-template #noDocumentsMessage>
+        <p>{{getNoDocumentsMessage()}}</p>
+      </ng-template>
     </div>
+
     <div *ngIf="data.launchedMessage">
       <p>
         {{ data.launchedMessage }}
       </p>
-      <button mat-flat-button color="primary" (click)="copyActionId()">
+      <button mat-stroked-button color="primary" (click)="copyActionId()">
         {{ data.copyActionId }}
       </button>
     </div>

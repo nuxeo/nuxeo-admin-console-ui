@@ -15,6 +15,18 @@
   &__registration-version {
     width: 33%;
     height: 60%;
-    margin-right: 0;
+    margin-right: 0px;
+  }
+}
+
+@media (max-width: 1250px) {
+  .home-container {
+    flex-direction: row;
+  }
+  .home-container__probes,
+  .home-container__registration-version {
+    width: 100%;
+    margin-right: 20px;
+    height: 45%;
   }
 }
