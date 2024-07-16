@@ -5,5 +5,6 @@ export interface UserInterface {
     lastName: string,
     email: string;
     username: string;
-  }
+  },
+  isAdministrator: boolean,
 }
