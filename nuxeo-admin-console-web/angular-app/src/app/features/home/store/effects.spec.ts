@@ -6,15 +6,18 @@ import { Observable, of, throwError } from "rxjs";
 import { HomeService } from "../services/home.service";
 import { loadVersionInfoEffect } from "./effects";
 import * as HomeActions from "./actions";
+import { Action } from "@ngrx/store";
+import { HttpErrorResponse } from "@angular/common/http";
 
 describe("HomeEffects", () => {
-  let actions$: Observable<any>;
-  let effect: any;
+  let actions$: Observable<Action>;
+  let effect: typeof loadVersionInfoEffect;
   let homeService: jasmine.SpyObj<HomeService>;
-  let homeServiceSpy: any;
 
   beforeEach(() => {
-    homeServiceSpy = jasmine.createSpyObj("HomeService", ["getVersionInfo"]);
+    const homeServiceSpy = jasmine.createSpyObj("HomeService", [
+      "getVersionInfo",
+    ]);
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
@@ -27,18 +30,16 @@ describe("HomeEffects", () => {
     effect = TestBed.runInInjectionContext(() => loadVersionInfoEffect);
   });
 
-  it("it should return fetchversionInfoFailure on failure", (done) => {
-    const error = {
-      name: "error404",
-      message: "Page not found !",
+  it("should return fetchversionInfoFailure on failure", (done) => {
+    const error = new HttpErrorResponse({
       error: "404",
-    };
-    homeServiceSpy.getVersionInfo.and.returnValue(throwError(() => error));
-    const outcome = HomeActions.fetchversionInfoFailure({
-      error,
+      status: 404,
+      statusText: "Not Found",
     });
+    homeService.getVersionInfo.and.returnValue(throwError(() => error));
+    const outcome = HomeActions.fetchversionInfoFailure({ error });
     const actionsMock$ = of(HomeActions.fetchversionInfo());
-    effect(actionsMock$, homeServiceSpy).subscribe((result: any) => {
+    effect(actionsMock$, homeService).subscribe((result: Action) => {
       expect(result).toEqual(outcome);
       done();
     });

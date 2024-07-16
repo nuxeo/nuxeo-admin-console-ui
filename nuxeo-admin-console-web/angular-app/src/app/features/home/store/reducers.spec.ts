@@ -1,9 +1,11 @@
 import { homeReducer, HomeState, initialState } from "./reducers";
 import * as HomeActions from "./actions";
+import { Action } from "@ngrx/store";
+import { HttpErrorResponse } from "@angular/common/http";
 
 describe("Home Reducer", () => {
   it("should return the initial state", () => {
-    const action = {} as any;
+    const action = {} as Action;
     const state = homeReducer(undefined, action);
 
     expect(state).toBe(initialState);
@@ -42,7 +44,11 @@ describe("Home Reducer", () => {
   });
 
   it("should handle fetchversionInfoFailure", () => {
-    const error = { message: "Error occurred" };
+    const error = new HttpErrorResponse({
+      error: { message: "Error occurred" },
+      status: 500,
+      statusText: "Internal Server Error",
+    });
     const action = HomeActions.fetchversionInfoFailure({ error });
 
     const expectedState: HomeState = {

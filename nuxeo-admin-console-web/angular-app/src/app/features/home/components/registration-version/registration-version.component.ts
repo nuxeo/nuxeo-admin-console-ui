@@ -4,6 +4,8 @@ import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as HomeActions from "../../store/actions";
 import { HomeState } from "../../store/reducers";
+import { HttpErrorResponse } from "@angular/common/http";
+
 @Component({
   selector: "registration-version",
   templateUrl: "./registration-version.component.html",
@@ -11,7 +13,7 @@ import { HomeState } from "../../store/reducers";
 })
 export class RegistrationVersionComponent implements OnInit {
   versionInfo$: Observable<versionInfo>;
-  error$: Observable<any>;
+  error$: Observable<HttpErrorResponse | null>;
   versionInfoSubscription = new Subscription();
   versionInformation: versionInfo = {
     version: null,

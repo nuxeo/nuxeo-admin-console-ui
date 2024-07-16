@@ -5,7 +5,6 @@ import {
 } from "@angular/common/http/testing";
 import { HomeService } from "./home.service";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
-import { versionInfo } from "../../../shared/types/version-info.interface";
 
 describe("HomeService", () => {
   let service: HomeService;

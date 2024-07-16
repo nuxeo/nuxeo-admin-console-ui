@@ -4,7 +4,8 @@ import {
 } from "./../../../shared/types/probes.interface";
 import { versionInfo } from "./../../../shared/types/version-info.interface";
 import { createReducer, on } from "@ngrx/store";
-import * as HomeActions from "./actions";
+import * as HomeActions from "./actions"; 
+import { HttpErrorResponse } from "@angular/common/http";
 
 export interface ProbesInfo {
   name: string;
@@ -15,7 +16,7 @@ export interface ProbesInfo {
 export interface HomeState {
   versionInfo: versionInfo;
   probesInfo: ProbesInfo[];
-  error: any;
+  error: HttpErrorResponse | null; 
 }
 
 export const initialState: HomeState = {
