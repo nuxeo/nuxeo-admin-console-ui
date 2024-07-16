@@ -1,9 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
-import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap, tap } from "rxjs";
-import { PersistenceService } from "../../shared/services/persistence.service";
+import { catchError, map, of, switchMap } from "rxjs";
 import { UserInterface } from "../../shared/types/user.interface";
 import { AuthService } from "../services/auth.service";
 import { authActions } from "./actions";
@@ -12,7 +10,6 @@ export const getCurrentUserEffect = createEffect(
   (
     actions$ = inject(Actions),
     authService = inject(AuthService),
-    persistenceService = inject(PersistenceService)
   ) => {
     return actions$.pipe(
       ofType(authActions.getCurrentUser),
@@ -36,7 +33,6 @@ export const signOutEffect = createEffect(
     actions$ = inject(Actions),
     authService = inject(AuthService),
   ) => {
-
     return actions$.pipe(
       ofType(authActions.signOut),
       switchMap(() => {
