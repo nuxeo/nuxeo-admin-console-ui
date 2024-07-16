@@ -1,1 +1,8 @@
-<base-layout *ngIf="loadApp"></base-layout>
+<div class="unauthorized" *ngIf="currentUser?.isAdministrator === false">
+    <h1>You are not authorized to view this page.</h1>
+    <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
+        <mat-icon hyIcon>logout</mat-icon> Login with a different account
+    </button>
+</div>
+
+<base-layout *ngIf="loadApp && currentUser?.isAdministrator === true"></base-layout>

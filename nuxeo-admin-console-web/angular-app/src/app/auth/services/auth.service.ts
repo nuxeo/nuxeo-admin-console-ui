@@ -29,7 +29,8 @@ export class AuthService {
         lastName: response?.properties?.lastName,
         email: response?.properties?.email,
         username: response?.properties?.username
-      }
+      },
+      isAdministrator: response?.isAdministrator,
     };
   }
 

@@ -11,5 +11,6 @@ export interface AuthUserResponseInterface{
     lastName:string,
     email: string;
     username: string;
-  }
+  },
+  isAdministrator: boolean,
 }

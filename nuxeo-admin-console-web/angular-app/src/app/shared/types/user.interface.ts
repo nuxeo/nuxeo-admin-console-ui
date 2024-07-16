@@ -6,4 +6,5 @@ export interface UserInterface {
     email: string;
     username: string;
   }
+  isAdministrator: boolean,
 }
