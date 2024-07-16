@@ -9,6 +9,7 @@ import { Store, select } from "@ngrx/store";
 import { authActions } from "./auth/store/actions";
 import { AuthStateInterface } from "./auth/types/authState.interface";
 import { UserInterface } from './shared/types/user.interface';
+import { APP_CONSTANTS } from './app.constants';
 
 @Component({
   selector: "app",
@@ -22,6 +23,9 @@ export class AppComponent implements OnInit, OnDestroy {
   currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
   baseUrl: string | null = null;
+  readonly UNAUTHORIZED_MESSAGE = APP_CONSTANTS.UNAUTHORIZED_MESSAGE;
+  readonly LOGIN_WITH_DIFFERENT_ACCOUNT = APP_CONSTANTS.LOGIN_WITH_DIFFERENT_ACCOUNT;
+
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
