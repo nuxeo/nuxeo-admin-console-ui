@@ -9,6 +9,7 @@ describe("NuxeoJSClientService", () => {
       providers: [NuxeoJSClientService],
     });
     service = TestBed.inject(NuxeoJSClientService);
+    service.initiateJSClient("/nuxeo");
   });
 
   it("should be created", () => {
@@ -16,18 +17,15 @@ describe("NuxeoJSClientService", () => {
   });
 
   it("should initialize Nuxeo instance on initiateJSClient", () => {
-    service.initiateJSClient();
     expect(service.getNuxeoInstance()).toBeDefined();
   });
 
   it("should return base URL from Nuxeo instance", () => {
-    service.initiateJSClient();
     const baseUrl = service.getBaseUrl();
     expect(baseUrl).toBeDefined();
   });
 
   it("should return API URL from Nuxeo instance", () => {
-    service.initiateJSClient();
     const apiUrl = service.getApiUrl();
     expect(apiUrl).toBeDefined();
   });
