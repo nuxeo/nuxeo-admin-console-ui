@@ -10,7 +10,7 @@
   <artifactId>nuxeo-admin-console-package</artifactId>
   <packaging>zip</packaging>
   <name>Nuxeo admin console package - Admin console package</name>
-    <properties>
+  <properties>
     <nuxeoadmin.package.version>${project.version}</nuxeoadmin.package.version>
   </properties>
 
