@@ -15,7 +15,7 @@ export class AuthService {
 
 
   getCurrentUser(): Observable<UserInterface> {
-    const url = `${this.nuxeoJsClientService.getApiUrl()}me`;
+    const url = `${this.nuxeoJsClientService.getApiUrl()}/me`;
     return this.http.get<AuthUserResponseInterface>(url).pipe(
       map(response => this.getUser(response))
     );
@@ -41,7 +41,7 @@ export class AuthService {
       .pipe(map(this.getUser));
   }
   signOut(): Observable<void> {
-    const url = `${this.nuxeoJsClientService.getBaseUrl()}logout`;
+    const url = `${this.nuxeoJsClientService.getBaseUrl()}/logout`;
     return this.http.get<void>(url, {});
   }
 
