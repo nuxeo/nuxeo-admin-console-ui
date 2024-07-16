@@ -14,7 +14,7 @@
           "builder": "@hylandsoftware/hy-ui-devkit:browser",
           "options": {
             "outputPath": "dist/admin_console_ui",
-            "index": "src/index.html",
+            "index": "src/index.jsp",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
@@ -73,6 +73,7 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
+              "index": "src/index.html",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

@@ -1,5 +1,5 @@
 import { NuxeoJSClientService } from './shared/services/nuxeo-js-client.service';
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "./shared/services/persistence.service";
 import { Subscription, Observable } from "rxjs";
@@ -21,18 +21,21 @@ export class AppComponent implements OnInit, OnDestroy {
   currentUser$: Observable<UserInterface | null | undefined>;
   currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
+  baseUrl: string | null = null;
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
     public commonService: CommonService,
     private nuxeoJsClientService: NuxeoJSClientService,
-    private store: Store<{ auth: AuthStateInterface }>
+    private store: Store<{ auth: AuthStateInterface }>,
+    private elementRef:ElementRef
   ) {
     this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
+    this.baseUrl = this.elementRef.nativeElement.getAttribute('baseUrl');
   }
 
   ngOnInit(): void {
-    this.nuxeoJsClientService.initiateJSClient();
+    this.nuxeoJsClientService.initiateJSClient(this.baseUrl);
     this.currentUserSubscription = this.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (this.currentUser) {
