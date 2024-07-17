@@ -5,6 +5,9 @@ on:
     - cron: '45 8 * * *'
     - cron: '47 8 * * *'
 
+permissions:
+  contents: read
+  
 jobs:
   scan-build:
     permissions:
