@@ -17,7 +17,7 @@ export class HomeService {
 
   getVersionInfo(): Observable<CapabilitiesResponse> {
     return this.http.get<CapabilitiesResponse>(
-      `${this.nuxeoJsClientService.getApiUrl()}${this.capabilities}`
+      `${this.nuxeoJsClientService.getApiUrl()}/${this.capabilities}`
     );
   }
 }

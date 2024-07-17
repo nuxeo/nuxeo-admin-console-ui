@@ -3,7 +3,7 @@
     <button mat-icon-button aria-label="branding icon" tabindex="0" (click)="navigateToHome()" class="brand-button">
       <img src="assets/images/logo.svg" alt="Nuxeo Logo" />
     </button>
-    <span class="header-bar__branding__title">Admin Console</span>
+    <span class="header-bar__branding__title">{{ BRAND_TITLE }}</span>
   </div>
 
   <span class="header-bar__spacer"></span>
@@ -11,6 +11,6 @@
     {{ displayName }}
   </span>
   <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
-    <mat-icon hyIcon>logout</mat-icon> Logout
+    <mat-icon hyIcon>logout</mat-icon> {{ LOGOUT }}
   </button>
 </mat-toolbar>
