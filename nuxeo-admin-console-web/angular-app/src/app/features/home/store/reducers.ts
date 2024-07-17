@@ -57,7 +57,7 @@ export const homeReducer = createReducer(
   })),
   on(HomeActions.fetchProbesInfoSuccess, (state, { probesInfo }) => ({
     ...state,
-    probesInfo
+    probesInfo,
   })),
   on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
     ...state,
