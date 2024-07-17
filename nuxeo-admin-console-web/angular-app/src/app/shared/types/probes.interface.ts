@@ -1,4 +1,4 @@
-interface ProbeStatus {
+export interface ProbeStatus {
   "entity-type": string;
   neverExecuted: boolean;
   success: boolean;
@@ -7,7 +7,7 @@ interface ProbeStatus {
   };
 }
 
-interface ProbeHistory {
+export interface ProbeHistory {
   lastRun: string | null;
   lastSuccess: string;
   lastFail: string;

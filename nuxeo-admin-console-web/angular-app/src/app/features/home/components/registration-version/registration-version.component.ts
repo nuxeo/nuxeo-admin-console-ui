@@ -1,10 +1,9 @@
+import { versionInfo } from "./../../../../shared/types/version-info.interface";
 import { Component, OnInit } from "@angular/core";
 import { Store, select } from "@ngrx/store";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import * as HomeActions from "../../store/actions";
 import { HomeState } from "../../store/reducers";
-import { versionInfo } from "../../../../shared/types/version-info.interface";
-
 @Component({
   selector: "registration-version",
   templateUrl: "./registration-version.component.html",
@@ -13,6 +12,11 @@ import { versionInfo } from "../../../../shared/types/version-info.interface";
 export class RegistrationVersionComponent implements OnInit {
   versionInfo$: Observable<versionInfo>;
   error$: Observable<any>;
+  versionInfoSubscription = new Subscription();
+  versionInformation: versionInfo = {
+    version: null,
+    clusterEnabled: false,
+  };
 
   constructor(private store: Store<{ home: HomeState }>) {
     this.versionInfo$ = this.store.pipe(
@@ -22,6 +26,14 @@ export class RegistrationVersionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(HomeActions.fetchversionInfo());
+    this.versionInfoSubscription = this.versionInfo$.subscribe(
+      (data: versionInfo) => {
+        if (data && Object.keys(data).length > 0) {
+          this.versionInformation = data;
+        } else {
+          this.store.dispatch(HomeActions.fetchversionInfo());
+        }
+      }
+    );
   }
 }

@@ -39,7 +39,8 @@ export const loadProbesInfoEffect = createEffect(
           map((data: ProbesResponse) => {
             const probesInfo = data.entries.map(entry => ({
               name: entry.name,
-              status: entry.status
+              status: entry.status,
+              history: entry.history
             }));
             return HomeActions.fetchProbesInfoSuccess({ probesInfo });
           }),
