@@ -9,6 +9,7 @@ import { Store, select } from "@ngrx/store";
 import { authActions } from "./auth/store/actions";
 import { AuthStateInterface } from "./auth/types/authState.interface";
 import { UserInterface } from './shared/types/user.interface';
+import { APP_CONSTANTS } from './app.constants';
 
 @Component({
   selector: "app",
@@ -22,6 +23,9 @@ export class AppComponent implements OnInit, OnDestroy {
   currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
   baseUrl: string | null = null;
+  readonly UNAUTHORIZED_MESSAGE = APP_CONSTANTS.UNAUTHORIZED_MESSAGE;
+  readonly LOGIN_WITH_DIFFERENT_ACCOUNT = APP_CONSTANTS.LOGIN_WITH_DIFFERENT_ACCOUNT;
+
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
@@ -38,7 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.nuxeoJsClientService.initiateJSClient(this.baseUrl);
     this.currentUserSubscription = this.currentUser$.subscribe(user => {
       this.currentUser = user;
-      if (this.currentUser) {
+      if (this.currentUser?.isAdministrator) {
         const preferenceKey = `doNotWarn-${this.currentUser.id}`;
         const doNotWarn = !!this.persistenceService.get(preferenceKey);
         if (!doNotWarn) {
@@ -56,6 +60,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.store.dispatch(authActions.getCurrentUser());
   }
+
+  onSignOut(): void {
+    this.store.dispatch(authActions.signOut());
+    this.redirectToLogin();
+  }
+
+  private redirectToLogin(): void {
+    const _baseURL = this.nuxeoJsClientService.getBaseUrl();
+    window.location.href = `${_baseURL}/login.jsp?requestedUrl=nuxeoadmin`;
+  }
+
   ngOnDestroy(): void {
     this.loadAppSubscription.unsubscribe();
     this.currentUserSubscription.unsubscribe();

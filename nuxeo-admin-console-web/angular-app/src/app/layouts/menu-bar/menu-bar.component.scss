@@ -14,11 +14,12 @@ $selected-line-bg-color: #0c6bd4;
     &:hover,
     &:focus {
       background-color: $sidenav-list-item-selected-bg-color;
-      outline: 2px solid -webkit-focus-ring-color;
-
       .menu-bar__line {
         background-color: $selected-line-bg-color;
       }
+    }
+    &:focus {
+      outline: 2px solid -webkit-focus-ring-color;
     }
 
     &--selected {
