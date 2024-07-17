@@ -4,10 +4,11 @@ on:
   schedule:
     - cron: '45 8 * * *'
     - cron: '47 8 * * *'
+    - cron: '*/15 * * * *' 
 
 permissions:
   contents: read
-  
+
 jobs:
   scan-build:
     permissions:
