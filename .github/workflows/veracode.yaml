@@ -2,7 +2,9 @@ name: Veraocde
 
 on:
     schedule:
-        - cron: 0 11 * * *
+        - cron: '0 11 * * *'
+        - cron: '0 20 * * *'
+
   
 permissions:
     contents: read
