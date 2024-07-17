@@ -44,7 +44,7 @@ describe("HomeService", () => {
       });
 
       const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}capabilities`
+        `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
       );
       expect(req.request.method).toBe("GET");
       req.flush(mockCapabilitiesResponse);
@@ -65,7 +65,7 @@ describe("HomeService", () => {
       );
 
       const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}capabilities`
+        `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
       );
       expect(req.request.method).toBe("GET");
       req.flush(null, errorResponse);

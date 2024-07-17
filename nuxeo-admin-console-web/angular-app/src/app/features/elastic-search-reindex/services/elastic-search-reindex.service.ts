@@ -19,7 +19,7 @@ export class ElasticSearchReindexService {
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.getApiUrl()}${
+      `${this.nuxeoJsClientService.getApiUrl()}/${
         this.elaticSearchReindexEndpoint
       }?query=${requestQuery}`,
       {}
@@ -28,7 +28,7 @@ export class ElasticSearchReindexService {
 
   performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.getApiUrl()}${
+      `${this.nuxeoJsClientService.getApiUrl()}/${
         this.elaticSearchReindexEndpoint
       }?query=${requestQuery}`,
       {}
@@ -37,7 +37,7 @@ export class ElasticSearchReindexService {
 
   performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
     return this.http.post<ReindexInfo>(
-      `${this.nuxeoJsClientService.getApiUrl()}${
+      `${this.nuxeoJsClientService.getApiUrl()}/${
         this.elaticSearchReindexEndpoint
       }?query=${nxqlQuery}`,
       {}
