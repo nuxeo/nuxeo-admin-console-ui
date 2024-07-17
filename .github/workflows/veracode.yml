@@ -1,38 +1,9 @@
-# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
-
-name: Veracode
+name: Veraocde 
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
-  workflow_dispatch:
-  workflow_call:
-    inputs:
-      branch:
-        description: 'The branch to Analyze'
-        type: string
-        required: true
-    secrets:
-      PACKAGES_AUTH_USER:
-        description: 'PACKAGES_AUTH_USER'
-        required: true
-      PACKAGES_AUTH_TOKEN:
-        description: 'PACKAGES_AUTH_TOKEN'
-        required: true
-      VERACODE_API_ID:
-        description: 'VERACODE_API_ID'
-        required: true
-      VERACODE_API_KEY:
-        description: 'VERACODE_API_KEY'
-        required: true
-
-env:
-  REFERENCE_BRANCH: dev-test-1
-  NPM_REPOSITORY: https://packages.nuxeo.com/repository/npm-public/
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev-test-1' }}
-
-permissions:
-  contents: read
+    - cron: '45 8 * * *'
+    - cron: '47 8 * * *'
 
 jobs:
   scan-build:
@@ -44,13 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: dev-test-1
 
       - uses: actions/setup-node@v4
         with:
-          registry-url: ${{ env.NPM_REPOSITORY }}
           node-version: 20
-          scope: '@nuxeo'
 
       - uses: actions/setup-java@v4
         with:
@@ -130,4 +99,3 @@ jobs:
           include: '*.war, *.zip, *.js, *.html, *.css, *.json'
           criticality: 'High'
           includenewmodules: 'true'
-          
