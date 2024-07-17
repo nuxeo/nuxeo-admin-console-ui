@@ -7,6 +7,7 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AuthStateInterface } from '../../auth/types/authState.interface';
 import { UserInterface } from '../../shared/types/user.interface';
+import { WARNING_DIALOG_CONSTANTS } from './warning,constants'; 
 
 @Component({
   selector: "warning",
@@ -17,6 +18,7 @@ export class WarningComponent implements OnInit {
   public doNotWarn = false;
   public currentUser$: Observable<UserInterface | null | undefined>;
   public currentUser: UserInterface | null | undefined = undefined;
+  public WARNING_LABELS = WARNING_DIALOG_CONSTANTS;
 
   constructor(
     public dialogService: MatDialog,

@@ -5,6 +5,7 @@ import { Observable, Subscription } from "rxjs";
 import * as HomeActions from "../../store/actions";
 import { HomeState } from "../../store/reducers";
 import { HttpErrorResponse } from "@angular/common/http";
+import { REGISTRATION_VERSION_LABELS } from "./../../../../features/home/home.constants"; 
 
 @Component({
   selector: "registration-version",
@@ -16,6 +17,7 @@ export class RegistrationVersionComponent implements OnInit, OnDestroy {
   error$: Observable<HttpErrorResponse | null>;
   versionInfoSubscription = new Subscription();
   versionInformation: versionInfo | null = null;
+  REGISTRATION_VERSION_LABELS = REGISTRATION_VERSION_LABELS;
 
   constructor(private store: Store<{ home: HomeState }>) {
     this.versionInfo$ = this.store.pipe(

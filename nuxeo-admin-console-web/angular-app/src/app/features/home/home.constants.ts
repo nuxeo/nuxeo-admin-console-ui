@@ -26,3 +26,10 @@ export const PROBES_LABELS = {
     FALSE: { VALUE: "false", PATH: "assets/images/error.svg" },
   },
 };
+
+export const REGISTRATION_VERSION_LABELS = {
+  REGISTRATION_VERSION_LABEL: "Registration Version",
+  VERSION_LABEL: "Version:",
+  CLUSTER_ENABLED_LABEL: "Cluster Enabled:",
+  VERSION_INFO_LABEL: "Version Info"
+};
