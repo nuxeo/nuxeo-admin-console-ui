@@ -159,7 +159,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
           errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
-          error: this.noOfDocumentsToReindex === 0 ? null : error,
+          error,
           isErrorModal: true,
           noMatchingQuery: true,
         },
