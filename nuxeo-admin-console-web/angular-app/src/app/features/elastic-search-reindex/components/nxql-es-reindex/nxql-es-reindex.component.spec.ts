@@ -171,6 +171,7 @@ describe("NXQLESReindexComponent", () => {
           error: mockError,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
+          noMatchingQuery: true,
         },
       }
     );

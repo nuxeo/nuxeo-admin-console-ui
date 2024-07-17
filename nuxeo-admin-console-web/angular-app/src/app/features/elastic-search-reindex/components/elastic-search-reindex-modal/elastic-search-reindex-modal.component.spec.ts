@@ -12,12 +12,14 @@ import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
-  class commonServiceStub {
+
+  class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
   }
 
@@ -30,7 +32,7 @@ describe("ElasticSearchReindexModalComponent", () => {
     confirmContinue: "Do you want to continue?",
     isErrorModal: false,
     errorMessageHeader: "",
-    error: { status: "", message: "" },
+    error: { message: "", status: "400" },
     launchedMessage: "",
     copyActionId: "Copy ID",
     abortLabel: "Abort",
@@ -39,6 +41,7 @@ describe("ElasticSearchReindexModalComponent", () => {
     isLaunchedModal: true,
     commandId: "203-11112-38652-990",
     userInput: "",
+    noMatchingQuery: false,
   };
 
   beforeEach(async () => {
@@ -47,6 +50,7 @@ describe("ElasticSearchReindexModalComponent", () => {
       "continue",
       "close",
     ]);
+
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
       imports: [
@@ -56,7 +60,7 @@ describe("ElasticSearchReindexModalComponent", () => {
       ],
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },
-        { provide: CommonService, useClass: commonServiceStub },
+        { provide: CommonService, useClass: CommonServiceStub },
         { provide: MatDialogRef, useValue: matDialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
@@ -69,11 +73,11 @@ describe("ElasticSearchReindexModalComponent", () => {
     component = fixture.componentInstance;
   });
 
-  it("should test if component is created", () => {
+  it("should create the component", () => {
     expect(component).toBeTruthy();
   });
 
-  it("should emit continue: true & commandId, when user chooses to continue", () => {
+  it("should emit continue: true & commandId when user chooses to continue", () => {
     component.continue();
     expect(dialogRef.close).toHaveBeenCalledWith({
       continue: true,
@@ -88,7 +92,7 @@ describe("ElasticSearchReindexModalComponent", () => {
     });
   });
 
-  it("should display a javascript alert indicating action id to have been copied, on clipboard copy", async () => {
+  it("should display a JavaScript alert indicating action ID has been copied to clipboard", async () => {
     const clipboardWriteTextSpy = spyOn(
       navigator.clipboard,
       "writeText"
@@ -100,6 +104,37 @@ describe("ElasticSearchReindexModalComponent", () => {
     expect(clipboardWriteTextSpy).toHaveBeenCalledWith(
       mockDialogData.commandId
     );
-    expect(alertSpy).toHaveBeenCalledWith("Action ID copied to clipboard!");
+    expect(alertSpy).toHaveBeenCalledWith(
+      ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT
+    );
+  });
+
+  it("should return NO_MATCHING_QUERY message when noMatchingQuery is true", () => {
+    component.data.noMatchingQuery = true;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toEqual(ELASTIC_SEARCH_LABELS.NO_MATCHING_QUERY);
+  });
+
+  it("should return NO_DOCUMENTS message with userInput when noMatchingQuery is false", () => {
+    const userInput = "12345";
+    component.data.noMatchingQuery = false;
+    component.data.userInput = userInput;
+    const message = component.getNoDocumentsMessage();
+    const expectedMessage = ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+      "<documentID>",
+      userInput
+    );
+    expect(message).toEqual(expectedMessage);
+  });
+
+  it("should return NO_DOCUMENTS message with empty userInput when noMatchingQuery is false and userInput is not provided", () => {
+    component.data.noMatchingQuery = false;
+    component.data.userInput = "";
+    const message = component.getNoDocumentsMessage();
+    const expectedMessage = ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+      "<documentID>",
+      ""
+    );
+    expect(message).toEqual(expectedMessage);
   });
 });

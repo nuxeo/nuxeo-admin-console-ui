@@ -45,6 +45,8 @@ export const ELASTIC_SEARCH_LABELS = {
   REQUIRED_FIELD_INDICATOR: "* indicates a required field",
   REFERENCE_POINT: 2000,
   NO_DOCUMENTS: "Document with id <documentID> was not found.",
+  NO_MATCHING_QUERY:
+    "No document matches that query. Please try again with a different query.",
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   DOCUMENT_ID: "Document ID",
   REINDEX_BUTTON_LABEL: "Reindex",

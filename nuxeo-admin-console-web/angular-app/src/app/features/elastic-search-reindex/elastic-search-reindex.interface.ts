@@ -37,4 +37,5 @@ export interface ReindexModalData {
   isLaunchedModal: boolean;
   commandId: string;
   userInput: string;
+  noMatchingQuery: boolean;
 }
