@@ -28,4 +28,10 @@ export class HomeService {
       `${this.nuxeoJsClientService.getApiUrl()}/${this.probes}`
     );
   }
+
+  getProbesInfo(): Observable<ProbesResponse> {
+    return this.http.get<ProbesResponse>(
+      `${this.nuxeoJsClientService.getApiUrl()}${this.probes}`
+    );
+  }
 }
