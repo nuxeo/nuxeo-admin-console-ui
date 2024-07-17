@@ -2,7 +2,7 @@ name: Veraocde
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '*/15 * * * *'
 
 jobs:
   run-scheduled-job:
