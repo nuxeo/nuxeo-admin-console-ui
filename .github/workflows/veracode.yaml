@@ -2,8 +2,8 @@ name: Veraocde
 
 on:
     schedule:
-        - cron: '0 11 * * *'
-        - cron: '0 20 * * *'
+        - cron: '0 6 * * *'    # 11:30 AM IST (6:00 AM UTC)
+        - cron: '30 14 * * *'  # 8:00 PM IST (2:30 PM UTC)    
 
   
 permissions:
