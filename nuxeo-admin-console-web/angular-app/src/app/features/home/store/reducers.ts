@@ -1,20 +1,27 @@
+import {
+  ProbeHistory,
+  ProbeStatus,
+} from "./../../../shared/types/probes.interface";
+import { versionInfo } from "./../../../shared/types/version-info.interface";
 import { createReducer, on } from "@ngrx/store";
-import * as HomeActions from "./actions"; 
+import * as HomeActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
 
+export interface ProbesInfo {
+  name: string;
+  status: ProbeStatus;
+  history: ProbeHistory;
+}
+
 export interface HomeState {
-  versionInfo: {
-    version: string | null;
-    clusterEnabled: boolean | null;
-  };
-  error: HttpErrorResponse | null; 
+  versionInfo: versionInfo;
+  probesInfo: ProbesInfo[];
+  error: HttpErrorResponse | null;
 }
 
 export const initialState: HomeState = {
-  versionInfo: {
-    version: null,
-    clusterEnabled: null,
-  },
+  versionInfo: {} as versionInfo,
+  probesInfo: [],
   error: null,
 };
 
@@ -26,10 +33,31 @@ export const homeReducer = createReducer(
   })),
   on(HomeActions.fetchversionInfoSuccess, (state, { versionInfo }) => ({
     ...state,
-    versionInfo: {
-      version: versionInfo?.version,
-      clusterEnabled: versionInfo?.clusterEnabled,
-    },
+    versionInfo,
+  })),
+  on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(HomeActions.fetchProbesInfo, (state) => ({
+    ...state,
+    error: null,
+  })),
+  on(HomeActions.fetchProbesInfoSuccess, (state, { probesInfo }) => ({
+    ...state,
+    probesInfo,
+  })),
+  on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(HomeActions.fetchProbesInfo, (state) => ({
+    ...state,
+    error: null,
+  })),
+  on(HomeActions.fetchProbesInfoSuccess, (state, { probesInfo }) => ({
+    ...state,
+    probesInfo,
   })),
   on(HomeActions.fetchversionInfoFailure, (state, { error }) => ({
     ...state,

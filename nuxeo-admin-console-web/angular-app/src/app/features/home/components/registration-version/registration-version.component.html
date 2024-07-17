@@ -3,14 +3,12 @@
   <mat-card-content class="registration-version__content registration-version__content--first">
     Version Info
   </mat-card-content>
-  <ng-container *ngIf="versionInfo$ | async as versionInfo">
-    <p class="registration-version__version">
-      <span class="registration-version__label">Version:</span>
-      {{ versionInfo.version }}
-    </p>
-    <p class="registration-version__cluster">
-      <span class="registration-version__label">Cluster Enabled:</span>
-      {{ versionInfo.clusterEnabled }}
-    </p>
-  </ng-container>
+  <p class="registration-version__version">
+    <span class="registration-version__label">Version:</span>
+    {{ versionInformation.version }}
+  </p>
+  <p class="registration-version__cluster">
+    <span class="registration-version__label">Cluster Enabled:</span>
+    {{ versionInformation.clusterEnabled }}
+  </p>
 </mat-card>

@@ -1,3 +1,5 @@
+import { ProbesInfo } from "./reducers";
+import { ProbesResponse } from "./../../../shared/types/probes.interface";
 import { createAction, props } from "@ngrx/store";
 import { versionInfo } from "../../../shared/types/version-info.interface";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -10,4 +12,14 @@ export const fetchversionInfoSuccess = createAction(
 export const fetchversionInfoFailure = createAction(
   "[Admin] Fetch Version Info Failure",
   props<{ error: HttpErrorResponse | null }>()
+);
+
+export const fetchProbesInfo = createAction("[Admin] Fetch Probes Info");
+export const fetchProbesInfoSuccess = createAction(
+  "[Admin] Fetch Probes Info Success",
+  props<{ probesInfo: ProbesInfo[] }>()
+);
+export const fetchProbesInfoFailure = createAction(
+  "[Admin] Fetch Probes Info Failure",
+  props<{ error: any }>()
 );
