@@ -8,8 +8,12 @@ import Nuxeo from "nuxeo";
 })
 export class NuxeoJSClientService {
   nuxeoInstance: Nuxeo = {};
-  initiateJSClient(): Nuxeo {
-    this.nuxeoInstance = new Nuxeo();
+  initiateJSClient(url: string | null): Nuxeo {
+    let configObj: object | null = null;
+    if(url) {
+      configObj = { baseURL: url };
+    }
+    this.nuxeoInstance = new Nuxeo(configObj);
   }
 
   getBaseUrl(): string {
