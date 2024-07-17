@@ -3,7 +3,7 @@
         {{PROBES_LABELS.PROBE_TITLE}}
         <ng-container>
             <hy-content-list [dataSource]="probesData">
-                <hy-content-list-column propertyName="name" label="Probe">
+                <hy-content-list-column propertyName="probe" label="Probe">
                     <ng-container *hyContentListHeader>
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.PROBE}}</strong>
                     </ng-container>
@@ -18,7 +18,6 @@
                     <ng-container *hyContentListCell="let row">
                         <img [src]="getImageSrc(row.status.success)" [alt]="row.status.success"
                             [matTooltip]="row.status.success" matTooltipClass="hy-tooltip" matTooltipPosition="above" />
-
                     </ng-container>
                 </hy-content-list-column>
 
@@ -30,10 +29,8 @@
                         <span>{{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_RUN : (row.history.lastRun | date:
                             'MMMM d, yyyy')
                             }}</span>
-
                     </ng-container>
                 </hy-content-list-column>
-
                 <hy-content-list-column propertyName="information" label="Information">
                     <ng-container *hyContentListHeader>
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.INFORMATION}}</strong>

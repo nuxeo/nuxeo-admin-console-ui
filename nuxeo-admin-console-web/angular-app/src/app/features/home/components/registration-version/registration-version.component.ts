@@ -15,10 +15,7 @@ export class RegistrationVersionComponent implements OnInit, OnDestroy {
   versionInfo$: Observable<versionInfo>;
   error$: Observable<HttpErrorResponse | null>;
   versionInfoSubscription = new Subscription();
-  versionInformation: versionInfo = {
-    version: null,
-    clusterEnabled: false,
-  };
+  versionInformation: versionInfo | null = null;
 
   constructor(private store: Store<{ home: HomeState }>) {
     this.versionInfo$ = this.store.pipe(
