@@ -1,12 +1,8 @@
 <mat-card role="region" tabindex="0" aria-label="probes-summary">
     <mat-card-content>
         {{PROBES_LABELS.PROBE_TITLE}}
-        <!-- <div class="spinner-overlay" *ngIf="spinnerVisible">
-            <mat-progress-spinner class="custom-spinner" mode="indeterminate">
-            </mat-progress-spinner>
-        </div> -->
         <ng-container>
-            <hy-content-list [dataSource]="probesData" [loading]="isLoading">
+            <hy-content-list [dataSource]="probesData">
                 <hy-content-list-column propertyName="name" label="Probe">
                     <ng-container *hyContentListHeader>
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.PROBE}}</strong>
@@ -20,8 +16,8 @@
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.SUCCESS}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <img [src]="getImageSrc(row.status.success)" [alt]="row.status.success" [matTooltip]="row.status.success"
-                            matTooltipClass="hy-tooltip" matTooltipPosition="above" />
+                        <img [src]="getImageSrc(row.status.success)" [alt]="row.status.success"
+                            [matTooltip]="row.status.success" matTooltipClass="hy-tooltip" matTooltipPosition="above" />
 
                     </ng-container>
                 </hy-content-list-column>

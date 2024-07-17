@@ -1,5 +1,5 @@
 export interface ProbeStatus {
-  "entity-type": string;
+  "entity-type"?: string;
   neverExecuted: boolean;
   success: boolean;
   infos: {
@@ -20,12 +20,12 @@ interface ProbeCounts {
 }
 
 interface Probe {
-  "entity-type": string;
+  "entity-type"?: string;
   name: string;
   status: ProbeStatus;
   history: ProbeHistory;
-  counts: ProbeCounts;
-  time: number;
+  counts?: ProbeCounts;
+  time?: number;
 }
 
 export interface ProbesResponse {

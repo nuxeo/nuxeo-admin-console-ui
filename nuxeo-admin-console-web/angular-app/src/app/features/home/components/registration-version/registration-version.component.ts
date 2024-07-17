@@ -1,5 +1,5 @@
 import { versionInfo } from "./../../../../shared/types/version-info.interface";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as HomeActions from "../../store/actions";
@@ -11,7 +11,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   templateUrl: "./registration-version.component.html",
   styleUrls: ["./registration-version.component.scss"],
 })
-export class RegistrationVersionComponent implements OnInit {
+export class RegistrationVersionComponent implements OnInit, OnDestroy {
   versionInfo$: Observable<versionInfo>;
   error$: Observable<HttpErrorResponse | null>;
   versionInfoSubscription = new Subscription();
@@ -37,5 +37,9 @@ export class RegistrationVersionComponent implements OnInit {
         }
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    this.versionInfoSubscription?.unsubscribe();
   }
 }

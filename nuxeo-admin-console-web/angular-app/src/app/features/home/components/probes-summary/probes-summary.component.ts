@@ -14,8 +14,6 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   probesData: ProbesInfo[] = [];
   fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
-  isLoading = true;
-  // spinnerVisible = false;
   PROBES_LABELS = PROBES_LABELS;
   constructor(private store: Store<{ home: HomeState }>) {
     this.fetchProbes$ = this.store.pipe(
@@ -24,15 +22,10 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.spinnerVisible = true;
     this.fetchProbesSubscription = this.fetchProbes$.subscribe(
       (data: ProbesInfo[]) => {
         if (data?.length !== 0) {
-          setTimeout(() => {
-            this.probesData = data;
-            this.isLoading = false;
-            // this.spinnerVisible = false;
-          }, 3000);
+          this.probesData = data;
         } else {
           this.store.dispatch(HomeActions.fetchProbesInfo());
         }
