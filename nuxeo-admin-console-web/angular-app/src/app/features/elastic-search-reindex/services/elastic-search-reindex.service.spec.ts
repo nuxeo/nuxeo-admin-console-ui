@@ -43,7 +43,7 @@ describe("ElasticSearchReindexService", () => {
       const req = httpMock.expectOne(
         `${service[
           "nuxeoJsClientService"
-        ].getApiUrl()}management/elasticsearch/reindex?query=${requestQuery}`
+        ].getApiUrl()}/management/elasticsearch/reindex?query=${requestQuery}`
       );
       expect(req.request.method).toBe("POST");
       req.flush(mockReindexInfoResponse);
@@ -61,7 +61,7 @@ describe("ElasticSearchReindexService", () => {
       const req = httpMock.expectOne(
         `${service[
           "nuxeoJsClientService"
-        ].getApiUrl()}management/elasticsearch/reindex?query=${requestQuery}`
+        ].getApiUrl()}/management/elasticsearch/reindex?query=${requestQuery}`
       );
       expect(req.request.method).toBe("POST");
       req.flush(mockReindexInfoResponse);
@@ -79,7 +79,7 @@ describe("ElasticSearchReindexService", () => {
       const req = httpMock.expectOne(
         `${service[
           "nuxeoJsClientService"
-        ].getApiUrl()}management/elasticsearch/reindex?query=${nxqlQuery}`
+        ].getApiUrl()}/management/elasticsearch/reindex?query=${nxqlQuery}`
       );
       expect(req.request.method).toBe("POST");
       req.flush(mockReindexInfoResponse);

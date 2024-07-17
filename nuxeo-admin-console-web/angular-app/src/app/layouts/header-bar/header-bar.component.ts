@@ -6,7 +6,7 @@ import { AuthStateInterface } from "../../auth/types/authState.interface";
 import { UserInterface } from "../../shared/types/user.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
-
+import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
 @Component({
   selector: "header-bar",
   templateUrl: "./header-bar.component.html",
@@ -17,6 +17,8 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
   displayName: string | undefined;
+  readonly BRAND_TITLE = HEADER_BAR_CONSTANTS.BRAND_TITLE
+  readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT
 
   constructor(
     private store: Store<{ auth: AuthStateInterface }>,
