@@ -9,13 +9,13 @@ describe("RegistrationVersionComponent", () => {
   let component: RegistrationVersionComponent;
   let fixture: ComponentFixture<RegistrationVersionComponent>;
   let store: MockStore<{ home: HomeState }>;
-  let dispatchSpy: jasmine.Spy;
 
   const initialState: HomeState = {
     versionInfo: {
-      version: "Nuxeo Platform 2021.45.8",
-      clusterEnabled: true,
+      version: null,
+      clusterEnabled: false,
     },
+    probesInfo: [],
     error: null,
   };
 
@@ -29,7 +29,7 @@ describe("RegistrationVersionComponent", () => {
     store = TestBed.inject(MockStore);
     fixture = TestBed.createComponent(RegistrationVersionComponent);
     component = fixture.componentInstance;
-    dispatchSpy = spyOn(store, "dispatch");
+    spyOn(store, "dispatch");
     fixture.detectChanges();
   });
 
@@ -39,15 +39,23 @@ describe("RegistrationVersionComponent", () => {
 
   it("should select versionInfo from store", (done) => {
     component.versionInfo$.subscribe((versionInfo) => {
-      expect(versionInfo.version).toBe("Nuxeo Platform 2021.45.8");
-      expect(versionInfo.clusterEnabled).toBeTrue();
+      expect(versionInfo).toEqual(initialState.versionInfo);
       done();
     });
   });
 
-  it("should dispatch fetchversionInfo on init", () => {
+  it("should not dispatch fetchversionInfo on init if versionInfo is not empty", () => {
+    const mockVersionInfo = {
+      version: "1.0.0",
+      clusterEnabled: true,
+    };
+    store.setState({ home: { ...initialState, versionInfo: mockVersionInfo } });
+    fixture.detectChanges();
+
     component.ngOnInit();
-    expect(dispatchSpy).toHaveBeenCalledWith(HomeActions.fetchversionInfo());
+    expect(store.dispatch).not.toHaveBeenCalledWith(
+      HomeActions.fetchversionInfo()
+    );
   });
 
   it("should select error from store", (done) => {
@@ -55,5 +63,13 @@ describe("RegistrationVersionComponent", () => {
       expect(error).toBeNull();
       done();
     });
+  });
+
+  it("should unsubscribe fetchProbesSubscription on destroy", () => {
+    component.versionInfoSubscription = jasmine.createSpyObj("Subscription", [
+      "unsubscribe",
+    ]);
+    component.ngOnDestroy();
+    expect(component.versionInfoSubscription.unsubscribe).toHaveBeenCalled();
   });
 });
