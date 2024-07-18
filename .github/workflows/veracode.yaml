@@ -1,0 +1,98 @@
+name: Veracode 
+
+on:
+    schedule:
+        - cron: '30 14 * * *'  # 8:00 PM IST (2:30 PM UTC)
+
+permissions:
+    contents: read
+  
+jobs:
+  scan-build:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+                <servers>
+                    <server>
+                      <id>maven-internal</id>
+                      <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                      <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                    </server>
+                </servers>
+                </settings>' > ~/.m2/settings.xml
+                
+      - name: Configure Additional Registries
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+    
+      - name: Delete Node Modules
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: rm -rf node_modules
+       
+      - name: Install zip
+        run: sudo apt-get install zip
+
+      - name: Zip nuxeo-admin-console
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: zip -r nuxeo-admin-console-ui.zip *
+
+      - name: Upload ZIP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuxeo-admin-console-ui
+          path: nuxeo-admin-console-web/angular-app/nuxeo-admin-console-ui.zip
+  
+  scan:
+    needs: scan-build
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuxeo-admin-console-ui
+          path: .
+
+      - name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@0.2.6
+        with:
+          appname: 'nuxeo-admin-console-ui'
+          createprofile: false
+          filepath: 'nuxeo-admin-console-ui.zip'
+          vid: '${{ secrets.VERACODE_SECRET_API_ID }}'
+          vkey: '${{ secrets.VERACODE_SECRET_KEY }}'
+          sandboxname: 'master'
+          scantimeout: 600
+          include: '*.war, *.zip, *.js, *.html, *.css, *.json'
+          criticality: 'High'
+          includenewmodules: 'true'
