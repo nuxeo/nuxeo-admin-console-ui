@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.admin.console</groupId>
   <artifactId>nuxeoadmin</artifactId>
-  <version>23.0.0-SNAPSHOT</version>
+  <version>23.0.0-rc.003</version>
   <name>Admin Console UI</name>
   <description>Nuxeo Admin console UI is a standard base web application for Nuxeo admin users.</description>
   <packaging>pom</packaging>
