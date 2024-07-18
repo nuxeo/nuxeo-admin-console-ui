@@ -90,12 +90,15 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     this.documentReindexingErrorSubscription =
       this.documentReindexingError$.subscribe((error) => {
         if (error) {
-          this.showReindexErrorModal(error);
+          this.showReindexErrorModal({
+            errorType: "serverError",
+            errorDetails: error,
+          });
         }
       });
   }
 
-  showReindexErrorModal(error: HttpErrorResponse): void {
+  showReindexErrorModal(error: unknown): void {
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -169,13 +172,19 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       const userInput = this.documentReindexForm
         ?.get("documentIdentifier")
         ?.value?.trim();
-      /* decode user input to handle path names that contain spaces, 
-      which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
-      const decodedUserInput = decodeURIComponent(
-        /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
-        this.elasticSearchReindexService.removeLeadingCharacters(userInput)
-      );
-      this.triggerReindex(decodedUserInput);
+      let decodedUserInput: string | null = null;
+      try {
+        decodedUserInput = decodeURIComponent(
+          this.elasticSearchReindexService.removeLeadingCharacters(userInput)
+        );
+        this.triggerReindex(decodedUserInput);
+      } catch (error) {
+        this.showReindexErrorModal({
+          errorType: "invalidInputError",
+          errorDetails: {},
+        });
+      }
+      // this.triggerReindex(this.elasticSearchReindexService.removeLeadingCharacters(userInput));
     }
   }
 
@@ -195,9 +204,11 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
           const decodedPath =
-            this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
-              doc.path
-            );
+            doc.path.indexOf("'") > -1
+              ? this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+                  doc.path
+                )
+              : doc.path;
           const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
           this.store.dispatch(
             ReindexActions.performDocumentReindex({

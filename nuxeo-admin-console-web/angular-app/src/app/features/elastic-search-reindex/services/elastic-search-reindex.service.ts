@@ -98,6 +98,6 @@ export class ElasticSearchReindexService {
   // tslint:disable-next-line:no-useless-escape
   decodeAndReplaceSingleQuotes(input: string): string {
     /* replace & decode all occurences of single & double quotes */
-    return decodeURIComponent(input).replaceAll("'", "%5C%27");
+      return decodeURIComponent(input).replaceAll("'", "%5C%27");
   }
 }

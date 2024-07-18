@@ -46,4 +46,18 @@ export class ElasticSearchReindexModalComponent {
           this.data?.userInput
         );
   }
+
+  /* 
+  
+  switch (this.data.error.errorType) {
+      case "invalidInputError":
+        return "Invalid document ID or path. Please enter a valid input.";
+      default:
+        return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+          "<documentID>",
+          this.data?.userInput
+        );
+    }
+  
+  */
 }

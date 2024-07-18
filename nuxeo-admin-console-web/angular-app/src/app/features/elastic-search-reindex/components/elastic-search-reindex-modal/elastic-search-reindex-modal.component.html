@@ -19,10 +19,10 @@
     </div>
 
     <div *ngIf="data.isErrorModal">
-      <div *ngIf="data.error else noDocumentsMessage;">
+      <div *ngIf="data.error && data.error.errorType === 'serverError' else noDocumentsMessage;">
         <p>{{data.errorMessageHeader}}</p>
-        <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.status}}</p>
-        <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.message}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.errorDetails.status}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.errorDetails.message}}</p>
       </div>
       <ng-template #noDocumentsMessage>
         <p>{{getNoDocumentsMessage()}}</p>

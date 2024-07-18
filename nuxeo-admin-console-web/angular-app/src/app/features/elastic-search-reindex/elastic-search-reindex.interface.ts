@@ -28,7 +28,7 @@ export interface ReindexModalData {
   confirmContinue: string;
   isErrorModal: boolean;
   errorMessageHeader: string;
-  error: ErrorDetails;
+  error: any;
   launchedMessage: string;
   copyActionId: string;
   abortLabel: string;
@@ -38,4 +38,5 @@ export interface ReindexModalData {
   commandId: string;
   userInput: string;
   noMatchingQuery: boolean;
+  invalidInputError: boolean;
 }
