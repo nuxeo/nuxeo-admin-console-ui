@@ -4,11 +4,14 @@ import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {
   ReindexModalClosedInfo,
   ReindexInfo,
+  ErrorDetails,
 } from "../../elastic-search-reindex.interface";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
   ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -105,7 +108,10 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     this.nxqlReindexingErrorSubscription = this.nxqlReindexingError$.subscribe(
       (error) => {
         if (error) {
-          this.showReindexErrorModal(error);
+          this.showReindexErrorModal({
+            type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
+          });
         }
       }
     );
@@ -147,7 +153,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     document.getElementById("nxqlQuery")?.focus();
   }
 
-  showReindexErrorModal(error?: HttpErrorResponse): void {
+  showReindexErrorModal(error: ErrorDetails): void {
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -159,9 +165,8 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
           errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
-          error: this.noOfDocumentsToReindex === 0 ? null : error,
+          error,
           isErrorModal: true,
-          noMatchingQuery: true,
         },
       }
     );
@@ -178,7 +183,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
 
   getErrorMessage(): string | null {
     if (this.nxqlReindexForm?.get("nxqlQuery")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.INVALID_NXQL_QUERY_ERROR;
+      return ELASTIC_SEARCH_LABELS.REQUIRED_NXQL_QUERY_ERROR;
     }
     return null;
   }
@@ -189,11 +194,22 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       const userInput = this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim();
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
-      const decodedUserInput = decodeURIComponent(
-        /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
-        this.elasticSearchReindexService.removeLeadingCharacters(userInput)
-      );
-      this.fetchNoOfDocuments(decodedUserInput);
+      try {
+        const decodedUserInput = decodeURIComponent(
+          /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
+          this.elasticSearchReindexService.removeLeadingCharacters(userInput)
+        );
+        this.fetchNoOfDocuments(decodedUserInput);
+      } catch (error) {
+        this.elasticSearchReindexService.spinnerStatus.next(false);
+        this.showReindexErrorModal({
+          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
+          details: {
+            message:
+              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+          },
+        });
+      }
     }
   }
 
@@ -212,7 +228,14 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
             ? (document.resultsCount as number)
             : 0;
           if (this.noOfDocumentsToReindex === 0) {
-            this.showReindexErrorModal();
+            this.elasticSearchReindexService.spinnerStatus.next(false);
+            this.showReindexErrorModal({
+              type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_MATCHING_QUERY,
+              details: {
+                message:
+                  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
+              },
+            });
           } else {
             this.showConfirmationModal(
               this.noOfDocumentsToReindex as number,
@@ -280,15 +303,25 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
-      this.decodedUserInput = decodeURIComponent(query).replace(
-        /\\'/g,
-        "%5C%27"
-      );
-      this.store.dispatch(
-        ReindexActions.performNxqlReindex({
-          nxqlQuery: this.decodedUserInput,
-        })
-      );
+      try {
+        this.decodedUserInput = decodeURIComponent(query).replace(
+          /\\'/g,
+          "%5C%27"
+        );
+        this.store.dispatch(
+          ReindexActions.performNxqlReindex({
+            nxqlQuery: this.decodedUserInput,
+          })
+        );
+      } catch (error) {
+        this.showReindexErrorModal({
+          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
+          details: {
+            message:
+              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+          },
+        });
+      }
     } else {
       document.getElementById("nxqlQuery")?.focus();
     }

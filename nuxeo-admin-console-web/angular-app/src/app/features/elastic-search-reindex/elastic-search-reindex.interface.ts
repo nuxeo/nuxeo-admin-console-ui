@@ -14,9 +14,14 @@ export interface ReindexModalClosedInfo {
   event: unknown;
 }
 
-export interface ErrorDetails {
-  status: string;
+export interface ErrorStatus {
+  status?: number;
   message: string;
+}
+
+export interface ErrorDetails {
+  type: string;
+  details: ErrorStatus;
 }
 
 export interface ReindexModalData {
@@ -28,7 +33,7 @@ export interface ReindexModalData {
   confirmContinue: string;
   isErrorModal: boolean;
   errorMessageHeader: string;
-  error: any;
+  error: ErrorDetails;
   launchedMessage: string;
   copyActionId: string;
   abortLabel: string;
@@ -37,6 +42,4 @@ export interface ReindexModalData {
   isLaunchedModal: boolean;
   commandId: string;
   userInput: string;
-  noMatchingQuery: boolean;
-  invalidInputError: boolean;
 }

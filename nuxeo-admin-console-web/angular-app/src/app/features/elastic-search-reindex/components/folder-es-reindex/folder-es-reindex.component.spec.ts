@@ -20,13 +20,13 @@ import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { ReindexInfo } from "../../elastic-search-reindex.interface";
+import { ErrorDetails, ReindexInfo } from "../../elastic-search-reindex.interface";
 import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { HttpErrorResponse } from "@angular/common/http";
 import {
   ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
   ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { DocumentReindexState, FolderReindexState } from "../../store/reducers";
@@ -140,10 +140,10 @@ describe("FolderESReindexComponent", () => {
   });
 
   it("should open error dialog and handle close subscription", () => {
-    const mockError: HttpErrorResponse = {
-      error: "Test Error",
-      status: 500,
-    } as HttpErrorResponse;
+    const mockError: ErrorDetails = {
+      type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID,
+      details: { message: "Test error" },
+    };
 
     spyOn(component, "onReindexErrorModalClose");
     component.userInput = "123";
@@ -220,7 +220,7 @@ describe("FolderESReindexComponent", () => {
     });
 
     const errorMessage = component.getErrorMessage();
-    expect(errorMessage).toBe(ELASTIC_SEARCH_LABELS.INVALID_DOCID_ERROR);
+    expect(errorMessage).toBe(ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_ERROR);
   });
 
   it("should return null when documentID does not have a required error", () => {

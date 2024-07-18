@@ -3,6 +3,7 @@ import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-mo
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { FolderReindexState } from "../../store/reducers";
 import {
+  ErrorDetails,
   ReindexInfo,
   ReindexModalClosedInfo,
 } from "../../elastic-search-reindex.interface";
@@ -10,6 +11,8 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
   ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
@@ -96,7 +99,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.folderReindexingErrorSubscription =
       this.folderReindexingError$.subscribe((error) => {
         if (error) {
-          this.showReindexErrorModal(error);
+          this.showReindexErrorModal({
+            type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
+          });
         }
       });
 
@@ -106,7 +112,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       });
   }
 
-  showReindexErrorModal(error?: HttpErrorResponse): void {
+  showReindexErrorModal(error: ErrorDetails): void {
     this.elasticSearchReindexService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
@@ -118,7 +124,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
           errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-          error: error,
+          error,
           userInput: this.userInput,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
@@ -169,7 +175,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   getErrorMessage(): string | null {
     if (this.folderReindexForm?.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.INVALID_DOCID_ERROR;
+      return ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_ERROR;
     }
     return null;
   }
@@ -184,12 +190,22 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
-      this.decodedUserInput =
-        this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
-          this.userInput
-        );
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
-      this.fetchNoOfDocuments(requestQuery);
+      try {
+        this.decodedUserInput =
+          this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+            decodeURIComponent(this.userInput)
+          );
+        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
+        this.fetchNoOfDocuments(requestQuery);
+      } catch (error) {
+        this.showReindexErrorModal({
+          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID,
+          details: {
+            message:
+              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+          },
+        });
+      }
     }
   }
 
@@ -208,7 +224,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             ? (document.resultsCount as number)
             : 0;
           if (documentCount === 0) {
-            this.showReindexErrorModal();
+            this.showReindexErrorModal({
+              type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
+              details: {
+                message:
+                  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
+              },
+            });
           } else {
             this.showConfirmationModal(documentCount);
           }

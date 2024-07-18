@@ -1,7 +1,14 @@
 import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
-import { ELASTIC_SEARCH_LABELS } from "./../../elastic-search-reindex.constants";
+import {
+  ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
+} from "./../../elastic-search-reindex.constants";
 import { ElasticSearchReindexModalComponent } from "./../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
-import { ReindexModalClosedInfo } from "./../../elastic-search-reindex.interface";
+import {
+  ErrorDetails,
+  ReindexModalClosedInfo,
+} from "./../../elastic-search-reindex.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ReindexInfo } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit } from "@angular/core";
@@ -91,14 +98,14 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
       this.documentReindexingError$.subscribe((error) => {
         if (error) {
           this.showReindexErrorModal({
-            errorType: "serverError",
-            errorDetails: error,
+            type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
           });
         }
       });
   }
 
-  showReindexErrorModal(error: unknown): void {
+  showReindexErrorModal(error: ErrorDetails): void {
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -109,7 +116,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
           errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-          error: error,
+          error,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
         },
@@ -162,7 +169,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
     if (
       this.documentReindexForm?.get("documentIdentifier")?.hasError("required")
     ) {
-      return ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH_ERROR;
+      return ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
@@ -180,11 +187,13 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
         this.triggerReindex(decodedUserInput);
       } catch (error) {
         this.showReindexErrorModal({
-          errorType: "invalidInputError",
-          errorDetails: {},
+          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+          details: {
+            message:
+              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+          },
         });
       }
-      // this.triggerReindex(this.elasticSearchReindexService.removeLeadingCharacters(userInput));
     }
   }
 
@@ -203,18 +212,28 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
-          const decodedPath =
-            doc.path.indexOf("'") > -1
-              ? this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
-                  doc.path
-                )
-              : doc.path;
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
-          this.store.dispatch(
-            ReindexActions.performDocumentReindex({
-              requestQuery: requestQuery,
-            })
-          );
+          try {
+            const decodedPath =
+              doc.path.indexOf("'") > -1
+                ? this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+                    decodeURIComponent(doc.path)
+                  )
+                : doc.path;
+            const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
+            this.store.dispatch(
+              ReindexActions.performDocumentReindex({
+                requestQuery: requestQuery,
+              })
+            );
+          } catch (error) {
+            this.showReindexErrorModal({
+              type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+              details: {
+                message:
+                  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+              },
+            });
+          }
         }
       })
       .catch((err: unknown) => {

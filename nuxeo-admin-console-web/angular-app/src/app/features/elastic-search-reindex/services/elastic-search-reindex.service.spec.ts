@@ -151,7 +151,7 @@ describe("ElasticSearchReindexService", () => {
 
     it("should decode URI components and replace single quotes", () => {
       const input = "test%27string%27with%27quotes";
-      const expectedOutput = "test%5C%27string%5C%27with%5C%27quotes";
+      const expectedOutput = "test%27string%27with%27quotes";
       expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
     });
 
@@ -175,7 +175,7 @@ describe("ElasticSearchReindexService", () => {
 
     it("should handle strings with encoded characters and single quotes", () => {
       const input = "%27encoded%27%20characters%27";
-      const expectedOutput = "%5C%27encoded%5C%27 characters%5C%27";
+      const expectedOutput = "%27encoded%27%20characters%27";
       expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
     });
   });

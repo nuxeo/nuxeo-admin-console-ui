@@ -20,13 +20,16 @@ import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { ReindexInfo } from "../../elastic-search-reindex.interface";
+import {
+  ErrorDetails,
+  ReindexInfo,
+} from "../../elastic-search-reindex.interface";
 import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { HttpErrorResponse } from "@angular/common/http";
 import {
   ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
   ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { DocumentReindexState } from "../../store/reducers";
@@ -190,7 +193,7 @@ describe("DocumentESReindexComponent", () => {
 
     const errorMessage = component.getErrorMessage();
     expect(errorMessage).toBe(
-      ELASTIC_SEARCH_LABELS.INVALID_DOCID_OR_PATH_ERROR
+      ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_OR_PATH_ERROR
     );
   });
 
@@ -204,14 +207,19 @@ describe("DocumentESReindexComponent", () => {
 
   it("should call triggerReindex with trimmed value when form is valid", () => {
     const triggerReindexSpy = spyOn(component, "triggerReindex");
-    
+
     component.documentReindexForm = new FormBuilder().group({
       documentIdentifier: ["  'some value'  ", Validators.required],
     });
-    spyOn(elasticSearchReindexService, "removeLeadingCharacters").and.returnValue("some value");
+    spyOn(
+      elasticSearchReindexService,
+      "removeLeadingCharacters"
+    ).and.returnValue("some value");
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).toHaveBeenCalledWith("some value");
-    expect(elasticSearchReindexService.removeLeadingCharacters).toHaveBeenCalled();
+    expect(
+      elasticSearchReindexService.removeLeadingCharacters
+    ).toHaveBeenCalled();
   });
 
   it("should not call triggerReindex when form is invalid", () => {
@@ -222,7 +230,9 @@ describe("DocumentESReindexComponent", () => {
     });
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).not.toHaveBeenCalled();
-    expect(elasticSearchReindexService.removeLeadingCharacters).not.toHaveBeenCalled();
+    expect(
+      elasticSearchReindexService.removeLeadingCharacters
+    ).not.toHaveBeenCalled();
   });
 
   it("should dispatch resetDocumentReindexState and unsubscribe from subscriptions on ngOnDestroy", () => {
@@ -294,9 +304,11 @@ describe("DocumentESReindexComponent", () => {
   });
 
   describe("test triggerReindex", () => {
-   
     it("should dispatch performDocumentReindex on successful fetch", async () => {
-      spyOn(elasticSearchReindexService, "decodeAndReplaceSingleQuotes").and.returnValue("/some/path");
+      spyOn(
+        elasticSearchReindexService,
+        "decodeAndReplaceSingleQuotes"
+      ).and.returnValue("/some/path");
       component.nuxeo = {
         repository: jasmine.createSpy().and.returnValue({
           fetch: jasmine
@@ -315,7 +327,9 @@ describe("DocumentESReindexComponent", () => {
           requestQuery: `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='/some/path'`,
         })
       );
-      expect(elasticSearchReindexService.decodeAndReplaceSingleQuotes).toHaveBeenCalled();
+      expect(
+        elasticSearchReindexService.decodeAndReplaceSingleQuotes
+      ).toHaveBeenCalled();
     });
 
     it("should handle error if fetch fails", async () => {
@@ -343,10 +357,10 @@ describe("DocumentESReindexComponent", () => {
   });
 
   it("should open error dialog and handle close subscription", () => {
-    const mockError: HttpErrorResponse = {
-      error: "Test Error",
-      status: 500,
-    } as HttpErrorResponse;
+    const mockError: ErrorDetails = {
+      type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      details: { message: "Test error" },
+    };
 
     spyOn(component, "onReindexErrorModalClose");
 
