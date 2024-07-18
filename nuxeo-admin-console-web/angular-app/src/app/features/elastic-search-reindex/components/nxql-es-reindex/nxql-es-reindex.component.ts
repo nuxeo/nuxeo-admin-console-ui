@@ -65,6 +65,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
   decodedUserInput = "";
+  noOfDocumentsToReindex = -1;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -146,7 +147,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     document.getElementById("nxqlQuery")?.focus();
   }
 
-  showReindexErrorModal(error: HttpErrorResponse): void {
+  showReindexErrorModal(error?: HttpErrorResponse): void {
     this.errorDialogRef = this.dialogService.open(
       ElasticSearchReindexModalComponent,
       {
@@ -157,9 +158,10 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
           errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-          error: error,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
+          error: this.noOfDocumentsToReindex === 0 ? null : error,
           isErrorModal: true,
+          noMatchingQuery: true,
         },
       }
     );
@@ -206,14 +208,22 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           document !== null &&
           "resultsCount" in document
         ) {
-          const documentCount = document.resultsCount
-            ? document.resultsCount
+          this.noOfDocumentsToReindex = document.resultsCount
+            ? (document.resultsCount as number)
             : 0;
-          this.showConfirmationModal(documentCount as number, query);
+          if (this.noOfDocumentsToReindex === 0) {
+            this.showReindexErrorModal();
+          } else {
+            this.showConfirmationModal(
+              this.noOfDocumentsToReindex as number,
+              query
+            );
+          }
         }
       })
       .catch((err: unknown) => {
         this.elasticSearchReindexService.spinnerStatus.next(false);
+        this.noOfDocumentsToReindex = -1;
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }

@@ -39,9 +39,11 @@ export class ElasticSearchReindexModalComponent {
   }
 
   getNoDocumentsMessage(): string | null {
-    return ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
-      "<documentID>",
-      this.data?.userInput
-    );
+    return this.data.noMatchingQuery
+      ? ELASTIC_SEARCH_LABELS.NO_MATCHING_QUERY
+      : ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+          "<documentID>",
+          this.data?.userInput
+        );
   }
 }
