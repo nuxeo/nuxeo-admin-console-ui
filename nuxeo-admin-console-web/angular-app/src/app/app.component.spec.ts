@@ -60,9 +60,6 @@ describe("AppComponent", () => {
     loadApp = new EventEmitter<boolean>();
   }
 
-  class nuxeoJsClientServiceStub {
-    initiateJSClient():void { }
-  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -71,7 +68,6 @@ describe("AppComponent", () => {
       providers: [
         { provide: PersistenceService, useClass: persistenceServiceStub },
         { provide: CommonService, useClass: commonServiceStub },
-        { provide: NuxeoJSClientService, useClass: nuxeoJsClientServiceStub },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         provideMockStore({ initialState: { auth: initialAuthState } }),
       ],
