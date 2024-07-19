@@ -9,7 +9,8 @@
     display: flex;
     align-items: baseline;
     gap: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     button {
       width: auto;
       height: auto;
@@ -19,6 +20,9 @@
       background-color: transparent;
       cursor: pointer;
       border-radius: 0;
+    }
+    button:focus {
+      outline: 2px auto -webkit-focus-ring-color;
     }
     img {
       width: 112px;
