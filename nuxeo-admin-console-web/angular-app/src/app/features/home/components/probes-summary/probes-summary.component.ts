@@ -38,17 +38,13 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
     return probe ? probe.displayName : probeName;
   }
 
-  getImageSrc(successStatus: string): string {
-    switch (String(successStatus).toLowerCase()) {
-      case PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE.VALUE:
-        return PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE.PATH;
-      case PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN.VALUE:
-        return PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN.PATH;
-      case PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE.VALUE:
-        return PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE.PATH;
-      default:
-        return PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN.PATH;
+  getImageSrc(neverExecuted: boolean, successStatus: boolean): string {
+    if (neverExecuted) {
+      return PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN;
     }
+    return successStatus
+      ? PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE
+      : PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE;
   }
 
   ngOnDestroy(): void {

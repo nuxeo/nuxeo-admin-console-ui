@@ -21,14 +21,14 @@ export const PROBES_LABELS = {
     INFORMATION: "Information",
   },
   SUCCESS_STATUS_ICONS: {
-    TRUE: { VALUE: "true", PATH: "assets/images/check.svg" },
-    UNKNOWN: { VALUE: "unknown", PATH: "assets/images/question.svg" },
-    FALSE: { VALUE: "false", PATH: "assets/images/error.svg" },
+    TRUE: "assets/images/check.svg",
+    UNKNOWN: "assets/images/question.svg",
+    FALSE: "assets/images/error.svg",
   },
 };
 
 export const REGISTRATION_VERSION_LABELS = {
   VERSION_TITLE: "Version:",
   CLUSTER_ENABLED: "Cluster Enabled:",
-  VERSION_INFO: "Version Info"
+  VERSION_INFO: "Version Info",
 };

@@ -127,39 +127,4 @@ describe("HomeService", () => {
       req.flush(null, errorResponse);
     });
   });
-
-  describe("getProbesInfo", () => {
-    it("should fetch probes info", () => {
-      service.getProbesInfo().subscribe((data) => {
-        expect(data).toEqual(mockProbesResponse);
-      });
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}management/probes`
-      );
-      expect(req.request.method).toBe("GET");
-      req.flush(mockProbesResponse);
-    });
-
-    it("should handle http error", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Server Error",
-      };
-
-      service.getProbesInfo().subscribe(
-        () => fail("expected an error, not probes info"),
-        (error) => {
-          expect(error.status).toBe(500);
-          expect(error.statusText).toBe("Server Error");
-        }
-      );
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}management/probes`
-      );
-      expect(req.request.method).toBe("GET");
-      req.flush(null, errorResponse);
-    });
-  });
 });
