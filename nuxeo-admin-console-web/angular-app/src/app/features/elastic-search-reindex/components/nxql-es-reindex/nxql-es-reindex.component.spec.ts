@@ -21,13 +21,13 @@ import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { ReindexInfo } from "../../elastic-search-reindex.interface";
+import { ErrorDetails, ReindexInfo } from "../../elastic-search-reindex.interface";
 import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { HttpErrorResponse } from "@angular/common/http";
 import {
   ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
   ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { NXQLReindexState } from "../../store/reducers";
@@ -149,10 +149,10 @@ describe("NXQLESReindexComponent", () => {
   });
 
   it("should open error dialog and handle close subscription", () => {
-    const mockError: HttpErrorResponse = {
-      error: "Test Error",
-      status: 500,
-    } as HttpErrorResponse;
+    const mockError: ErrorDetails = {
+      type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
+      details: { message: "Test error" },
+    };
 
     spyOn(component, "onReindexErrorModalClose");
 
@@ -171,7 +171,6 @@ describe("NXQLESReindexComponent", () => {
           error: mockError,
           closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           isErrorModal: true,
-          noMatchingQuery: true,
         },
       }
     );
@@ -229,7 +228,7 @@ describe("NXQLESReindexComponent", () => {
     });
 
     const errorMessage = component.getErrorMessage();
-    expect(errorMessage).toBe(ELASTIC_SEARCH_LABELS.INVALID_NXQL_QUERY_ERROR);
+    expect(errorMessage).toBe(ELASTIC_SEARCH_LABELS.REQUIRED_NXQL_QUERY_ERROR);
   });
 
   it("should return null when nxqlQuery does not have a required error", () => {

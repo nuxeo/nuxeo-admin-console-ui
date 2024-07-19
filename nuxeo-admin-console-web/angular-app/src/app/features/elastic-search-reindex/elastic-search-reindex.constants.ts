@@ -11,11 +11,31 @@ export const ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS = {
   WIDTH: "550px",
 };
 
+export const ELASTIC_SEARCH_REINDEX_ERROR_TYPES = {
+  INVALID_DOC_ID_OR_PATH: "invalidDocIdOrPathError",
+  INVALID_DOC_ID: "invalidDocIdError",
+  INVALID_QUERY: "invalidQueryError",
+  NO_DOCUMENT_ID_FOUND: "noDocumentIdFound",
+  NO_MATCHING_QUERY: "noMatchingQuery",
+  SERVER_ERROR: "serverError",
+};
+
+export const ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES = {
+  INVALID_DOC_ID_OR_PATH_MESSAGE:
+    "Invalid document ID or path. Please enter a valid ID or path.",
+  INVALID_DOC_ID_MESSAGE: "Invalid document ID. Please enter a valid ID.",
+  INVALID_QUERY_MESSAGE: "Invalid query. Please enter a valid query.",
+  NO_DOCUMENT_ID_FOUND_MESSAGE: "Document with ID <documentID> was not found.",
+  NO_MATCHING_QUERY_MESSAGE:
+    "No document matches that query. Please try again with a different query.",
+  UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",
+};
+
 export const ELASTIC_SEARCH_LABELS = {
-  INVALID_DOCID_OR_PATH_ERROR:
+  REQUIRED_DOCID_OR_PATH_ERROR:
     "Please provide a document id or a document path",
-  INVALID_DOCID_ERROR: "Please provide a document id",
-  INVALID_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
+  REQUIRED_DOCID_ERROR: "Please provide a document id",
+  REQUIRED_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
   REINDEX_WARNING:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
   REINDEX_LAUNCHED: "Congratulations! Your action is launched with ID",
@@ -44,9 +64,6 @@ export const ELASTIC_SEARCH_LABELS = {
   },
   REQUIRED_FIELD_INDICATOR: "* indicates a required field",
   REFERENCE_POINT: 2000,
-  NO_DOCUMENTS: "Document with id <documentID> was not found.",
-  NO_MATCHING_QUERY:
-    "No document matches that query. Please try again with a different query.",
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   DOCUMENT_ID: "Document ID",
   REINDEX_BUTTON_LABEL: "Reindex",

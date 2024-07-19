@@ -12,7 +12,7 @@ import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
-import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS, ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES, ELASTIC_SEARCH_REINDEX_ERROR_TYPES } from "../../elastic-search-reindex.constants";
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
@@ -32,7 +32,7 @@ describe("ElasticSearchReindexModalComponent", () => {
     confirmContinue: "Do you want to continue?",
     isErrorModal: false,
     errorMessageHeader: "",
-    error: { message: "", status: "400" },
+    error: { type: "", details: { status: 0, message: "" } },
     launchedMessage: "",
     copyActionId: "Copy ID",
     abortLabel: "Abort",
@@ -41,7 +41,6 @@ describe("ElasticSearchReindexModalComponent", () => {
     isLaunchedModal: true,
     commandId: "203-11112-38652-990",
     userInput: "",
-    noMatchingQuery: false,
   };
 
   beforeEach(async () => {
@@ -108,33 +107,48 @@ describe("ElasticSearchReindexModalComponent", () => {
       ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT
     );
   });
+  
 
-  it("should return NO_MATCHING_QUERY message when noMatchingQuery is true", () => {
-    component.data.noMatchingQuery = true;
+  it("should return INVALID_DOC_ID_OR_PATH_MESSAGE when error type is INVALID_DOC_ID_OR_PATH", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH;
     const message = component.getNoDocumentsMessage();
-    expect(message).toEqual(ELASTIC_SEARCH_LABELS.NO_MATCHING_QUERY);
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE);
   });
 
-  it("should return NO_DOCUMENTS message with userInput when noMatchingQuery is false", () => {
+  it("should return INVALID_DOC_ID_MESSAGE when error type is INVALID_DOC_ID", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE);
+  });
+
+  it("should return INVALID_QUERY_MESSAGE when error type is INVALID_QUERY", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE);
+  });
+
+  it("should return NO_DOCUMENT_ID_FOUND_MESSAGE with userInput when error type is NO_DOCUMENT_ID_FOUND", () => {
     const userInput = "12345";
-    component.data.noMatchingQuery = false;
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_DOCUMENT_ID_FOUND;
     component.data.userInput = userInput;
     const message = component.getNoDocumentsMessage();
-    const expectedMessage = ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
+    const expectedMessage = ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE.replace(
       "<documentID>",
       userInput
     );
-    expect(message).toEqual(expectedMessage);
+    expect(message).toBe(expectedMessage);
   });
 
-  it("should return NO_DOCUMENTS message with empty userInput when noMatchingQuery is false and userInput is not provided", () => {
-    component.data.noMatchingQuery = false;
-    component.data.userInput = "";
+  it("should return NO_MATCHING_QUERY_MESSAGE when error type is NO_MATCHING_QUERY", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_MATCHING_QUERY;
     const message = component.getNoDocumentsMessage();
-    const expectedMessage = ELASTIC_SEARCH_LABELS.NO_DOCUMENTS.replace(
-      "<documentID>",
-      ""
-    );
-    expect(message).toEqual(expectedMessage);
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE);
   });
+
+  it("should return UNKNOWN_ERROR_MESSAGE for any other error type", () => {
+    component.data.error.type = "UNKNOWN_ERROR_TYPE";
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.UNKNOWN_ERROR_MESSAGE);
+  });
+
 });
