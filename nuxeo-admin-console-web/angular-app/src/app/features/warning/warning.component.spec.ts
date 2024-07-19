@@ -8,7 +8,6 @@ import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from "@angular/core";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { AuthStateInterface } from '../../auth/types/authState.interface';
 
 describe("WarningComponent", () => {
   let component: WarningComponent;
@@ -27,12 +26,12 @@ describe("WarningComponent", () => {
   };
 
   class PersistenceServiceStub {
-    get(key: string) {
+    get() {
       return null;
     }
 
-    set(key: string, value: string) {
-      return;
+    set() {
+      return null;
     }
   }
 
