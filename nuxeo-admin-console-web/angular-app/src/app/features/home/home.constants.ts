@@ -21,9 +21,9 @@ export const PROBES_LABELS = {
     INFORMATION: "Information",
   },
   SUCCESS_STATUS_ICONS: {
-    TRUE: { VALUE: "true", PATH: "assets/images/check.svg" },
-    UNKNOWN: { VALUE: "unknown", PATH: "assets/images/question.svg" },
-    FALSE: { VALUE: "false", PATH: "assets/images/error.svg" },
+    TRUE: "assets/images/check.svg",
+    UNKNOWN: "assets/images/question.svg",
+    FALSE: "assets/images/error.svg",
   },
 };
 

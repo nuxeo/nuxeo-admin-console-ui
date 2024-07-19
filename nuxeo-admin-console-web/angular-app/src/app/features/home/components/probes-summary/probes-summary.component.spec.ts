@@ -66,19 +66,25 @@ describe("ProbesSummaryComponent", () => {
     expect(unknownDisplayName).toBe(unknownProbeName);
   });
 
-  it("should return correct image src based on success status", () => {
-    expect(component.getImageSrc("true")).toBe(
-      PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE.PATH
-    );
-    expect(component.getImageSrc("unknown")).toBe(
-      PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN.PATH
-    );
-    expect(component.getImageSrc("false")).toBe(
-      PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE.PATH
-    );
-    expect(component.getImageSrc("invalidStatus")).toBe(
-      PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN.PATH
-    );
+  it("should return UNKNOWN icon when neverExecuted is true", () => {
+    const neverExecuted = true;
+    const successStatus = false;
+    const result = component.getImageSrc(neverExecuted, successStatus);
+    expect(result).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN);
+  });
+
+  it("should return TRUE icon when neverExecuted is false and successStatus is true", () => {
+    const neverExecuted = false;
+    const successStatus = true;
+    const result = component.getImageSrc(neverExecuted, successStatus);
+    expect(result).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE);
+  });
+
+  it("should return FALSE icon when neverExecuted is false and successStatus is false", () => {
+    const neverExecuted = false;
+    const successStatus = false;
+    const result = component.getImageSrc(neverExecuted, successStatus);
+    expect(result).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE);
   });
 
   it("should unsubscribe fetchProbesSubscription on destroy", () => {

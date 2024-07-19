@@ -18,8 +18,10 @@
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.SUCCESS}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <img [src]="getImageSrc(row.status.success)" [alt]="row.status.success"
-                            [matTooltip]="row.status.success" matTooltipClass="hy-tooltip" matTooltipPosition="above" />
+                        <img [src]="getImageSrc(row?.status?.neverExecuted, row.status.success)"
+                            [alt]="row.status.neverExecuted ? 'unknown' : row.status.success"
+                            [matTooltip]="row.status.neverExecuted ? 'unknown' : row.status.success"
+                            matTooltipClass="hy-tooltip" matTooltipPosition="above" />
                     </ng-container>
                 </hy-content-list-column>
 
