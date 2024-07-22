@@ -40,3 +40,8 @@ mat-form-field.hy-form-field {
   max-width: 600px;
   width: 80%;
 }
+
+.resizable-textarea {
+  resize: vertical;
+  overflow: auto;
+}
