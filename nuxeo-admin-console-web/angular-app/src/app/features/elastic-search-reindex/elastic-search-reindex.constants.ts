@@ -33,8 +33,8 @@ export const ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES = {
 
 export const ELASTIC_SEARCH_LABELS = {
   REQUIRED_DOCID_OR_PATH_ERROR:
-    "Please provide a document id or a document path",
-  REQUIRED_DOCID_ERROR: "Please provide a document id",
+    "Please provide a document ID or a document path",
+  REQUIRED_DOCID_ERROR: "Please provide a document ID",
   REQUIRED_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
   REINDEX_WARNING:
     "This action will impact 10 documents. This action could take approximately 1d 2h 30m. Continue?",
@@ -48,13 +48,13 @@ export const ELASTIC_SEARCH_LABELS = {
   FOLDER_REINDEX_TITLE: "Reindex a document and all of its children",
   REINDEX_LAUNCHED_MODAL_TITLE: "Action launched",
   REINDEX_ERRROR_MODAL_TITLE: "An error occurred",
-  REINDEXING_ERROR: "Your action was not executed due to an error. ",
+  REINDEXING_ERROR: "Your action was not executed due to an internal error. ",
   DOCUMENT_REINDEX_TITLE: "Reindex a single document",
   NXQL_QUERY_REINDEX_TITLE: "Reindex the results of a NXQL query",
   ERROR_DETAILS: "Details:",
   ERROR_STATUS: "Status:",
   CONTINUE_CONFIRMATION: "Would you like to continue?",
-  COPY_ACTION_ID_BUTTON_LABEL: "Copy action ID",
+  COPY_ACTION_ID_BUTTON_LABEL: "Copy Action ID",
   IMPACT_MESSAGE:
     "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
   MODAL_TYPE: {
