@@ -63,12 +63,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   onSignOut(): void {
     this.store.dispatch(authActions.signOut());
-    this.redirectToLogin();
-  }
-
-  private redirectToLogin(): void {
-    const _baseURL = this.nuxeoJsClientService.getBaseUrl();
-    window.location.href = `${_baseURL}/login.jsp?requestedUrl=nuxeoadmin`;
   }
 
   ngOnDestroy(): void {

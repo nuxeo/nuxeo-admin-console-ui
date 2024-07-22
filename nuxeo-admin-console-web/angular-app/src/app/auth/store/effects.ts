@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap } from "rxjs";
+import { catchError, map, of, switchMap, tap } from "rxjs";
 import { UserInterface } from "../../shared/types/user.interface";
 import { AuthService } from "../services/auth.service";
 import { authActions } from "./actions";
-
+import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 export const getCurrentUserEffect = createEffect(
   (
     actions$ = inject(Actions),
@@ -32,6 +32,7 @@ export const signOutEffect = createEffect(
   (
     actions$ = inject(Actions),
     authService = inject(AuthService),
+    nuxeoJsClientService = inject(NuxeoJSClientService)
   ) => {
     return actions$.pipe(
       ofType(authActions.signOut),
@@ -48,8 +49,12 @@ export const signOutEffect = createEffect(
             );
           })
         );
+      }),
+      tap(() => {
+        const _baseURL = nuxeoJsClientService.getBaseUrl();
+        window.location.href = `${_baseURL}/login.jsp?requestedUrl=nuxeoadmin`;
       })
     );
   },
-  { functional: true, dispatch: false }
+  { functional: true }
 );
