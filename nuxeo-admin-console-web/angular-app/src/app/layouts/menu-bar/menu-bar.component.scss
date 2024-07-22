@@ -19,7 +19,13 @@ $selected-line-bg-color: #0c6bd4;
       }
     }
     &:focus {
-      outline: 2px solid -webkit-focus-ring-color;
+      outline: 2px auto -webkit-focus-ring-color;
+    }
+    @supports (-moz-appearance:none) {
+      &:focus {
+        outline-color: #4B86D8;
+        outline-style: solid;
+      }
     }
 
     &--selected {
