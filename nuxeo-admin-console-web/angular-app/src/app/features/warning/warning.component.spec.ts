@@ -12,6 +12,7 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 describe("WarningComponent", () => {
   let component: WarningComponent;
   let fixture: ComponentFixture<WarningComponent>;
+  let store: MockStore;
   let persistenceServiceSetSpy: jasmine.Spy;
   let commonServiceLoadAppEmitSpy: jasmine.Spy;
 

@@ -7,6 +7,7 @@ import { WarningComponent } from "./features/warning/warning.component";
 import { CommonService } from "./shared/services/common.service";
 import { EventEmitter } from "@angular/core";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { NuxeoJSClientService } from './shared/services/nuxeo-js-client.service';
 import { AuthStateInterface } from './auth/types/authState.interface';
 import { UserInterface } from './shared/types/user.interface';
 import { APP_CONSTANTS } from './app.constants';

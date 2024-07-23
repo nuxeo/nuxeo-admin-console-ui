@@ -18,6 +18,7 @@ describe("HeaderBarComponent", () => {
   let component: HeaderBarComponent;
   let fixture: ComponentFixture<HeaderBarComponent>;
   let store: MockStore;
+  let nuxeoJsClientService: jasmine.SpyObj<NuxeoJSClientService>;
   let router: Router;
 
   const initialAuthState = {
