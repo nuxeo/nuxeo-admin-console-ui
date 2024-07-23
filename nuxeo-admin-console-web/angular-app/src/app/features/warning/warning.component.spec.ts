@@ -7,12 +7,11 @@ import { CommonModule } from "@angular/common";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from "@angular/core";
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe("WarningComponent", () => {
   let component: WarningComponent;
   let fixture: ComponentFixture<WarningComponent>;
-  let store: MockStore;
   let persistenceServiceSetSpy: jasmine.Spy;
   let commonServiceLoadAppEmitSpy: jasmine.Spy;
 
@@ -56,7 +55,6 @@ describe("WarningComponent", () => {
       ],
     }).compileComponents();
 
-    store = TestBed.inject(MockStore);
     fixture = TestBed.createComponent(WarningComponent);
     component = fixture.componentInstance;
     persistenceServiceSetSpy = spyOn(component.persistenceService, "set");
