@@ -18,7 +18,6 @@ describe("HeaderBarComponent", () => {
   let component: HeaderBarComponent;
   let fixture: ComponentFixture<HeaderBarComponent>;
   let store: MockStore;
-  let nuxeoJsClientService: jasmine.SpyObj<NuxeoJSClientService>;
   let router: Router;
 
   const initialAuthState = {
@@ -38,7 +37,7 @@ describe("HeaderBarComponent", () => {
   };
 
   beforeEach(async () => {
-    const nuxeoJsClientServiceSpy = jasmine.createSpyObj('NuxeoJSClientService', ['getBaseUrl']);
+    const nuxeoJsClientServiceSpy = jasmine.createSpyObj('nuxeoJSClientService', ['getBaseUrl']);
 
     await TestBed.configureTestingModule({
       declarations: [HeaderBarComponent],
@@ -56,7 +55,6 @@ describe("HeaderBarComponent", () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
-    nuxeoJsClientService = TestBed.inject(NuxeoJSClientService) as jasmine.SpyObj<NuxeoJSClientService>;
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(HeaderBarComponent);
     component = fixture.componentInstance;
