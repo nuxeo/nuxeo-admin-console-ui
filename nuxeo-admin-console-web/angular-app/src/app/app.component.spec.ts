@@ -130,14 +130,13 @@ describe("AppComponent", () => {
   });
 
   describe("onSignOut", () => {
-    it("should dispatch signOut action and redirect to login", () => {
+    it("should dispatch signOut action", () => {
       spyOn(store, "dispatch");
-      spyOn<any>(component, "redirectToLogin");
       component.onSignOut();
       expect(store.dispatch).toHaveBeenCalledWith(authActions.signOut());
-      expect((component as any).redirectToLogin).toHaveBeenCalled();
     });
   });
+  
 
   describe("DOM", () => {
     it("should display unauthorized message if currentUser is not administrator", () => {

@@ -12,6 +12,7 @@ import {
 } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { UserInterface } from "../../shared/types/user.interface";
+import { authActions } from "../../auth/store/actions";
 
 describe("HeaderBarComponent", () => {
   let component: HeaderBarComponent;
@@ -126,5 +127,19 @@ describe("HeaderBarComponent", () => {
     });
     fixture.detectChanges();
     expect(component.displayName).toBe('nco');
+  });
+  
+  it("should navigate to home on navigateToHome call", () => {
+    spyOn(router, 'navigate');
+    component.navigateToHome();
+    expect(router.navigate).toHaveBeenCalledWith(['/home']);
+  });
+
+  describe("onSignOut", () => {
+    it("should dispatch signOut action", () => {
+      spyOn(store, "dispatch");
+      component.onSignOut();
+      expect(store.dispatch).toHaveBeenCalledWith(authActions.signOut());
+    });
   });
 });
