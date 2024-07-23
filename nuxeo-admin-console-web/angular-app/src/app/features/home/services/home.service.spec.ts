@@ -10,6 +10,7 @@ import { ProbesResponse } from "./../../../shared/types/probes.interface";
 describe("HomeService", () => {
   let service: HomeService;
   let httpMock: HttpTestingController;
+
   const mockCapabilitiesResponse: CapabilitiesResponse = {
     server: {
       distributionVersion: "Nuxeo Platform 2021.45.8",
@@ -44,6 +45,7 @@ describe("HomeService", () => {
       imports: [HttpClientTestingModule],
       providers: [HomeService],
     });
+
     service = TestBed.inject(HomeService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -61,6 +63,7 @@ describe("HomeService", () => {
       service.getVersionInfo().subscribe((data) => {
         expect(data).toEqual(mockCapabilitiesResponse);
       });
+
       const req = httpMock.expectOne(
         `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
       );
@@ -73,6 +76,7 @@ describe("HomeService", () => {
         status: 500,
         statusText: "Server Error",
       };
+
       service.getVersionInfo().subscribe(
         () => fail("expected an error, not version info"),
         (error) => {
@@ -80,12 +84,15 @@ describe("HomeService", () => {
           expect(error.statusText).toBe("Server Error");
         }
       );
+
       const req = httpMock.expectOne(
         `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
       );
+
       expect(req.request.method).toBe("GET");
       req.flush(null, errorResponse);
     });
+
   });
 
   describe("getProbesInfo", () => {
@@ -93,9 +100,11 @@ describe("HomeService", () => {
       service.getProbesInfo().subscribe((data) => {
         expect(data).toEqual(mockProbesResponse);
       });
+
       const req = httpMock.expectOne(
         `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
       );
+
       expect(req.request.method).toBe("GET");
       req.flush(mockProbesResponse);
     });
@@ -112,12 +121,15 @@ describe("HomeService", () => {
           expect(error.statusText).toBe("Server Error");
         }
       );
+
       const req = httpMock.expectOne(
         `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
       );
+
       expect(req.request.method).toBe("GET");
       req.flush(null, errorResponse);
     });
+    
   });
 
   it("should convert a single word to title case", () => {
