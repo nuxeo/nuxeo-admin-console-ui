@@ -12,10 +12,15 @@ import { UserInterface } from './shared/types/user.interface';
 import { APP_CONSTANTS } from './app.constants';
 import { By } from '@angular/platform-browser';
 import { authActions } from './auth/store/actions';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component"
 import { HyMaterialIconModule } from "@hyland/ui";
+import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
+import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 describe("AppComponent", () => {
   let component: AppComponent;
@@ -62,8 +67,8 @@ describe("AppComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, BaseLayoutComponent],
-      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule],
+      declarations: [AppComponent, BaseLayoutComponent, HeaderBarComponent, MenuBarComponent],
+      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule,],
       providers: [
         { provide: PersistenceService, useClass: persistenceServiceStub },
         { provide: CommonService, useClass: commonServiceStub },
