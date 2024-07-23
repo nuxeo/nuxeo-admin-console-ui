@@ -6,6 +6,7 @@ import {
 import { HomeService } from "./home.service";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
 import { ProbesResponse } from "./../../../shared/types/probes.interface";
+
 describe("HomeService", () => {
   let service: HomeService;
   let httpMock: HttpTestingController;
@@ -17,6 +18,7 @@ describe("HomeService", () => {
       enabled: true,
     },
   };
+
   const mockProbesResponse: ProbesResponse = {
     entries: [
       {
@@ -36,6 +38,7 @@ describe("HomeService", () => {
       },
     ],
   };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -44,12 +47,15 @@ describe("HomeService", () => {
     service = TestBed.inject(HomeService);
     httpMock = TestBed.inject(HttpTestingController);
   });
+
   afterEach(() => {
     httpMock.verify();
   });
+
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
+
   describe("getVersionInfo", () => {
     it("should fetch version info", () => {
       service.getVersionInfo().subscribe((data) => {
@@ -61,6 +67,7 @@ describe("HomeService", () => {
       expect(req.request.method).toBe("GET");
       req.flush(mockCapabilitiesResponse);
     });
+
     it("should handle http error", () => {
       const errorResponse = {
         status: 500,
@@ -80,6 +87,7 @@ describe("HomeService", () => {
       req.flush(null, errorResponse);
     });
   });
+
   describe("getProbesInfo", () => {
     it("should fetch probes info", () => {
       service.getProbesInfo().subscribe((data) => {
@@ -91,6 +99,7 @@ describe("HomeService", () => {
       expect(req.request.method).toBe("GET");
       req.flush(mockProbesResponse);
     });
+
     it("should handle http error", () => {
       const errorResponse = {
         status: 500,
@@ -110,18 +119,22 @@ describe("HomeService", () => {
       req.flush(null, errorResponse);
     });
   });
+
   it("should convert a single word to title case", () => {
     const result = service.convertoTitleCase("hello");
     expect(result).toBe("Hello");
   });
+
   it("should convert multiple words to title case", () => {
     const result = service.convertoTitleCase("hello world");
     expect(result).toBe("Hello World");
   });
+
   it("should handle mixed case words", () => {
     const result = service.convertoTitleCase("hElLo WoRlD");
     expect(result).toBe("Hello World");
   });
+
   it("should handle empty string", () => {
     const result = service.convertoTitleCase("");
     expect(result).toBe("");

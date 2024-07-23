@@ -31,9 +31,9 @@ export class HomeService {
 
   convertoTitleCase(word: string) {
     return word
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      ?.toLowerCase()
+      ?.split(" ")
+      ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+      ?.join(" ");
   }
 }
