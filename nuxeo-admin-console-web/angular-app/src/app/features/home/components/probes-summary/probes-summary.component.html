@@ -19,8 +19,8 @@
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
                         <img [src]="getImageSrc(row?.status?.neverExecuted, row.status.success)"
-                            [alt]="row.status.neverExecuted ? 'unknown' : row.status.success"
-                            [matTooltip]="row.status.neverExecuted ? 'unknown' : row.status.success"
+                            [alt]="row.status.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row.status.success)"
+                            [matTooltip]="row.status.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row.status.success)"
                             matTooltipClass="hy-tooltip" matTooltipPosition="above" />
                     </ng-container>
                 </hy-content-list-column>
@@ -30,7 +30,7 @@
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.LAST_EXECUTED}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_RUN : (row.history.lastRun | date:
+                        <span>{{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED : (row.history.lastRun | date:
                             'MMMM d, yyyy')
                             }}</span>
                     </ng-container>
