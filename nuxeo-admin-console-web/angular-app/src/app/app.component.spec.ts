@@ -68,7 +68,7 @@ describe("AppComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent, BaseLayoutComponent, HeaderBarComponent, MenuBarComponent],
-      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule,],
+      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule],
       providers: [
         { provide: PersistenceService, useClass: persistenceServiceStub },
         { provide: CommonService, useClass: commonServiceStub },
