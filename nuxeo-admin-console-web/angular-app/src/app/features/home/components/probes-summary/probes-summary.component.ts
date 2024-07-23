@@ -4,7 +4,7 @@ import { Observable, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { HomeState, ProbesInfo } from "../../store/reducers";
 import * as HomeActions from "../../store/actions";
-
+import { HomeService } from "../../services/home.service";
 @Component({
   selector: "probes-summary",
   templateUrl: "./probes-summary.component.html",
@@ -15,7 +15,10 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
-  constructor(private store: Store<{ home: HomeState }>) {
+  constructor(
+    private store: Store<{ home: HomeState }>,
+    private homeService: HomeService
+  ) {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.home?.probesInfo)
     );
@@ -45,6 +48,10 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
     return successStatus
       ? PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE
       : PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE;
+  }
+
+  getTooltipAltText(probeStatus: string | boolean): string {
+    return this.homeService.convertoTitleCase(probeStatus.toString());
   }
 
   ngOnDestroy(): void {

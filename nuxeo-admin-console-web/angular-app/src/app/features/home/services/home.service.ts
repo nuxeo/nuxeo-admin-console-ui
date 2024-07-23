@@ -28,4 +28,12 @@ export class HomeService {
       `${this.nuxeoJsClientService.getApiUrl()}/${this.probes}`
     );
   }
+
+  convertoTitleCase(word: string) {
+    return word
+      ?.toLowerCase()
+      ?.split(" ")
+      ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+      ?.join(" ");
+  }
 }

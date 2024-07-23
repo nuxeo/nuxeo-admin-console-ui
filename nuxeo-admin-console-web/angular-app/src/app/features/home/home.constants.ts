@@ -13,7 +13,7 @@ export const PROBES: Probe[] = [
 
 export const PROBES_LABELS = {
   PROBE_TITLE: "Probes",
-  NEVER_RUN: "Never Run",
+  NEVER_EXECUTED: "Never Executed",
   COLUMN_HEADERS: {
     PROBE: "Probe",
     SUCCESS: "Success",
@@ -32,3 +32,4 @@ export const REGISTRATION_VERSION_LABELS = {
   CLUSTER_ENABLED: "Cluster Enabled:",
   VERSION_INFO: "Version Info"
 };
+

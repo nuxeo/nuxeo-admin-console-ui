@@ -11,12 +11,14 @@ import { Store } from "@ngrx/store";
 import { PROBES_LABELS } from "../../home.constants";
 import * as HomeActions from "../../store/actions";
 import { of } from "rxjs";
+import { HomeService } from "../../services/home.service";
 
 describe("ProbesSummaryComponent", () => {
   let component: ProbesSummaryComponent;
   let fixture: ComponentFixture<ProbesSummaryComponent>;
   let store: Store<{ home: HomeState }>;
-
+  let homeServiceSpy: jasmine.SpyObj<HomeService>;
+  
   const initialState: HomeState = {
     versionInfo: {
       version: null,
@@ -27,6 +29,11 @@ describe("ProbesSummaryComponent", () => {
   };
 
   beforeEach(async () => {
+    homeServiceSpy = jasmine.createSpyObj("HomeService", [
+      "getVersionInfo",
+      "getProbesInfo",
+      "convertoTitleCase",
+    ]);
     await TestBed.configureTestingModule({
       declarations: [ProbesSummaryComponent],
       imports: [
@@ -36,13 +43,16 @@ describe("ProbesSummaryComponent", () => {
         MatProgressSpinnerModule,
         MatTooltipModule,
       ],
-      providers: [provideMockStore({ initialState: { home: initialState } })],
+      providers: [
+        provideMockStore({ initialState: { home: initialState } }),
+        { provide: HomeService, useValue: homeServiceSpy },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(ProbesSummaryComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(Store);
   });
-  
+
   it("should test if component is created", () => {
     expect(component).toBeTruthy();
   });
@@ -50,9 +60,7 @@ describe("ProbesSummaryComponent", () => {
   it("should fetch probes info on init if probesInfo is empty", () => {
     spyOn(store, "dispatch");
     spyOn(store, "pipe").and.returnValue(of([]));
-
     component.ngOnInit();
-
     expect(store.dispatch).toHaveBeenCalledWith(HomeActions.fetchProbesInfo());
   });
 
@@ -60,7 +68,6 @@ describe("ProbesSummaryComponent", () => {
     const probeName = "repositoryStatus";
     const displayName = component.getProbeDisplayName(probeName);
     expect(displayName).toBe("Repository");
-
     const unknownProbeName = "unknownProbe";
     const unknownDisplayName = component.getProbeDisplayName(unknownProbeName);
     expect(unknownDisplayName).toBe(unknownProbeName);
@@ -93,5 +100,23 @@ describe("ProbesSummaryComponent", () => {
     ]);
     component.ngOnDestroy();
     expect(component.fetchProbesSubscription.unsubscribe).toHaveBeenCalled();
+  });
+
+  it("should convert string probeStatus to title case", () => {
+    homeServiceSpy.convertoTitleCase.and.returnValue("Hello World");
+    const result = component.getTooltipAltText("hello world");
+    expect(result).toBe("Hello World");
+  });
+
+  it("should convert boolean probeStatus true to title case", () => {
+    homeServiceSpy.convertoTitleCase.and.returnValue("True");
+    const result = component.getTooltipAltText(true);
+    expect(result).toBe("True");
+  });
+
+  it("should convert boolean probeStatus false to title case", () => {
+    homeServiceSpy.convertoTitleCase.and.returnValue("False");
+    const result = component.getTooltipAltText(false);
+    expect(result).toBe("False");
   });
 });
