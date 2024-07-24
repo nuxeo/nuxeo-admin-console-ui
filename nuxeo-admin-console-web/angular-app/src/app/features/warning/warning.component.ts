@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
-import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AuthStateInterface } from '../../auth/types/authState.interface';
@@ -24,7 +23,6 @@ export class WarningComponent implements OnInit {
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
     public commonService: CommonService,
-    private _hyKeyboardFocusService: HyKeyboardFocusService,
     private store: Store<{ auth: AuthStateInterface }>
   ) {
     this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));

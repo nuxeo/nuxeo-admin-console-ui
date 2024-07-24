@@ -4,7 +4,6 @@ import {
   ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
 } from "./../../elastic-search-reindex.constants";
 import { CommonService } from "../../../../shared/services/common.service";
-import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
@@ -20,7 +19,6 @@ export class ElasticSearchReindexModalComponent {
   constructor(
     private dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>,
     public commonService: CommonService,
-    private _hyKeyboardFocusService: HyKeyboardFocusService,
     @Inject(MAT_DIALOG_DATA) public data: ReindexModalData
   ) {}
 

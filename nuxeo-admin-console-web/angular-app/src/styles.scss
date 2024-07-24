@@ -30,3 +30,9 @@ body {
 .material-icons {
   font-feature-settings: "liga";
 }
+
+button, a, input {
+  &:focus, &:hover {
+    outline: none;
+  }
+}
