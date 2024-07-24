@@ -63,6 +63,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
 
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
+  isReindexBtnDisabled = false;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -130,6 +131,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexErrorModalClose(): void {
+    this.isReindexBtnDisabled = false;
     document.getElementById("documentIdentifier")?.focus();
   }
 
@@ -161,6 +163,7 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexLaunchedModalClose(): void {
+    this.isReindexBtnDisabled = false;
     this.documentReindexForm?.reset();
     document.getElementById("documentIdentifier")?.focus();
   }
@@ -175,7 +178,8 @@ export class DocumentESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexFormSubmit(): void {
-    if (this.documentReindexForm?.valid) {
+    if (this.documentReindexForm?.valid && !this.isReindexBtnDisabled) {
+      this.isReindexBtnDisabled = true;
       const userInput = this.documentReindexForm
         ?.get("documentIdentifier")
         ?.value?.trim();

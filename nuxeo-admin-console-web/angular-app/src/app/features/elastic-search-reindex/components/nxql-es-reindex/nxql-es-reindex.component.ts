@@ -69,6 +69,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   spinnerStatusSubscription: Subscription = new Subscription();
   decodedUserInput = "";
   noOfDocumentsToReindex = -1;
+  isReindexBtnDisabled = false;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -149,6 +150,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexLaunchedModalClose(): void {
+    this.isReindexBtnDisabled = false;
     this.nxqlReindexForm?.reset();
     document.getElementById("nxqlQuery")?.focus();
   }
@@ -178,6 +180,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexErrorModalClose(): void {
+    this.isReindexBtnDisabled = false;
     document.getElementById("nxqlQuery")?.focus();
   }
 
@@ -189,7 +192,8 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexFormSubmit(): void {
-    if (this.nxqlReindexForm?.valid) {
+    if (this.nxqlReindexForm?.valid && !this.isReindexBtnDisabled) {
+      this.isReindexBtnDisabled = true;
       this.elasticSearchReindexService.spinnerStatus.next(true);
       const userInput = this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim();
       /* decode user input to handle path names that contain spaces, 
@@ -298,6 +302,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   onConfirmationModalClose(data: ReindexModalClosedInfo, query: string): void {
+    this.isReindexBtnDisabled = false;
     if (data?.continue) {
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like

@@ -65,6 +65,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
+  isReindexBtnDisabled = false;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -139,6 +140,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexErrorModalClose(): void {
+    this.isReindexBtnDisabled = false;
     this.elasticSearchReindexService.spinnerStatus.next(false);
     document.getElementById("documentID")?.focus();
   }
@@ -169,6 +171,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexLaunchedModalClose(): void {
+    this.isReindexBtnDisabled = false;
     this.folderReindexForm?.reset();
     document.getElementById("documentID")?.focus();
   }
@@ -181,7 +184,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onReindexFormSubmit(): void {
-    if (this.folderReindexForm?.valid) {
+    if (this.folderReindexForm?.valid && !this.isReindexBtnDisabled) {
+      this.isReindexBtnDisabled = true;
       this.elasticSearchReindexService.spinnerStatus.next(true);
       this.userInput = this.elasticSearchReindexService.removeLeadingCharacters(
         this.folderReindexForm?.get("documentID")?.value.trim()
@@ -289,6 +293,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onConfirmationModalClose(modalData: unknown): void {
+    this.isReindexBtnDisabled = false;
     const data = modalData as ReindexModalClosedInfo;
     if (data?.continue) {
       const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
