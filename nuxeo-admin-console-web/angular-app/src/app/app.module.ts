@@ -36,6 +36,7 @@ import * as HomeEffects from "./features/home/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
+import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 
 @NgModule({
   declarations: [
@@ -91,4 +92,8 @@ import { ElasticSearchReindexModalComponent } from "./features/elastic-search-re
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(
+    private _hyKeyboardFocusService: HyKeyboardFocusService
+  ) {}
+}
