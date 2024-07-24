@@ -7,7 +7,7 @@
         <mat-error *ngIf="documentReindexForm?.get('documentIdentifier')?.invalid">
             {{getErrorMessage()}}</mat-error>
     </mat-form-field>
-    <button mat-flat-button color="primary" type="submit" class="document-es-reindex-container__button">
+    <button mat-flat-button color="primary" type="submit" class="document-es-reindex-container__button" [disabled]="isReindexBtnDisabled">
         {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
     </button>
 </form>
