@@ -52,11 +52,14 @@
         height: 40px;
       }
     }
-  }
-}
-
-@media (width < 600px) {
-  .header-bar {
-    min-width:160svw;
+    @media (width < 600px) {
+      img {
+        width: 80px;
+        height: auto;
+      }
+      &__title {
+        font-size: 14px;
+      }
+    }
   }
 }

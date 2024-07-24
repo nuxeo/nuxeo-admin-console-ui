@@ -8,12 +8,27 @@
   position: absolute;
   &__bottom {
     display: flex;
-    height: 100vh;
+    height: 100%;
     &__left {
-      flex: 15%;
+      width: 15%;
     }
     &__right {
-      flex: 85%;
+      width: 85%;
+    }
+  }
+}
+
+@media (width < 600px) {
+  .base-container {
+    &__bottom {
+      display: flex;
+      flex-direction: column;
+      &__left {
+        width: 100%
+      }
+      &__right {
+        width: 100%;
+      }
     }
   }
 }
