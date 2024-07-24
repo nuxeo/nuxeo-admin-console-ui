@@ -6,11 +6,12 @@
     <span class="header-bar__branding__title">{{ BRAND_TITLE }}</span>
   </div>
 
-  <span class="header-bar__spacer"></span>
-  <span *ngIf="displayName" class="header-bar__branding__username">
-    {{ displayName }}
-  </span>
-  <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
-    <mat-icon hyIcon>logout</mat-icon> {{ LOGOUT }}
-  </button>
+  <div>
+    <span *ngIf="displayName" class="header-bar__branding__username">
+      {{ displayName }}
+    </span>
+    <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
+      <mat-icon hyIcon>logout</mat-icon> {{ LOGOUT }}
+    </button>
+  </div>
 </mat-toolbar>

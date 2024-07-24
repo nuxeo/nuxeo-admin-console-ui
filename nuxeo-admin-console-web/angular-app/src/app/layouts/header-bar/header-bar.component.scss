@@ -1,10 +1,10 @@
 .header-bar {
   background-color: #fff;
   padding-left: 3px;
-  &__spacer {
-    flex: 1 1 auto;
-  }
-
+  display: flex;
+  position: relative;
+  width: 100%;
+  justify-content: space-between;
   &__branding {
     display: flex;
     align-items: baseline;
@@ -52,5 +52,11 @@
         height: 40px;
       }
     }
+  }
+}
+
+@media (width < 600px) {
+  .header-bar {
+    min-width:160svw;
   }
 }
