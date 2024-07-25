@@ -22,3 +22,7 @@ mat-card {
 .probes-title {
   margin-left: 21px;
 }
+
+::ng-deep .hy-content-list__custom-cell {
+  max-height: max-content !important; 
+}
