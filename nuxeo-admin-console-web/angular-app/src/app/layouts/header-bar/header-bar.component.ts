@@ -7,6 +7,7 @@ import { UserInterface } from "../../shared/types/user.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
 import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
+import {toggleMenu} from "../menu-bar/store/action"
 @Component({
   selector: "header-bar",
   templateUrl: "./header-bar.component.html",
@@ -21,9 +22,9 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT
 
   constructor(
-    private store: Store<{ auth: AuthStateInterface }>,
+    private store: Store<{ auth: AuthStateInterface,menu: { isOpen: boolean } }>,
     private nuxeoJsClientService: NuxeoJSClientService,
-    private router: Router
+    private router: Router,
   ) {
     this.currentUser$ = this.store.pipe(
       select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser)
@@ -45,6 +46,10 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
 
   onSignOut(): void {
     this.store.dispatch(authActions.signOut());
+  }
+
+  toggleMenuButton() {
+    this.store.dispatch(toggleMenu());
   }
 
   private setDisplayName(): void {

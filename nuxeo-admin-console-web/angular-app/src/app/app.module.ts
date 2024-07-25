@@ -36,7 +36,7 @@ import * as HomeEffects from "./features/home/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
-
+import {menuReducer} from "../app/layouts/menu-bar/store/reducer";
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +62,8 @@ import { ElasticSearchReindexModalComponent } from "./features/elastic-search-re
       home: homeReducer,
       reindex: reindexReducer,
       folderReindex: folderReindexReducer,
-      nxqlReindex: nxqlReindexReducer
+      nxqlReindex: nxqlReindexReducer,
+      menu: menuReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),

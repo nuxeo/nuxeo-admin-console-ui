@@ -55,3 +55,63 @@
     min-height: 200px;
   }
 }
+
+// @media (max-width: 480px) {
+//   .home-container {
+//     flex-direction: column;
+//     overflow: scroll;
+//     gap: 10px;
+//     height: 100vh;
+
+//   }
+//   .home-container__probes,
+//   .home-container__registration-version {
+//     width: 100%;
+//     min-width: 500px;
+//   }
+//   .home-container__probes {
+//     min-height: 300px;
+//   }
+//   .home-container__registration-version {
+//     min-height: 200px;
+//   }
+// }
+// @media (min-width: 481px) and (max-width: 768px)  {
+//   .home-container {
+//     flex-direction: column;
+//     overflow: scroll;
+//     gap: 10px;
+//     height: 100vh;
+
+//   }
+//   .home-container__probes,
+//   .home-container__registration-version {
+//     width: 100%;
+//     min-width: 500px;
+//   }
+//   .home-container__probes {
+//     min-height: 300px;
+//   }
+//   .home-container__registration-version {
+//     min-height: 200px;
+//   }
+// }
+
+// @media (min-width: 769px) and (max-width: 1024px){
+//   .home-container {
+//     flex-direction: column;
+//     overflow: scroll;
+//     gap: 10px;
+//   }
+//   .home-container__probes,
+//   .home-container__registration-version {
+//     width: 100%;
+//     height: 100%;
+//   }
+//   .home-container__probes{
+//     min-height: 300px;
+//   }
+//   .home-container__registration-version {
+//     min-height: fit-content;
+//   }
+// }

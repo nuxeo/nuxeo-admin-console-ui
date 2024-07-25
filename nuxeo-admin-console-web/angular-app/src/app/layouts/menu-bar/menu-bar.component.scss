@@ -1,6 +1,9 @@
 $sidenav-list-item-selected-bg-color: #000000;
 $selected-line-bg-color: #0c6bd4;
-
+.mobile-menu-bar{
+  display: none;
+}
+.mobile-menu-bar,
 .menu-bar {
   height: 100%;
   background-color: #212121;
@@ -69,4 +72,21 @@ $selected-line-bg-color: #0c6bd4;
 
 .mdc-list-item.mdc-list-item--with-one-line {
   height: 36px !important;
+}
+
+@media (max-width: 480px) {
+  .menu-bar{
+    display: none;
+  }
+  .mobile-menu-bar{
+    display: block;
+  }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  .mobile-menu-bar{
+    display: block;
+  }
+  .menu-bar{
+    display: none;
+  }
 }
