@@ -6,16 +6,18 @@ import { UserInterface } from "../../shared/types/user.interface";
 import { AuthUserResponseInterface } from "../types/authResponse.interface";
 import { HylandSSORequestInterface } from "../types/hylandSSORequest.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
+import { REST_END_POINTS } from "../../shared/constants/rest-end-ponts.constants";
+import {NetworkService } from "../../shared/services/network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  constructor(private http: HttpClient, private nuxeoJsClientService: NuxeoJSClientService) { }
+  constructor(private http: HttpClient, private nuxeoJsClientService: NuxeoJSClientService, private networkService: NetworkService) { }
 
 
   getCurrentUser(): Observable<UserInterface> {
-    const url = `${this.nuxeoJsClientService.getApiUrl()}/me`;
+    const url = this.networkService.getAPIEndpoint(REST_END_POINTS.CURRENT_USER);
     return this.http.get<AuthUserResponseInterface>(url).pipe(
       map(response => this.getUser(response))
     );
