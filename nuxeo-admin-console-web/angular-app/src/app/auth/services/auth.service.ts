@@ -7,20 +7,22 @@ import { AuthUserResponseInterface } from "../types/authResponse.interface";
 import { HylandSSORequestInterface } from "../types/hylandSSORequest.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { REST_END_POINTS } from "../../shared/constants/rest-end-ponts.constants";
-import {NetworkService } from "../../shared/services/network.service";
+import { NetworkService } from "../../shared/services/network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  constructor(private http: HttpClient, private nuxeoJsClientService: NuxeoJSClientService, private networkService: NetworkService) { }
-
+  constructor(
+    private http: HttpClient,
+    private nuxeoJsClientService: NuxeoJSClientService,
+    private networkService: NetworkService
+  ) {}
 
   getCurrentUser(): Observable<UserInterface> {
-    const url = this.networkService.getAPIEndpoint(REST_END_POINTS.CURRENT_USER);
-    return this.http.get<AuthUserResponseInterface>(url).pipe(
-      map(response => this.getUser(response))
-    );
+    return this.networkService
+      .makeNetworkRequest<AuthUserResponseInterface>(REST_END_POINTS.CURRENT_USER)
+      .pipe(map((response) => this.getUser(response)));
   }
 
   getUser(response: AuthUserResponseInterface): UserInterface {
@@ -30,24 +32,19 @@ export class AuthService {
         firstName: response?.properties?.firstName,
         lastName: response?.properties?.lastName,
         email: response?.properties?.email,
-        username: response?.properties?.username
+        username: response?.properties?.username,
       },
       isAdministrator: response?.isAdministrator,
     };
   }
 
   sso(data: HylandSSORequestInterface): Observable<UserInterface> {
-    const url = environment.apiUrl + "/users/sso";
-    return this.http
-      .post<AuthUserResponseInterface>(url, data)
-      .pipe(map(this.getUser));
+    return this.networkService
+      .makeNetworkRequest<AuthUserResponseInterface>(REST_END_POINTS.SSO, data)
+      .pipe(map((response) => this.getUser(response)));
   }
+
   signOut(): Observable<void> {
-    const url = `${this.nuxeoJsClientService.getBaseUrl()}/logout`;
-    return this.http.get<void>(url, {});
+    return this.networkService.makeNetworkRequest<void>(REST_END_POINTS.LOGOUT);
   }
-
 }
-
-
-

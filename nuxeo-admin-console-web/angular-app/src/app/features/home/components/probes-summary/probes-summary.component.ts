@@ -51,7 +51,7 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   }
 
   getTooltipAltText(probeStatus: string | boolean): string {
-    return this.homeService.convertoTitleCase(probeStatus.toString());
+    return this.homeService.convertToTitleCase(probeStatus.toString());
   }
 
   ngOnDestroy(): void {
