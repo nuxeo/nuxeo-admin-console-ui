@@ -1,5 +1,5 @@
 <!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
-<package type="addon" name="nuxeo-admin-console-ui-package" version="23.0.0-SNAPSHOT">
+<package type="addon" name="nuxeo-admin-console-ui-package" version="23.0.0-rc.015">
   <title>Nuxeo Admin Console UI package</title>
   <description>
     <p>Nuxeo Admin console UI is a standard base web application for Nuxeo admin users.</p>
