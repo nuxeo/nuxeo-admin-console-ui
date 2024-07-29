@@ -17,28 +17,28 @@ export class NetworkService {
     return `${this.nuxeoJsClientService.getApiUrl()}${config.endpoint}`;
   }
 
-  makeNetworkRequest<T>(endpointName: EndpointName, data?: Record<string, unknown>, method?: 'POST' | 'GET' | 'PUT'): Observable<T> {
+  makeNetworkRequest<T>(endpointName: EndpointName, data?: Record<string, unknown>): Observable<T> {
     const config = REST_END_POINT_CONFIG[endpointName];
     const url = this.getAPIEndpoint(endpointName);
+    const method = config.method || 'PUT';
     let params = new HttpParams();
 
-    if (method === 'POST') {
-      return this.http.post<T>(url, data || {});
-    } 
-    
-    if (method === 'PUT') {
-      return this.http.put<T>(url, data || {});
+    switch (method) {
+      case 'POST':
+        return this.http.post<T>(url, data || {});
+      case 'PUT':
+        return this.http.put<T>(url, data || {});
+      case 'DELETE':
+        return this.http.delete<T>(url, { body: data });
+      case 'GET':
+        if (data) {
+          Object.keys(data).forEach(key => {
+            params = params.append(key, String(data[key]));
+          });
+        }
+        return this.http.get<T>(url, { params });
+      default:
+        throw new Error(`Unsupported HTTP method: ${method}`);
     }
-    
-    if (method === 'GET' || config.method === 'GET') {
-      if (data) {
-        Object.keys(data).forEach(key => {
-          params = params.append(key, String(data[key]));
-        });
-      }
-      return this.http.get<T>(url, { params });
-    }
-
-    throw new Error(`Unsupported HTTP method: ${method}`);
   }
 }

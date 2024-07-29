@@ -11,7 +11,7 @@ type RestEndpointKey = keyof typeof REST_END_POINTS;
 
 interface RestEndpointConfig {
     endpoint: string;
-    method: "GET" | "POST";
+    method: "GET" | "POST" | "PUT" | "DELETE";
 }
 
 export const REST_END_POINT_CONFIG: Record<RestEndpointKey, RestEndpointConfig> = {
