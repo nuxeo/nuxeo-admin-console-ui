@@ -1,0 +1,42 @@
+export const REST_END_POINTS = {
+    ELASTIC_SEARCH_REINDEX: "ELASTIC_SEARCH_REINDEX",
+    PROBES: "PROBES",
+    CURRENT_USER: "CURRENT_USER",
+    CAPABILITIES: "CAPABILITIES",
+    LOGOUT: "LOGOUT",
+    SSO: "SSO",
+} as const;
+
+type RestEndpointKey = keyof typeof REST_END_POINTS;
+
+interface RestEndpointConfig {
+    endpoint: string;
+    method: "GET" | "POST";
+}
+
+export const REST_END_POINT_CONFIG: Record<RestEndpointKey, RestEndpointConfig> = {
+    ELASTIC_SEARCH_REINDEX: {
+        endpoint: "/management/elasticsearch/reindex",
+        method: "POST"
+    },
+    PROBES: {
+        endpoint: "/management/probes",
+        method: "GET"
+    },
+    CAPABILITIES: {
+        endpoint: "/capabilities",
+        method: "GET"
+    },
+    LOGOUT: {
+        endpoint: "/logout",
+        method: "GET"
+    },
+    CURRENT_USER: {
+        endpoint: "/me",
+        method: "GET"
+    },
+    SSO: {
+        endpoint: "/users/sso",
+        method: "POST"
+    }
+};
