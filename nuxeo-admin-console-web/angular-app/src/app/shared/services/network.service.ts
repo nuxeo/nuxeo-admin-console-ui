@@ -26,10 +26,13 @@ export class NetworkService {
     switch (method) {
       case 'POST':
         return this.http.post<T>(url, data || {});
+        break;
       case 'PUT':
         return this.http.put<T>(url, data || {});
+        break;
       case 'DELETE':
         return this.http.delete<T>(url, { body: data });
+        break;
       case 'GET':
         if (data) {
           Object.keys(data).forEach(key => {
@@ -37,6 +40,7 @@ export class NetworkService {
           });
         }
         return this.http.get<T>(url, { params });
+        break;
       default:
         throw new Error(`Unsupported HTTP method: ${method}`);
     }
