@@ -17,7 +17,7 @@ export class NetworkService {
     return `${this.nuxeoJsClientService.getApiUrl()}${config.endpoint}`;
   }
 
-  makeNetworkRequest<T>(endpointName: EndpointName, data?: Record<string, unknown>): Observable<T> {
+  makeNetworkRequest<T>(endpointName: EndpointName, data?: any): Observable<T> {
     const config = REST_END_POINT_CONFIG[endpointName];
     const url = this.getAPIEndpoint(endpointName);
     const method = config.method || 'PUT';
