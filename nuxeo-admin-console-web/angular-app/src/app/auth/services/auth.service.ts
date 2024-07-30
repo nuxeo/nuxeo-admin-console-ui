@@ -37,6 +37,7 @@ export class AuthService {
       isAdministrator: response?.isAdministrator,
     };
   }
+  
   signOut(): Observable<void> {
     return this.networkService.makeNetworkRequest<void>(REST_END_POINTS.LOGOUT);
   }
