@@ -20,21 +20,21 @@ export class ElasticSearchReindexService {
   ) {}
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeNetworkRequest<ReindexInfo>(
+    return this.networkService.makeHttpRequest<ReindexInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: requestQuery }
     );
   }
 
   performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeNetworkRequest<ReindexInfo>(
+    return this.networkService.makeHttpRequest<ReindexInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: requestQuery }
     );
   }
 
   performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeNetworkRequest<ReindexInfo>(
+    return this.networkService.makeHttpRequest<ReindexInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: nxqlQuery }
     );

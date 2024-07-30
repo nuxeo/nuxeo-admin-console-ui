@@ -18,13 +18,13 @@ export class HomeService {
   ) {}
 
   getVersionInfo(): Observable<CapabilitiesResponse> {
-    return this.networkService.makeNetworkRequest<CapabilitiesResponse>(
+    return this.networkService.makeHttpRequest<CapabilitiesResponse>(
       REST_END_POINTS.CAPABILITIES
     );
   }
 
   getProbesInfo(): Observable<ProbesResponse> {
-    return this.networkService.makeNetworkRequest<ProbesResponse>(
+    return this.networkService.makeHttpRequest<ProbesResponse>(
       REST_END_POINTS.PROBES
     );
   }
