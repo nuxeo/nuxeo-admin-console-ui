@@ -1,5 +1,5 @@
 <!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
-<package type="addon" name="nuxeo-admin-console" version="23.0.0">
+<package type="addon" name="nuxeo-admin-console" version="23.0.0-SNAPSHOT">
   <title>Nuxeo Admin Console</title>
   <description>
     <p>The Nuxeo admin console provides a dedicated UI for system administrators to get an overview of the system and perform common tasks like reindexing documents.</p>
@@ -12,7 +12,7 @@
   <license>Apache License, Version 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
   <target-platform>
-    <name>lts</name>
+    <name>@DISTRIBUTION_NAME@</name>
     <version>[2023,)</version>
   </target-platform>
   <!-- Visibility: PRIVATE | MARKETPLACE | DEV | PUBLIC -->
