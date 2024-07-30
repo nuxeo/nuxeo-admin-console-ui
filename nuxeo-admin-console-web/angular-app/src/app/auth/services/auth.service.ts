@@ -3,7 +3,6 @@ import { HttpClient } from "@angular/common/http";
 import { map, Observable } from "rxjs";
 import { UserInterface } from "../../shared/types/user.interface";
 import { AuthUserResponseInterface } from "../types/authResponse.interface";
-import { HylandSSORequestInterface } from "../types/hylandSSORequest.interface";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { REST_END_POINTS } from "../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../shared/services/network.service";
@@ -37,11 +36,7 @@ export class AuthService {
     };
   }
 
-  sso(data: HylandSSORequestInterface): Observable<UserInterface> {
-    return this.networkService
-      .makeNetworkRequest<AuthUserResponseInterface>(REST_END_POINTS.SSO, data)
-      .pipe(map((response) => this.getUser(response)));
-  }
+  
 
   signOut(): Observable<void> {
     return this.networkService.makeNetworkRequest<void>(REST_END_POINTS.LOGOUT);
