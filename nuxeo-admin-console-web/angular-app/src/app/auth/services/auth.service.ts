@@ -19,7 +19,9 @@ export class AuthService {
 
   getCurrentUser(): Observable<UserInterface> {
     return this.networkService
-      .makeNetworkRequest<AuthUserResponseInterface>(REST_END_POINTS.CURRENT_USER)
+      .makeNetworkRequest<AuthUserResponseInterface>(
+        REST_END_POINTS.CURRENT_USER
+      )
       .pipe(map((response) => this.getUser(response)));
   }
 
@@ -35,9 +37,6 @@ export class AuthService {
       isAdministrator: response?.isAdministrator,
     };
   }
-
-  
-
   signOut(): Observable<void> {
     return this.networkService.makeNetworkRequest<void>(REST_END_POINTS.LOGOUT);
   }
