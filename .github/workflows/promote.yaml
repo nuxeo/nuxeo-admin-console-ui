@@ -93,12 +93,12 @@ jobs:
 
       - name: Promote Admin Console UI ${{ github.event.inputs.version }} to ${{ env.VERSION }}
         env:
-          PACKAGE: nuxeo-admin-console-package-${{ env.VERSION }} 
+          PACKAGE: nuxeo-admin-console-${{ env.VERSION }} 
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
           PADDED=$(printf '%03d' $(echo ${{ github.event.inputs.version }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))  
           PADDED_VERSION=$(echo ${{ github.event.inputs.version }} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
-          curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "$CONNECT_PREPROD_URL/site/marketplace/package/nuxeo-admin-console-ui-package/download?version=$PADDED_VERSION"
+          curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "$CONNECT_PREPROD_URL/site/marketplace/package/nuxeo-admin-console/download?version=$PADDED_VERSION"
           unzip -d $PACKAGE $PACKAGE.zip && rm $PACKAGE.zip
           pushd $PACKAGE
           if [ "${{ github.event.inputs.isMinorRelease }}" != "true" ]; then
@@ -121,8 +121,8 @@ jobs:
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
-          PACKAGE="nuxeo-admin-console-package-${{env.VERSION}}.zip"
-          rm -rf "nuxeo-admin-console-package-${{env.VERSION}}"
+          PACKAGE="nuxeo-admin-console-${{env.VERSION}}.zip"
+          rm -rf "nuxeo-admin-console-${{env.VERSION}}"
           STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
             cat publish-req.output
             if [[ "$STATUS_CODE" != "200" ]]
@@ -137,7 +137,7 @@ jobs:
         env:
           CONNECT_URL: https://connect.nuxeo.com/nuxeo
         run: | 
-         PACKAGE="nuxeo-admin-console-package-${{env.VERSION}}.zip"  
+         PACKAGE="nuxeo-admin-console-${{env.VERSION}}.zip"  
          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE "$CONNECT_URL/site/marketplace/upload?batch=true"`
             cat publish-req.output
             if [[ "$STATUS_CODE" != "200" ]]
