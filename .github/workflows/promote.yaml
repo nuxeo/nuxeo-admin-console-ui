@@ -36,7 +36,7 @@ jobs:
           ref: v${{ github.event.inputs.version }}
           token: ${{ secrets.GIT_TOKEN }}
 
-      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+      - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
     
                 
       - name: Install semver

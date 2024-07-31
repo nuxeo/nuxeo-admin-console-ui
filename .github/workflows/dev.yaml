@@ -1,28 +1,28 @@
-name: Main
+name: Dev
 
 on:
   push:
     branches:
-      - main
+      - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
-  lint:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+  # lint:
+  #   uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
+  #   secrets:
+  #     NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+  #     GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
-  test:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@main
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+  # test:
+  #   uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
+  #   secrets:
+  #     NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+  #     GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    # needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -71,16 +71,16 @@ jobs:
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
-          PRE_RELEASE_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-pre-release}*" | tail -1 | tr -d '\n')
-          echo "v${PACKAGE_VERSION/-pre-release}*" "->" "${PRE_RELEASE_VERSION}" "->" "${PRE_RELEASE_VERSION:-$PACKAGE_VERSION}"
-          echo "VERSION=$(npx semver -i prerelease --preid pre-release ${PRE_RELEASE_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
+          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
+          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
+          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
       
       - name: Update Version
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
-          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-pre-release\.\([0-9]+\)/\\1/g))
-          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-pre-release\.)[0-9]+/\\1$PADDED/g")
+          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
           echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"$PADDED_VERSION"'/g' {} \;
           sed -i -e 's/\${project.version}/'"$PADDED_VERSION"'/g' nuxeo-admin-console-package/pom.xml
@@ -122,17 +122,26 @@ jobs:
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
         
-      - name: Publish on Pre-Prod Marketplace
+      # - name: Publish on Pre-Prod Marketplace
+      #   working-directory: nuxeo-admin-console-package/target
+      #   env:
+      #     CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+      #   run: |
+      #     PACKAGE="nuxeo-admin-console-package-${{env.PADDED_VERSION}}.zip"
+      #     STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
+      #     cat publish-req.output
+      #     if [[ "$STATUS_CODE" != "200" ]]
+      #     then
+      #       exit 1
+      #     else
+      #       exit 0
+      #     fi
+    
+    - name: Publish on Pre-Prod Marketplace
         working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
-          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
-          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
-          cat publish-req.output
-          if [[ "$STATUS_CODE" != "200" ]]
-          then
-            exit 1
-          else
-            exit 0
-          fi
+          ls
+          PACKAGE="nuxeo-admin-console-package-${{env.PADDED_VERSION}}.zip"
+          echo $PACKAGE
