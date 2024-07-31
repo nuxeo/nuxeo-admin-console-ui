@@ -9,7 +9,7 @@ on:
       referenceBranch:
         description: 'Branch to be updated after the promotion'
         required: true
-        default: 'dev'
+        default: 'dev-test-1'
       dryRun:
         description: 'Run the workflow without pushing code or publishing artifacts'
         type: boolean
@@ -132,20 +132,20 @@ jobs:
                 exit 0
             fi
 
-      - name: Push promoted Admin Console UI to Connect PROD
-        if: ${{ github.event.inputs.dryRun == 'false' }}
-        env:
-          CONNECT_URL: https://connect.nuxeo.com/nuxeo
-        run: | 
-         PACKAGE="nuxeo-admin-console-package-${{env.VERSION}}.zip"  
-         STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE "$CONNECT_URL/site/marketplace/upload?batch=true"`
-            cat publish-req.output
-            if [[ "$STATUS_CODE" != "200" ]]
-            then
-                exit 1
-            else
-                exit 0
-            fi  
+      # - name: Push promoted Admin Console UI to Connect PROD
+      #   if: ${{ github.event.inputs.dryRun == 'false' }}
+      #   env:
+      #     CONNECT_URL: https://connect.nuxeo.com/nuxeo
+      #   run: | 
+      #    PACKAGE="nuxeo-admin-console-package-${{env.VERSION}}.zip"  
+      #    STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE "$CONNECT_URL/site/marketplace/upload?batch=true"`
+      #       cat publish-req.output
+      #       if [[ "$STATUS_CODE" != "200" ]]
+      #       then
+      #           exit 1
+      #       else
+      #           exit 0
+      #       fi  
 
       - uses: actions/checkout@v4
         with:

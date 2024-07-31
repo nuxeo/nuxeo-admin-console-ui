@@ -3,38 +3,27 @@ name: Lint
 on:
   pull_request:
     branches:
-      - dev
-  workflow_call:
+      - DevOps-Testing
+  workflow_dispatch:
     inputs:
       branch:
         description: 'The current branch'
-        default: dev
+        default: DevOps-Testing
         type: string
         required: false
-    secrets:
-      NPM_PACKAGES_TOKEN:
-        description: 'NPM_PACKAGES_TOKEN'
-        required: true
-      GIT_TOKEN:
-        description: 'GIT_TOKEN'
-        required: true
+
 env:
-  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'DevOps-Testing' }}
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
         with:
           ref: ${{ env.BRANCH_NAME }}
 
-      - name: Remove .npmrc file if exists
-        run: |
-          if [ -f .npmrc ]; then
-            rm .npmrc
-          fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v3
         with:
           registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
@@ -46,18 +35,11 @@ jobs:
             npm -v
   
 
-      - name: Configure Additional Registries
+      - name: Set Registry Config
         run: |
-            npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-            npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-            npm config set registry https://registry.npmjs.org/ --global
-
-      - name: Install @angular/cli
-        run: npm install -g @angular/cli
-
-      - name: Install Dependencies
-        working-directory: nuxeo-admin-console-web/angular-app
-        run: npm install
+          npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
+          npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GIT_TOKEN }} --global
+          npm config set registry https://registry.npmjs.org/ --global
 
       - name: Install @angular/cli
         run: npm install -g @angular/cli
@@ -66,5 +48,4 @@ jobs:
         run: npm install 
     
       - name: Lint
-        working-directory: nuxeo-admin-console-web/angular-app
         run: npm run lint
