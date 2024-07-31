@@ -28,7 +28,11 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
+<<<<<<< HEAD:nuxeo-admin-console-web/angular-app/tsconfig.json
   "include": ["src/main.ts", "src/polyfills.ts"],
   "files": ["src/polyfills.ts"],
   "styles": ["src/styles.scss"]
+=======
+  "include": ["src/main.ts", "src/polyfills.ts"]
+>>>>>>> main:tsconfig.json
 }

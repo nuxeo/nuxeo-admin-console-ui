@@ -25,6 +25,7 @@
                 "input": "./node_modules/@hyland/ui/assets/public",
                 "output": "./"
               }
+<<<<<<< HEAD:nuxeo-admin-console-web/angular-app/angular.json
             ],
             "styles": [
               "src/styles.scss"
@@ -41,6 +42,15 @@
               "includePaths": [
                 "node_modules"
               ]
+=======
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": [],
+            "i18nPaths": ["src/app"],
+            "i18nModules": ["@hyland/ui", "@hyland/ui-shell"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["node_modules"]
+>>>>>>> main:angular.json
             }
           },
           "configurations": {
@@ -110,6 +120,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+<<<<<<< HEAD:nuxeo-admin-console-web/angular-app/angular.json
             "polyfills": [
               "src/polyfills.ts",
               "zone.js",
@@ -138,6 +149,19 @@
               "src/**/*.ts",
               "src/**/*.html"
             ]
+=======
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+>>>>>>> main:angular.json
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

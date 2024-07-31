@@ -39,6 +39,12 @@ jobs:
           registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20
           scope: '@nuxeo'
+    
+      - name: Verify Node and npm Version
+        run: |
+            node -v
+            npm -v
+  
 
       - name: Configure Additional Registries
         run: |
@@ -53,6 +59,12 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
+      - name: Install @angular/cli
+        run: npm install -g @angular/cli
+
+      - name: Install Node
+        run: npm install 
+    
       - name: Lint
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm run lint

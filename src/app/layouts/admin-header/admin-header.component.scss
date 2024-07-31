@@ -1,0 +1,37 @@
+.admin-header {
+  background-color: #fff;
+  &__spacer {
+    flex: 1 1 auto;
+  }
+  &__branding {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    button {
+      width: 112px;
+      height: 36px;
+    }
+    button:focus,
+    button:hover {
+      outline: 0;
+      background-color: transparent;
+      cursor: default;
+    }
+    img {
+      width: 112px;
+      height: 36px;
+    }
+    &__title {
+      color: #212121;
+      font-size: 20px;
+    }
+    &__profile-icon {
+      height: 58px !important;
+      width: 58px !important;
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+}
