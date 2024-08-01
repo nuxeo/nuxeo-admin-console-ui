@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - dev
+  workflow_call:
+    inputs:
+      branch:
+        description: 'The current branch'
+        default: dev
+        type: string
+        required: false
+    secrets:
+      NPM_PACKAGES_TOKEN:
+        description: 'NPM_PACKAGES_TOKEN'
+        required: true
+      GIT_TOKEN:
+        description: 'GIT_TOKEN'
+        required: true
+env:
+  BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
+  enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
+  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
+  NEXUS_REPOSITORY: npm-public
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
+  NEW_VERSION: 2.0.0
+
+jobs:
+  utest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+  
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+  
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
+  
+      - name: Configure Additional Registries
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+            echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Install @angular/cli
+        run: npm install -g @angular/cli
+      
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+    
+      - name: Build Angular Project
+        run: mvn package
+
+      - name: Publish to package.nuxeo.com
+        working-directory: nuxeo-admin-console-package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
