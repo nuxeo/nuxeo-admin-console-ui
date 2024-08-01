@@ -17,4 +17,8 @@ jobs:
           ls -al  # Verify the file is created
           cat WEBUI_ACCESS_TOKEN_PERSONAL.txt  # Optional: Display file contents for debugging
 
-      - name: Upload Artifa
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: WEBUI_ACCESS_TOKEN_PERSONAL.txt
