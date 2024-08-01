@@ -79,4 +79,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
+          npm publish --registry=https://packages.devtools.nuxeo.com/repository/npm-public/
