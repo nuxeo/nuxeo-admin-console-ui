@@ -74,8 +74,8 @@ jobs:
       - name: Build Angular Project
         run: mvn package
 
-      - name: Publish to package.nuxeo.com
-        working-directory: nuxeo-admin-console-package
+      - name: Publish to package.devtools.nuxeo.com
+        working-directory: nuxeo-admin-console-web
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
