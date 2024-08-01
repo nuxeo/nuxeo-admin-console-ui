@@ -74,9 +74,9 @@ jobs:
       - name: Build Angular Project
         run: mvn package
 
-      - name: Publish to package.devtools.nuxeo.com
+      - name: Publish to package.nuxeo.com
         working-directory: nuxeo-admin-console-web/angular-app
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --registry=https://packages.devtools.nuxeo.com/repository/npm-public/
+          npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
