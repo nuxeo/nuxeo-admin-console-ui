@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Example Step
         env:
-          YOUR_SECRET: ${{ secrets.PACKAGES_AUTH_USER }}
+          YOUR_SECRET: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "$YOUR_SECRET" > WEBUI_ACCESS_TOKEN_PERSONAL.txt
           ls -al  # Verify the file is created
