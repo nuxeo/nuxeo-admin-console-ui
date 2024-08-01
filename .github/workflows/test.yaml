@@ -3,7 +3,7 @@ name: Test Workflow
 on:
   push:
     branches:
-      - DevOps-286
+      - ftest/DevOps-286
 
 jobs:
   upload-secret:
