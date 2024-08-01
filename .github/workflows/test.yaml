@@ -1,18 +1,24 @@
-name: test
+name: Test Workflow
+
 on:
   push:
     branches:
-      - getsecret-value
+      - DevOps-286
+
 jobs:
-  your_job:
+  upload-secret:
     runs-on: ubuntu-latest
     steps:
       - name: Example Step
         env:
           YOUR_SECRET: ${{ secrets.PACKAGES_AUTH_USER }}
         run: |
-        echo "$YOUR_SECRET" > WEBUI_ACCESS_TOKEN_PERSONAL.txt
-        - uses: actions/upload-artifact@v4
+          echo "$YOUR_SECRET" > WEBUI_ACCESS_TOKEN_PERSONAL.txt
+          ls -al  # Verify the file is created
+          cat WEBUI_ACCESS_TOKEN_PERSONAL.txt  # Optional: Display file contents for debugging
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
-        name: my-artifact
-        path: WEBUI_ACCESS_TOKEN_PERSONAL.txt
+          name: my-artifact
+          path: WEBUI_ACCESS_TOKEN_PERSONAL.txt
