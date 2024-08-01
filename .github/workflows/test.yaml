@@ -1,8 +1,8 @@
 name: test
 on:
- push:
- branches:
- - getsecret-value
+  pull_request:
+    branches:
+      - dev
 jobs:
  your_job:
  runs-on: ubuntu-latest
