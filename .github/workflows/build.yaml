@@ -21,7 +21,7 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
   enabledebug: ${{ inputs.debug == true && '-vvv' || ''}}
-  NEXUS_URL: https://packages.nuxeo.com/repository/npm-public/
+  NEXUS_URL: https://packages.devtools.nuxeo.com/repository/npm-public/
   NEXUS_REPOSITORY: npm-public
   NODE_AUTH_TOKEN: ${{ secrets.NPM_ADMIN_TOKEN }}
   GIT_TOKEN: ${{ secrets.GIT_TOKEN}}
