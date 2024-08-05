@@ -1,0 +1,20 @@
+<!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
+<package type="addon" name="nuxeo-admin-console" version="23.0.1-SNAPSHOT">
+  <title>Nuxeo Admin Console</title>
+  <description>
+    <p>The Nuxeo admin console provides a dedicated UI for system administrators to get an overview of the system and perform common tasks like reindexing documents.</p>
+  </description>
+  <home-page>https://www.nuxeo.com</home-page>
+  <vendor>nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
+  <license>Apache License, Version 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>[2023,)</version>
+  </target-platform>
+  <!-- Visibility: PRIVATE | MARKETPLACE | DEV | PUBLIC -->
+  <visibility>PUBLIC</visibility>
+</package>

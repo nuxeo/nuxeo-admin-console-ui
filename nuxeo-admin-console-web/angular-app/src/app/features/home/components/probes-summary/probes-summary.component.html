@@ -1,0 +1,50 @@
+<mat-card role="region" tabindex="0" aria-label="probes-summary">
+    <mat-card-content>
+        <div class="probes-title">
+        {{PROBES_LABELS.PROBE_TITLE}}
+        </div>
+        <ng-container>
+            <hy-content-list [dataSource]="probesData">
+                <hy-content-list-column propertyName="probe" label="Probe">
+                    <ng-container *hyContentListHeader>
+                        <strong>{{PROBES_LABELS.COLUMN_HEADERS.PROBE}}</strong>
+                    </ng-container>
+                    <ng-container *hyContentListCell="let row">
+                        <span>{{getProbeDisplayName(row?.name)}}</span>
+                    </ng-container>
+                </hy-content-list-column>
+                <hy-content-list-column propertyName="success" label="Success">
+                    <ng-container *hyContentListHeader>
+                        <strong>{{PROBES_LABELS.COLUMN_HEADERS.SUCCESS}}</strong>
+                    </ng-container>
+                    <ng-container *hyContentListCell="let row">
+                        <img [src]="getImageSrc(row?.status?.neverExecuted, row?.status?.success)"
+                            [alt]="row?.status?.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row?.status?.success)"
+                            [matTooltip]="row?.status?.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row?.status?.success)"
+                            matTooltipClass="hy-tooltip" matTooltipPosition="above" />
+                    </ng-container>
+                </hy-content-list-column>
+
+                <hy-content-list-column propertyName="neverExecuted" label="Last Executed">
+                    <ng-container *hyContentListHeader>
+                        <strong>{{PROBES_LABELS.COLUMN_HEADERS.LAST_EXECUTED}}</strong>
+                    </ng-container>
+                    <ng-container *hyContentListCell="let row">
+                        <span>{{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED : (row.history.lastRun | date:
+                            'MMMM d, yyyy')
+                            }}</span>
+                    </ng-container>
+                </hy-content-list-column>
+                <hy-content-list-column propertyName="information" label="Information">
+                    <ng-container *hyContentListHeader>
+                        <strong>{{PROBES_LABELS.COLUMN_HEADERS.INFORMATION}}</strong>
+                    </ng-container>
+                    <ng-container *hyContentListCell="let row">
+                        <span>{{ row?.status?.infos?.info }}</span>
+                    </ng-container>
+                </hy-content-list-column>
+            </hy-content-list>
+        </ng-container>
+
+    </mat-card-content>
+</mat-card>

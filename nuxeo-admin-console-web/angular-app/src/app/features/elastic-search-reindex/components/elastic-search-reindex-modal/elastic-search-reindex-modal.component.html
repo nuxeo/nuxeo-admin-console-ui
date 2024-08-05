@@ -1,0 +1,58 @@
+<hy-dialog-box class="hy-dialog-box">
+  <hy-dialog-box-header class="hy-dialog-box__header">
+    <hy-dialog-box-title class="hy-dialog-box__title">
+      {{ data.title }}
+    </hy-dialog-box-title>
+  </hy-dialog-box-header>
+
+  <hy-dialog-box-content class="hy-dialog-box__content">
+    <div *ngIf="data.isConfirmModal">
+      <div>
+        <p>
+          {{ data.impactMessage }}
+        </p>
+        <p>This action will impact {{data.documentCount}} 
+          {{data.documentCount === 1 ? 'document' : 'documents'}}
+          and could take approximately {{data.timeTakenToReindex}}. {{ data.confirmContinue }}
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="data.isErrorModal">
+      <div *ngIf="data.error.type === ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR else noDocumentsMessage;">
+        <p>{{data.errorMessageHeader}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+        <p>{{ELASTIC_SEARCH_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
+      </div>
+      <ng-template #noDocumentsMessage>
+        <p>{{getNoDocumentsMessage()}}</p>
+      </ng-template>
+    </div>
+
+    <div *ngIf="data.launchedMessage">
+      <p>
+        {{ data.launchedMessage }}
+      </p>
+      <button mat-stroked-button color="primary" (click)="copyActionId()">
+        {{ data.copyActionId }}
+      </button>
+    </div>
+  </hy-dialog-box-content>
+
+  <hy-dialog-box-footer class="hy-dialog-box__footer">
+    <div *ngIf="data.isConfirmModal; else closeBtn" class="hy-dialog-box__button-group">
+      <button mat-stroked-button color="primary" (click)="close()">
+        {{ data.abortLabel }}
+      </button>
+      <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">
+        {{ data.continueLabel }}
+      </button>
+    </div>
+
+    <ng-template #closeBtn>
+      <button mat-flat-button color="primary" (click)="close()">
+        {{ data.closeLabel }}
+      </button>
+    </ng-template>
+  </hy-dialog-box-footer>
+</hy-dialog-box>

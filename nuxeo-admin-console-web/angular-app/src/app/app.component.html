@@ -1,0 +1,8 @@
+<div class="unauthorized" *ngIf="currentUser?.isAdministrator === false">
+    <h1>{{ UNAUTHORIZED_MESSAGE }}</h1>
+    <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
+        <mat-icon hyIcon>logout</mat-icon> {{ LOGIN_WITH_DIFFERENT_ACCOUNT }}
+    </button>
+</div>
+
+<base-layout *ngIf="loadApp && currentUser?.isAdministrator === true"></base-layout>

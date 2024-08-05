@@ -1,0 +1,16 @@
+<mat-card role="region" aria-label="Registration Version" tabindex="0"
+  class="registration-version registration-version--mdc">
+  <mat-card-content class="registration-version__content registration-version__content--first">
+    <div class="version-info">
+      {{ REGISTRATION_VERSION_LABELS.VERSION_INFO }}
+    </div>
+  </mat-card-content>
+  <p class="registration-version__version">
+    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.VERSION_TITLE }}</span>
+    {{ versionInformation?.version }}
+  </p>
+  <p class="registration-version__cluster">
+    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
+    {{ versionInformation?.clusterEnabled }}
+  </p>
+</mat-card>

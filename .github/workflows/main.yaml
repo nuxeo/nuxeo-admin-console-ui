@@ -1,0 +1,138 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - dev
+
+  # Manually trigger the workflow
+  workflow_dispatch:
+
+jobs:
+  lint:
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+
+  test:
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
+    secrets:
+      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
+
+      - name: Configure .npmrc
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Prepare Environment
+        run: |
+          echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
+          pushd nuxeo-admin-console-web/angular-app
+          echo $(npx -c 'echo "$npm_package_version"')
+          echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
+          popd
+
+
+      - name: Get Prerelease Version
+        run: |
+          git fetch origin --tags
+          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
+          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
+          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
+      
+      - name: Update Version
+        run: |
+          # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
+          # set padded version to build package for connect preprod
+          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"$PADDED_VERSION"'/g' {} \;
+          sed -i -e 's/\${project.version}/'"$PADDED_VERSION"'/g' nuxeo-admin-console-package/pom.xml
+          pushd nuxeo-admin-console-web/angular-app
+          npm version ${{env.VERSION}} --no-git-tag-version
+          popd
+         
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+
+      - name: Build Angular Project
+        run: mvn package
+
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: |
+            nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Delete & Update .npmrc 
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          rm .npmrc
+          echo "
+          @hylandsoftware:registry=https://npm.pkg.github.com
+          @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
+          registry=https://registry.npmjs.org/
+          " >> .npmrc
+
+      - name: Tag
+        run: |
+          git add nuxeo-admin-console-web/angular-app/package-lock.json
+          git commit -a -m "Release ${{env.VERSION}}"
+          git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
+          git push origin v${{env.VERSION}}
+        
+      - name: Publish on Pre-Prod Marketplace
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: |
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
+          cat publish-req.output
+          if [[ "$STATUS_CODE" != "200" ]]
+          then
+            exit 1
+          else
+            exit 0
+          fi

@@ -1,0 +1,47 @@
+.nxql-es-reindex-container {
+  padding: 10px 0px 0px 10px;
+  #requiredField {
+    font-size: 12px;
+    color: #da1500;
+    font-weight: 400;
+    font-family: "Open Sans";
+  }
+  &__button {
+    border-radius: 4px !important;
+    width: 110px;
+    height: 45px;
+    position: relative;
+    left: 20px;
+    font-size: 16px;
+  }
+}
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+}
+
+.custom-spinner {
+  width: 80px !important;
+  height: 80px !important;
+  stroke-width: 5px !important;
+}
+
+mat-form-field.hy-form-field {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  max-width: 600px;
+  width: 80%;
+}
+
+.resizable-textarea {
+  resize: vertical;
+  overflow: auto;
+}

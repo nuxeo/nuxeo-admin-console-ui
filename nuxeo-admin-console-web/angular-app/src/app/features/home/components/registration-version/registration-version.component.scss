@@ -1,0 +1,36 @@
+.registration-version {
+  height: 100%;
+}
+
+.registration-version__button {
+  border-radius: 4px;
+  width: 79px;
+  height: 36px;
+  position: absolute;
+  bottom: 8%;
+  right: 4%;
+}
+
+.registration-version__content {
+  display: block;
+  padding: 0 0 !important;
+  font-size: 20px;
+}
+
+.registration-version__content--first {
+  padding-top: 0;
+}
+
+.registration-version__version {
+  margin-top: 15px;
+}
+
+.registration-version__label {
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 21px;
+}
+
+.version-info {
+  margin-left: 21px;
+}

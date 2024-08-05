@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+@use "@hyland/ui" as hy;
+@use "@hyland/ui/theming/hy-palette.theme";
+@use "@hyland/ui-shell" as hy-shell;
+@use "sass:map";
+
+@import "@hylandsoftware/hy-ui-icons/index.css";
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+@include hy.typography();
+@include hy.core();
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("assets/fonts/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf")
+      format("truetype support variations"),
+    url("assets/fonts/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf")
+      format("truetype-variations");
+  font-weight: 400 700;
+  font-display: swap;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+// IE11 compatibility mode
+.material-icons {
+  font-feature-settings: "liga";
+}
+
+button, a, input {
+  &:focus, &:hover {
+    outline: none;
+  }
+}

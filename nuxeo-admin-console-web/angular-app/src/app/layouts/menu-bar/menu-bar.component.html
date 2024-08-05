@@ -1,0 +1,15 @@
+<mat-nav-list class="menu-bar" role="navigation" aria-label="navigation">
+      <a mat-list-item *ngFor="let item of menu; let i = index" (click)="menuItemSelected(item.id)"
+            (keyup.enter)="menuItemSelected(item.id)" class="menu-bar__list-item" [routerLink]="[item.path]"
+            [routerLinkActive]="['menu-bar__list-item--selected']"
+            [routerLinkActiveOptions]="item.name === 'Home' ? { exact: true } :  { exact: false }" role="menuitem"
+            [attr.aria-selected]="item.isSelected ? 'true' : 'false'">
+
+            <span class="menu-bar__line" [routerLinkActive]="['menu-bar__line--selected']"
+                  [routerLinkActiveOptions]="item.name === 'Home' ? { exact: true } :  { exact: false }"></span>
+
+            <span class="menu-bar__list-item-content" [routerLinkActive]="['menu-bar__list-item-content--selected']"
+                  [routerLinkActiveOptions]="item.name === 'Home' ? { exact: true } :  { exact: false }">{{ item.name
+                  }}</span>
+      </a>
+</mat-nav-list>

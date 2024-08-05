@@ -1,0 +1,28 @@
+mat-card {
+  height: 100%;
+  button {
+    border-radius: 4px;
+    width: 79px;
+    height: 36px;
+    position: absolute;
+    bottom: 8%;
+    right: 4%;
+  }
+}
+
+.mat-mdc-card-content:first-child {
+  padding-top: 0;
+}
+
+.mat-mdc-card-content {
+  height: 100%;
+  width: 100%;
+}
+
+.probes-title {
+  margin-left: 21px;
+}
+
+::ng-deep .hy-content-list__custom-cell {
+  max-height: max-content !important; 
+}

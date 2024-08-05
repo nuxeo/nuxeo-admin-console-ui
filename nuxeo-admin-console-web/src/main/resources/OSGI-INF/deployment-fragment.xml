@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <install>
+    <!-- Unzip the contents of our web application into the server -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nuxeoadmin/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <extension target="rewrite#RULE">
+    RewriteCond %{REQUEST_PATH} !-f
+    RewriteRule ^/nuxeoadmin/(.*)$ /nuxeoadmin/ [E=ORIGINAL_PATH:%{REQUEST_PATH}]
+  </extension>
+
+</fragment>

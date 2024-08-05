@@ -1,0 +1,19 @@
+.base-container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  position: absolute;
+  &__bottom {
+    display: flex;
+    height: 100vh;
+    &__left {
+      flex: 15%;
+    }
+    &__right {
+      flex: 85%;
+    }
+  }
+}

@@ -1,0 +1,17 @@
+<form [formGroup]="folderReindexForm" (ngSubmit)="onReindexFormSubmit()" class="folder-es-reindex-container">
+    <p id="requiredField"> {{ ELASTIC_SEARCH_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+    <mat-form-field hyFormField>
+        <mat-label>{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID }}</mat-label>
+        <input matInput placeholder="Document ID" type="text" formControlName="documentID" id="documentID" required />
+        <mat-error *ngIf="folderReindexForm?.get('documentID')?.invalid">
+            {{getErrorMessage()}}
+        </mat-error>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" class="folder-es-reindex-container__button" [disabled]="isReindexBtnDisabled">
+        {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
+    </button>
+    <div class="spinner-overlay" *ngIf="spinnerVisible">
+        <mat-progress-spinner class="custom-spinner" mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
+</form>

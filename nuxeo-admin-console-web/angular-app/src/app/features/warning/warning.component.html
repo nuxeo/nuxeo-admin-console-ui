@@ -1,0 +1,24 @@
+<hy-dialog-box class="warning-dialog">
+    <hy-dialog-box-header>
+        <hy-dialog-box-title class="warning-dialog__title">{{ WARNING_LABELS.TITLE }}</hy-dialog-box-title>
+    </hy-dialog-box-header>
+
+    <hy-dialog-box-content class="warning-dialog__content">
+        <hy-dialog-box-subheading>
+            {{ WARNING_LABELS.CONTENT }}
+            <hy-dialog-box-subheading-caption>
+                {{ WARNING_LABELS.SUBHEADING_CAPTION }}
+            </hy-dialog-box-subheading-caption>
+        </hy-dialog-box-subheading>
+    </hy-dialog-box-content>
+
+    <hy-dialog-box-footer>
+        <div class="warning-dialog__checkbox-container">
+            <mat-checkbox color="primary" [(ngModel)]="doNotWarn">{{ WARNING_LABELS.CHECKBOX_LABEL }}</mat-checkbox>
+        </div>
+
+        <div class="warning-dialog__button-container">
+            <button mat-flat-button color="primary" (click)="onConfirm()">{{ WARNING_LABELS.BUTTON_LABEL }}</button>
+        </div>
+    </hy-dialog-box-footer>
+</hy-dialog-box>

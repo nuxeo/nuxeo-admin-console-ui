@@ -1,0 +1,46 @@
+.warning-dialog {
+  width: 564px;
+  &__title {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 1.7rem !important;
+    line-height: 20px;
+    letter-spacing: 0.011em;
+  }
+  &__content {
+    padding-bottom: 5px;
+  }
+  &__checkbox-container {
+    margin-right: auto;
+  }
+
+  &__button-container {
+    margin-left: auto;
+  }
+}
+
+.hy-dialog-box-subheading-caption {
+  padding-top: 15px;
+  font-weight: bold;
+}
+
+:host ::ng-deep hy-dialog-box-subheading .hy-text-subhead {
+  font-weight: 200;
+  font-size: 14px;
+}
+:host ::ng-deep hy-dialog-box-title .mat-title {
+  font-size: 26px;
+}
+
+:host ::ng-deep hy-dialog-box-subheading-caption {
+  font-size: 14px !important;
+}
+
+:host
+  ::ng-deep
+  hy-dialog-box-footer
+  .warning-dialog__checkbox-container
+  .mdc-form-field
+  .mdc-label {
+  padding-top: 6px;
+}

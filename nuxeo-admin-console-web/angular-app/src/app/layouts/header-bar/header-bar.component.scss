@@ -1,0 +1,59 @@
+.header-bar {
+  background-color: #fff;
+  padding-left: 3px;
+  display: flex;
+  position: relative;
+  width: 100%;
+  justify-content: space-between;
+  &__branding {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    button {
+      width: auto;
+      height: auto;
+    }
+    button:focus,
+    button:hover {
+      background-color: transparent;
+      cursor: pointer;
+      border-radius: 0;
+    }
+    img {
+      width: 112px;
+      height: 36px;
+    }
+    &__title {
+      color: #212121;
+      font-size: 20px;
+    }
+    &__username {
+      color: #212121;
+      font-size: 14px;
+      margin-right: 15px;
+      &__skeleton {
+        width: 120px;
+        height: 24px;
+        background-color: rgba(175, 169, 169, 0.432);
+        border-radius: 20px;
+        margin-right: 15px;
+      }
+    }
+    &__profile-icon {
+      height: 58px !important;
+      width: 58px !important;
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+}
+
+@media (width < 600px) {
+  .header-bar {
+    min-width:160svw;
+  }
+}

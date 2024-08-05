@@ -1,0 +1,63 @@
+$sidenav-list-item-selected-bg-color: #000000;
+$selected-line-bg-color: #0c6bd4;
+
+.menu-bar {
+  height: 100%;
+  background-color: #212121;
+  padding-top: 24px;
+
+  &__list-item {
+    position: relative;
+    margin-bottom: 5px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: $sidenav-list-item-selected-bg-color;
+      .menu-bar__line {
+        background-color: $selected-line-bg-color;
+      }
+    }
+
+    &--selected {
+      background-color: $sidenav-list-item-selected-bg-color;
+
+      .menu-bar__list-item-content {
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      .menu-bar__line {
+        background-color: $selected-line-bg-color;
+      }
+    }
+  }
+
+  &__list-item-content {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.16px;
+    text-align: left;
+    padding: 9px 8px;
+  }
+
+  &__line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+
+    &--selected {
+      background-color: $selected-line-bg-color;
+    }
+  }
+}
+
+.mdc-list-item.mdc-list-item--with-one-line {
+  height: 36px !important;
+}
