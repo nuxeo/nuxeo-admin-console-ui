@@ -70,13 +70,23 @@ jobs:
       - name: Install Dependencies
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
+      
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: restore
     
       - name: Build Angular Project
         run: mvn package
 
-      - name: Publish to package.devtools.nuxeo.com
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: save
+
+      - name: Publish to package.nuxeo.com
         working-directory: nuxeo-admin-console-web/angular-app
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --registry=https://packages.devtools.nuxeo.com/repository/npm-public/
+          npm publish --registry=https://packages.nuxeo.com/repository/npm-public/
