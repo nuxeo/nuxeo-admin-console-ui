@@ -36,11 +36,8 @@
   font-size: 14px !important;
 }
 
-:host
-  ::ng-deep
-  hy-dialog-box-footer
-  .warning-dialog__checkbox-container
-  .mdc-form-field
-  .mdc-label {
-  padding-top: 6px;
+.warning-dialog__checkbox {
+  ::ng-deep .mdc-form-field > label {
+    margin-top: 6px;
+  }
 }
