@@ -95,8 +95,18 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: restore
+
       - name: Build Angular Project
         run: mvn package
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: save
 
       - name: Archive Package
         uses: actions/upload-artifact@v4
