@@ -1,3 +1,4 @@
+import { bulkActionMonitoringReducer } from './features/bulk-action-monitoring/store/reducers';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -34,9 +35,12 @@ import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
+import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
+import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
+import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +52,7 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ElasticSearchReindexModalComponent,
+    ErrorModalComponent
   ],
   imports: [
     BrowserModule,
@@ -63,10 +68,11 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
       home: homeReducer,
       reindex: reindexReducer,
       folderReindex: folderReindexReducer,
-      nxqlReindex: nxqlReindexReducer
+      nxqlReindex: nxqlReindexReducer,
+      bulkActionMonitoring:  bulkActionMonitoringReducer
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -82,6 +88,7 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
     FormsModule,
     MatCheckboxModule,
     HyMaterialIconModule,
+    BulkActionMonitoringModule
   ],
   providers: [
     {
