@@ -1,5 +1,4 @@
 .header-bar {
-  padding-bottom: 7px;
   background-color: #fff;
   padding-left: 3px;
   display: flex;
@@ -8,14 +7,13 @@
   justify-content: space-between;
   &__branding {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 10px;
     margin-bottom: 5px;
     margin-top: 5px;
     button {
       width: auto;
       height: auto;
-      margin-top: 10px;
     }
     button:focus,
     button:hover {
