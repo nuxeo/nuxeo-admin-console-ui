@@ -1,4 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
 @use "@angular/material" as mat;
 @use "@hyland/ui" as hy;
 @use "@hyland/ui/theming/hy-palette.theme";
@@ -23,23 +22,28 @@
 
 html {
   position: relative;
-  min-height: 95vh;
+  min-height: 100vh;
+  padding-bottom: 100px;
+  font-family: sans-serif;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  -ms-overflow-style: scrollbar;
+  -webkit-tap-highlight-color: transparent;
+  height: 100%;
+  margin: 0;
 }
 
 body {
-  height: 100%;
   margin: 0;
+  font-family: source sans pro, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #373a3c;
   background-color: #f4f4f4;
-  font-family: "Open Sans";
+  height: 100%;
 }
-
-// IE11 compatibility mode
-.material-icons {
-  font-feature-settings: "liga";
-}
-
 
 a {
   background-color: transparent;
@@ -53,9 +57,27 @@ a:hover {
   outline: 0;
 }
 
-h1 {
-  font-size: 2em;
-  margin: 0.67em 0;
+b,
+strong {
+  font-weight: 700;
+}
+
+img {
+  border: 0;
+  vertical-align: middle;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 button,
@@ -81,6 +103,7 @@ button,
 html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
+  -webkit-appearance: button;
   cursor: pointer;
 }
 
@@ -105,29 +128,53 @@ input[type="radio"] {
   padding: 0;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+fieldset {
+  border: 1px solid silver;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: transparent;
+}
+
+th {
+  text-align: left;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
 
 @-ms-viewport {
   width: device-width;
 }
 
-html {
-  font-size: 16px;
-  -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: transparent;
-}
-
 [tabindex="-1"]:focus {
   outline: none !important;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
 }
 
 p {
@@ -135,59 +182,18 @@ p {
   margin-bottom: 1rem;
 }
 
-textarea {
-  overflow: auto;
+[role="button"] {
+  cursor: pointer;
 }
 
-p,
-h2,
-h3 {
-  orphans: 3;
-  widows: 3;
-}
-
-h2,
-h3 {
-  page-break-after: avoid;
-}
-
-.navbar {
-  display: none;
-}
-
-[tabindex="-1"]:focus {
-  outline: none !important;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-}
-
-p {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-a:not([href]) {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:not([href]):focus,
-a:not([href]):hover {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:not([href]):focus {
-  outline: none;
-}
-
+a,
+area,
+button,
+[role="button"],
+input,
+label,
+select,
+summary,
 textarea {
   touch-action: manipulation;
 }
@@ -208,6 +214,11 @@ textarea {
 
 textarea {
   resize: vertical;
+  overflow: auto;
+}
+
+input[type="search"] {
+  -webkit-appearance: none;
 }
 
 output {
@@ -230,6 +241,7 @@ h6,
 .h4,
 .h5,
 .h6 {
+  margin-top: 0;
   margin-bottom: 0.5rem;
   font-family: inherit;
   font-weight: 500;
@@ -256,7 +268,6 @@ h4,
 .h4 {
   font-size: 1.5rem;
 }
-
 h5,
 .h5 {
   font-size: 1.25rem;
@@ -267,84 +278,23 @@ h6,
   font-size: 1rem;
 }
 
-@media (min-width: 544px) {
-  .container {
-    max-width: 576px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 720px;
-  }
-}
-
-@media (min-width: 992px) {
-  .container {
-    max-width: 940px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1140px;
-  }
-}
-
-.checkbox {
-  position: relative;
-  display: block;
-  margin-bottom: 0.75rem;
-}
-
-.checkbox label {
-  padding-left: 1.25rem;
-  margin-bottom: 0;
-  cursor: pointer;
-}
-
-.checkbox label input:only-child {
-  position: static;
-}
-
-.checkbox input[type="checkbox"],
-.checkbox-inline input[type="checkbox"] {
-  position: absolute;
-  margin-top: 0.25rem;
-  margin-left: -1.25rem;
-}
-
-.checkbox + .checkbox {
-  margin-top: -0.25rem;
-}
-
-.checkbox-inline {
-  position: relative;
-  display: inline-block;
-  padding-left: 1.25rem;
-  margin-bottom: 0;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.checkbox-inline + .checkbox-inline {
-  margin-top: 0;
-  margin-left: 0.75rem;
-}
-
+input[type="radio"]:disabled,
+input[type="radio"].disabled,
 input[type="checkbox"]:disabled,
 input[type="checkbox"].disabled {
   cursor: not-allowed;
 }
 
-.checkbox-inline.disabled {
-  cursor: not-allowed;
+footer {
+  background: #f3f3f3;
+  margin-top: 3rem;
+  padding: 1rem 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
-.checkbox.disabled label {
-  cursor: not-allowed;
-}
-
-.font-weight-normal {
-  font-weight: 400;
+// IE11 compatibility mode
+.material-icons {
+  font-feature-settings: "liga";
 }
