@@ -270,7 +270,6 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
           message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
-          impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
           documentCount,
           timeTakenToReindex: this.getHumanReadableTime(
             documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT

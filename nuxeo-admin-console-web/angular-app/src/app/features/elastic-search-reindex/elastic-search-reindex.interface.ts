@@ -28,12 +28,9 @@ export interface ReindexModalData {
   title: string;
   type: number;
   documentCount: number;
-  impactMessage: string;
   timeTakenToReindex: string;
   error: ErrorDetails;
   launchedMessage: string;
-  copyActionId: string;
-  abortLabel: string;
   commandId: string;
   userInput: string;
 }

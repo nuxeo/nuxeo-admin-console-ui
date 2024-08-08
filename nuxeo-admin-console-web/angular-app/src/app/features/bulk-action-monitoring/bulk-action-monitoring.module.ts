@@ -1,4 +1,4 @@
-import { BulkActionMonitoringRoutingModule } from './bulk-action-monitoring-routing.module';
+import { BulkActionMonitoringRoutingModule } from "./bulk-action-monitoring-routing.module";
 import { MatButtonModule } from "@angular/material/button";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -18,7 +18,7 @@ import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.componen
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    BulkActionMonitoringRoutingModule
+    BulkActionMonitoringRoutingModule,
   ],
 })
 export class BulkActionMonitoringModule {}

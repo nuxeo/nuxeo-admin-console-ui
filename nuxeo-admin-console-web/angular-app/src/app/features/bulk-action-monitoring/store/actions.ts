@@ -11,7 +11,7 @@ export const onBulkActionMonitorLaunch = createAction(
   props<{ bulkActionMonitoringInfo: BulkActionMonitoringInfo }>()
 );
 export const onBulkActionMonitorFailure = createAction(
-  "[Admin] Perform Bulk Action Monitor Failure",
+  "[Admin] On Bulk Action Monitor Failure",
   props<{ error: HttpErrorResponse }>()
 );
 export const resetBulkActionMonitorState = createAction(

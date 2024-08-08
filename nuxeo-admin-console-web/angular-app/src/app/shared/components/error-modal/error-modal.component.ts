@@ -36,7 +36,7 @@ export class ErrorModalComponent {
 
   getCustomErrorMessage(): string | null {
     if (this.data?.error) {
-      return this.data.error?.type === ERROR_TYPES.NO_DOCUMENT_ID_FOUND
+      return this.data.error.type === ERROR_TYPES.NO_DOCUMENT_ID_FOUND
         ? this.data.error.details?.message.replace(
             "<documentID>",
             this.data?.userInput as string

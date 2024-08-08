@@ -12,7 +12,7 @@ export class BulkActionMonitoringService {
 
   constructor(private networkService: NetworkService) {}
 
-  performBulkActionMonitoring(id: string | null): Observable<any> {
+  performBulkActionMonitoring(id: string | null): Observable<BulkActionMonitoringInfo> {
     return this.networkService.makeHttpRequest<BulkActionMonitoringInfo>(
       REST_END_POINTS.BULK_ACTION_MONITORING,
       { urlParam: id }

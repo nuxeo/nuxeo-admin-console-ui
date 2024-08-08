@@ -1,8 +1,5 @@
 export interface ErrorModalData {
-  title: string;
-  errorMessageHeader: string;
   error: ErrorDetails;
-  closeLabel: string;
   userInput?: string;
 }
 
