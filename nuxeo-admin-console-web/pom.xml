@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.nuxeo.admin.console</groupId>
     <artifactId>nuxeoadmin</artifactId>
-    <version>23.0.1-SNAPSHOT</version>
+    <version>23.0.1-rc.003</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-admin-console-web</artifactId>
   <name>Admin console</name>
-  <version>23.0.1-SNAPSHOT</version>
+  <version>23.0.1-rc.003</version>
   <description />
 
   <properties>
