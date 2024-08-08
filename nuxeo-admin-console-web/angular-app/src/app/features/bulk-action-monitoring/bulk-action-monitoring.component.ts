@@ -16,7 +16,6 @@ import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as BulkActionMonitoringActions from "../bulk-action-monitoring/store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { BulkActionMonitoringService } from "./services/bulk-action-monitoring.service";
 import { BulkActionMonitoringState } from "./store/reducers";
 import { ErrorDetails } from "../elastic-search-reindex/elastic-search-reindex.interface";
 import { BulkActionMonitoringInfo } from "./bulk-action-monitoring.interface";
@@ -44,7 +43,6 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
 
   constructor(
-    private bulkActionService: BulkActionMonitoringService,
     private commonService: CommonService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -127,9 +125,7 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
         this.bulkActionMonitoringForm?.get("bulkActionId")?.value.trim()
       );
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
-          for bulk action monitoring endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
-          /default-domain/workspaces/ws1/Harry%5C%27s-file
-          Other special characters are encoded by default by nuxeo js client, but not single quote */
+          for bulk action monitoring endpoint. Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
         this.decodedUserInput =
           this.commonService.decodeAndReplaceSingleQuotes(

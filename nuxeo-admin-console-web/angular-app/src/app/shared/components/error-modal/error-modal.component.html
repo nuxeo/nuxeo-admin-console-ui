@@ -6,14 +6,14 @@
   </hy-dialog-box-header>
 
   <hy-dialog-box-content class="hy-dialog-box__content">
-      <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
-        <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
-        <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
-        <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
-      </div>
-      <ng-template #customErrorMessage>
-        <p>{{getCustomErrorMessage()}}</p>
-      </ng-template>
+    <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
+      <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
+      <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+      <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
+    </div>
+    <ng-template #customErrorMessage>
+      <p>{{getCustomErrorMessage()}}</p>
+    </ng-template>
   </hy-dialog-box-content>
 
   <hy-dialog-box-footer class="hy-dialog-box__footer">
