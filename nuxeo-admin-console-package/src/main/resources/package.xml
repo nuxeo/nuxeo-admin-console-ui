@@ -5,7 +5,7 @@
     <p>The Nuxeo admin console provides a dedicated UI for system administrators to get an overview of the system and perform common tasks like reindexing documents.</p>
   </description>
   <home-page>https://www.nuxeo.com</home-page>
-  <vendor>nuxeo</vendor>
+  <vendor>Nuxeo</vendor>
   <installer restart="true" />
   <uninstaller restart="true" />
   <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
