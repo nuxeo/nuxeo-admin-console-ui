@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
-import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
 

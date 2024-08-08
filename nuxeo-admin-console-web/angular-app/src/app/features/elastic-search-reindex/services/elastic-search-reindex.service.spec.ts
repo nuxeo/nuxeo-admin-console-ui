@@ -1,9 +1,7 @@
 import { TestBed } from "@angular/core/testing";
-import { of } from "rxjs";
 import { ElasticSearchReindexService } from "./elastic-search-reindex.service";
 import { NetworkService } from "../../../shared/services/network.service";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
-import { ReindexInfo } from "../elastic-search-reindex.interface";
 
 describe("ElasticSearchReindexService", () => {
   let service: ElasticSearchReindexService;
