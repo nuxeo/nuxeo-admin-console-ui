@@ -3,40 +3,44 @@ import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
-import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
-import { NetworkService } from "../../../shared/services/network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class ElasticSearchReindexService {
+  private elaticSearchReindexEndpoint = "management/elasticsearch/reindex";
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     private http: HttpClient,
-    private nuxeoJsClientService: NuxeoJSClientService,
-    private networkService: NetworkService
+    private nuxeoJsClientService: NuxeoJSClientService
   ) {}
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
-      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
-      { query: requestQuery }
+    return this.http.post<ReindexInfo>(
+      `${this.nuxeoJsClientService.getApiUrl()}/${
+        this.elaticSearchReindexEndpoint
+      }?query=${requestQuery}`,
+      {}
     );
   }
 
   performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
-      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
-      { query: requestQuery }
+    return this.http.post<ReindexInfo>(
+      `${this.nuxeoJsClientService.getApiUrl()}/${
+        this.elaticSearchReindexEndpoint
+      }?query=${requestQuery}`,
+      {}
     );
   }
 
   performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
-      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
-      { query: nxqlQuery }
+    return this.http.post<ReindexInfo>(
+      `${this.nuxeoJsClientService.getApiUrl()}/${
+        this.elaticSearchReindexEndpoint
+      }?query=${nxqlQuery}`,
+      {}
     );
   }
 
@@ -94,6 +98,6 @@ export class ElasticSearchReindexService {
   // tslint:disable-next-line:no-useless-escape
   decodeAndReplaceSingleQuotes(input: string): string {
     /* replace & decode all occurences of single & double quotes */
-    return input.replaceAll("'", "%5C%27");
+      return input.replaceAll("'", "%5C%27");
   }
 }
