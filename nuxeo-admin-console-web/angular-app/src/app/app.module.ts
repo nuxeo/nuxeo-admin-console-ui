@@ -28,7 +28,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
+import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
@@ -81,6 +81,7 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
     HyDialogBoxModule,
     FormsModule,
     MatCheckboxModule,
+    HyMaterialIconModule,
   ],
   providers: [
     {
