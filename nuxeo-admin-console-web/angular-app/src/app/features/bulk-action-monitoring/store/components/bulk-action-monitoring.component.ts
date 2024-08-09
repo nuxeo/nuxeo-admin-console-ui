@@ -1,24 +1,24 @@
-import { CommonService } from './../../shared/services/common.service';
-import { ErrorModalClosedInfo } from "./../../shared/types/common.interface";
-import { ErrorModalComponent } from "./../../shared/components/error-modal/error-modal.component";
+import { CommonService } from '../../../../shared/services/common.service';
+import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface";
+import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
 import {
   COMMON_LABELS,
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
   MODAL_DIMENSIONS,
-} from "./../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "./bulk-action-monitoring.constants";
+} from "../../../../shared/constants/common.constants";
+import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-import * as BulkActionMonitoringActions from "../bulk-action-monitoring/store/actions";
+import * as BulkActionMonitoringActions from "../actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { BulkActionMonitoringState } from "./store/reducers";
-import { ErrorDetails } from "../elastic-search-reindex/elastic-search-reindex.interface";
-import { BulkActionMonitoringInfo } from "./bulk-action-monitoring.interface";
+import { BulkActionMonitoringState } from "../reducers";
+import { ErrorDetails } from "../../../elastic-search-reindex/elastic-search-reindex.interface";
+import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
 
 @Component({
   selector: "bulk-action-monitoring",

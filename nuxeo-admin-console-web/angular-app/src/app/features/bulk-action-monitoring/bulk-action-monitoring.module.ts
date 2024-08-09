@@ -6,7 +6,7 @@ import { HyFormContainerModule, HyMaterialModule } from "@hyland/ui";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
+import { BulkActionMonitoringComponent } from "./store/components/bulk-action-monitoring.component";
 
 @NgModule({
   declarations: [BulkActionMonitoringComponent],
