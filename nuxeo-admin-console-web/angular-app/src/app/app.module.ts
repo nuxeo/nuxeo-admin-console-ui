@@ -29,7 +29,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { HyDialogBoxModule, HyDialogModul, HyMaterialIconModule } from "@hyland/ui";
+import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
@@ -87,8 +87,8 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
     HyDialogBoxModule,
     FormsModule,
     MatCheckboxModule,
-    BulkActionMonitoringModule,
-    HyMaterialIconModule
+    HyMaterialIconModule,
+    BulkActionMonitoringModule
   ],
   providers: [
     {
