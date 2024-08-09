@@ -35,7 +35,7 @@ export class NetworkService {
     if (data?.["urlParam"] && Object.keys(data?.["urlParam"]).length > 0) {
       Object.entries(data?.["urlParam"]).forEach(([key, value]) => {
         if (url.indexOf(key) > -1) {
-          url = url.replace(`{${key}}`, value);
+          url = url.replaceAll(`{${key}}`, value);
         }
       });
       delete data["urlParam"];
