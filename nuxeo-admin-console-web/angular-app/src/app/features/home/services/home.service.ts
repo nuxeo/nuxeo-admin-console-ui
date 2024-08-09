@@ -4,28 +4,28 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
+import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
+import { NetworkService } from "../../../shared/services/network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class HomeService {
-  private readonly capabilities = "capabilities";
-  private readonly probes = "management/probes";
-
   constructor(
     private http: HttpClient,
-    private nuxeoJsClientService: NuxeoJSClientService
+    private nuxeoJsClientService: NuxeoJSClientService,
+    private networkService: NetworkService
   ) {}
 
   getVersionInfo(): Observable<CapabilitiesResponse> {
-    return this.http.get<CapabilitiesResponse>(
-      `${this.nuxeoJsClientService.getApiUrl()}/${this.capabilities}`
+    return this.networkService.makeHttpRequest<CapabilitiesResponse>(
+      REST_END_POINTS.CAPABILITIES
     );
   }
 
   getProbesInfo(): Observable<ProbesResponse> {
-    return this.http.get<ProbesResponse>(
-      `${this.nuxeoJsClientService.getApiUrl()}/${this.probes}`
+    return this.networkService.makeHttpRequest<ProbesResponse>(
+      REST_END_POINTS.PROBES
     );
   }
 
