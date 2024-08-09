@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
-import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
 
@@ -14,8 +12,6 @@ export class ElasticSearchReindexService {
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private http: HttpClient,
-    private nuxeoJsClientService: NuxeoJSClientService,
     private networkService: NetworkService
   ) {}
 
@@ -76,24 +72,5 @@ export class ElasticSearchReindexService {
     }
 
     return humanReadableTime.trim();
-  }
-
-  removeLeadingCharacters(input: string): string {
-    if (input.startsWith("'") && input.endsWith("'")) {
-      return input.slice(1, -1);
-    }
-    if (input.startsWith('"') && input.endsWith('"')) {
-      return input.slice(1, -1);
-    }
-    if (input.startsWith("'") || input.startsWith('"')) {
-      return input.slice(1);
-    }
-    return input;
-  }
-
-  // tslint:disable-next-line:no-useless-escape
-  decodeAndReplaceSingleQuotes(input: string): string {
-    /* replace & decode all occurences of single & double quotes */
-    return input.replaceAll("'", "%5C%27");
   }
 }
