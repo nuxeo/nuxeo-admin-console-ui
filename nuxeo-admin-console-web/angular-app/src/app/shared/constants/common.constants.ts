@@ -6,6 +6,7 @@ export const ERROR_MODAL_LABELS = {
     ERROR_STATUS: "Status:",
     UNEXPECTED_ERROR: "Unexpected error format",
     UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",
+    TEST_ERROR: "test error"
   };
   
   export const COMMON_LABELS = {
