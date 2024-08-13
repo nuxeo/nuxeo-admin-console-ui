@@ -1,0 +1,22 @@
+.bulk-action-summary {
+  &__header {
+    display: flex;
+    h5,
+    p {
+      color: #767676;
+      margin-top: 5px;
+    }
+    h5 {
+      font-weight: 550;
+    }
+    p {
+      margin-left: 10px;
+    }
+    button {
+      margin-left: 10px;
+    }
+  }
+  &__status-text {
+    margin-top: 20px;
+  }
+}

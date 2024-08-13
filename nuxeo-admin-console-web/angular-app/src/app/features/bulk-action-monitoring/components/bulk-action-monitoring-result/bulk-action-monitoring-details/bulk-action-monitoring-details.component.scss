@@ -1,0 +1,39 @@
+.bulk-action-details {
+  display: flex;
+  margin-top: 50px;
+  .title {
+    color: #767676;
+    font-weight: 700;
+  }
+  &__info {
+    width: 24%;
+    height: 200px;
+    p {
+      font-weight: 550;
+      color: #616161;
+    }
+    .title {
+      padding-bottom: 5px;
+    }
+    .error-found {
+      color: red;
+    }
+    .separator {
+      height: 1px;
+      width: 294px;
+      background-color: grey;
+      margin-left: -24px;
+    }
+  }
+  &__additional-info {
+    margin-left: 10px;
+    width: 74%;
+    height: 200px;
+  }
+  .mat-mdc-card-content {
+    width: 100%;
+    height: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

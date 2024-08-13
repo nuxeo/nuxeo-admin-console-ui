@@ -1,11 +1,11 @@
-import { BulkActionMonitoringComponent } from './components/bulk-action-monitoring.component';
+import { BulkActionMonitoringFormComponent } from './components/bulk-action-monitoring-form/bulk-action-monitoring-form.component';
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";
 export const BulkActionMonitoringRoutes: Route[] = [
   {
     path: '',
-    component: BulkActionMonitoringComponent,
+    component: BulkActionMonitoringFormComponent,
   },
 ];
 

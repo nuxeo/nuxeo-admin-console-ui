@@ -1,31 +1,29 @@
-import { CommonService } from './../../../shared/services/common.service';
-import { ErrorModalComponent } from './../../../shared/components/error-modal/error-modal.component';
+import { CommonService } from "../../../../shared/services/common.service";
+import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
 import {
   COMMON_LABELS,
-  ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
-  ERROR_TYPES,
   MODAL_DIMENSIONS,
-} from "../../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "../bulk-action-monitoring.constants";
+} from "../../../../shared/constants/common.constants";
+import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-import * as BulkActionMonitoringActions from "../store/actions";
+import * as BulkActionMonitoringActions from "../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { BulkActionMonitoringState } from "../store/reducers";
-import { ErrorModalClosedInfo } from '../../../shared/types/common.interface';
-import { BulkActionMonitoringInfo } from '../bulk-action-monitoring.interface';
-import { ErrorDetails } from '../../elastic-search-reindex/elastic-search-reindex.interface';
+import { BulkActionMonitoringState } from "../../store/reducers";
+import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface";
+import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
+import { ErrorDetails } from "../../../elastic-search-reindex/elastic-search-reindex.interface";
 
 @Component({
-  selector: "bulk-action-monitoring",
-  templateUrl: "./bulk-action-monitoring.component.html",
-  styleUrls: ["./bulk-action-monitoring.component.scss"],
+  selector: "bulk-action-monitoring-form",
+  templateUrl: "./bulk-action-monitoring-form.component.html",
+  styleUrls: ["./bulk-action-monitoring-form.component.scss"],
 })
-export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
+export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
   bulkActionErrorSubscription = new Subscription();
@@ -37,7 +35,6 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   isBulkActionBtnDisabled = false;
   userInput = "";
-  decodedUserInput = "";
   pageTitle = BULK_ACTION_LABELS.BULK_ACTION_TITLE;
   COMMON_LABELS = COMMON_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
@@ -78,7 +75,10 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
         if (error && error.error) {
           this.showBulkActionErrorModal({
             type: ERROR_MODAL_LABELS.SERVER_ERROR,
-            details: { status: error.error.status, message: error.error.message },
+            details: {
+              status: error.error.status,
+              message: error.error.message,
+            },
           });
         }
       }
@@ -124,26 +124,11 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
       this.userInput = this.commonService.removeLeadingCharacters(
         this.bulkActionMonitoringForm?.get("bulkActionId")?.value.trim()
       );
-      /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
-          for bulk action monitoring endpoint. Other special characters are encoded by default by nuxeo js client, but not single quote */
-      try {
-        this.decodedUserInput =
-          this.commonService.decodeAndReplaceSingleQuotes(
-            decodeURIComponent(this.userInput)
-          );
-        this.store.dispatch(
-          BulkActionMonitoringActions.performBulkActionMonitor({
-            id: this.userInput,
-          })
-        );
-      } catch (error) {
-        this.showBulkActionErrorModal({
-          type: ERROR_TYPES.INVALID_ACTION_ID,
-          details: {
-            message: ERROR_MESSAGES.INVALID_ACTION_ID_MESSAGE,
-          },
-        });
-      }
+      this.store.dispatch(
+        BulkActionMonitoringActions.performBulkActionMonitor({
+          id: this.userInput,
+        })
+      );
     }
   }
 

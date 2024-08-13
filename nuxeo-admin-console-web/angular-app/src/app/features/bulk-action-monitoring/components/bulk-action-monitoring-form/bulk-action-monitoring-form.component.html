@@ -15,11 +15,7 @@
             [disabled]="isBulkActionBtnDisabled">
             {{ BULK_ACTION_LABELS.BULK_ACTION_BUTTON_LABEL }}
         </button> <br><br>
-        <ng-container *ngIf="bulkActionResponse && bulkActionResponse?.commandId">
-            <div *ngFor="let item of bulkActionResponse | keyvalue">
-                <div>{{item.key}} ------- {{item.value}}</div>
-            </div>
-
-        </ng-container>
+        <bulk-action-monitoring-result [resultData]="bulkActionResponse"
+            *ngIf="bulkActionResponse && bulkActionResponse?.commandId"></bulk-action-monitoring-result>
     </form>
 </div>
