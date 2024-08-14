@@ -43,10 +43,22 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   }
 
   getRunningStatusText(): string {
-    return BULK_ACTION_LABELS.RUNNING_STATUS_TEXT.replaceAll(
+    const statusText = BULK_ACTION_LABELS.RUNNING_STATUS_TEXT.replaceAll(
       "{processed}",
       this.bulkActionSummary?.processed?.toString()
-    ).replaceAll("{total}", this.bulkActionSummary?.total?.toString());
+    )
+      .replaceAll("{total}", this.bulkActionSummary?.total?.toString())
+      .replaceAll(
+        "{errorCount}",
+        this.bulkActionSummary?.errorCount === 0
+          ? BULK_ACTION_LABELS.NO
+          : this.bulkActionSummary?.errorCount?.toString()
+      );
+    const initText = this.commonService.getPluralizedText(
+      this.bulkActionSummary?.total,
+      statusText
+    );
+    return initText;
   }
 
   onRefresh(): void {

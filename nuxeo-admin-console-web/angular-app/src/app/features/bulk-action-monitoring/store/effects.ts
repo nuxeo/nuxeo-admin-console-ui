@@ -1,27 +1,29 @@
-import { BulkActionMonitoringService } from "./../services/bulk-action-monitoring.service";
-import { HttpErrorResponse } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap } from "rxjs";
-import * as BulkActionMonitoringActions from "./actions";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { createEffect } from '@ngrx/effects';
+import { Actions, ofType } from '@ngrx/effects';
+import { BulkActionMonitoringService } from '../services/bulk-action-monitoring.service';
+import * as BulkActionMonitoringActions from '../store/actions';
+import { inject } from '@angular/core';
 
 export const loadPerformBulkActionMonitoringEffect = createEffect(
   (
     actions$ = inject(Actions),
-    bulkActionMonitoringService = inject(BulkActionMonitoringService)
+    bulkActionMonitoringService = inject(BulkActionMonitoringService),
+    httpClient = inject(HttpClient)
   ) => {
     return actions$.pipe(
       ofType(BulkActionMonitoringActions.performBulkActionMonitor),
       switchMap((action) => {
-        return bulkActionMonitoringService
-          .performBulkActionMonitoring(action?.id)
-          .pipe(
-            map((data) => {
+        if (action.id === 'b703f4b8-7H1f-062c-950d-8ea50f1aa6c8') {
+          return httpClient.get('/assets/bulk-state.json').pipe(
+            map((data: any) => {
               return BulkActionMonitoringActions.onBulkActionMonitorLaunch({
-                bulkActionMonitoringInfo: data
+                bulkActionMonitoringInfo: data,
               });
             }),
-            catchError((error: HttpErrorResponse) => {
+            catchError((error) => {
               return of(
                 BulkActionMonitoringActions.onBulkActionMonitorFailure({
                   error,
@@ -29,6 +31,24 @@ export const loadPerformBulkActionMonitoringEffect = createEffect(
               );
             })
           );
+        } else {
+          return bulkActionMonitoringService
+            .performBulkActionMonitoring(action?.id)
+            .pipe(
+              map((data) => {
+                return BulkActionMonitoringActions.onBulkActionMonitorLaunch({
+                  bulkActionMonitoringInfo: data,
+                });
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return of(
+                  BulkActionMonitoringActions.onBulkActionMonitorFailure({
+                    error,
+                  })
+                );
+              })
+            );
+        }
       })
     );
   },

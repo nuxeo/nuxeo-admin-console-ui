@@ -1,8 +1,16 @@
 .bulk-action-details {
   display: flex;
   margin-top: 50px;
+  hr {
+    clear: both;
+    display: block;
+    height: 1px;
+    width: 294px;
+    background-color: #d1d5db;
+    margin-left: -24px;
+  }
   .title {
-    color: #767676;
+    //   color: #767676;
     font-weight: 700;
   }
   &__info {
@@ -10,19 +18,13 @@
     height: 200px;
     p {
       font-weight: 550;
-      color: #616161;
-    }
-    .title {
-      padding-bottom: 5px;
+      //  color: #616161;
     }
     .error-found {
       color: red;
     }
-    .separator {
-      height: 1px;
-      width: 294px;
-      background-color: grey;
-      margin-left: -24px;
+    .info-container {
+      font-size: 14px;
     }
   }
   &__additional-info {
@@ -33,7 +35,6 @@
   .mat-mdc-card-content {
     width: 100%;
     height: 100%;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
   }
 }

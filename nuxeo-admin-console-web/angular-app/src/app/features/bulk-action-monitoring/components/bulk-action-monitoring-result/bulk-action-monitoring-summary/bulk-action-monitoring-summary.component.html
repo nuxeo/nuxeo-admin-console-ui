@@ -1,16 +1,22 @@
 <div class="bulk-action-summary">
     <div class="bulk-action-summary__header">
-        <h5>{{bulkActionSummary.action | titlecase}}</h5>
-        <p *ngIf="bulkActionSummary?.state === 'COMPLETED' else runningState;">{{completedText}}</p>
+        <!-- <p class="action-name">{{bulkActionSummary.action | titlecase}}</p>
+        <p *ngIf="bulkActionSummary?.state === 'COMPLETED' else runningState;" class="action-status">{{completedText}}</p>  -->
+        <p>
+            <span class="action-name">
+                {{bulkActionSummary.action | titlecase}}
+            </span>
+            <span *ngIf="bulkActionSummary?.state === 'COMPLETED' else runningState;"
+                class="action-status">{{completedText}}</span>
+        </p>
         <ng-template #runningState>
-            <p>{{getRunningStatusText()}}</p>
+            <span>{{getRunningStatusText()}}</span>
         </ng-template>
         <button mat-stroked-button (click)="onRefresh()" aria-label="Refresh">
             <mat-icon hyIcon>refresh</mat-icon> {{BULK_ACTION_LABELS.REFRESH}}
         </button>
     </div>
-   
-    <p class="bulk-action-summary__status-text">{{statusText}}
+    <p>{{statusText}}
         {{bulkActionSummary.submitted | date:
         'MMMM d, yyyy'}}</p>
 </div>

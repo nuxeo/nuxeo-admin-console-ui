@@ -19,5 +19,6 @@ export const BULK_ACTION_LABELS = {
   DOCUMENTS_PROCESSED: "{noOfDocs} document processed",
   ERRORS_FOUND: "{errorCount} error found",
   DOCUMENTS_SKIPPED: "{skipCount} document skipped",
-  RUNNING_STATUS_TEXT: "- Running {processed}/{total} documents - No errors"
+  RUNNING_STATUS_TEXT: "- Running {processed}/{total} document - {errorCount} error",
+  NO: "No"
 };

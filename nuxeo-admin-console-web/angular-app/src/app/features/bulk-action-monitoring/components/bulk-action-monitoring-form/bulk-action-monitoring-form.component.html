@@ -14,8 +14,12 @@
         <button mat-flat-button color="primary" type="submit" class="bulk-action-form__button"
             [disabled]="isBulkActionBtnDisabled">
             {{ BULK_ACTION_LABELS.BULK_ACTION_BUTTON_LABEL }}
-        </button> <br><br>
-        <bulk-action-monitoring-result [resultData]="bulkActionResponse"
-            *ngIf="bulkActionResponse && bulkActionResponse?.commandId"></bulk-action-monitoring-result>
+        </button>
+        <div class="bulk-action-container__result" *ngIf="bulkActionResponse && bulkActionResponse?.commandId">
+            <hr>
+            <bulk-action-monitoring-result
+                [resultData]="bulkActionResponse"></bulk-action-monitoring-result>
+        </div>
+
     </form>
 </div>

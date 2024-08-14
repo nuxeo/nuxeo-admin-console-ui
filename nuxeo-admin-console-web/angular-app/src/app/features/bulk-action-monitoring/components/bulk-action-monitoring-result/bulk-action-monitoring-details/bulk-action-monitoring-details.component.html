@@ -3,8 +3,7 @@
         <div class="title">
             {{BULK_ACTION_LABELS.DETAILS_TITLE}}
         </div>
-        
-        <div class="separator"></div>
+        <hr>
         <div class="info-container">
             <p>{{docsProcessedText}}</p>
             <p [ngClass]="{'error-found': bulkActionDetails.errorCount}">{{errorsFoundText}}</p>
@@ -23,7 +22,8 @@
                         <strong>{{BULK_ACTION_LABELS.SCROLL_START}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{row.scrollStart  ? (row.scrollStart | date: 'MMM d, h:mm:ss.SSS') : 'NA'}}</span>
+                        <span>{{row.scrollStart ? (row.scrollStart | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                            'NA'}}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="scrollEnd" label="[BULK_ACTION_LABELS.SCROLL_END]">
@@ -31,7 +31,8 @@
                         <strong>{{BULK_ACTION_LABELS.SCROLL_END}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{row.scrollEnd ? (row.scrollEnd | date: 'MMM d, h:mm:ss.SSS') : 'NA'}}</span>
+                        <span>{{row.scrollEnd ? (row.scrollEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                            'NA'}}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="processingStart" label="[BULK_ACTION_LABELS.PROCESSING_START]">
@@ -39,7 +40,8 @@
                         <strong>{{BULK_ACTION_LABELS.PROCESSING_START}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{row.processingStart ?  (row.processingStart | date: 'MMM d, h:mm:ss.SSS') : 'NA' }}</span>
+                        <span>{{row.processingStart ? (row.processingStart | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                            'NA' }}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="processingEnd" label="[BULK_ACTION_LABELS.PROCESSING_END]">
@@ -47,7 +49,8 @@
                         <strong>{{BULK_ACTION_LABELS.PROCESSING_END}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{row.processingEnd ? (row.processingEnd | date: 'MMM d, h:mm:ss.SSS') : 'NA'}}</span>
+                        <span>{{row.processingEnd ? (row.processingEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                            'NA'}}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="completed" label="[BULK_ACTION_LABELS.COMPLETED_ON]">
@@ -55,7 +58,8 @@
                         <strong>{{BULK_ACTION_LABELS.COMPLETED_ON}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{row.completed ? (row.completed | date: 'MMM d, h:mm:ss.SSS') : 'NA'}}</span>
+                        <span>{{row.completed ? (row.completed | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                            'NA'}}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="processingMillis" label="[BULK_ACTION_LABELS.PROCESSING_TIME]">

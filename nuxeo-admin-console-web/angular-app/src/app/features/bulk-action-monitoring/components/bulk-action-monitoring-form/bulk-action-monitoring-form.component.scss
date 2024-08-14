@@ -8,6 +8,12 @@
     font-weight: 500;
     width: fit-content;
   }
+  &__result {
+    margin-top: 100px;
+    hr {
+      margin-left: -10px;
+    }
+  }
 }
 
 .bulk-action-form {
