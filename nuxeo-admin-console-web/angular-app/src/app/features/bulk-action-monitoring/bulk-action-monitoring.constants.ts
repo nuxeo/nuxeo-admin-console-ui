@@ -5,7 +5,6 @@ export const BULK_ACTION_LABELS = {
   BULK_ACTION_BUTTON_LABEL: "Submit",
   BULK_ACTION_SUMMARY_TEXT: "Bulk Action ID - {commandId} launched by '{username}' on",
   COMPLETED_WITH_ERROR: "- Completed with {errorCount} error",
-  NO_ERRORS_FOUND: "No Errors found",
   SCROLL_START: "Scroll start",
   SCROLL_END: "Scroll end",
   PROCESSING_START: "Processing start",
@@ -20,5 +19,7 @@ export const BULK_ACTION_LABELS = {
   ERRORS_FOUND: "{errorCount} error found",
   DOCUMENTS_SKIPPED: "{skipCount} document skipped",
   RUNNING_STATUS_TEXT: "- Running {processed}/{total} document - {errorCount} error",
-  NO: "No"
+  NO_ERRORS: "No errors",
+  ERROR: "error",
+  DOCUMENT: "document"
 };

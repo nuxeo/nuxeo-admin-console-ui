@@ -28,19 +28,4 @@ export class CommonService {
     /* replace & decode all occurences of single & double quotes */
     return input.replaceAll("'", "%5C%27");
   }
-
-  getPluralizedText(itemCount: number, inputStr: string): string {
-    if (itemCount !== 1) {
-      return inputStr.indexOf(COMMON_LABELS.DOCUMENT_TEXT) > -1
-        ? inputStr.replaceAll(
-            COMMON_LABELS.DOCUMENT_TEXT,
-            COMMON_LABELS.DOCUMENT_TEXT + "s"
-          )
-        : inputStr.replaceAll(
-            COMMON_LABELS.ERROR_TEXT,
-            COMMON_LABELS.ERROR_TEXT + "s"
-          );
-    }
-    return inputStr;
-  }
 }

@@ -1,4 +1,3 @@
-import { CommonService } from "./../../../../../shared/services/common.service";
 import { Component, Input, OnChanges } from "@angular/core";
 import { BulkActionInfoDetails } from "../../../bulk-action-monitoring.interface";
 import { BULK_ACTION_LABELS } from "../../../bulk-action-monitoring.constants";
@@ -16,7 +15,7 @@ export class BulkActionMonitoringDetailsComponent implements OnChanges {
   docsProcessedText = "";
   errorsFoundText = "";
   docsSkippedText = "";
-  constructor(private commonService: CommonService) {}
+
   ngOnChanges(): void {
     this.additionalInfoDataSrc = [this.bulkActionDetails];
     if (this.bulkActionDetails) {
@@ -25,26 +24,38 @@ export class BulkActionMonitoringDetailsComponent implements OnChanges {
   }
 
   replacePlaceholderValues(): void {
-    this.docsProcessedText = this.commonService.getPluralizedText(
-      this.bulkActionDetails?.processed,
-      BULK_ACTION_LABELS.DOCUMENTS_PROCESSED.replace(
-        "{noOfDocs}",
-        this.bulkActionDetails?.processed?.toString()
-      )
+    this.docsProcessedText = BULK_ACTION_LABELS.DOCUMENTS_PROCESSED.replaceAll(
+      "{noOfDocs}",
+      this.bulkActionDetails?.processed?.toString()
     );
-    this.errorsFoundText = this.commonService.getPluralizedText(
-      this.bulkActionDetails?.errorCount,
-      BULK_ACTION_LABELS.ERRORS_FOUND.replace(
-        "{errorCount}",
-        this.bulkActionDetails?.errorCount?.toString()
-      )
+    if (this.bulkActionDetails?.processed !== 1) {
+      this.docsProcessedText = this.docsProcessedText.replaceAll(
+        BULK_ACTION_LABELS.DOCUMENT,
+        BULK_ACTION_LABELS.DOCUMENT + "s"
+      );
+    }
+
+    this.errorsFoundText = BULK_ACTION_LABELS.ERRORS_FOUND.replaceAll(
+      "{errorCount}",
+      this.bulkActionDetails?.errorCount?.toString()
     );
-    this.docsSkippedText = this.commonService.getPluralizedText(
-      this.bulkActionDetails?.skipCount,
-      BULK_ACTION_LABELS.DOCUMENTS_SKIPPED.replace(
-        "{skipCount}",
-        this.bulkActionDetails?.skipCount?.toString()
-      )
+
+    if (this.bulkActionDetails?.errorCount !== 1) {
+      this.errorsFoundText = this.errorsFoundText.replaceAll(
+        BULK_ACTION_LABELS.ERROR,
+        BULK_ACTION_LABELS.ERROR + "s"
+      );
+    }
+
+    this.docsSkippedText = BULK_ACTION_LABELS.DOCUMENTS_SKIPPED.replaceAll(
+      "{skipCount}",
+      this.bulkActionDetails?.skipCount?.toString()
     );
+    if (this.bulkActionDetails?.skipCount !== 1) {
+      this.docsSkippedText = this.docsSkippedText.replaceAll(
+        BULK_ACTION_LABELS.DOCUMENT,
+        BULK_ACTION_LABELS.DOCUMENT + "s"
+      );
+    }
   }
 }

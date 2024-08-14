@@ -20,8 +20,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   constructor(
     private toastService: HyToastService,
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
-    private commonService: CommonService
+    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>
   ) {}
   ngOnChanges(): void {
     if (this.bulkActionSummary) {
@@ -33,32 +32,47 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
       "{commandId}",
       this.bulkActionSummary?.commandId as string
     ).replace("{username}", this.bulkActionSummary?.username as string);
-    this.completedText = this.commonService.getPluralizedText(
-      this.bulkActionSummary?.errorCount,
-      BULK_ACTION_LABELS.COMPLETED_WITH_ERROR.replace(
-        "{errorCount}",
-        this.bulkActionSummary?.errorCount?.toString()
-      )
+    this.completedText = BULK_ACTION_LABELS.COMPLETED_WITH_ERROR.replaceAll(
+      "{errorCount}",
+      this.bulkActionSummary?.errorCount?.toString()
     );
+    if (this.bulkActionSummary?.errorCount !== 1) {
+      this.completedText = this.completedText.replaceAll(
+        BULK_ACTION_LABELS.ERROR,
+        BULK_ACTION_LABELS.ERROR + "s"
+      );
+    }
   }
 
   getRunningStatusText(): string {
-    const statusText = BULK_ACTION_LABELS.RUNNING_STATUS_TEXT.replaceAll(
+    let statusText = BULK_ACTION_LABELS.RUNNING_STATUS_TEXT.replaceAll(
       "{processed}",
       this.bulkActionSummary?.processed?.toString()
     )
       .replaceAll("{total}", this.bulkActionSummary?.total?.toString())
       .replaceAll(
-        "{errorCount}",
+        `{errorCount} ${BULK_ACTION_LABELS.ERROR}`,
         this.bulkActionSummary?.errorCount === 0
-          ? BULK_ACTION_LABELS.NO
-          : this.bulkActionSummary?.errorCount?.toString()
+          ? BULK_ACTION_LABELS.NO_ERRORS
+          : `${this.bulkActionSummary?.errorCount?.toString()} ${
+              BULK_ACTION_LABELS.ERROR
+            }`
       );
-    const initText = this.commonService.getPluralizedText(
-      this.bulkActionSummary?.total,
-      statusText
-    );
-    return initText;
+    if (this.bulkActionSummary?.errorCount > 1) {
+      statusText = statusText.replaceAll(
+        BULK_ACTION_LABELS.ERROR,
+        BULK_ACTION_LABELS.ERROR + "s"
+      );
+    }
+
+    if (this.bulkActionSummary?.total !== 1) {
+      statusText = statusText.replaceAll(
+        BULK_ACTION_LABELS.DOCUMENT,
+        BULK_ACTION_LABELS.DOCUMENT + "s"
+      );
+    }
+
+    return statusText;
   }
 
   onRefresh(): void {
