@@ -1,24 +1,19 @@
-import { CommonService } from './../../../shared/services/common.service';
-import { ErrorModalComponent } from './../../../shared/components/error-modal/error-modal.component';
-import {
-  COMMON_LABELS,
-  ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
-  ERROR_TYPES,
-  MODAL_DIMENSIONS,
-} from "../../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "../bulk-action-monitoring.constants";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Store, select } from "@ngrx/store";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
+import { CommonService } from './../../../shared/services/common.service';
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { Store, select } from "@ngrx/store";
 import * as BulkActionMonitoringActions from "../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../store/reducers";
-import { ErrorModalClosedInfo } from '../../../shared/types/common.interface';
-import { BulkActionMonitoringInfo } from '../bulk-action-monitoring.interface';
+import { ErrorModalComponent } from './../../../shared/components/error-modal/error-modal.component';
 import { ErrorDetails } from '../../elastic-search-reindex/elastic-search-reindex.interface';
+import { ErrorModalClosedInfo } from '../../../shared/types/common.interface';
+import { BULK_ACTION_LABELS } from "../bulk-action-monitoring.constants";
+import { COMMON_LABELS, ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, MODAL_DIMENSIONS } from "../../../shared/constants/common.constants";
+import { BulkActionMonitoringInfo } from '../bulk-action-monitoring.interface';
 
 @Component({
   selector: "bulk-action-monitoring",
@@ -46,7 +41,9 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>
+    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.bulkActionMonitoringForm = this.fb.group({
       bulkActionId: ["", Validators.required],
@@ -62,6 +59,14 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const bulkActionId = params.get('bulkActionId');
+      if (bulkActionId) {
+        this.bulkActionMonitoringForm.patchValue({ bulkActionId });
+        this.onBulkActionFormSubmit();  // Auto-submit the form if needed
+      }
+    });
+
     this.bulkActionLaunchedSubscription =
       this.bulkActionMonitoringLaunched$.subscribe((data) => {
         if (data?.commandId) {
@@ -136,6 +141,8 @@ export class BulkActionMonitoringComponent implements OnInit, OnDestroy {
             id: this.userInput,
           })
         );
+        // Navigate to the URL with the bulk action ID
+        this.router.navigate(['/bulk-action-monitoring', this.userInput]);
       } catch (error) {
         this.showBulkActionErrorModal({
           type: ERROR_TYPES.INVALID_ACTION_ID,

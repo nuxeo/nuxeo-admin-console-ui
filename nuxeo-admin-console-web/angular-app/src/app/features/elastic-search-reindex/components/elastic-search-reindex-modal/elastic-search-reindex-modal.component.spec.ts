@@ -13,11 +13,13 @@ import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
+import { Router } from '@angular/router';  // Import Router
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
-  let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
+  let dialogRef: jasmine.SpyObj<MatDialogRef<ElasticSearchReindexModalComponent>>;
+  let router: jasmine.SpyObj<Router>;  // Declare Router spy
 
   class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
@@ -37,9 +39,10 @@ describe("ElasticSearchReindexModalComponent", () => {
   beforeEach(async () => {
     const matDialogRefSpy = jasmine.createSpyObj("MatDialogRef", [
       "afterClosed",
-      "continue",
       "close",
     ]);
+
+    router = jasmine.createSpyObj('Router', ['navigate']);  // Create Router spy
 
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
@@ -53,14 +56,19 @@ describe("ElasticSearchReindexModalComponent", () => {
         { provide: CommonService, useClass: CommonServiceStub },
         { provide: MatDialogRef, useValue: matDialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: Router, useValue: router },  // Provide the Router spy
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ElasticSearchReindexModalComponent);
     dialogRef = TestBed.inject(
       MatDialogRef
-    ) as MatDialogRef<ElasticSearchReindexModalComponent>;
+    ) as jasmine.SpyObj<MatDialogRef<ElasticSearchReindexModalComponent>>;
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();  // Clean up spies
   });
 
   it("should create the component", () => {
@@ -97,5 +105,15 @@ describe("ElasticSearchReindexModalComponent", () => {
     expect(alertSpy).toHaveBeenCalledWith(
       ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT
     );
+  });
+
+  it("should navigate to the bulk action monitoring page with URL parameter and close the dialog when 'See Status' is clicked", async () => {
+    const navigateSpy = router.navigate.and.returnValue(Promise.resolve(true));  // Use router spy
+    const closeDialogSpy = dialogRef.close as jasmine.Spy;
+
+    await component.seeStatus();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/bulk-action-monitoring', mockDialogData.commandId]);
+    expect(closeDialogSpy).toHaveBeenCalled();  // Ensure close is called
   });
 });

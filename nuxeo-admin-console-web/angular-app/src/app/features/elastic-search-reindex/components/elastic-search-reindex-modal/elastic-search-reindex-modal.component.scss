@@ -1,8 +1,24 @@
+
 :host ::ng-deep hy-dialog-box-title .mat-title {
   font-weight: 300;
 }
 
+#action-buttons-container {
+  display: flex;
+  gap: 15px; 
+  margin-top: 20px; 
+}
+
+.action-button-group {
+  display: flex;
+  align-items: center; 
+}
+
+// .action-button-group button:focus {
+//   outline: 2px solid blue; 
+// }
+
 .hy-dialog-box__button-group {
   display: flex;
-  gap: 10px;
+  gap: 10px; 
 }

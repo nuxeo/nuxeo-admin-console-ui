@@ -35,6 +35,7 @@ export const ELASTIC_SEARCH_LABELS = {
     launched: 2
   },
   REFERENCE_POINT: 2000,
+  SEE_STATUS_LABEL: 'See Status',
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   DOCUMENT_ID: "Document ID",
   REINDEX_BUTTON_LABEL: "Reindex",

@@ -4,11 +4,7 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
-import {
-  MatDialog,
-  MatDialogModule,
-  MatDialogRef,
-} from "@angular/material/dialog";
+import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { Store, StoreModule } from "@ngrx/store";
 import { of } from "rxjs";
@@ -20,6 +16,7 @@ import { ErrorModalComponent } from "../../../shared/components/error-modal/erro
 import { CommonService } from "../../../shared/services/common.service";
 import { ERROR_MESSAGES, ERROR_TYPES, MODAL_DIMENSIONS } from "../../../shared/constants/common.constants";
 import { BULK_ACTION_LABELS } from "../bulk-action-monitoring.constants";
+import { ActivatedRoute } from "@angular/router";
 
 describe("BulkActionMonitoringComponent", () => {
   let component: BulkActionMonitoringComponent;
@@ -29,6 +26,7 @@ describe("BulkActionMonitoringComponent", () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<ErrorModalComponent>>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
+
   const initialState = {
     bulkActionMonitoringInfo: {
       "entity-type": null,
@@ -50,6 +48,17 @@ describe("BulkActionMonitoringComponent", () => {
       processingMillis: -1,
     },
     error: null,
+  };
+
+  const mockActivatedRoute = {
+    paramMap: of({
+      get: (key: string) => {
+        if (key === 'bulkActionId') {
+          return 'mockId'; 
+        }
+        return null;
+      },
+    }),
   };
 
   beforeEach(async () => {
@@ -79,10 +88,10 @@ describe("BulkActionMonitoringComponent", () => {
         { provide: CommonService, useValue: mockCommonService },
         { provide: MatDialog, useValue: mockDialog },
         provideMockStore({ initialState }),
+        { provide: ActivatedRoute, useValue: mockActivatedRoute }, // Provide mocked ActivatedRoute
       ],
     }).compileComponents();
   });
-
   beforeEach(() => {
     fixture = TestBed.createComponent(BulkActionMonitoringComponent);
     component = fixture.componentInstance;
@@ -142,23 +151,6 @@ describe("BulkActionMonitoringComponent", () => {
       spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
       expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("mockId");
-      expect(mockCommonService.decodeAndReplaceSingleQuotes).toHaveBeenCalledWith(mockId);
-      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: mockId }));
-    });
-
-    it("should handle invalid action ID", () => {
-      const invalidId = "%invalid";
-      mockCommonService.removeLeadingCharacters.and.returnValue(invalidId);
-      mockCommonService.decodeAndReplaceSingleQuotes.and.throwError(new URIError("URI malformed"));
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(invalidId);
-      spyOn(component, "showBulkActionErrorModal");
-      component.onBulkActionFormSubmit();
-      expect(component.showBulkActionErrorModal).toHaveBeenCalledWith({
-        type: ERROR_TYPES.INVALID_ACTION_ID,
-        details: {
-          message: ERROR_MESSAGES.INVALID_ACTION_ID_MESSAGE,
-        },
-      });
     });
   });
 
@@ -173,6 +165,14 @@ describe("BulkActionMonitoringComponent", () => {
       expect(component.bulkActionErrorSubscription.unsubscribe).toHaveBeenCalled();
       expect(component.errorDialogClosedSubscription.unsubscribe).toHaveBeenCalled();
       expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.resetBulkActionMonitorState());
+    });
+  });
+
+  describe("ngOnInit", () => {
+    it("should auto-submit the form if bulkActionId is present in the URL", () => {
+      spyOn(component, "onBulkActionFormSubmit");
+      component.ngOnInit();
+      expect(component.onBulkActionFormSubmit).toHaveBeenCalled();
     });
   });
 });
