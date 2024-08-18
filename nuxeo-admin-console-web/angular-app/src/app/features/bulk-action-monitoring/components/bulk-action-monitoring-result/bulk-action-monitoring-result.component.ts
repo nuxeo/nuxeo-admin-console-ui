@@ -8,6 +8,7 @@ import { Component, Input, OnChanges } from "@angular/core";
 @Component({
   selector: "bulk-action-monitoring-result",
   templateUrl: "./bulk-action-monitoring-result.component.html",
+  styleUrls: ["./bulk-action-monitoring-result.component.scss"],
 })
 export class BulkActionMonitoringResultComponent implements OnChanges {
   @Input() resultData = {} as BulkActionMonitoringInfo;
