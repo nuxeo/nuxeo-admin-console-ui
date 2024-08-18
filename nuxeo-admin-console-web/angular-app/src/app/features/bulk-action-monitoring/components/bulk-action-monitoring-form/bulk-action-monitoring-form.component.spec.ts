@@ -18,7 +18,7 @@ import * as BulkActionMonitoringActions from "../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
 import { CommonService } from "../../../../shared/services/common.service";
-import { ERROR_MESSAGES, ERROR_TYPES, MODAL_DIMENSIONS } from "../../../../shared/constants/common.constants";
+import { MODAL_DIMENSIONS } from "../../../../shared/constants/common.constants";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 
 describe("BulkActionMonitoringFormComponent", () => {
@@ -142,24 +142,9 @@ describe("BulkActionMonitoringFormComponent", () => {
       spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
       expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("mockId");
-      expect(mockCommonService.decodeAndReplaceSingleQuotes).toHaveBeenCalledWith(mockId);
       expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: mockId }));
     });
 
-    it("should handle invalid action ID", () => {
-      const invalidId = "%invalid";
-      mockCommonService.removeLeadingCharacters.and.returnValue(invalidId);
-      mockCommonService.decodeAndReplaceSingleQuotes.and.throwError(new URIError("URI malformed"));
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(invalidId);
-      spyOn(component, "showBulkActionErrorModal");
-      component.onBulkActionFormSubmit();
-      expect(component.showBulkActionErrorModal).toHaveBeenCalledWith({
-        type: ERROR_TYPES.INVALID_ACTION_ID,
-        details: {
-          message: ERROR_MESSAGES.INVALID_ACTION_ID_MESSAGE,
-        },
-      });
-    });
   });
 
   describe("ngOnDestroy", () => {

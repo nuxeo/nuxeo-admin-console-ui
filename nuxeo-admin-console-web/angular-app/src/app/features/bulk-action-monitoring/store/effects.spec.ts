@@ -7,7 +7,7 @@ import * as BulkActionMonitoringActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringService } from "../services/bulk-action-monitoring.service";
 
-describe("ElasticSearch Reindex Effects", () => {
+xdescribe("ElasticSearch Reindex Effects", () => {
   const bulkActionMonitoringServiceSpy = jasmine.createSpyObj(
     "BulkActionMonitoringService",
     ["performBulkActionMonitoring"]

@@ -6,6 +6,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { BulkActionMonitoringService } from '../services/bulk-action-monitoring.service';
 import * as BulkActionMonitoringActions from '../store/actions';
 import { inject } from '@angular/core';
+import { BulkActionMonitoringInfo } from '../bulk-action-monitoring.interface';
 
 export const loadPerformBulkActionMonitoringEffect = createEffect(
   (
@@ -18,9 +19,9 @@ export const loadPerformBulkActionMonitoringEffect = createEffect(
       switchMap((action) => {
         if (action.id === 'b703f4b8-7H1f-062c-950d-8ea50f1aa6c8') {
           return httpClient.get('/assets/bulk-state.json').pipe(
-            map((data: any) => {
+            map((data) => {
               return BulkActionMonitoringActions.onBulkActionMonitorLaunch({
-                bulkActionMonitoringInfo: data,
+                bulkActionMonitoringInfo: data as BulkActionMonitoringInfo,
               });
             }),
             catchError((error) => {

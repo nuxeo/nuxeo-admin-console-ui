@@ -1,4 +1,3 @@
-import { CommonService } from "./../../../../../shared/services/common.service";
 import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
 import { Component, Input, OnChanges } from "@angular/core";
 import { BulkActionInfoSummary } from "../../../bulk-action-monitoring.interface";
@@ -33,7 +32,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
       this.bulkActionSummary?.commandId as string
     ).replace("{username}", this.bulkActionSummary?.username as string);
     if (this.bulkActionSummary?.state) {
-      let state: string = this.bulkActionSummary?.state;
+      const state: string = this.bulkActionSummary?.state;
       this.nonRunningText = BULK_ACTION_LABELS.FULLFILLED_TEXT.replaceAll(
         "{fulfilled}",
         BULK_ACTION_LABELS.STATUS_INFO_TEXT[
@@ -55,7 +54,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   getRunningStatusText(): string {
     let statusText;
     if (this.bulkActionSummary?.state) {
-      let state: string = this.bulkActionSummary?.state;
+      const state: string = this.bulkActionSummary?.state;
       statusText = BULK_ACTION_LABELS.STATUS_TEXT.replaceAll(
         "{Running}",
         BULK_ACTION_LABELS.STATUS_INFO_TEXT[
@@ -109,6 +108,6 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
     return BULK_ACTION_LABELS.STATUS_INFO_TEXT[
       this.bulkActionSummary
         ?.state as keyof typeof BULK_ACTION_LABELS.STATUS_INFO_TEXT
-    ].tooltip;
+    ]?.tooltip;
   }
 }
