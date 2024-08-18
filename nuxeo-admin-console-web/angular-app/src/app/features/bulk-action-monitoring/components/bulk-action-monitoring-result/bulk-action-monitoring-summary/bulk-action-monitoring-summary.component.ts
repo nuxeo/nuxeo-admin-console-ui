@@ -16,7 +16,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   @Input() bulkActionSummary: BulkActionInfoSummary =
     {} as BulkActionInfoSummary;
   statusText = "";
-  completedText = "";
+  nonRunningText = "";
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   constructor(
     private toastService: HyToastService,
@@ -32,12 +32,20 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
       "{commandId}",
       this.bulkActionSummary?.commandId as string
     ).replace("{username}", this.bulkActionSummary?.username as string);
-    this.completedText = BULK_ACTION_LABELS.COMPLETED_WITH_ERROR.replaceAll(
-      "{errorCount}",
-      this.bulkActionSummary?.errorCount?.toString()
-    );
-    if (this.bulkActionSummary?.errorCount !== 1) {
-      this.completedText = this.completedText.replaceAll(
+    if (this.bulkActionSummary?.state) {
+      let state: string = this.bulkActionSummary?.state;
+      this.nonRunningText = BULK_ACTION_LABELS.FULLFILLED_TEXT.replaceAll(
+        "{fulfilled}",
+        BULK_ACTION_LABELS.STATUS_INFO_TEXT[
+          state as keyof typeof BULK_ACTION_LABELS.STATUS_INFO_TEXT
+        ].label
+      ).replaceAll(
+        "{errorCount}",
+        this.bulkActionSummary?.errorCount?.toString()
+      );
+    }
+    if (this.bulkActionSummary?.errorCount !== 1 && this.nonRunningText) {
+      this.nonRunningText = this.nonRunningText.replaceAll(
         BULK_ACTION_LABELS.ERROR,
         BULK_ACTION_LABELS.ERROR + "s"
       );
@@ -45,34 +53,45 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   }
 
   getRunningStatusText(): string {
-    let statusText = BULK_ACTION_LABELS.RUNNING_STATUS_TEXT.replaceAll(
-      "{processed}",
-      this.bulkActionSummary?.processed?.toString()
-    )
-      .replaceAll("{total}", this.bulkActionSummary?.total?.toString())
-      .replaceAll(
-        `{errorCount} ${BULK_ACTION_LABELS.ERROR}`,
-        this.bulkActionSummary?.errorCount === 0
-          ? BULK_ACTION_LABELS.NO_ERRORS
-          : `${this.bulkActionSummary?.errorCount?.toString()} ${
-              BULK_ACTION_LABELS.ERROR
-            }`
-      );
+    let statusText;
+    if (this.bulkActionSummary?.state) {
+      let state: string = this.bulkActionSummary?.state;
+      statusText = BULK_ACTION_LABELS.STATUS_TEXT.replaceAll(
+        "{Running}",
+        BULK_ACTION_LABELS.STATUS_INFO_TEXT[
+          state as keyof typeof BULK_ACTION_LABELS.STATUS_INFO_TEXT
+        ].label
+      )
+        .replaceAll(
+          "{processed}",
+          this.bulkActionSummary?.processed?.toString()
+        )
+        .replaceAll("{total}", this.bulkActionSummary?.total?.toString())
+        .replaceAll(
+          `{errorCount} ${BULK_ACTION_LABELS.ERROR}`,
+          this.bulkActionSummary?.errorCount === 0
+            ? BULK_ACTION_LABELS.NO_ERRORS
+            : `${this.bulkActionSummary?.errorCount?.toString()} ${
+                BULK_ACTION_LABELS.ERROR
+              }`
+        );
+    }
+
     if (this.bulkActionSummary?.errorCount > 1) {
-      statusText = statusText.replaceAll(
+      statusText = statusText?.replaceAll(
         BULK_ACTION_LABELS.ERROR,
         BULK_ACTION_LABELS.ERROR + "s"
       );
     }
 
     if (this.bulkActionSummary?.total !== 1) {
-      statusText = statusText.replaceAll(
+      statusText = statusText?.replaceAll(
         BULK_ACTION_LABELS.DOCUMENT,
         BULK_ACTION_LABELS.DOCUMENT + "s"
       );
     }
 
-    return statusText;
+    return statusText || "";
   }
 
   onRefresh(): void {
@@ -84,5 +103,12 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
         id: this.bulkActionSummary?.commandId,
       })
     );
+  }
+
+  getTooltipText(): string {
+    return BULK_ACTION_LABELS.STATUS_INFO_TEXT[
+      this.bulkActionSummary
+        ?.state as keyof typeof BULK_ACTION_LABELS.STATUS_INFO_TEXT
+    ].tooltip;
   }
 }

@@ -3,8 +3,9 @@ export const BULK_ACTION_LABELS = {
   BULK_ACTION_TITLE: "Monitor a bulk action",
   BULK_ACTION_ID: "Bulk Action ID",
   BULK_ACTION_BUTTON_LABEL: "Submit",
-  BULK_ACTION_SUMMARY_TEXT: "Bulk Action ID - {commandId} launched by '{username}' on",
-  COMPLETED_WITH_ERROR: "- Completed with {errorCount} error",
+  BULK_ACTION_SUMMARY_TEXT:
+    "Bulk Action ID - {commandId} launched by '{username}' on",
+  FULLFILLED_TEXT: "- {fulfilled} with {errorCount} error",
   SCROLL_START: "Scroll start",
   SCROLL_END: "Scroll end",
   PROCESSING_START: "Processing start",
@@ -18,8 +19,26 @@ export const BULK_ACTION_LABELS = {
   DOCUMENTS_PROCESSED: "{noOfDocs} document processed",
   ERRORS_FOUND: "{errorCount} error found",
   DOCUMENTS_SKIPPED: "{skipCount} document skipped",
-  RUNNING_STATUS_TEXT: "- Running {processed}/{total} document - {errorCount} error",
+  STATUS_TEXT: "- {Running} {processed}/{total} document - {errorCount} error",
   NO_ERRORS: "No errors",
   ERROR: "error",
-  DOCUMENT: "document"
+  DOCUMENT: "document",
+  STATUS_INFO_TEXT: {
+    "UNKNOWN": {
+      label: "Unknown",
+      tooltip: "State is unknown.",
+    },
+    "SCHEDULED": { label: "Scheduled", tooltip: "Bulk action is pending." },
+    "SCROLLING_RUNNING": {
+      label: "Scrolling running",
+      tooltip: "Creating the list of documents to execute the action on.",
+    },
+    "RUNNING": { label: "Running", tooltip: "Bulk action is being processed." },
+    "COMPLETED": { label: "Completed", tooltip: "Bulk action is finished." },
+    "ABORTED": {
+      label: "Aborted",
+      tooltip:
+        "Bulk action was interrupted and may have been executed partially on the documents. Check the details.",
+    },
+  },
 };

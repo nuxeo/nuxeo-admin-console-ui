@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { BulkActionMonitoringDetailsComponent } from "./components/bulk-action-monitoring-result/bulk-action-monitoring-details/bulk-action-monitoring-details.component";
@@ -38,6 +39,7 @@ import { HyContentListModule } from "@hyland/ui/content-list";
     MatCardModule,
     HyContentListModule,
     HyToastModule,
+    MatTooltipModule
   ],
 })
 export class BulkActionMonitoringModule {}

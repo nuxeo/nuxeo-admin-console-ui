@@ -4,11 +4,14 @@
             <span class="action-name">
                 {{bulkActionSummary.action | titlecase}}
             </span>
-            <span *ngIf="bulkActionSummary?.state === 'COMPLETED' else runningState;"
-                class="action-status">{{completedText}}</span>
+            <span
+                *ngIf="bulkActionSummary?.state !== 'RUNNING' && bulkActionSummary?.state !== 'SCROLLING_RUNNING' else runningState;"
+                class="action-status" [matTooltip]="getTooltipText()" matTooltipClass="hy-tooltip"
+                matTooltipPosition="above">{{nonRunningText}}</span>
         </p>
         <ng-template #runningState>
-            <span>{{getRunningStatusText()}}</span>
+            <span [matTooltip]="getTooltipText()" matTooltipClass="hy-tooltip" matTooltipPosition="above"
+                class="action-status">{{getRunningStatusText()}}</span>
         </ng-template>
         <button mat-stroked-button (click)="onRefresh()" aria-label="Refresh">
             <mat-icon hyIcon>refresh</mat-icon> {{BULK_ACTION_LABELS.REFRESH}}
