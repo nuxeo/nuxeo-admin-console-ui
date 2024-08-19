@@ -4,18 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to promote (e.g.: 23.0.1-rc.2)'
+        description: 'Version to promote (e.g.: 23.0.1-beta.0)'
         required: true
-      referenceBranch:
-        description: 'Branch to be updated after the promotion'
-        required: true
-        default: 'dev'
       dryRun:
         description: 'Run the workflow without pushing code or publishing artifacts'
         type: boolean
         required: false
       isMinorRelease:
-        description: "Is this a Enhancement Packs(EP's) or Service Packs(SP's) aka Minor Release (eg: 23.1.1 for 1st minor release after 23.1.0)"
+        description: "Is this a Enhancement Packs(EP's) or Service Packs(SP's) aka Minor Release (eg: 23.1.1 for 1st minor release after 23.1.0) ?"
         type: boolean
         required: true
 
@@ -43,12 +39,12 @@ jobs:
         run: npm install -g semver
         
       - if: ${{ github.event.inputs.isMinorRelease == 'true' }}
-        run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+        run: echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-beta.[0-9]*//')" >> $GITHUB_ENV
         
       
       - if: ${{ github.event.inputs.isMinorRelease == 'false'}}
         run: | 
-          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-rc.[0-9]*//')" >> $GITHUB_ENV
+          echo "VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e 's/-beta.[0-9]*//')" >> $GITHUB_ENV
           source $GITHUB_ENV
           echo "Initial VERSION: $VERSION"
           NEW_VERSION=$(npx semver -i minor $VERSION)
@@ -96,21 +92,21 @@ jobs:
           PACKAGE: nuxeo-admin-console-${{ env.VERSION }} 
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
-          PADDED=$(printf '%03d' $(echo ${{ github.event.inputs.version }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))  
-          PADDED_VERSION=$(echo ${{ github.event.inputs.version }} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          PADDED=$(printf '%03d' $(echo ${{ github.event.inputs.version }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-beta\.\([0-9]+\)/\\1/g))  
+          PADDED_VERSION=$(echo ${{ github.event.inputs.version }} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-beta\.)[0-9]+/\\1$PADDED/g")
           curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "$CONNECT_PREPROD_URL/site/marketplace/package/nuxeo-admin-console/download?version=$PADDED_VERSION"
           unzip -d $PACKAGE $PACKAGE.zip && rm $PACKAGE.zip
           pushd $PACKAGE
           if [ "${{ github.event.inputs.isMinorRelease }}" != "true" ]; then
             sed -i "s/$PADDED_VERSION/${{ env.VERSION }}/g" package.xml
           else
-            sed -i 's/-rc.[0-9]*//' package.xml
+            sed -i 's/-beta.[0-9]*//' package.xml
           fi
           for f in install/bundles/*.jar; do 
             if [ "${{ github.event.inputs.isMinorRelease }}" != "true" ]; then
               mv $f $(echo $f | sed -e "s/$PADDED_VERSION/${{ env.VERSION }}/")
             else
-              mv $f $(echo $f | sed -e 's/-rc.[0-9]*//')
+              mv $f $(echo $f | sed -e 's/-beta.[0-9]*//')
             fi
           done
           zip -r ../$PACKAGE.zip .
@@ -150,13 +146,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_TOKEN }}
-          ref: ${{ github.event.inputs.referenceBranch }}
+          ref: dev
 
       - name: New Version (Always Minor)
         run: echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
 
 
-      - name: Align ${{ github.event.inputs.referenceBranch }} branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
+      - name: Align dev branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -175,4 +171,4 @@ jobs:
           git commit -a -m "Update $OLD_SNAPSHOT to $NEW_SNAPSHOT"
 
       - if: ${{ github.event.inputs.dryRun == 'false' }}
-        run: git push origin ${{ github.event.inputs.referenceBranch }}
+        run: git push origin dev
