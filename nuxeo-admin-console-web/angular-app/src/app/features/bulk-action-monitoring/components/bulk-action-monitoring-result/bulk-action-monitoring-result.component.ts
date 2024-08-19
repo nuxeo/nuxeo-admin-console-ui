@@ -21,7 +21,6 @@ export class BulkActionMonitoringResultComponent implements OnChanges {
   extractDetailsFromResult(): void {
     const { action, username, state, submitted, total, commandId } =
       this.resultData;
-
     const {
       skipCount,
       error,

@@ -24,18 +24,18 @@ export const BULK_ACTION_LABELS = {
   ERROR: "error",
   DOCUMENT: "document",
   STATUS_INFO_TEXT: {
-    "UNKNOWN": {
+    UNKNOWN: {
       label: "Unknown",
       tooltip: "State is unknown.",
     },
-    "SCHEDULED": { label: "Scheduled", tooltip: "Bulk action is pending." },
-    "SCROLLING_RUNNING": {
+    SCHEDULED: { label: "Scheduled", tooltip: "Bulk action is pending." },
+    SCROLLING_RUNNING: {
       label: "Scrolling running",
       tooltip: "Creating the list of documents to execute the action on.",
     },
-    "RUNNING": { label: "Running", tooltip: "Bulk action is being processed." },
-    "COMPLETED": { label: "Completed", tooltip: "Bulk action is finished." },
-    "ABORTED": {
+    RUNNING: { label: "Running", tooltip: "Bulk action is being processed." },
+    COMPLETED: { label: "Completed", tooltip: "Bulk action is finished." },
+    ABORTED: {
       label: "Aborted",
       tooltip:
         "Bulk action was interrupted and may have been executed partially on the documents. Check the details.",
