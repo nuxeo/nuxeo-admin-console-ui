@@ -16,10 +16,13 @@ export class NetworkService {
   constructor(
     private http: HttpClient,
     private nuxeoJsClientService: NuxeoJSClientService
-  ) {}
+  ) { }
 
   getAPIEndpoint = (name: EndpointName): string => {
     const config = REST_END_POINT_CONFIG[name];
+    if (name === "LOGOUT") {
+      return `${this.nuxeoJsClientService.getBaseUrl()}${config.endpoint}`;
+    }
     return `${this.nuxeoJsClientService.getApiUrl()}${config.endpoint}`;
   };
 
