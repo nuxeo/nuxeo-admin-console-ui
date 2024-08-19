@@ -20,7 +20,7 @@ export class NetworkService {
 
   getAPIEndpoint = (name: EndpointName): string => {
     const config = REST_END_POINT_CONFIG[name];
-    if (name === "LOGOUT") {
+    if (name === REST_END_POINTS.LOGOUT) {
       return `${this.nuxeoJsClientService.getBaseUrl()}${config.endpoint}`;
     }
     return `${this.nuxeoJsClientService.getApiUrl()}${config.endpoint}`;
