@@ -3,26 +3,105 @@ name: Main
 on:
   push:
     branches:
-      - dev
+      - main  
 
-  # Manually trigger the workflow
+  # Manually trigger the workflow 
   workflow_dispatch:
 
 jobs:
+  get-branch-name:
+    runs-on: ubuntu-latest
+    outputs:
+      last_pr_branch: ${{ steps.get-branch.outputs.last_pr_branch }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
+
+
+      - name: Get the branch name of the last merged PR
+        id: get-branch
+        run: |
+          last_pr_merge_commit=$(git log --merges --pretty=format:"%H" -n 1)
+          merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
+          full_branch_name=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
+          branch_name=$(echo "$full_branch_name" | awk -F'/' '{print $2}')
+          echo "The branch name is $branch_name & full name is $full_branch_name"
+          echo "::set-output name=last_pr_branch::$(echo $branch_name | xargs)"
+
   lint:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   test:
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@dev
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@main
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
+  hotfix-merge:
+    needs: [get-branch-name]
+    outputs:
+      hotfix_beta_version: ${{ steps.get-hotfix-beta-version.outputs.hotfix_beta_version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        uses: actions/checkout@v4
+
+      - name: Setup Git config
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Authenticate GitHub CLI
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+          echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
+      
+      - name: Debug Output
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+            echo "Branch name: ${{ needs.get-branch-name.outputs.last_pr_branch }}"
+
+      - name: Get latest beta tag
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+          git fetch  origin --tags
+          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
+          echo "Latest beta tag: $latest_beta_tag"
+          echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
+
+      - name: Update beta version
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+            # Increment beta.x to x+1 while preserving the correct format
+            BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
+            BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
+            NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
+            NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
+            echo "New beta tag: $NEW_BETA_TAG"
+            echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
+
+      - name: Store Beta Release Version as a Secret
+        id: get-hotfix-beta-version
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+          gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+          echo "hotfix_beta_version=${{ env.NEW_BETA_TAG }}" >> $GITHUB_ENV
+          echo "::set-output name=hotfix_beta_version::${{ env.NEW_BETA_TAG }}"
+
+      - name: Create Pull Request
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: |
+          gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
+
   build:
-    needs: [lint, test]
+    needs: [get-branch-name, lint, test, hotfix-merge]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -67,46 +146,46 @@ jobs:
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
 
-
       - name: Get Prerelease Version
         run: |
-          git fetch origin --tags
-          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
-          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
-          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
-      
-      - name: Update Version
+          if [[ -n "${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" ]]; then
+            echo "VERSION=${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV
+          fi
+          
+      - name: Update Version ${{env.VERSION}}
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
-          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
-          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-beta\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-beta\.)[0-9]+/\\1$PADDED/g")
           echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"$PADDED_VERSION"'/g' {} \;
           sed -i -e 's/\${project.version}/'"$PADDED_VERSION"'/g' nuxeo-admin-console-package/pom.xml
           pushd nuxeo-admin-console-web/angular-app
           npm version ${{env.VERSION}} --no-git-tag-version
           popd
-
+         
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+            cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+  
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
         continue-on-error: true
         run: npm list
-         
+
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
