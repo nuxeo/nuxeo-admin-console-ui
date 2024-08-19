@@ -5,7 +5,7 @@ export const BULK_ACTION_LABELS = {
   BULK_ACTION_BUTTON_LABEL: "Submit",
   BULK_ACTION_SUMMARY_TEXT:
     "Bulk Action ID - {commandId} launched by '{username}' on",
-  FULLFILLED_TEXT: "- {fulfilled} with {errorCount} error",
+  FULLFILLED_TEXT: "- {fulfilled} - {errorCount} error",
   SCROLL_START: "Scroll start",
   SCROLL_END: "Scroll end",
   PROCESSING_START: "Processing start",

@@ -1,9 +1,8 @@
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { MatIconModule } from "@angular/material/icon";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary.component";
 import { StoreModule } from "@ngrx/store";
-import { HyToastService } from "@hyland/ui";
+import { HyMaterialModule, HyToastService } from "@hyland/ui";
 import { BULK_ACTION_LABELS } from "../../../bulk-action-monitoring.constants";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import * as fromReducer from "../../../store/reducers";
@@ -47,7 +46,7 @@ describe("BulkActionMonitoringSummaryComponent", () => {
         provideMockStore({ initialState }),
       ],
       imports: [
-        MatIconModule,
+        HyMaterialModule,
         StoreModule.forRoot(provideMockStore),
         MatTooltipModule,
       ],

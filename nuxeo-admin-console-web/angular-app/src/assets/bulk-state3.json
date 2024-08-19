@@ -1,0 +1,19 @@
+{
+  "entity-type": "bulkStatus",
+  "commandId": "c703fmb8-7I1f-062c-92ld-8ea20f1aa6c8",
+  "state": "SCROLLING_RUNNING",
+  "processed": 4,
+  "skipCount": 2,
+  "error": false,
+  "errorCount": 0,
+  "total": 8,
+  "action": "index",
+  "username": "system",
+  "submitted": "2024-08-14T07:44:16.364Z",
+  "scrollStart": "2024-08-14T07:44:16.399Z",
+  "scrollEnd": "2024-08-14T07:44:16.400Z",
+  "processingStart": "2024-08-14T07:44:16.464Z",
+  "processingEnd": "2024-08-14T07:44:16.550Z",
+  "completed": "2024-08-14T07:44:19.394Z",
+  "processingMillis": 7
+}

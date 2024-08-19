@@ -1,7 +1,6 @@
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatCardModule } from "@angular/material/card";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary/bulk-action-monitoring-summary.component";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-details/bulk-action-monitoring-details.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -11,7 +10,11 @@ import {
   BulkActionInfoSummary,
   BulkActionMonitoringInfo,
 } from "../../bulk-action-monitoring.interface";
-import { HyContentListModule, HyToastService } from "@hyland/ui";
+import {
+  HyContentListModule,
+  HyMaterialModule,
+  HyToastService,
+} from "@hyland/ui";
 import { provideMockStore } from "@ngrx/store/testing";
 
 describe("BulkActionMonitoringResultComponent", () => {
@@ -48,8 +51,17 @@ describe("BulkActionMonitoringResultComponent", () => {
         BulkActionMonitoringDetailsComponent,
         BulkActionMonitoringSummaryComponent,
       ],
-      imports: [MatIconModule, MatCardModule, HyContentListModule, MatTooltipModule, NoopAnimationsModule],
-      providers: [ { provide: HyToastService, useValue: toastServiceSpy }, provideMockStore({ initialState }),]
+      imports: [
+        HyMaterialModule,
+        MatCardModule,
+        HyContentListModule,
+        MatTooltipModule,
+        NoopAnimationsModule,
+      ],
+      providers: [
+        { provide: HyToastService, useValue: toastServiceSpy },
+        provideMockStore({ initialState }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringResultComponent);
