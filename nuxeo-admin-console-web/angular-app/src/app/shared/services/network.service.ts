@@ -16,7 +16,7 @@ export class NetworkService {
   constructor(
     private http: HttpClient,
     private nuxeoJsClientService: NuxeoJSClientService
-  ) { }
+  ) {}
 
   getAPIEndpoint = (name: EndpointName): string => {
     const config = REST_END_POINT_CONFIG[name];
