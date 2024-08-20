@@ -12,10 +12,18 @@ import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { ActivatedRoute } from "@angular/router";
 
 describe("BulkActionMonitoringComponent", () => {
   let component: BulkActionMonitoringComponent;
   let fixture: ComponentFixture<BulkActionMonitoringComponent>;
+  const mockActivatedRoute = {
+    snapshot: {
+      paramMap: {
+        get: () => 'Administrator'
+      }
+    }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -33,6 +41,7 @@ describe("BulkActionMonitoringComponent", () => {
         MatInputModule,
         MatButtonModule,
       ],
+      providers: [ { provide: ActivatedRoute, useValue: mockActivatedRoute },]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringComponent);

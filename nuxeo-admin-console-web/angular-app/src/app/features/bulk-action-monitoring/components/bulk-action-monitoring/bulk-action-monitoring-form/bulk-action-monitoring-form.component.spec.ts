@@ -20,6 +20,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { ActivatedRoute } from '@angular/router';
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
@@ -29,6 +30,13 @@ describe("BulkActionMonitoringFormComponent", () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<ErrorModalComponent>>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
+  const mockActivatedRoute = {
+    snapshot: {
+      paramMap: {
+        get: () => 'Administrator'
+      }
+    }
+  };
   const initialState = {
     bulkActionMonitoringInfo: {
       "entity-type": null,
@@ -78,6 +86,7 @@ describe("BulkActionMonitoringFormComponent", () => {
         { provide: CommonService, useValue: mockCommonService },
         { provide: MatDialog, useValue: mockDialog },
         provideMockStore({ initialState }),
+        { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ],
     }).compileComponents();
   });
