@@ -27,6 +27,11 @@
   }
 }
 
+.hy-icon.hy-icon--small, .hy-icon-tab-group .hy-icon, .mat-menu-panel .hy-icon {
+  min-width: 0px !important;
+  width: 0px !important;
+}
+
 @media (max-width: 768px) {
   .bulk-action-summary__header {
     flex-direction: column;

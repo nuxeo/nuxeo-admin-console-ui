@@ -8,8 +8,7 @@
                 *ngIf="bulkActionSummary?.state !== BULK_ACTION_LABELS.RUNNING_STATE && bulkActionSummary?.state !== BULK_ACTION_LABELS.SCROLLING_RUNNING_STATE else runningState;"
                 class="action-status">{{nonRunningText}}</span>
             <ng-template #runningState>
-                <span [matTooltip]="getTooltipText()" matTooltipClass="hy-tooltip" matTooltipPosition="above"
-                    class="action-status">{{getRunningStatusText()}}</span>
+                <span class="action-status">{{getRunningStatusText()}}</span>
             </ng-template>
             <mat-icon hyIcon [small]="true" class="info-icon" aria-hidden="false" [matTooltip]="getTooltipText()"
                 matTooltipClass="hy-tooltip" matTooltipPosition="above" tabindex="0">info</mat-icon>
