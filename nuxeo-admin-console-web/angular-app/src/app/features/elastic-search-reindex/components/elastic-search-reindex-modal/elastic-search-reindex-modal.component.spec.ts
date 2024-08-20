@@ -13,16 +13,20 @@ import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
-import { Router } from '@angular/router';  // Import Router
+import { Router } from "@angular/router"; // Import Router
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
-  let router: jasmine.SpyObj<Router>;  // Declare Router spy
+  let router: jasmine.SpyObj<Router>; // Declare Router spy
+  let commonService: jasmine.SpyObj<CommonService>;
 
   class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
+    redirectToBulkActionMonitoring() {
+      return "";
+    }
   }
 
   const mockDialogData: ReindexModalData = {
@@ -43,7 +47,7 @@ describe("ElasticSearchReindexModalComponent", () => {
       "close",
     ]);
 
-    router = jasmine.createSpyObj('Router', ['navigate']);  
+    router = jasmine.createSpyObj("Router", ["navigate"]);
 
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
@@ -66,10 +70,13 @@ describe("ElasticSearchReindexModalComponent", () => {
       MatDialogRef
     ) as MatDialogRef<ElasticSearchReindexModalComponent>;
     component = fixture.componentInstance;
+    commonService = TestBed.inject(
+      CommonService
+    ) as jasmine.SpyObj<CommonService>;
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();  
+    jasmine.clock().uninstall();
   });
 
   it("should create the component", () => {
@@ -109,10 +116,12 @@ describe("ElasticSearchReindexModalComponent", () => {
   });
 
   it("should navigate to the bulk action monitoring page with URL parameter and close the dialog when 'See Status' is clicked", async () => {
-    const navigateSpy = router.navigate.and.returnValue(Promise.resolve(true));  // Use router spy
     const closeDialogSpy = dialogRef.close as jasmine.Spy;
+    spyOn(commonService, "redirectToBulkActionMonitoring");
     await component.seeStatus();
-    expect(navigateSpy).toHaveBeenCalledWith(['/bulk-action-monitoring', mockDialogData.commandId]);
-    expect(closeDialogSpy).toHaveBeenCalled();  // Ensure close is called
+    expect(commonService.redirectToBulkActionMonitoring).toHaveBeenCalledWith(
+      component.data.commandId
+    );
+    expect(closeDialogSpy).toHaveBeenCalled(); // Ensure close is called
   });
 });

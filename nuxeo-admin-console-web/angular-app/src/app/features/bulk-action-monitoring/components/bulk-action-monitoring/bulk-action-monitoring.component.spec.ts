@@ -13,6 +13,7 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
+import { of } from "rxjs";
 
 describe("BulkActionMonitoringComponent", () => {
   let component: BulkActionMonitoringComponent;
@@ -41,7 +42,14 @@ describe("BulkActionMonitoringComponent", () => {
         MatInputModule,
         MatButtonModule,
       ],
-      providers: [ { provide: ActivatedRoute, useValue: mockActivatedRoute },]
+      providers: [ {
+        provide: ActivatedRoute,
+        useValue: {
+          paramMap: of({
+            get: (key: string) => (key === 'bulkActionId' ? '123' : null)
+          })
+        }
+      }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringComponent);
