@@ -26,8 +26,7 @@ import { BulkActionMonitoringState } from "../../../store/reducers";
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
-  @Output() setBulkActionResponse =
-    new EventEmitter<BulkActionMonitoringInfo>();
+  @Output() setBulkActionResponse = new EventEmitter<BulkActionMonitoringInfo | null>();
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
   bulkActionErrorSubscription = new Subscription();
@@ -77,6 +76,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     this.bulkActionErrorSubscription = this.bulkActionError$.subscribe(
       (error) => {
         if (error && error.error) {
+          this.setBulkActionResponse.emit(null);
           this.showBulkActionErrorModal({
             type: ERROR_MODAL_LABELS.SERVER_ERROR,
             details: {

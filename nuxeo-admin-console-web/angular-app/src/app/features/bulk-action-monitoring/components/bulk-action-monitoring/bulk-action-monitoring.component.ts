@@ -8,9 +8,9 @@ import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
   styleUrls: ["./bulk-action-monitoring.component.scss"],
 })
 export class BulkActionMonitoringComponent {
-  bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
+  bulkActionResponse: BulkActionMonitoringInfo | null = {} as BulkActionMonitoringInfo;
   pageTitle = BULK_ACTION_LABELS.BULK_ACTION_TITLE;
-  setBulkActionResponse(data: BulkActionMonitoringInfo): void {
+  setBulkActionResponse(data: BulkActionMonitoringInfo | null): void {
     this.bulkActionResponse = data;
   }
 }
