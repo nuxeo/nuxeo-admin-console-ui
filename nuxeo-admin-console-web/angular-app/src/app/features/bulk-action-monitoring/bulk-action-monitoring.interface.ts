@@ -1,15 +1,25 @@
-export interface BulkActionMonitoringInfo {
+export interface BulkActionMonitoringInfo
+  extends BulkActionInfoSummary,
+    BulkActionInfoDetails {
   "entity-type": string | null;
+}
+
+export interface BulkActionInfoSummary {
+  action: string | null;
   commandId: string | null;
+  username: string | null;
   state: string | null;
-  processed: number;
-  skipCount: number;
-  error: boolean;
   errorCount: number;
   total: number;
-  action: string | null;
-  username: string | null;
   submitted: string | null;
+  processed: number;
+}
+
+export interface BulkActionInfoDetails {
+  skipCount: number;
+  processed: number;
+  errorCount: number;
+  error: boolean;
   scrollStart: string | null;
   scrollEnd: string | null;
   processingStart: string | null;

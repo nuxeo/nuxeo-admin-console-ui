@@ -1,3 +1,4 @@
+import { COMMON_LABELS } from "../constants/common.constants";
 import { ReindexModalClosedInfo } from "./../../features/elastic-search-reindex/elastic-search-reindex.interface";
 import { EventEmitter, Injectable } from "@angular/core";
 
@@ -7,6 +8,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 export class CommonService {
   loadApp = new EventEmitter<boolean>();
   reindexDialogClosed = new EventEmitter<ReindexModalClosedInfo>();
+  COMMON_LABELS = COMMON_LABELS;
 
   removeLeadingCharacters(input: string): string {
     if (input.startsWith("'") && input.endsWith("'")) {

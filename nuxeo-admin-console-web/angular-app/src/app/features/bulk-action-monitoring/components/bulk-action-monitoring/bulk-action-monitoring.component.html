@@ -1,0 +1,13 @@
+<div class="bulk-action-container">
+    <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
+        {{ pageTitle }}
+    </h1>
+    <div class="bulk-action-container__placeholder">
+        <bulk-action-monitoring-form
+            (setBulkActionResponse)="setBulkActionResponse($event)"></bulk-action-monitoring-form>
+        <div class="result" *ngIf="bulkActionResponse && bulkActionResponse?.commandId">
+            <hr>
+            <bulk-action-monitoring-result [resultData]="bulkActionResponse"></bulk-action-monitoring-result>
+        </div>
+    </div>
+</div>

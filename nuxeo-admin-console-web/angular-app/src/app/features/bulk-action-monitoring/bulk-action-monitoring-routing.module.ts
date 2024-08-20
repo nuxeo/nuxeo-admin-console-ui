@@ -1,10 +1,10 @@
-import { BulkActionMonitoringComponent } from './components/bulk-action-monitoring.component';
+import { BulkActionMonitoringComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring.component";
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";
 export const BulkActionMonitoringRoutes: Route[] = [
   {
-    path: '',
+    path: "",
     component: BulkActionMonitoringComponent,
   },
 ];
@@ -13,4 +13,4 @@ export const BulkActionMonitoringRoutes: Route[] = [
   imports: [RouterModule.forChild(BulkActionMonitoringRoutes)],
   exports: [RouterModule],
 })
-export class BulkActionMonitoringRoutingModule { }
+export class BulkActionMonitoringRoutingModule {}
