@@ -1,12 +1,12 @@
+import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
+import { BulkActionInfoSummary } from './../../../../bulk-action-monitoring.interface';
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary.component";
 import { StoreModule } from "@ngrx/store";
 import { HyMaterialModule, HyToastService } from "@hyland/ui";
-import { BULK_ACTION_LABELS } from "../../../bulk-action-monitoring.constants";
-import * as BulkActionMonitoringActions from "../../../store/actions";
-import * as fromReducer from "../../../store/reducers";
-import { BulkActionInfoSummary } from "../../../bulk-action-monitoring.interface";
+import * as BulkActionMonitoringActions from "../../../../store/actions";
+import * as fromReducer from "../../../../store/reducers";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 
 describe("BulkActionMonitoringSummaryComponent", () => {
@@ -59,7 +59,7 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     ) as jasmine.SpyObj<HyToastService>;
     store = TestBed.inject(MockStore);
 
-    fixture.detectChanges(); 
+    fixture.detectChanges();
   });
 
   it("should load the component properly", () => {

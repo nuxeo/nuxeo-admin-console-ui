@@ -1,6 +1,6 @@
+import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
+import { BulkActionInfoDetails } from './../../../../bulk-action-monitoring.interface';
 import { Component, Input, OnChanges } from "@angular/core";
-import { BulkActionInfoDetails } from "../../../bulk-action-monitoring.interface";
-import { BULK_ACTION_LABELS } from "../../../bulk-action-monitoring.constants";
 
 @Component({
   selector: "bulk-action-monitoring-details",

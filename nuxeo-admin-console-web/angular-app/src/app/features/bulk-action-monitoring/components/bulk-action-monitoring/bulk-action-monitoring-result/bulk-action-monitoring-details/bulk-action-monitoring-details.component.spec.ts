@@ -1,8 +1,8 @@
+import { BulkActionInfoDetails } from './../../../../bulk-action-monitoring.interface';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from "@angular/material/card";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-details.component";
-import { BulkActionInfoDetails } from "../../../bulk-action-monitoring.interface";
 import { HyContentListModule } from "@hyland/ui";
 
 describe("BulkActionMonitoringDetailsComponent", () => {

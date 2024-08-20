@@ -1,10 +1,10 @@
-import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
+import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
+import { BulkActionInfoSummary } from './../../../../bulk-action-monitoring.interface';
 import { Component, Input, OnChanges } from "@angular/core";
-import { BulkActionInfoSummary } from "../../../bulk-action-monitoring.interface";
 import { HyToastService } from "@hyland/ui";
-import * as BulkActionMonitoringActions from "../../../store/actions";
+import * as BulkActionMonitoringActions from "../../../../store/actions";
 import { Store } from "@ngrx/store";
-import { BulkActionMonitoringState } from "../../../store/reducers";
+import { BulkActionMonitoringState } from "../../../../store/reducers";
 
 @Component({
   selector: "bulk-action-monitoring-summary",

@@ -1,3 +1,7 @@
+import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
+import { MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
+import { ErrorModalComponent } from './../../../../../shared/components/error-modal/error-modal.component';
+import { CommonService } from './../../../../../shared/services/common.service';
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
@@ -13,13 +17,9 @@ import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { Store, StoreModule } from "@ngrx/store";
 import { of } from "rxjs";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import * as fromReducer from "../../store/reducers";
-import * as BulkActionMonitoringActions from "../../store/actions";
+import * as fromReducer from "../../../store/reducers";
+import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
-import { CommonService } from "../../../../shared/services/common.service";
-import { MODAL_DIMENSIONS } from "../../../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;

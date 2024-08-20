@@ -1,9 +1,9 @@
+import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-result/bulk-action-monitoring-details/bulk-action-monitoring-details.component";
+import { BulkActionMonitoringFormComponent } from "./bulk-action-monitoring-form/bulk-action-monitoring-form.component";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDialogModule } from "@angular/material/dialog";
-import { BulkActionMonitoringFormComponent } from "./../bulk-action-monitoring-form/bulk-action-monitoring-form.component";
-import { BulkActionMonitoringDetailsComponent } from "./../bulk-action-monitoring-result/bulk-action-monitoring-details/bulk-action-monitoring-details.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";

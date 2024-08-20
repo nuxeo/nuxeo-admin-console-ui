@@ -1,11 +1,10 @@
-import { CommonService } from "../../../../shared/services/common.service";
-import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
-import {
-  COMMON_LABELS,
-  ERROR_MODAL_LABELS,
-  MODAL_DIMENSIONS,
-} from "../../../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
+import { ErrorDetails } from './../../../../elastic-search-reindex/elastic-search-reindex.interface';
+import { CommonService } from './../../../../../shared/services/common.service';
+import { COMMON_LABELS, ERROR_MODAL_LABELS, MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
+import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
+import { ErrorModalComponent } from './../../../../../shared/components/error-modal/error-modal.component';
+import { ErrorModalClosedInfo } from './../../../../../shared/types/common.interface';
+import { BulkActionMonitoringInfo } from './../../../bulk-action-monitoring.interface';
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {
   Component,
@@ -17,12 +16,9 @@ import {
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-import * as BulkActionMonitoringActions from "../../store/actions";
+import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { BulkActionMonitoringState } from "../../store/reducers";
-import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface";
-import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
-import { ErrorDetails } from "../../../elastic-search-reindex/elastic-search-reindex.interface";
+import { BulkActionMonitoringState } from "../../../store/reducers";
 
 @Component({
   selector: "bulk-action-monitoring-form",
