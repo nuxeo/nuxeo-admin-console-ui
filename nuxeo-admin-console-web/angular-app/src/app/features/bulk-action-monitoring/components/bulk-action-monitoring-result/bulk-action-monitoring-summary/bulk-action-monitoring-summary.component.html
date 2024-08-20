@@ -5,7 +5,7 @@
                 {{bulkActionSummary.action | titlecase}}
             </span>
             <span
-                *ngIf="bulkActionSummary?.state !== 'RUNNING' && bulkActionSummary?.state !== 'SCROLLING_RUNNING' else runningState;"
+                *ngIf="bulkActionSummary?.state !== BULK_ACTION_LABELS.RUNNING_STATE && bulkActionSummary?.state !== BULK_ACTION_LABELS.SCROLLING_RUNNING_STATE else runningState;"
                 class="action-status">{{nonRunningText}}</span>
             <ng-template #runningState>
                 <span [matTooltip]="getTooltipText()" matTooltipClass="hy-tooltip" matTooltipPosition="above"

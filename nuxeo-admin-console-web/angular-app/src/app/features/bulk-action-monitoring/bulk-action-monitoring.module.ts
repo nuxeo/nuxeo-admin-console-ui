@@ -18,9 +18,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { BulkActionMonitoringFormComponent } from "./components/bulk-action-monitoring-form/bulk-action-monitoring-form.component";
 import { HyContentListModule } from "@hyland/ui/content-list";
+import { BulkActionMonitoringComponent } from './components/bulk-action-monitoring/bulk-action-monitoring.component';
 
 @NgModule({
   declarations: [
+    BulkActionMonitoringComponent,
     BulkActionMonitoringFormComponent,
     BulkActionMonitoringResultComponent,
     BulkActionMonitoringSummaryComponent,

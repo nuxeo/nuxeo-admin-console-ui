@@ -66,7 +66,6 @@ describe("BulkActionMonitoringFormComponent", () => {
       imports: [
         HttpClientTestingModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
         NoopAnimationsModule,

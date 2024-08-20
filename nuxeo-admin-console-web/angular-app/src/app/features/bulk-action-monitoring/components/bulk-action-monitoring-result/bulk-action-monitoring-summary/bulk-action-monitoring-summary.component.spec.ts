@@ -59,10 +59,10 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     ) as jasmine.SpyObj<HyToastService>;
     store = TestBed.inject(MockStore);
 
-    fixture.detectChanges(); // Trigger initial lifecycle hooks
+    fixture.detectChanges(); 
   });
 
-  it("should create", () => {
+  it("should load the component properly", () => {
     expect(component).toBeTruthy();
   });
 

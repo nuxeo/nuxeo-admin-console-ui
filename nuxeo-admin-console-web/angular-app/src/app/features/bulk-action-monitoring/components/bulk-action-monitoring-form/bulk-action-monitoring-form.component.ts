@@ -7,7 +7,13 @@ import {
 } from "../../../../shared/constants/common.constants";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
@@ -24,6 +30,8 @@ import { ErrorDetails } from "../../../elastic-search-reindex/elastic-search-rei
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
+  @Output() setBulkActionResponse =
+    new EventEmitter<BulkActionMonitoringInfo>();
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
   bulkActionErrorSubscription = new Subscription();
@@ -35,7 +43,6 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   isBulkActionBtnDisabled = false;
   userInput = "";
-  pageTitle = BULK_ACTION_LABELS.BULK_ACTION_TITLE;
   COMMON_LABELS = COMMON_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
 
@@ -63,6 +70,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
       this.bulkActionMonitoringLaunched$.subscribe((data) => {
         if (data?.commandId) {
           this.bulkActionResponse = data;
+          this.setBulkActionResponse.emit(this.bulkActionResponse);
           this.isBulkActionBtnDisabled = false;
           this.bulkActionMonitoringForm.reset();
           document.getElementById("bulkActionId")?.focus();

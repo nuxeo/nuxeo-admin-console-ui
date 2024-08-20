@@ -23,6 +23,8 @@ export const BULK_ACTION_LABELS = {
   NO_ERRORS: "No errors",
   ERROR: "error",
   DOCUMENT: "document",
+  RUNNING_STATE: "RUNNING",
+  SCROLLING_RUNNING_STATE: "SCROLLING_RUNNING",
   STATUS_INFO_TEXT: {
     UNKNOWN: {
       label: "Unknown",
