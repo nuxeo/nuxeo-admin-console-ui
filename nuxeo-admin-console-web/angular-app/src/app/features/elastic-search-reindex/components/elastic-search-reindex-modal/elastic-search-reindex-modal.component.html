@@ -7,24 +7,29 @@
 
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.type === ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm else launchMessage;">
-      <div>
-        <p>
-          {{ ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE }}
-        </p>
-        <p>This action will impact {{data.documentCount}} 
-          {{data.documentCount === 1 ? 'document' : 'documents'}}
-          and could take approximately {{data.timeTakenToReindex}}. {{ ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION }}
-        </p>
-      </div>
+      <p>{{ ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE }}</p>
+      <p>
+        This action will impact {{data.documentCount}}
+        {{data.documentCount === 1 ? 'document' : 'documents'}}
+        and could take approximately {{data.timeTakenToReindex}}.
+        {{ ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION }}
+      </p>
     </div>
 
     <ng-template #launchMessage>
-      <p>
-        {{ data.launchedMessage }}
-      </p>
-      <button mat-stroked-button color="primary" (click)="copyActionId()">
-        {{ ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL }}
-      </button>
+      <p>{{ data.launchedMessage }}</p>
+      <div id="action-buttons-container">
+        <div class="action-button-group">
+          <button mat-stroked-button color="primary" (click)="seeStatus()">
+            {{ ELASTIC_SEARCH_LABELS.SEE_STATUS_LABEL }}
+          </button>
+        </div>
+        <div class="action-button-group">
+          <button mat-stroked-button color="primary" (click)="copyActionId()">
+            {{ ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL }}
+          </button>
+        </div>
+      </div>
     </ng-template>
   </hy-dialog-box-content>
 
