@@ -10,7 +10,8 @@
   }
   &__placeholder {
     background-color: #fff;
-    height: 95%;
+    min-height: 95%;
+    height: auto;
   }
   .result {
     margin-top: 65px;
