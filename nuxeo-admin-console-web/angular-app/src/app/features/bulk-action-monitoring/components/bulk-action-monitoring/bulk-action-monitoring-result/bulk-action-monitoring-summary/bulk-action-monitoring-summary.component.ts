@@ -1,5 +1,5 @@
-import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
-import { BulkActionInfoSummary } from './../../../../bulk-action-monitoring.interface';
+import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
+import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
 import { Component, Input, OnChanges } from "@angular/core";
 import { HyToastService } from "@hyland/ui";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
@@ -68,15 +68,13 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
         .replaceAll("{total}", this.bulkActionSummary?.total?.toString())
         .replaceAll(
           `{errorCount} ${BULK_ACTION_LABELS.ERROR}`,
-          this.bulkActionSummary?.errorCount === 0
-            ? BULK_ACTION_LABELS.NO_ERRORS
-            : `${this.bulkActionSummary?.errorCount?.toString()} ${
-                BULK_ACTION_LABELS.ERROR
-              }`
+          `${this.bulkActionSummary?.errorCount?.toString()} ${
+            BULK_ACTION_LABELS.ERROR
+          }`
         );
     }
 
-    if (this.bulkActionSummary?.errorCount > 1) {
+    if (this.bulkActionSummary?.errorCount !== 1 && statusText) {
       statusText = statusText?.replaceAll(
         BULK_ACTION_LABELS.ERROR,
         BULK_ACTION_LABELS.ERROR + "s"
