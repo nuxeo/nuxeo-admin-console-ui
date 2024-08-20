@@ -9,8 +9,6 @@
 
   &__info {
     height: 220px;
-    padding: 18px 24px; 
-
     p {
       font-weight: 550;
     }
@@ -24,10 +22,8 @@
     }
 
     hr {
-      height: 1px;
-      width: calc(100% + 48px); 
+      width: 100%;
       background-color: #d1d5db;
-      margin-left: -24px; 
     }
   }
 
@@ -45,8 +41,8 @@
 }
 
 ::ng-deep .hy-content-list__custom-cell {
-  max-height: none !important; 
-  height: auto; 
+  max-height: none !important;
+  height: auto;
 }
 ::ng-deep .hy-content-list__virtual-scroll-viewport {
   height: 90% !important;
@@ -62,13 +58,6 @@
       width: 100%;
       margin: 0;
       margin-bottom: 20px;
-      padding: 10px 12px; 
-    }
-
-    &__info hr {
-      width: calc(100% + 24px); 
-      margin-left: -12px;
     }
   }
 }
-
