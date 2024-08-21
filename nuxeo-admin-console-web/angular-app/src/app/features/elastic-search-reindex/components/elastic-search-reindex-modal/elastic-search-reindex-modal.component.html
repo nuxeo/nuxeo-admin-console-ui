@@ -7,13 +7,15 @@
 
   <hy-dialog-box-content class="hy-dialog-box__content">
     <div *ngIf="data.type === ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm else launchMessage;">
-      <p>{{ ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE }}</p>
-      <p>
-        This action will impact {{data.documentCount}}
-        {{data.documentCount === 1 ? 'document' : 'documents'}}
-        and could take approximately {{data.timeTakenToReindex}}.
-        {{ ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION }}
-      </p>
+      <div>
+        <p>
+          {{ ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE }}
+        </p>
+        <p>This action will impact {{data.documentCount}} 
+          {{data.documentCount === 1 ? 'document' : 'documents'}}
+          and could take approximately {{data.timeTakenToReindex}}. {{ ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION }}
+        </p>
+      </div>
     </div>
 
     <ng-template #launchMessage>

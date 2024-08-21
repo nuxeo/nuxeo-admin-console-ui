@@ -32,6 +32,6 @@ export class CommonService {
   }
 
   redirectToBulkActionMonitoring(commandId: string): void {
-    this.router.navigate(['/bulk-action-monitoring', commandId]);
+    this.router.navigate(["/bulk-action-monitoring", commandId]);
   }
 }

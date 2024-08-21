@@ -18,14 +18,7 @@ import { of } from "rxjs";
 describe("BulkActionMonitoringComponent", () => {
   let component: BulkActionMonitoringComponent;
   let fixture: ComponentFixture<BulkActionMonitoringComponent>;
-  const mockActivatedRoute = {
-    snapshot: {
-      paramMap: {
-        get: () => 'Administrator'
-      }
-    }
-  };
-
+  
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [

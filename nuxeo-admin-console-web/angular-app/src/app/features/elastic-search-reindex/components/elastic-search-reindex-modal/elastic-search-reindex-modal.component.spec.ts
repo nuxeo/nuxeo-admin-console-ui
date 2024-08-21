@@ -13,13 +13,13 @@ import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
-import { Router } from "@angular/router"; // Import Router
+import { Router } from "@angular/router"; 
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
-  let router: jasmine.SpyObj<Router>; // Declare Router spy
+  let router: jasmine.SpyObj<Router>; 
   let commonService: jasmine.SpyObj<CommonService>;
 
   class CommonServiceStub {
@@ -122,6 +122,6 @@ describe("ElasticSearchReindexModalComponent", () => {
     expect(commonService.redirectToBulkActionMonitoring).toHaveBeenCalledWith(
       component.data.commandId
     );
-    expect(closeDialogSpy).toHaveBeenCalled(); // Ensure close is called
+    expect(closeDialogSpy).toHaveBeenCalled(); 
   });
 });

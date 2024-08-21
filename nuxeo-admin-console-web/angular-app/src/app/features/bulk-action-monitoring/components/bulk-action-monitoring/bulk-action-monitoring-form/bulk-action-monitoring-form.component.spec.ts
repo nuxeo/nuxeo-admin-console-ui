@@ -20,7 +20,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from "@angular/router";
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
@@ -83,7 +83,7 @@ describe("BulkActionMonitoringFormComponent", () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => (key === 'bulkActionId' ? '123' : null)
+              get: (key: string) => (key === "bulkActionId" ? "123" : null)
             })
           }
         }
