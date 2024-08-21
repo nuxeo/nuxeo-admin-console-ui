@@ -13,14 +13,20 @@ import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
+import { Router } from "@angular/router"; 
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
+  let router: jasmine.SpyObj<Router>; 
+  let commonService: jasmine.SpyObj<CommonService>;
 
   class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
+    redirectToBulkActionMonitoring() {
+      return "";
+    }
   }
 
   const mockDialogData: ReindexModalData = {
@@ -41,6 +47,8 @@ describe("ElasticSearchReindexModalComponent", () => {
       "close",
     ]);
 
+    router = jasmine.createSpyObj("Router", ["navigate"]);
+
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
       imports: [
@@ -53,6 +61,7 @@ describe("ElasticSearchReindexModalComponent", () => {
         { provide: CommonService, useClass: CommonServiceStub },
         { provide: MatDialogRef, useValue: matDialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: Router, useValue: router },
       ],
     }).compileComponents();
 
@@ -61,6 +70,13 @@ describe("ElasticSearchReindexModalComponent", () => {
       MatDialogRef
     ) as MatDialogRef<ElasticSearchReindexModalComponent>;
     component = fixture.componentInstance;
+    commonService = TestBed.inject(
+      CommonService
+    ) as jasmine.SpyObj<CommonService>;
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it("should create the component", () => {
@@ -97,5 +113,15 @@ describe("ElasticSearchReindexModalComponent", () => {
     expect(alertSpy).toHaveBeenCalledWith(
       ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT
     );
+  });
+
+  it("should navigate to the bulk action monitoring page with URL parameter and close the dialog when 'See Status' is clicked", async () => {
+    const closeDialogSpy = dialogRef.close as jasmine.Spy;
+    spyOn(commonService, "redirectToBulkActionMonitoring");
+    await component.seeStatus();
+    expect(commonService.redirectToBulkActionMonitoring).toHaveBeenCalledWith(
+      component.data.commandId
+    );
+    expect(closeDialogSpy).toHaveBeenCalled(); 
   });
 });

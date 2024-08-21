@@ -1,6 +1,7 @@
+import { EventEmitter, Injectable } from "@angular/core";
+import { Router } from '@angular/router';
 import { COMMON_LABELS } from "../constants/common.constants";
 import { ReindexModalClosedInfo } from "./../../features/elastic-search-reindex/elastic-search-reindex.interface";
-import { EventEmitter, Injectable } from "@angular/core";
 
 @Injectable({
   providedIn: "root",
@@ -9,6 +10,7 @@ export class CommonService {
   loadApp = new EventEmitter<boolean>();
   reindexDialogClosed = new EventEmitter<ReindexModalClosedInfo>();
   COMMON_LABELS = COMMON_LABELS;
+  constructor(private router: Router) {} 
 
   removeLeadingCharacters(input: string): string {
     if (input.startsWith("'") && input.endsWith("'")) {
@@ -27,5 +29,9 @@ export class CommonService {
   decodeAndReplaceSingleQuotes(input: string): string {
     /* replace & decode all occurences of single & double quotes */
     return input.replaceAll("'", "%5C%27");
+  }
+
+  redirectToBulkActionMonitoring(commandId: string): void {
+    this.router.navigate(["/bulk-action-monitoring", commandId]);
   }
 }

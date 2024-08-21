@@ -20,6 +20,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { ActivatedRoute } from "@angular/router";
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
@@ -56,7 +57,7 @@ describe("BulkActionMonitoringFormComponent", () => {
     mockStore = jasmine.createSpyObj("Store", ["pipe", "dispatch"]);
     mockCommonService = jasmine.createSpyObj("CommonService", [
       "removeLeadingCharacters",
-      "decodeAndReplaceSingleQuotes",
+      "redirectToBulkActionMonitoring",
     ]);
     mockDialog = jasmine.createSpyObj("MatDialog", ["open"]);
     mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
@@ -78,6 +79,14 @@ describe("BulkActionMonitoringFormComponent", () => {
         { provide: CommonService, useValue: mockCommonService },
         { provide: MatDialog, useValue: mockDialog },
         provideMockStore({ initialState }),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({
+              get: (key: string) => (key === "bulkActionId" ? "123" : null)
+            })
+          }
+        }
       ],
     }).compileComponents();
   });
@@ -95,7 +104,6 @@ describe("BulkActionMonitoringFormComponent", () => {
   afterEach(() => {
     mockStore.dispatch.calls.reset();
     mockCommonService.removeLeadingCharacters.calls.reset();
-    mockCommonService.decodeAndReplaceSingleQuotes.calls.reset();
   });
 
   it("should create", () => {
@@ -134,14 +142,13 @@ describe("BulkActionMonitoringFormComponent", () => {
 
   describe("onBulkActionFormSubmit", () => {
     it("should handle valid form submission", () => {
-      const mockId = "mockId";
-      mockCommonService.removeLeadingCharacters.and.returnValue(mockId);
-      mockCommonService.decodeAndReplaceSingleQuotes.and.returnValue(mockId);
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("mockId");
+      component.isBulkActionBtnDisabled = false;
+      mockCommonService.removeLeadingCharacters.and.returnValue("123");
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("123");
       spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
-      expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("mockId");
-      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: mockId }));
+      expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("123");
+      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: "123" }));
     });
 
   });
