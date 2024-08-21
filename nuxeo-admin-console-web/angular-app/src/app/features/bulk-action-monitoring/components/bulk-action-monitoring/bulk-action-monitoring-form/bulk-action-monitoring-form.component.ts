@@ -65,7 +65,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      const bulkActionId = params.get('bulkActionId');
+      const bulkActionId = params.get("bulkActionId");
       if (bulkActionId) {
         this.bulkActionMonitoringForm.patchValue({ bulkActionId });
         this.onBulkActionFormSubmit();  
