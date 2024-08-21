@@ -21,8 +21,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
 import { ActivatedRoute } from '@angular/router';
 
-
-
 @Component({
   selector: "bulk-action-monitoring-form",
   templateUrl: "./bulk-action-monitoring-form.component.html",
