@@ -172,3 +172,27 @@ jobs:
 
       - if: ${{ github.event.inputs.dryRun == 'false' }}
         run: git push origin dev
+
+      - name: Output Release Details in Markdown Summary
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: |
+          echo "## 🚀 Nuxeo Admin Console Release Successful" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Release Information" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event.inputs.isMinorRelease }}" = "true" ]; then
+            echo "- **Release Type:** Minor" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Release Type:** Major" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Release Version:** ${{env.VERSION}}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pre-Release Version:** ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verification" >> $GITHUB_STEP_SUMMARY
+          echo "Please verify that the package is available in the marketplace:" >> $GITHUB_STEP_SUMMARY
+          echo "[Nuxeo Admin Console Package on Marketplace](https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-admin-console)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Note" >> $GITHUB_STEP_SUMMARY
+          echo "The release process is completed. Please wait for the new snapshot to be generated." >> $GITHUB_STEP_SUMMARY
+          echo "New snapshot: **${{ env.NEW_VERSION }}-SNAPSHOT**" >> $GITHUB_STEP_SUMMARY
+          echo "If there are any hotfix changes in the **main** branch, merge those changes into the **dev** branch once the new snapshot is generated." >> $GITHUB_STEP_SUMMARY
