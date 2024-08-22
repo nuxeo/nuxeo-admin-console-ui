@@ -28,6 +28,7 @@ export const ELASTIC_SEARCH_LABELS = {
   NXQL_QUERY_REINDEX_TITLE: "Reindex the results of a NXQL query",
   CONTINUE_CONFIRMATION: "Would you like to continue?",
   COPY_ACTION_ID_BUTTON_LABEL: "Copy Action ID",
+  SEE_STATUS_LABEL: "See Status",
   IMPACT_MESSAGE:
     "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
   MODAL_TYPE: {

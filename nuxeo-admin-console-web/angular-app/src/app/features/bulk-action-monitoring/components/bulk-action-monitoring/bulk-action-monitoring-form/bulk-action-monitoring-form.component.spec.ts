@@ -1,9 +1,13 @@
+import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
+import { MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
+import { ErrorModalComponent } from './../../../../../shared/components/error-modal/error-modal.component';
+import { CommonService } from './../../../../../shared/services/common.service';
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
+import { BulkActionMonitoringFormComponent } from "./bulk-action-monitoring-form.component";
 import {
   MatDialog,
   MatDialogModule,
@@ -13,17 +17,14 @@ import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { Store, StoreModule } from "@ngrx/store";
 import { of } from "rxjs";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import * as fromReducer from "../store/reducers";
-import * as BulkActionMonitoringActions from "../store/actions";
+import * as fromReducer from "../../../store/reducers";
+import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ErrorModalComponent } from "../../../shared/components/error-modal/error-modal.component";
-import { CommonService } from "../../../shared/services/common.service";
-import { ERROR_MESSAGES, ERROR_TYPES, MODAL_DIMENSIONS } from "../../../shared/constants/common.constants";
-import { BULK_ACTION_LABELS } from "../bulk-action-monitoring.constants";
+import { ActivatedRoute } from "@angular/router";
 
-describe("BulkActionMonitoringComponent", () => {
-  let component: BulkActionMonitoringComponent;
-  let fixture: ComponentFixture<BulkActionMonitoringComponent>;
+describe("BulkActionMonitoringFormComponent", () => {
+  let component: BulkActionMonitoringFormComponent;
+  let fixture: ComponentFixture<BulkActionMonitoringFormComponent>;
   let mockStore: jasmine.SpyObj<Store>;
   let mockCommonService: jasmine.SpyObj<CommonService>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
@@ -56,17 +57,16 @@ describe("BulkActionMonitoringComponent", () => {
     mockStore = jasmine.createSpyObj("Store", ["pipe", "dispatch"]);
     mockCommonService = jasmine.createSpyObj("CommonService", [
       "removeLeadingCharacters",
-      "decodeAndReplaceSingleQuotes",
+      "redirectToBulkActionMonitoring",
     ]);
     mockDialog = jasmine.createSpyObj("MatDialog", ["open"]);
     mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
 
     await TestBed.configureTestingModule({
-      declarations: [BulkActionMonitoringComponent],
+      declarations: [BulkActionMonitoringFormComponent],
       imports: [
         HttpClientTestingModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
         NoopAnimationsModule,
@@ -79,12 +79,20 @@ describe("BulkActionMonitoringComponent", () => {
         { provide: CommonService, useValue: mockCommonService },
         { provide: MatDialog, useValue: mockDialog },
         provideMockStore({ initialState }),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({
+              get: (key: string) => (key === "bulkActionId" ? "123" : null)
+            })
+          }
+        }
       ],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BulkActionMonitoringComponent);
+    fixture = TestBed.createComponent(BulkActionMonitoringFormComponent);
     component = fixture.componentInstance;
     mockStore.pipe.and.returnValue(of(null));
     mockDialog.open.and.returnValue(mockDialogRef);
@@ -96,7 +104,6 @@ describe("BulkActionMonitoringComponent", () => {
   afterEach(() => {
     mockStore.dispatch.calls.reset();
     mockCommonService.removeLeadingCharacters.calls.reset();
-    mockCommonService.decodeAndReplaceSingleQuotes.calls.reset();
   });
 
   it("should create", () => {
@@ -135,31 +142,15 @@ describe("BulkActionMonitoringComponent", () => {
 
   describe("onBulkActionFormSubmit", () => {
     it("should handle valid form submission", () => {
-      const mockId = "mockId";
-      mockCommonService.removeLeadingCharacters.and.returnValue(mockId);
-      mockCommonService.decodeAndReplaceSingleQuotes.and.returnValue(mockId);
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("mockId");
+      component.isBulkActionBtnDisabled = false;
+      mockCommonService.removeLeadingCharacters.and.returnValue("123");
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("123");
       spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
-      expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("mockId");
-      expect(mockCommonService.decodeAndReplaceSingleQuotes).toHaveBeenCalledWith(mockId);
-      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: mockId }));
+      expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("123");
+      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: "123" }));
     });
 
-    it("should handle invalid action ID", () => {
-      const invalidId = "%invalid";
-      mockCommonService.removeLeadingCharacters.and.returnValue(invalidId);
-      mockCommonService.decodeAndReplaceSingleQuotes.and.throwError(new URIError("URI malformed"));
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(invalidId);
-      spyOn(component, "showBulkActionErrorModal");
-      component.onBulkActionFormSubmit();
-      expect(component.showBulkActionErrorModal).toHaveBeenCalledWith({
-        type: ERROR_TYPES.INVALID_ACTION_ID,
-        details: {
-          message: ERROR_MESSAGES.INVALID_ACTION_ID_MESSAGE,
-        },
-      });
-    });
   });
 
   describe("ngOnDestroy", () => {

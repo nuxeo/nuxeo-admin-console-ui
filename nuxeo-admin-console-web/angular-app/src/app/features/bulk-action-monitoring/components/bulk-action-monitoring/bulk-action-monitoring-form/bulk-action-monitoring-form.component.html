@@ -1,7 +1,4 @@
-<div class="bulk-action-container">
-    <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
-        {{ pageTitle }}
-    </h1>
+<div class="bulk-action-form-container">
     <form [formGroup]="bulkActionMonitoringForm" (ngSubmit)="onBulkActionFormSubmit()" class="bulk-action-form">
         <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
         <mat-form-field hyFormField>
@@ -14,12 +11,6 @@
         <button mat-flat-button color="primary" type="submit" class="bulk-action-form__button"
             [disabled]="isBulkActionBtnDisabled">
             {{ BULK_ACTION_LABELS.BULK_ACTION_BUTTON_LABEL }}
-        </button> <br><br>
-        <ng-container *ngIf="bulkActionResponse && bulkActionResponse?.commandId">
-            <div *ngFor="let item of bulkActionResponse | keyvalue">
-                <div>{{item.key}} ------- {{item.value}}</div>
-            </div>
-
-        </ng-container>
+        </button>
     </form>
 </div>
