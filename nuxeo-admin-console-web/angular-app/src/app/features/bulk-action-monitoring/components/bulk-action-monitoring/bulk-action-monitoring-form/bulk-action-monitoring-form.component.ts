@@ -40,8 +40,6 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   userInput = "";
   COMMON_LABELS = COMMON_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
-  isRefreshTriggeredSubscription = new Subscription();
-  isRefreshTriggered = false;
 
   constructor(
     private commonService: CommonService,
@@ -133,7 +131,6 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   }
 
   onBulkActionFormSubmit(): void {
-    this.isRefreshTriggered = false;
     if (this.bulkActionMonitoringForm?.valid && !this.isBulkActionBtnDisabled) {
       this.isBulkActionBtnDisabled = true;
       this.userInput = this.commonService.removeLeadingCharacters(
@@ -155,6 +152,5 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     this.bulkActionLaunchedSubscription?.unsubscribe();
     this.bulkActionErrorSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
-    this.isRefreshTriggeredSubscription?.unsubscribe();
   }
 }
