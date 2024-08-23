@@ -76,7 +76,6 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
         this.setBulkActionResponse.emit(this.bulkActionResponse);
         this.isBulkActionBtnDisabled = false;
         this.bulkActionMonitoringForm.reset();
-        document.getElementById("bulkActionId")?.focus();
       } else {
         this.bulkActionResponse = {} as BulkActionMonitoringInfo;
       }
