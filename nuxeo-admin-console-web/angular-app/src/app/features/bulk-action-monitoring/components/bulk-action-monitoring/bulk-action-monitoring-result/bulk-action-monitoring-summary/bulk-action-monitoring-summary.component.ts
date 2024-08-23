@@ -1,3 +1,4 @@
+import { CommonService } from './../../../../../../shared/services/common.service';
 import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
 import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
 import { Component, Input, OnChanges } from "@angular/core";
@@ -18,6 +19,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   nonRunningText = "";
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   constructor(
+    private commonService: CommonService,
     private toastService: HyToastService,
     private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>
   ) {}
@@ -100,6 +102,8 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
         id: this.bulkActionSummary?.commandId,
       })
     );
+    this.commonService.isBulkActionRefreshAction.emit(true);
+    document.getElementById("refreshBtn")?.focus();
   }
 
   getTooltipText(): string {

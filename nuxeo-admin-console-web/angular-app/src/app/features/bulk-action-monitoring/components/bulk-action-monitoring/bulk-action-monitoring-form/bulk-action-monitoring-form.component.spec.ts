@@ -21,6 +21,7 @@ import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
+import { EventEmitter } from '@angular/core';
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
@@ -59,6 +60,7 @@ describe("BulkActionMonitoringFormComponent", () => {
       "removeLeadingCharacters",
       "redirectToBulkActionMonitoring",
     ]);
+    mockCommonService.isBulkActionRefreshAction = new EventEmitter<boolean>();
     mockDialog = jasmine.createSpyObj("MatDialog", ["open"]);
     mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
 
