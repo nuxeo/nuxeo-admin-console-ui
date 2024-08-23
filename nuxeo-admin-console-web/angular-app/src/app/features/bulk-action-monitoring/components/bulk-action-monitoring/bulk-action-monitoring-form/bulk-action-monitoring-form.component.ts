@@ -72,21 +72,12 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.isRefreshTriggeredSubscription = this.commonService.isBulkActionRefreshAction.subscribe(
-      (data) => {
-        this.isRefreshTriggered = data;
-      }
-    );
-    
     this.bulkActionLaunchedSubscription = this.bulkActionMonitoringLaunched$.subscribe((data) => {
       if (data?.commandId) {
         this.bulkActionResponse = data;
         this.setBulkActionResponse.emit(this.bulkActionResponse);
         this.isBulkActionBtnDisabled = false;
         this.bulkActionMonitoringForm.reset();
-        if (!this.isRefreshTriggered) {
-          document.getElementById("bulkActionId")?.focus();
-        }
       } else {
         this.bulkActionResponse = {} as BulkActionMonitoringInfo;
       }

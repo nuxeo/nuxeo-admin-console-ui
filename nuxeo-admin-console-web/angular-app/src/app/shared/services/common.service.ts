@@ -9,7 +9,6 @@ import { ReindexModalClosedInfo } from "./../../features/elastic-search-reindex/
 export class CommonService {
   loadApp = new EventEmitter<boolean>();
   reindexDialogClosed = new EventEmitter<ReindexModalClosedInfo>();
-  isBulkActionRefreshAction = new EventEmitter<boolean>();
   COMMON_LABELS = COMMON_LABELS;
   constructor(private router: Router) {} 
 
