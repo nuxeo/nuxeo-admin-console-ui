@@ -77,8 +77,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
         this.isRefreshTriggered = data;
       }
     );
-
-
+    
     this.bulkActionLaunchedSubscription = this.bulkActionMonitoringLaunched$.subscribe((data) => {
       if (data?.commandId) {
         this.bulkActionResponse = data;
