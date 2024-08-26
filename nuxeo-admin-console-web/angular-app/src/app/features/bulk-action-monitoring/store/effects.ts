@@ -7,6 +7,7 @@ import { BulkActionMonitoringService } from "../services/bulk-action-monitoring.
 import * as BulkActionMonitoringActions from "../store/actions";
 import { inject } from "@angular/core";
 import { BulkActionMonitoringInfo } from "../bulk-action-monitoring.interface";
+import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 
 // TODO: Remove this once testing is complete for different bulk action states for different action IDs
 const jsonMap = [
@@ -44,7 +45,8 @@ export const loadPerformBulkActionMonitoringEffect = createEffect(
   (
     actions$ = inject(Actions),
     bulkActionMonitoringService = inject(BulkActionMonitoringService),
-    httpClient = inject(HttpClient)
+    httpClient = inject(HttpClient),
+    nuxeoJsClientService = inject(NuxeoJSClientService)
   ) => {
     return actions$.pipe(
       ofType(BulkActionMonitoringActions.performBulkActionMonitor),
@@ -52,9 +54,10 @@ export const loadPerformBulkActionMonitoringEffect = createEffect(
         // TODO: Remove this once testing is complete for different bulk action states for different action IDs
         const isTestId = jsonMap.some((map) => action.id === map.id);
         if (isTestId) {
-          const fileName = jsonMap.find(
+          let fileName = jsonMap.find(
             (item) => item.id === action.id
           )?.filename;
+          fileName= `${nuxeoJsClientService.getBaseUrl()}/nuxeoadmin${fileName}`;
           return httpClient.get(fileName as string).pipe(
             map((data) => {
               return BulkActionMonitoringActions.onBulkActionMonitorLaunch({
