@@ -19,6 +19,7 @@ import { Observable, Subscription } from "rxjs";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: "bulk-action-monitoring-form",
@@ -26,15 +27,13 @@ import { BulkActionMonitoringState } from "../../../store/reducers";
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
-  @Output() setBulkActionResponse =
-    new EventEmitter<BulkActionMonitoringInfo>();
+  @Output() setBulkActionResponse = new EventEmitter<BulkActionMonitoringInfo | null>();
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
   bulkActionErrorSubscription = new Subscription();
   bulkActionLaunchedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
-    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> = {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   bulkActionMonitoringLaunched$: Observable<BulkActionMonitoringInfo>;
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   isBulkActionBtnDisabled = false;
@@ -46,7 +45,8 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>
+    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
+    private route: ActivatedRoute
   ) {
     this.bulkActionMonitoringForm = this.fb.group({
       bulkActionId: ["", Validators.required],
@@ -62,21 +62,29 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.bulkActionLaunchedSubscription =
-      this.bulkActionMonitoringLaunched$.subscribe((data) => {
-        if (data?.commandId) {
-          this.bulkActionResponse = data;
-          this.setBulkActionResponse.emit(this.bulkActionResponse);
-          this.isBulkActionBtnDisabled = false;
-          this.bulkActionMonitoringForm.reset();
-          document.getElementById("bulkActionId")?.focus();
-        } else {
-          this.bulkActionResponse = {} as BulkActionMonitoringInfo;
-        }
-      });
+    this.route.paramMap.subscribe(params => {
+      const bulkActionId = params.get("bulkActionId");
+      if (bulkActionId) {
+        this.bulkActionMonitoringForm.patchValue({ bulkActionId });
+        this.onBulkActionFormSubmit();  
+      }
+    });
+
+    this.bulkActionLaunchedSubscription = this.bulkActionMonitoringLaunched$.subscribe((data) => {
+      if (data?.commandId) {
+        this.bulkActionResponse = data;
+        this.setBulkActionResponse.emit(this.bulkActionResponse);
+        this.isBulkActionBtnDisabled = false;
+        this.bulkActionMonitoringForm.reset();
+      } else {
+        this.bulkActionResponse = {} as BulkActionMonitoringInfo;
+      }
+    });
+
     this.bulkActionErrorSubscription = this.bulkActionError$.subscribe(
       (error) => {
         if (error && error.error) {
+          this.setBulkActionResponse.emit(null);
           this.showBulkActionErrorModal({
             type: ERROR_MODAL_LABELS.SERVER_ERROR,
             details: {
@@ -133,6 +141,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
           id: this.userInput,
         })
       );
+      this.commonService.redirectToBulkActionMonitoring(this.userInput);
     }
   }
 

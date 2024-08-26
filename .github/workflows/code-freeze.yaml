@@ -1,0 +1,70 @@
+name: Code Freeze
+on:
+  workflow_dispatch:
+    inputs:
+      rc:
+        description: 'Release Candidate version eg(23.0.0-rc.1)'
+        required: true
+        type: string
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
+
+      - name: Get latest beta tag
+        run: |
+          git fetch origin --tags
+          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
+          echo "Latest beta tag: $latest_beta_tag"
+          echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
+
+      - name: Get Input & latest beta tag Base Version
+        run: |
+          INPUT_VERSION="${{ github.event.inputs.rc }}"
+          INPUT_BASE_VERSION=$(echo $INPUT_VERSION | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+          echo "INPUT_BASE_VERSION=$INPUT_BASE_VERSION" >> $GITHUB_ENV
+
+          BETA_TAG_BASE_VERSION=$(echo $LATEST_BETA_TAG | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+          echo "BETA_TAG_BASE_VERSION=$BETA_TAG_BASE_VERSION" >> $GITHUB_ENV
+
+          echo $INPUT_BASE_VERSION $BETA_TAG_BASE_VERSION
+
+      - name: Update beta version
+        run: |
+          if [ "$INPUT_BASE_VERSION" = "$BETA_TAG_BASE_VERSION" ]; then
+            # Increment beta.x to x+1 while preserving the correct format
+            BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
+            BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
+            NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
+            NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
+          else
+            # Append -beta.0 to INPUT_BASE_VERSION
+            NEW_BETA_TAG="${INPUT_BASE_VERSION}-beta.0"
+          fi
+          echo "New beta tag: $NEW_BETA_TAG"
+          echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
+
+      - name: Store Beta Release Version as a Secret
+        run: |
+           gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+        
+
+      - name: Create Pull Request
+        run: |
+          rc_version="${{ github.event.inputs.rc }}"
+          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
+          It includes updates in preparation for the upcoming release.
+          **Release Candidate:** [v${rc_version}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
+          **Create Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})."
