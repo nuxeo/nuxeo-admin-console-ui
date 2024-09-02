@@ -28,7 +28,7 @@ jobs:
           - name: Get the branch name of the last merged PR
             id: get-branch
             run: |
-              last_pr_merge_commit=$(git log --merges --pretty=format:"%H" -n 1)
+              last_pr_merge_commit=$(git log -1 --pretty=format:"%H")
               echo "Last PR merge commit: $last_pr_merge_commit"
               merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
               echo "Merge message: $merge_message"
