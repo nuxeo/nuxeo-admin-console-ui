@@ -13,16 +13,9 @@ export const ADMIN_MENU: Menu[] = [
     path: "elasticsearch-reindex",
     isSelected: false,
   },
-  {
-    id: 2,
-    name: "Bulk Action Monitoring",
-    path: "bulk-action-monitoring",
-    isSelected: false,
-  },
 ];
 
 export const ROUTES_TITLE = {
   HOME: "Home",
-  ELASTICSEARCH_REINDEX: "ElasticSearch Reindex",
-  BULKACTIONMONITORING: "Bulk Action Monitoring",
-};
+  ELASTICSEARCH_REINDEX: "ElasticSearch Reindex"
+}

@@ -1,4 +1,5 @@
 import { NXQLESReindexComponent } from "./nxql-es-reindex.component";
+
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -24,12 +25,14 @@ import { ErrorDetails, ReindexInfo } from "../../elastic-search-reindex.interfac
 import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
+import {
+  ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
+  ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
+} from "../../elastic-search-reindex.constants";
 import { NXQLReindexState } from "../../store/reducers";
 import * as ReindexActions from "../../store//actions";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
-import { ERROR_TYPES,MODAL_DIMENSIONS } from "../../../../shared/constants/common.constants";
-import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
 
 describe("NXQLESReindexComponent", () => {
   let component: NXQLESReindexComponent;
@@ -58,6 +61,14 @@ describe("NXQLESReindexComponent", () => {
     }
 
     secondsToHumanReadable() {
+      return "";
+    }
+
+    removeLeadingCharacters() {
+      return "";
+    }
+
+    decodeAndReplaceSingleQuotes() {
       return "";
     }
   }
@@ -139,7 +150,7 @@ describe("NXQLESReindexComponent", () => {
 
   it("should open error dialog and handle close subscription", () => {
     const mockError: ErrorDetails = {
-      type: ERROR_TYPES.INVALID_QUERY,
+      type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
       details: { message: "Test error" },
     };
 
@@ -148,16 +159,22 @@ describe("NXQLESReindexComponent", () => {
     component.showReindexErrorModal(mockError);
 
     expect(dialogService.open).toHaveBeenCalledWith(
-      ErrorModalComponent,
+      ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
+          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
+          title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
           error: mockError,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
+          isErrorModal: true,
         },
       }
     );
+
     expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     expect(component.onReindexErrorModalClose).toHaveBeenCalled();
   });
@@ -165,7 +182,9 @@ describe("NXQLESReindexComponent", () => {
   it("should focus on the input field on modal close", () => {
     const mockElement = jasmine.createSpyObj("HTMLElement", ["focus"]);
     spyOn(document, "getElementById").and.returnValue(mockElement);
+
     component.onReindexErrorModalClose();
+
     expect(document.getElementById).toHaveBeenCalledWith("nxqlQuery");
     expect(mockElement.focus).toHaveBeenCalled();
   });
@@ -186,13 +205,16 @@ describe("NXQLESReindexComponent", () => {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
           launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           commandId,
+          copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL}`,
+          isLaunchedModal: true,
         },
       }
     );
@@ -302,12 +324,17 @@ describe("NXQLESReindexComponent", () => {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
           message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
+          isConfirmModal: true,
+          abortLabel: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
+          continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
+          impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
+          confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           documentCount: 2,
           timeTakenToReindex: "1 second",
         },

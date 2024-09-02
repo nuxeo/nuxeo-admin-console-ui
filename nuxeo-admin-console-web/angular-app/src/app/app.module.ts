@@ -1,4 +1,3 @@
-import { bulkActionMonitoringReducer } from './features/bulk-action-monitoring/store/reducers';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
@@ -29,18 +28,15 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland/ui";
+import { HyDialogBoxModule, HyDialogModule } from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
-import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
-import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
-import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +48,6 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ElasticSearchReindexModalComponent,
-    ErrorModalComponent
   ],
   imports: [
     BrowserModule,
@@ -68,11 +63,10 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
       home: homeReducer,
       reindex: reindexReducer,
       folderReindex: folderReindexReducer,
-      nxqlReindex: nxqlReindexReducer,
-      bulkActionMonitoring:  bulkActionMonitoringReducer
+      nxqlReindex: nxqlReindexReducer
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -87,8 +81,6 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
     HyDialogBoxModule,
     FormsModule,
     MatCheckboxModule,
-    HyMaterialIconModule,
-    BulkActionMonitoringModule
   ],
   providers: [
     {

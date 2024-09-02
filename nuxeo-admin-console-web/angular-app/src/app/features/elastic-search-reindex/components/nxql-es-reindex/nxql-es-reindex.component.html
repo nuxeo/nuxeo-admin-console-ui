@@ -1,5 +1,5 @@
 <form [formGroup]="nxqlReindexForm" (ngSubmit)="onReindexFormSubmit()" class="nxql-es-reindex-container">
-    <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+    <p id="requiredField"> {{ ELASTIC_SEARCH_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ ELASTIC_SEARCH_LABELS.NXQL_QUERY }}</mat-label>
         <textarea matInput [placeholder]="ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="nxqlQuery"
@@ -10,7 +10,7 @@
     <button mat-flat-button color="primary" type="submit" class="nxql-es-reindex-container__button" [disabled]="isReindexBtnDisabled">
         {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
     </button>
-    <div class="nxql-es-reindex-hint" [innerHTML]="nxqlQueryHintSanitized"></div>
+    <div [innerHTML]="nxqlQueryHintSanitized"></div>
     <div class="spinner-overlay" *ngIf="spinnerVisible">
         <mat-progress-spinner class="custom-spinner" mode="indeterminate">
         </mat-progress-spinner>

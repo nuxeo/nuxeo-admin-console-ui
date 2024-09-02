@@ -12,30 +12,33 @@ import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
 import { CommonService } from "../../../../shared/services/common.service";
 import { ReindexModalData } from "../../elastic-search-reindex.interface";
-import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
-import { Router } from "@angular/router"; 
+import { ELASTIC_SEARCH_LABELS, ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES, ELASTIC_SEARCH_REINDEX_ERROR_TYPES } from "../../elastic-search-reindex.constants";
 
 describe("ElasticSearchReindexModalComponent", () => {
   let component: ElasticSearchReindexModalComponent;
   let fixture: ComponentFixture<ElasticSearchReindexModalComponent>;
   let dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>;
-  let router: jasmine.SpyObj<Router>; 
-  let commonService: jasmine.SpyObj<CommonService>;
 
   class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
-    redirectToBulkActionMonitoring() {
-      return "";
-    }
   }
 
   const mockDialogData: ReindexModalData = {
     title: "Test Title",
-    type: 1,
+    isConfirmModal: true,
     documentCount: 5,
+    impactMessage: "This is going to affect a huge no. of documents",
     timeTakenToReindex: "10 minutes",
+    confirmContinue: "Do you want to continue?",
+    isErrorModal: false,
+    errorMessageHeader: "",
     error: { type: "", details: { status: 0, message: "" } },
     launchedMessage: "",
+    copyActionId: "Copy ID",
+    abortLabel: "Abort",
+    continueLabel: "Continue",
+    closeLabel: "Close",
+    isLaunchedModal: true,
     commandId: "203-11112-38652-990",
     userInput: "",
   };
@@ -46,8 +49,6 @@ describe("ElasticSearchReindexModalComponent", () => {
       "continue",
       "close",
     ]);
-
-    router = jasmine.createSpyObj("Router", ["navigate"]);
 
     await TestBed.configureTestingModule({
       declarations: [ElasticSearchReindexModalComponent],
@@ -61,7 +62,6 @@ describe("ElasticSearchReindexModalComponent", () => {
         { provide: CommonService, useClass: CommonServiceStub },
         { provide: MatDialogRef, useValue: matDialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
-        { provide: Router, useValue: router },
       ],
     }).compileComponents();
 
@@ -70,13 +70,6 @@ describe("ElasticSearchReindexModalComponent", () => {
       MatDialogRef
     ) as MatDialogRef<ElasticSearchReindexModalComponent>;
     component = fixture.componentInstance;
-    commonService = TestBed.inject(
-      CommonService
-    ) as jasmine.SpyObj<CommonService>;
-  });
-
-  afterEach(() => {
-    jasmine.clock().uninstall();
   });
 
   it("should create the component", () => {
@@ -114,14 +107,48 @@ describe("ElasticSearchReindexModalComponent", () => {
       ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT
     );
   });
+  
 
-  it("should navigate to the bulk action monitoring page with URL parameter and close the dialog when 'See Status' is clicked", async () => {
-    const closeDialogSpy = dialogRef.close as jasmine.Spy;
-    spyOn(commonService, "redirectToBulkActionMonitoring");
-    await component.seeStatus();
-    expect(commonService.redirectToBulkActionMonitoring).toHaveBeenCalledWith(
-      component.data.commandId
-    );
-    expect(closeDialogSpy).toHaveBeenCalled(); 
+  it("should return INVALID_DOC_ID_OR_PATH_MESSAGE when error type is INVALID_DOC_ID_OR_PATH", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE);
   });
+
+  it("should return INVALID_DOC_ID_MESSAGE when error type is INVALID_DOC_ID", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE);
+  });
+
+  it("should return INVALID_QUERY_MESSAGE when error type is INVALID_QUERY", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE);
+  });
+
+  it("should return NO_DOCUMENT_ID_FOUND_MESSAGE with userInput when error type is NO_DOCUMENT_ID_FOUND", () => {
+    const userInput = "12345";
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_DOCUMENT_ID_FOUND;
+    component.data.userInput = userInput;
+    const message = component.getNoDocumentsMessage();
+    const expectedMessage = ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE.replace(
+      "<documentID>",
+      userInput
+    );
+    expect(message).toBe(expectedMessage);
+  });
+
+  it("should return NO_MATCHING_QUERY_MESSAGE when error type is NO_MATCHING_QUERY", () => {
+    component.data.error.type = ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_MATCHING_QUERY;
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE);
+  });
+
+  it("should return UNKNOWN_ERROR_MESSAGE for any other error type", () => {
+    component.data.error.type = "UNKNOWN_ERROR_TYPE";
+    const message = component.getNoDocumentsMessage();
+    expect(message).toBe(ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.UNKNOWN_ERROR_MESSAGE);
+  });
+
 });

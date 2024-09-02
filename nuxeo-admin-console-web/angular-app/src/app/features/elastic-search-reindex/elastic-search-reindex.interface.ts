@@ -26,11 +26,20 @@ export interface ErrorDetails {
 
 export interface ReindexModalData {
   title: string;
-  type: number;
+  isConfirmModal: boolean;
   documentCount: number;
+  impactMessage: string;
   timeTakenToReindex: string;
+  confirmContinue: string;
+  isErrorModal: boolean;
+  errorMessageHeader: string;
   error: ErrorDetails;
   launchedMessage: string;
+  copyActionId: string;
+  abortLabel: string;
+  continueLabel: string;
+  closeLabel: string;
+  isLaunchedModal: boolean;
   commandId: string;
   userInput: string;
 }

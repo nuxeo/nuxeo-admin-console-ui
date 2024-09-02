@@ -27,22 +27,19 @@ import {
 import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
+import {
+  ELASTIC_SEARCH_LABELS,
+  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
+  ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
+} from "../../elastic-search-reindex.constants";
 import { DocumentReindexState } from "../../store/reducers";
 import * as ReindexActions from "../../store//actions";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
-import {
-  ERROR_TYPES,
-  MODAL_DIMENSIONS,
-} from "../../../../shared/constants/common.constants";
-import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
-import { CommonService } from "../../../../shared/services/common.service";
 
 describe("DocumentESReindexComponent", () => {
   let component: DocumentESReindexComponent;
   let nuxeoJSClientService: jasmine.SpyObj<NuxeoJSClientService>;
   let elasticSearchReindexService: jasmine.SpyObj<ElasticSearchReindexService>;
-  let commonService: jasmine.SpyObj<CommonService>;
   let fixture: ComponentFixture<DocumentESReindexComponent>;
   let store: MockStore<DocumentReindexState>;
   let dialogService: jasmine.SpyObj<MatDialog>;
@@ -64,9 +61,7 @@ describe("DocumentESReindexComponent", () => {
     performNXQLReindex() {
       return Observable<ReindexInfo>;
     }
-  }
 
-  class CommonServiceStub {
     removeLeadingCharacters() {
       return "";
     }
@@ -115,10 +110,6 @@ describe("DocumentESReindexComponent", () => {
           provide: ElasticSearchReindexService,
           useClass: elasticSearchReindexServiceStub,
         },
-        {
-          provide: CommonService,
-          useClass: CommonServiceStub,
-        },
         { provide: MatDialog, useValue: dialogService },
         provideMockStore({ initialState }),
       ],
@@ -126,9 +117,6 @@ describe("DocumentESReindexComponent", () => {
     elasticSearchReindexService = TestBed.inject(
       ElasticSearchReindexService
     ) as jasmine.SpyObj<ElasticSearchReindexService>;
-    commonService = TestBed.inject(
-      CommonService
-    ) as jasmine.SpyObj<CommonService>;
     fixture = TestBed.createComponent(DocumentESReindexComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
@@ -180,13 +168,17 @@ describe("DocumentESReindexComponent", () => {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
           launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+          isConfirmModal: false,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           commandId,
+          copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL}`,
+          isLaunchedModal: true,
         },
       }
     );
@@ -219,23 +211,28 @@ describe("DocumentESReindexComponent", () => {
     component.documentReindexForm = new FormBuilder().group({
       documentIdentifier: ["  'some value'  ", Validators.required],
     });
-    spyOn(commonService, "removeLeadingCharacters").and.returnValue(
-      "some value"
-    );
+    spyOn(
+      elasticSearchReindexService,
+      "removeLeadingCharacters"
+    ).and.returnValue("some value");
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).toHaveBeenCalledWith("some value");
-    expect(commonService.removeLeadingCharacters).toHaveBeenCalled();
+    expect(
+      elasticSearchReindexService.removeLeadingCharacters
+    ).toHaveBeenCalled();
   });
 
   it("should not call triggerReindex when form is invalid", () => {
     const triggerReindexSpy = spyOn(component, "triggerReindex");
-    spyOn(commonService, "removeLeadingCharacters");
+    spyOn(elasticSearchReindexService, "removeLeadingCharacters");
     component.documentReindexForm = new FormBuilder().group({
       documentIdentifier: ["", Validators.required],
     });
     component.onReindexFormSubmit();
     expect(triggerReindexSpy).not.toHaveBeenCalled();
-    expect(commonService.removeLeadingCharacters).not.toHaveBeenCalled();
+    expect(
+      elasticSearchReindexService.removeLeadingCharacters
+    ).not.toHaveBeenCalled();
   });
 
   it("should dispatch resetDocumentReindexState and unsubscribe from subscriptions on ngOnDestroy", () => {
@@ -308,9 +305,10 @@ describe("DocumentESReindexComponent", () => {
 
   describe("test triggerReindex", () => {
     it("should dispatch performDocumentReindex on successful fetch", async () => {
-      spyOn(commonService, "decodeAndReplaceSingleQuotes").and.returnValue(
-        "/some/path"
-      );
+      spyOn(
+        elasticSearchReindexService,
+        "decodeAndReplaceSingleQuotes"
+      ).and.returnValue("/some/path");
       component.nuxeo = {
         repository: jasmine.createSpy().and.returnValue({
           fetch: jasmine
@@ -329,11 +327,13 @@ describe("DocumentESReindexComponent", () => {
           requestQuery: `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:path='/some/path'`,
         })
       );
-      expect(commonService.decodeAndReplaceSingleQuotes).toHaveBeenCalled();
+      expect(
+        elasticSearchReindexService.decodeAndReplaceSingleQuotes
+      ).toHaveBeenCalled();
     });
 
     it("should handle error if fetch fails", async () => {
-      spyOn(commonService, "decodeAndReplaceSingleQuotes");
+      spyOn(elasticSearchReindexService, "decodeAndReplaceSingleQuotes");
       const userInput = "test-input";
       component.nuxeo = {
         repository: jasmine.createSpy().and.returnValue({
@@ -358,7 +358,7 @@ describe("DocumentESReindexComponent", () => {
 
   it("should open error dialog and handle close subscription", () => {
     const mockError: ErrorDetails = {
-      type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
       details: { message: "Test error" },
     };
 
@@ -366,14 +366,22 @@ describe("DocumentESReindexComponent", () => {
 
     component.showReindexErrorModal(mockError);
 
-    expect(dialogService.open).toHaveBeenCalledWith(ErrorModalComponent, {
-      disableClose: true,
-      height: MODAL_DIMENSIONS.HEIGHT,
-      width: MODAL_DIMENSIONS.WIDTH,
-      data: {
-        error: mockError,
-      },
-    });
+    expect(dialogService.open).toHaveBeenCalledWith(
+      ElasticSearchReindexModalComponent,
+      {
+        disableClose: true,
+        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
+        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
+        data: {
+          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
+          title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
+          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
+          error: mockError,
+          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
+          isErrorModal: true,
+        },
+      }
+    );
 
     expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     expect(component.onReindexErrorModalClose).toHaveBeenCalled();

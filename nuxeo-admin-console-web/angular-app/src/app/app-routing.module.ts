@@ -20,12 +20,6 @@ export const appRoutes: Route[] = [
       ).then((m) => m.ElasticSearchReindexModule),
   },
   {
-    path: "bulk-action-monitoring",
-    title: routeTitle.BULKACTIONMONITORING,
-    loadChildren: () =>
-      import("./features/bulk-action-monitoring/bulk-action-monitoring.module").then((m) => m.BulkActionMonitoringModule),
-  },
-  {
     path: "auth",
     loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
   },

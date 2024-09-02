@@ -6,22 +6,14 @@
   min-height: 100%;
   width: 100%;
   position: absolute;
-
-  &__top {
-    flex-shrink: 0; 
-  }
-
   &__bottom {
     display: flex;
-    flex: 1; 
-
+    height: 100vh;
     &__left {
-      position: relative;
+      flex: 15%;
     }
-
     &__right {
-      flex: 1; 
-      box-sizing: inherit;
+      flex: 85%;
     }
   }
 }
