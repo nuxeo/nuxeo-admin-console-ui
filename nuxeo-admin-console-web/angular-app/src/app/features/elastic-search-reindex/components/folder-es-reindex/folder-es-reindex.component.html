@@ -1,5 +1,5 @@
 <form [formGroup]="folderReindexForm" (ngSubmit)="onReindexFormSubmit()" class="folder-es-reindex-container">
-    <p id="requiredField"> {{ ELASTIC_SEARCH_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+    <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID }}</mat-label>
         <input matInput placeholder="Document ID" type="text" formControlName="documentID" id="documentID" required />

@@ -1,0 +1,13 @@
+.bulk-action-monitoring-results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (min-width: 962px) {
+  .bulk-action-monitoring-results {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

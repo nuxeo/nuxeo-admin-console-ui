@@ -1,3 +1,13 @@
+import { CommonService } from './../../../../shared/services/common.service';
+import { ErrorModalClosedInfo } from "./../../../../shared/types/common.interface";
+import { ErrorModalComponent } from "./../../../../shared/components/error-modal/error-modal.component";
+import {
+  COMMON_LABELS,
+  ERROR_MESSAGES,
+  ERROR_MODAL_LABELS,
+  ERROR_TYPES,
+  MODAL_DIMENSIONS,
+} from "./../../../../shared/constants/common.constants";
 import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -8,12 +18,7 @@ import {
 } from "../../elastic-search-reindex.interface";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  ELASTIC_SEARCH_LABELS,
-  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES,
-  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
-  ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
-} from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
@@ -56,13 +61,8 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     ElasticSearchReindexModalComponent,
     ReindexModalClosedInfo
   >;
-  errorDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
   spinnerVisible = false;
@@ -70,6 +70,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   decodedUserInput = "";
   noOfDocumentsToReindex = -1;
   isReindexBtnDisabled = false;
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
@@ -77,7 +78,8 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private store: Store<{ nxqlReindex: NXQLReindexState }>,
     private sanitizer: DomSanitizer,
-    private nuxeoJSClientService: NuxeoJSClientService
+    private nuxeoJSClientService: NuxeoJSClientService,
+    private commonService: CommonService
   ) {
     this.nxqlReindexForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
@@ -110,7 +112,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       (error) => {
         if (error) {
           this.showReindexErrorModal({
-            type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR,
+            type: ERROR_TYPES.SERVER_ERROR,
             details: { status: error.status, message: error.message },
           });
         }
@@ -128,16 +130,13 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
+        height: MODAL_DIMENSIONS.HEIGHT,
+        width: MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
           launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
-          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           commandId,
-          copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL}`,
-          isLaunchedModal: true,
         },
       }
     );
@@ -156,22 +155,14 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   showReindexErrorModal(error: ErrorDetails): void {
-    this.errorDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
-      {
-        disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
-        data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
-          error,
-          isErrorModal: true,
-        },
-      }
-    );
+    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+      disableClose: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        error,
+      },
+    });
     this.errorDialogClosedSubscription = this.errorDialogRef
       .afterClosed()
       .subscribe(() => {
@@ -201,16 +192,15 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       try {
         const decodedUserInput = decodeURIComponent(
           /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
-          this.elasticSearchReindexService.removeLeadingCharacters(userInput)
+          this.commonService.removeLeadingCharacters(userInput)
         );
         this.fetchNoOfDocuments(decodedUserInput);
       } catch (error) {
         this.elasticSearchReindexService.spinnerStatus.next(false);
         this.showReindexErrorModal({
-          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
+          type: ERROR_TYPES.INVALID_QUERY,
           details: {
-            message:
-              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+            message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
           },
         });
       }
@@ -234,10 +224,9 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           if (this.noOfDocumentsToReindex === 0) {
             this.elasticSearchReindexService.spinnerStatus.next(false);
             this.showReindexErrorModal({
-              type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_MATCHING_QUERY,
+              type: ERROR_TYPES.NO_MATCHING_QUERY,
               details: {
-                message:
-                  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
+                message: ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
               },
             });
           } else {
@@ -256,7 +245,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
             err as { response: { json: () => Promise<unknown> } }
           ).response.json();
         } else {
-          return Promise.reject(ELASTIC_SEARCH_LABELS.UNEXPECTED_ERROR);
+          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
         }
       })
       .then((errorJson: unknown) => {
@@ -275,17 +264,12 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
+        height: MODAL_DIMENSIONS.HEIGHT,
+        width: MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
           message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
-          isConfirmModal: true,
-          abortLabel: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
-          continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
-          impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
-          confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           documentCount,
           timeTakenToReindex: this.getHumanReadableTime(
             documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
@@ -320,10 +304,9 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
         );
       } catch (error) {
         this.showReindexErrorModal({
-          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_QUERY,
+          type: ERROR_TYPES.INVALID_QUERY,
           details: {
-            message:
-              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+            message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
           },
         });
       }
