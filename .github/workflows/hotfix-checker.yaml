@@ -16,6 +16,9 @@ jobs:
         steps:
           - name: Checkout Code
             uses: actions/checkout@v4
+            with:
+              fetch-depth: 0  # Fetch all history for all branches and tags
+        
     
           - name: Authenticate GitHub CLI
             run: |
@@ -25,9 +28,12 @@ jobs:
           - name: Get the branch name of the last merged PR
             id: get-branch
             run: |
-              last_pr_merge_commit=$(git log --merges --pretty=format:"%H" -n 1)
+              last_pr_merge_commit=$(git log -1 --pretty=format:"%H")
+              echo "Last PR merge commit: $last_pr_merge_commit"
               merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
+              echo "Merge message: $merge_message"
               full_branch_name=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
+              echo "Full branch name: $full_branch_name"
               branch_name=$(echo "$full_branch_name" | awk -F'/' '{print $2}')
               echo "The branch name is $branch_name & full name is $full_branch_name"
               echo "::set-output name=last_pr_branch::$(echo $branch_name | xargs)"
