@@ -20,5 +20,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     HyContentListModule,
     MatTooltipModule,
   ],
+  exports: [
+    ProbesComponent,  
+  ],
 })
+
 export class ProbesModule {}
