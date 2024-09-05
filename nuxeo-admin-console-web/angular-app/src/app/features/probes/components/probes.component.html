@@ -81,19 +81,28 @@
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
                         <div>
-                            <strong>Last Run:</strong> 
+                            <strong>Last Run: </strong> 
                             <span>{{ row?.history?.lastRun ? (row.history.lastRun | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                         <div>
-                            <strong>Last Success:</strong> 
+                            <strong>Last Success: </strong> 
                             <span>{{ row?.history?.lastSuccess ? (row.history.lastSuccess | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                         <div>
-                            <strong>Last Fail:</strong> 
+                            <strong>Last Fail: </strong> 
                             <span>{{ row?.history?.lastFail ? (row.history.lastFail | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                     </ng-container>
                 </hy-content-list-column>
+
+                <hy-content-list-column propertyName="actions" label="Actions" fixedWidth="150px">
+                    <ng-container *hyContentListCell="let row">
+                      <button class="launch-probe" mat-stroked-button color="primary" (click)="launchProbe(row)">
+                        {{PROBES_LABELS.CHECK_AGAIN}}
+                      </button>
+                     
+                    </ng-container>
+                  </hy-content-list-column>
             </hy-content-list>
         </mat-card-content>
     </mat-card>

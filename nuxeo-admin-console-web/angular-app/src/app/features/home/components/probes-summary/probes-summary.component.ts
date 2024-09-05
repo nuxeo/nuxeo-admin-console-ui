@@ -5,6 +5,7 @@ import { Store, select } from "@ngrx/store";
 import { HomeState, ProbesInfo } from "../../store/reducers";
 import * as HomeActions from "../../store/actions";
 import { HomeService } from "../../services/home.service";
+import { CommonService } from "src/app/shared/services/common.service";
 @Component({
   selector: "probes-summary",
   templateUrl: "./probes-summary.component.html",
@@ -17,7 +18,8 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
   PROBES_LABELS = PROBES_LABELS;
   constructor(
     private store: Store<{ home: HomeState }>,
-    private homeService: HomeService
+    private homeService: HomeService,
+    private commonService: CommonService
   ) {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.home?.probesInfo)
@@ -52,6 +54,10 @@ export class ProbesSummaryComponent implements OnInit, OnDestroy {
 
   getTooltipAltText(probeStatus: string | boolean): string {
     return this.homeService.convertoTitleCase(probeStatus.toString());
+  }
+
+  viewDetails(): void {
+    this.commonService.redirectToProbesDetails();
   }
 
   ngOnDestroy(): void {

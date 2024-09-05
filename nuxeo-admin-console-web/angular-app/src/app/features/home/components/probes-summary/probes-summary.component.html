@@ -45,6 +45,11 @@
                 </hy-content-list-column>
             </hy-content-list>
         </ng-container>
-
+        
     </mat-card-content>
+     <mat-card-footer>
+        <button mat-flat-button color="primary" (click)="viewDetails()">
+            {{ PROBES_LABELS.DETAILS }}
+          </button>
+    </mat-card-footer> 
 </mat-card>

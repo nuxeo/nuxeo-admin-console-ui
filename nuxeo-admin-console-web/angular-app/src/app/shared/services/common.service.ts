@@ -34,4 +34,8 @@ export class CommonService {
   redirectToBulkActionMonitoring(commandId: string): void {
     this.router.navigate(["/bulk-action-monitoring", commandId]);
   }
+
+  redirectToProbesDetails(): void {
+    this.router.navigate(["/probes"]);
+  }
 }

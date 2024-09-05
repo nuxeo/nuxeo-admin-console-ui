@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { ProbesResponse } from "../../../shared/types/probes.interface";
+import { Probe, ProbesResponse } from "../../../shared/types/probes.interface";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
 
@@ -28,6 +28,14 @@ export class ProbeService {
       ?.split(" ")
       ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
       ?.join(" ");
+  }
+
+  launchProbe(probeName: string | null) {
+   // const probe = 'abc';
+    return this.networkService.makeHttpRequest<Probe>(
+      REST_END_POINTS.LAUNCH_PROBE,
+      { urlParam: { probeName } }
+    );
   }
 
 }

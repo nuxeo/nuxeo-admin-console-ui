@@ -12,7 +12,7 @@ import {
     status: ProbeStatus;
     history: ProbeHistory;
     counts?: ProbeCounts;  
-    time?: number;        
+    time?: number;     
   }
 
   export interface ProbeState {
@@ -40,6 +40,16 @@ import {
       probesInfo,
     })),
     on(ProbesActions.fetchProbesInfoFailure, (state, { error }) => ({
+      ...state,
+      error,
+    })),
+    on(ProbesActions.launchProbeSuccess, (state, { probeInfo }) => ({
+      ...state,
+      probesInfo: state.probesInfo.map((probe) =>
+        probe.name === probeInfo.name ? { ...probe, ...probeInfo } : probe
+      ),
+    })),
+    on(ProbesActions.launchProbeFailure, (state, { error }) => ({
       ...state,
       error,
     }))

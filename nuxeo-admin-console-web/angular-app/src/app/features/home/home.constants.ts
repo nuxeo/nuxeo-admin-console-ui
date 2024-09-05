@@ -15,6 +15,7 @@ export const PROBES_LABELS = {
   PROBE_TITLE: "Probes",
   NEVER_EXECUTED: "Never Executed",
   CHECK_AGAIN: "Check Again",
+  DETAILS: "Details",
   NOT_RUN: 'N/A',
   COLUMN_HEADERS: {
     PROBE: "Probe",
@@ -34,6 +35,8 @@ export const PROBES_LABELS = {
     UNKNOWN: "assets/images/question.svg",
     FALSE: "assets/images/error.svg",
   },
+  PROBE_LAUNCHED_SUCCESS: "{probeName} checked. Success: True",
+  PROBE_LAUNCHED_ERROR: "{probeName} checked. Success: False"
 };
 
 export const REGISTRATION_VERSION_LABELS = {

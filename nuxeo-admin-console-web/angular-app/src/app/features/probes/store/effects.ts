@@ -1,4 +1,4 @@
-import { ProbesResponse } from "./../../../shared/types/probes.interface";
+import { Probe, ProbesResponse } from "./../../../shared/types/probes.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
@@ -31,3 +31,24 @@ export const loadProbesInfoEffect = createEffect(
   },
   { functional: true }
 );
+
+export const launchProbeEffect = createEffect(
+  (actions$ = inject(Actions), probeService = inject(ProbeService)) => {
+    return actions$.pipe(
+      ofType(ProbeActions.launchProbe),
+      switchMap((action) => {
+        return probeService.launchProbe(action?.probeName).pipe(
+          map((data: Probe) => {
+            const probeInfo = data;
+            return ProbeActions.launchProbeSuccess({ probeInfo });
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(ProbeActions.launchProbeFailure({ error }));
+          })
+        );
+      })
+    );
+  },
+  { functional: true }
+);
+
