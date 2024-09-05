@@ -2,14 +2,14 @@ import { ProbesInfo } from "./reducers";
 import { createAction, props } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
 
-export const fetchProbesInfo = createAction("[Admin] Fetch Probes Info");
+export const loadProbesData = createAction("[Admin] Load Probes Data");
 
-export const fetchProbesInfoSuccess = createAction(
-  "[Admin] Fetch Probes Info Success",
-  props<{ probesInfo: ProbesInfo[] }>()
+export const loadProbesDataSuccess = createAction(
+  "[Admin] Load Probes Data Success",
+  props<{ probesData: ProbesInfo[] }>()
 );
 
-export const fetchProbesInfoFailure = createAction(
-  "[Admin] Fetch Probes Info Failure",
+export const loadProbesDataFailure = createAction(
+  "[Admin] Load Probes Data Failure",
   props<{ error: HttpErrorResponse }>()
 );

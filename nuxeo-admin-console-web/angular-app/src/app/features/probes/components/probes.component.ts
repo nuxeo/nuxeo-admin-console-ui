@@ -32,18 +32,18 @@ export class ProbesComponent implements OnInit, OnDestroy {
         if (data?.length !== 0) {
           this.probesData = data;
         } else {
-          this.store.dispatch(ProbeActions.fetchProbesInfo());
+          this.store.dispatch(ProbeActions.loadProbesData());
         }
       }
     );
   }
 
-  getProbeDisplayName(probeName: string): string {
+  deriveProbeDisplayName(probeName: string): string {
     const probe = PROBES.find((probe) => probe.name === probeName);
     return probe ? probe.displayName : probeName;
   }
 
-  getImageSrc(neverExecuted: boolean, successStatus: boolean): string {
+  determineImageSource(neverExecuted: boolean, successStatus: boolean): string {
     if (neverExecuted) {
       return PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN;
     }
@@ -52,11 +52,9 @@ export class ProbesComponent implements OnInit, OnDestroy {
       : PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE;
   }
 
-  getTooltipAltText(probeStatus: string | boolean): string {
-    return this.probeService.convertoTitleCase(probeStatus.toString());
+  formatTooltipText(probeStatus: string | boolean): string {
+    return this.probeService.formatToTitleCase(probeStatus.toString());
   }
-
-  
 
   ngOnDestroy(): void {
     this.fetchProbesSubscription?.unsubscribe();

@@ -10,7 +10,7 @@
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.PROBE}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <span>{{getProbeDisplayName(row?.name)}}</span>
+                        <span>{{deriveProbeDisplayName(row?.name)}}</span>
                     </ng-container>
                 </hy-content-list-column>
                 <hy-content-list-column propertyName="success" label="Success">
@@ -18,9 +18,9 @@
                         <strong>{{PROBES_LABELS.COLUMN_HEADERS.SUCCESS}}</strong>
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
-                        <img [src]="getImageSrc(row?.status?.neverExecuted, row?.status?.success)"
-                            [alt]="row?.status?.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row?.status?.success)"
-                            [matTooltip]="row?.status?.neverExecuted ? getTooltipAltText('unknown') : getTooltipAltText(row?.status?.success)"
+                        <img [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
+                            [alt]="row?.status?.neverExecuted ? formatTooltipText('unknown') : formatTooltipText(row?.status?.success)"
+                            [matTooltip]="row?.status?.neverExecuted ? formatTooltipText('unknown') : formatTooltipText(row?.status?.success)"
                             matTooltipClass="hy-tooltip" matTooltipPosition="above" />
                     </ng-container>
                 </hy-content-list-column>
@@ -81,15 +81,15 @@
                     </ng-container>
                     <ng-container *hyContentListCell="let row">
                         <div>
-                            <strong>Last Run:</strong> 
+                            <strong>Last Run: </strong> 
                             <span>{{ row?.history?.lastRun ? (row.history.lastRun | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                         <div>
-                            <strong>Last Success:</strong> 
+                            <strong>Last Success: </strong> 
                             <span>{{ row?.history?.lastSuccess ? (row.history.lastSuccess | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                         <div>
-                            <strong>Last Fail:</strong> 
+                            <strong>Last Fail: </strong> 
                             <span>{{ row?.history?.lastFail ? (row.history.lastFail | date:'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
                         </div>
                     </ng-container>

@@ -6,24 +6,24 @@ import { catchError, map, of, switchMap } from "rxjs";
 import { ProbeService } from "../services/probes.service";
 import * as ProbeActions from "./actions";
 
-export const loadProbesInfoEffect = createEffect(
+export const loadProbesDataEffect = createEffect(
   (actions$ = inject(Actions), probeService = inject(ProbeService)) => {
     return actions$.pipe(
-      ofType(ProbeActions.fetchProbesInfo),
+      ofType(ProbeActions.loadProbesData),
       switchMap(() => {
         return probeService.getProbesInfo().pipe(
           map((data: ProbesResponse) => {
-            const probesInfo = data.entries.map((entry) => ({
+            const probesData = data.entries.map((entry) => ({
               name: entry.name,
               status: entry.status,
               history: entry.history,
-              counts: entry.counts,  
-              time: entry.time  
+              counts: entry.counts,
+              time: entry.time,
             }));
-            return ProbeActions.fetchProbesInfoSuccess({ probesInfo });
+            return ProbeActions.loadProbesDataSuccess({ probesData });
           }),
           catchError((error: HttpErrorResponse) => {
-            return of(ProbeActions.fetchProbesInfoFailure({ error }));
+            return of(ProbeActions.loadProbesDataFailure({ error }));
           })
         );
       })
