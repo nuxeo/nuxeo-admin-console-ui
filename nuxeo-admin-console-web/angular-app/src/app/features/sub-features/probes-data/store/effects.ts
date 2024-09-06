@@ -1,13 +1,13 @@
-import { ProbesResponse } from "./../../../shared/types/probes.interface";
+import { ProbesResponse } from "../../../../shared/types/probes.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap } from "rxjs";
-import { ProbeService } from "../services/probes.service";
+import { ProbeDataService } from "../services/probes-data.service";
 import * as ProbeActions from "./actions";
 
 export const loadProbesDataEffect = createEffect(
-  (actions$ = inject(Actions), probeService = inject(ProbeService)) => {
+  (actions$ = inject(Actions), probeService = inject(ProbeDataService)) => {
     return actions$.pipe(
       ofType(ProbeActions.loadProbesData),
       switchMap(() => {

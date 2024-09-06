@@ -1,4 +1,4 @@
-import { ProbesComponent } from './components/probes.component';
+import { ProbesComponent } from './probes.component';
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";

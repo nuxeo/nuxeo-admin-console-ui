@@ -1,24 +1,24 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { HyContentListModule } from "@hyland/ui/content-list";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { ProbesComponent } from "./probes.component";
+import { ProbesDataComponent } from "./probe-data.component";
 import { Store, StoreModule } from "@ngrx/store";
 import { ProbeReducer, ProbeState } from "../store/reducers";
-import { ProbeService } from "../services/probes.service";
+import { ProbeDataService } from "../services/probes-data.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
 import { of } from "rxjs";
 
 describe("ProbesComponent", () => {
-  let component: ProbesComponent;
-  let fixture: ComponentFixture<ProbesComponent>;
+  let component: ProbesDataComponent;
+  let fixture: ComponentFixture<ProbesDataComponent>;
   let store: Store<{ probes: ProbeState }>;
-  let probeService: ProbeService;
+  let probeService: ProbeDataService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProbesComponent],
+      declarations: [ProbesDataComponent],
       imports: [
         StoreModule.forRoot({ probes: ProbeReducer }),
         HttpClientTestingModule,
@@ -27,12 +27,12 @@ describe("ProbesComponent", () => {
         HyContentListModule,
         MatTooltipModule,
       ],
-      providers: [ProbeService],
+      providers: [ProbeDataService],
     }).compileComponents();
 
     store = TestBed.inject(Store);
-    probeService = TestBed.inject(ProbeService);
-    fixture = TestBed.createComponent(ProbesComponent);
+    probeService = TestBed.inject(ProbeDataService);
+    fixture = TestBed.createComponent(ProbesDataComponent);
     component = fixture.componentInstance;
 
     spyOn(store, "pipe").and.returnValue(of([]));

@@ -1,10 +1,10 @@
 import { TestBed } from "@angular/core/testing";
-import { ProbeService } from "./probes.service";
-import { ProbesResponse } from "../../../shared/types/probes.interface";
+import { ProbeDataService } from "./probes-data.service";
+import { ProbesResponse } from "../../../../shared/types/probes.interface";
 import { HttpTestingController,HttpClientTestingModule } from "@angular/common/http/testing";
 
-describe("ProbeService", () => {
-  let service: ProbeService;
+describe("ProbeDataService", () => {
+  let service: ProbeDataService;
   let httpMock: HttpTestingController;
 
   const mockProbesResponse: ProbesResponse = {
@@ -61,10 +61,10 @@ describe("ProbeService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ProbeService],
+      providers: [ProbeDataService],
     });
 
-    service = TestBed.inject(ProbeService);
+    service = TestBed.inject(ProbeDataService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

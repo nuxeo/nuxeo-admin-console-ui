@@ -2,7 +2,7 @@ import {
   ProbeHistory,
   ProbeStatus,
   ProbeCounts
-} from "./../../../shared/types/probes.interface";
+} from "../../../../shared/types/probes.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { createReducer, on } from "@ngrx/store";
 import * as ProbeActions from "./actions";

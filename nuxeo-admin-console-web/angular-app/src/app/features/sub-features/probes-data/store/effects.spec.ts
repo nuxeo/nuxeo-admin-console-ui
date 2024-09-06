@@ -3,7 +3,7 @@ import { provideMockActions } from "@ngrx/effects/testing";
 import { provideMockStore } from "@ngrx/store/testing";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { Observable, of, throwError } from "rxjs";
-import { ProbeService } from "../services/probes.service";
+import { ProbeDataService } from "../services/probes-data.service";
 import { loadProbesDataEffect } from "./effects";
 import * as ProbeActions from "./actions";
 import { Action } from "@ngrx/store";
@@ -12,7 +12,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 describe("ProbeEffects", () => {
   let actions$: Observable<Action>;
   let loadProbesData: typeof loadProbesDataEffect;
-  let probeService: jasmine.SpyObj<ProbeService>;
+  let probeService: jasmine.SpyObj<ProbeDataService>;
 
   beforeEach(() => {
     const probeServiceSpy = jasmine.createSpyObj("ProbeService", [
@@ -23,10 +23,10 @@ describe("ProbeEffects", () => {
       providers: [
         provideMockActions(() => actions$),
         provideMockStore(),
-        { provide: ProbeService, useValue: probeServiceSpy },
+        { provide: ProbeDataService, useValue: probeServiceSpy },
       ],
     });
-    probeService = TestBed.inject(ProbeService) as jasmine.SpyObj<ProbeService>;
+    probeService = TestBed.inject(ProbeDataService) as jasmine.SpyObj<ProbeDataService>;
     loadProbesData = TestBed.runInInjectionContext(() => loadProbesDataEffect);
   });
 

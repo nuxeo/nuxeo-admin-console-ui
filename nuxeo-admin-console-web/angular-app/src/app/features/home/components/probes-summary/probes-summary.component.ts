@@ -1,20 +1,10 @@
-import { PROBES, PROBES_LABELS } from "./../../home.constants";
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
-import { Store, select } from "@ngrx/store";
-import { HomeState, ProbesInfo } from "../../store/reducers";
-import * as HomeActions from "../../store/actions";
-import { HomeService } from "../../services/home.service";
+import { Component, ViewEncapsulation } from "@angular/core";
+
 @Component({
   selector: "probes-summary",
   templateUrl: "./probes-summary.component.html",
   styleUrls: ["./probes-summary.component.scss"],
+  encapsulation: ViewEncapsulation.None ,
 })
-export class ProbesSummaryComponent{
-  
- 
-
-  
+export class ProbesSummaryComponent {
 }
-
- 
