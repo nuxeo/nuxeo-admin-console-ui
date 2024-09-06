@@ -8,7 +8,8 @@ button {
   height: 36px;
   position: relative;
   left: 85%;
-  top: 10%;
+  top: 40%;
+  margin-bottom: 20px;
 }
 mat-card-footer {
   margin-top: 30px;
@@ -29,4 +30,10 @@ mat-card-footer {
 
 ::ng-deep .hy-content-list__custom-cell {
   max-height: max-content !important; 
+}
+
+@media (width < 800px) {
+  button {
+    left: 75%;
+  }
 }

@@ -31,7 +31,6 @@ export class ProbeService {
   }
 
   launchProbe(probeName: string | null) {
-   // const probe = 'abc';
     return this.networkService.makeHttpRequest<Probe>(
       REST_END_POINTS.LAUNCH_PROBE,
       { urlParam: { probeName } }

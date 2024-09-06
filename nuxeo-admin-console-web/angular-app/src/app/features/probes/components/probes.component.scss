@@ -2,14 +2,10 @@ mat-card {
     height: 97%;
     min-height: 300px ;
     min-width: 400px;
-    // button {
-    //   border-radius: 4px;
-    //   width: 79px;
-    //   height: 36px;
-    //   position: absolute;
-    //   bottom: 8%;
-    //   right: 4%;
-    // }
+  }
+  button.mdc-button.mat-mdc-button-base {
+    line-height: 16px !important;
+    height: 40px !important
   }
   
   .mat-mdc-card-content:first-child {
