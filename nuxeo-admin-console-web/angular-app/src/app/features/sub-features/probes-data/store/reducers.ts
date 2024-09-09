@@ -25,7 +25,7 @@ export const initialState: ProbeState = {
   error: null,
 };
 
-export const ProbeReducer = createReducer(
+export const ProbeDataReducer = createReducer(
   initialState,
   on(ProbeActions.loadProbesData, (state) => ({
     ...state,

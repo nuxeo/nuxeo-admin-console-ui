@@ -1,7 +1,6 @@
 import * as HomeActions from "./actions";
 import { versionInfo } from "../../../shared/types/version-info.interface";
 import { HttpErrorResponse } from "@angular/common/http";
-import { ProbesInfo } from "./reducers";
 
 describe("HomeActions", () => {
   it("should create fetchversionInfo action", () => {

@@ -1,5 +1,5 @@
-import { PROBES_LABELS } from "../home/home.constants";
-import { Component, OnInit } from "@angular/core";
+import { PROBES_LABELS } from "../sub-features/probes-data/probes-data.constants";
+import { Component } from "@angular/core";
 import { Subscription } from "rxjs";
 
 @Component({
@@ -10,13 +10,4 @@ import { Subscription } from "rxjs";
 export class ProbesComponent {
   PROBES_LABELS = PROBES_LABELS;
   fetchProbesSubscription = new Subscription();
-  
-  // Add the PROBES property
-  PROBES = [
-    { name: "repositoryStatus", displayName: "Repository" },
-    { name: "runtimeStatus", displayName: "Runtime" },
-    { name: "elasticSearchStatus", displayName: "Elasticsearch" },
-    { name: "streamStatus", displayName: "Stream" },
-    { name: "ldapDirectories", displayName: "LDAP Directories" },
-  ];
 }

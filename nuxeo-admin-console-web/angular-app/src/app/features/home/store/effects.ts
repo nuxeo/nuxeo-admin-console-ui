@@ -1,4 +1,3 @@
-import { ProbesResponse } from "./../../../shared/types/probes.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";

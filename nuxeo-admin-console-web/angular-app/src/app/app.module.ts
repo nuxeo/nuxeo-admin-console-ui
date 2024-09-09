@@ -33,7 +33,7 @@ import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
-import { ProbeReducer } from "./features/sub-features/probes-data/store/reducers";
+import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
@@ -73,7 +73,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
       folderReindex: folderReindexReducer,
       nxqlReindex: nxqlReindexReducer,
       bulkActionMonitoring:  bulkActionMonitoringReducer,
-      probes: ProbeReducer,
+      probes: ProbeDataReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects),

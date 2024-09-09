@@ -1,4 +1,4 @@
-import { ProbeReducer, ProbeState, initialState } from "./reducers";
+import { ProbeDataReducer, ProbeState, initialState } from "./reducers";
 import * as ProbeActions from "./actions";
 import { Action } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -6,7 +6,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 describe("Probe Reducer", () => {
   it("should return the initial state", () => {
     const action = {} as Action;
-    const state = ProbeReducer(undefined, action);
+    const state = ProbeDataReducer(undefined, action);
 
     expect(state).toBe(initialState);
   });
@@ -19,7 +19,7 @@ describe("Probe Reducer", () => {
       error: null,
     };
 
-    const state = ProbeReducer(initialState, action);
+    const state = ProbeDataReducer(initialState, action);
 
     expect(state).toEqual(expectedState);
   });
@@ -57,7 +57,7 @@ describe("Probe Reducer", () => {
       error: null,
     };
 
-    const state = ProbeReducer(initialState, action);
+    const state = ProbeDataReducer(initialState, action);
 
     expect(state).toEqual(expectedState);
   });
@@ -75,7 +75,7 @@ describe("Probe Reducer", () => {
       error: error,
     };
 
-    const state = ProbeReducer(initialState, action);
+    const state = ProbeDataReducer(initialState, action);
 
     expect(state).toEqual(expectedState);
   });

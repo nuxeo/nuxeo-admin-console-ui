@@ -5,7 +5,6 @@ import {
 } from "@angular/common/http/testing";
 import { HomeService } from "./home.service";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
-import { ProbesResponse } from "./../../../shared/types/probes.interface";
 
 describe("HomeService", () => {
   let service: HomeService;
@@ -18,26 +17,6 @@ describe("HomeService", () => {
     cluster: {
       enabled: true,
     },
-  };
-
-  const mockProbesResponse: ProbesResponse = {
-    entries: [
-      {
-        name: "testProbe",
-        status: {
-          neverExecuted: false,
-          success: true,
-          infos: {
-            info: "Test info",
-          },
-        },
-        history: {
-          lastRun: "2024-07-17T10:00:00Z",
-          lastSuccess: "2024-07-17T10:00:00Z",
-          lastFail: "",
-        },
-      },
-    ],
   };
 
   beforeEach(() => {

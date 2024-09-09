@@ -1,4 +1,4 @@
-import { PROBES, PROBES_LABELS } from "../../../home/home.constants";
+import { PROBES, PROBES_LABELS } from "../probes-data.constants";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";

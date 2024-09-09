@@ -1,70 +1,98 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { HyContentListModule } from "@hyland/ui/content-list";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { ProbesDataComponent } from "./probe-data.component";
-import { Store, StoreModule } from "@ngrx/store";
-import { ProbeReducer, ProbeState } from "../store/reducers";
-import { ProbeDataService } from "../services/probes-data.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { MatCardModule } from "@angular/material/card";
-import { CommonModule } from "@angular/common";
+import { provideMockStore } from "@ngrx/store/testing";
+import { Store } from "@ngrx/store";
 import { of } from "rxjs";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import * as ProbeActions from "../store/actions";
+import { ProbeDataService } from "../services/probes-data.service";
+import { PROBES_LABELS } from "../probes-data.constants";
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe("ProbesComponent", () => {
+describe("ProbesDataComponent", () => {
   let component: ProbesDataComponent;
   let fixture: ComponentFixture<ProbesDataComponent>;
-  let store: Store<{ probes: ProbeState }>;
-  let probeService: ProbeDataService;
+  let store: Store;
+  let probeServiceSpy: jasmine.SpyObj<ProbeDataService>;
+
+  const initialState = {
+    probes: {
+      probesInfo: [],
+    },
+  };
 
   beforeEach(async () => {
+    probeServiceSpy = jasmine.createSpyObj("ProbeDataService", [
+      "formatToTitleCase",
+    ]);
+
     await TestBed.configureTestingModule({
       declarations: [ProbesDataComponent],
-      imports: [
-        StoreModule.forRoot({ probes: ProbeReducer }),
-        HttpClientTestingModule,
-        CommonModule,
-        MatCardModule,
-        HyContentListModule,
-        MatTooltipModule,
-       BrowserAnimationsModule 
+      providers: [
+        provideMockStore({ initialState }), 
+        { provide: ProbeDataService, useValue: probeServiceSpy }, 
       ],
-      providers: [ProbeDataService],
+      schemas: [NO_ERRORS_SCHEMA], 
     }).compileComponents();
 
-    store = TestBed.inject(Store);
-    probeService = TestBed.inject(ProbeDataService);
     fixture = TestBed.createComponent(ProbesDataComponent);
     component = fixture.componentInstance;
-
-    spyOn(store, "pipe").and.returnValue(of([]));
-    spyOn(store, "dispatch").and.callThrough();
-    fixture.detectChanges();
+    store = TestBed.inject(Store); 
   });
 
-  it("should be created", () => {
+  it("should test if the component is created", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("probeDisplayName", () => {
-    it("should return the probe name as is", () => {
-      const probeName = "probe1";
-      const displayName = component.deriveProbeDisplayName(probeName);
-      expect(displayName).toBe(probeName);
-    });
+  it("should fetch probes info on init if probesInfo is empty", () => {
+    spyOn(store, "dispatch").and.callThrough();
+
+    
+    spyOn(store, "pipe").and.returnValue(of([]));
+
+    
+    component.ngOnInit();
+
+    
+    expect(store.dispatch).toHaveBeenCalledWith(ProbeActions.loadProbesData());
   });
 
-  describe("imageSource", () => {
-    it("should determine the image source based on status", () => {
-      const imgSrc = component.determineImageSource(true, false);
-      expect(imgSrc).toBe(component.PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN);
-    });
+
+  it("should return correct display name for probe", () => {
+    const probeName = "repositoryStatus";
+    const displayName = component.deriveProbeDisplayName(probeName);
+    expect(displayName).toBe("Repository");
+
+    const unknownProbeName = "unknownProbe";
+    const unknownDisplayName = component.deriveProbeDisplayName(unknownProbeName);
+    expect(unknownDisplayName).toBe(unknownProbeName);
   });
 
-  describe("tooltipText", () => {
-    it("should format the tooltip text", () => {
-      const tooltipText = component.formatTooltipText("success");
-      expect(tooltipText).toBe("Success");
-    });
+  it("should return the correct image source based on probe status", () => {
+    expect(component.determineImageSource(true, false)).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.UNKNOWN);
+    expect(component.determineImageSource(false, true)).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.TRUE);
+    expect(component.determineImageSource(false, false)).toBe(PROBES_LABELS.SUCCESS_STATUS_ICONS.FALSE);
+  });
+
+  it("should format tooltip text correctly", () => {
+    probeServiceSpy.formatToTitleCase.and.returnValue("Formatted Text");
+
+    const result = component.formatTooltipText("some text");
+    expect(result).toBe("Formatted Text");
+
+    probeServiceSpy.formatToTitleCase.and.returnValue("True");
+    const trueResult = component.formatTooltipText(true);
+    expect(trueResult).toBe("True");
+
+    probeServiceSpy.formatToTitleCase.and.returnValue("False");
+    const falseResult = component.formatTooltipText(false);
+    expect(falseResult).toBe("False");
+  });
+
+  it("should unsubscribe fetchProbesSubscription on destroy", () => {
+    component.fetchProbesSubscription = jasmine.createSpyObj("Subscription", [
+      "unsubscribe",
+    ]);
+    component.ngOnDestroy();
+    expect(component.fetchProbesSubscription.unsubscribe).toHaveBeenCalled();
   });
 });

@@ -1,4 +1,3 @@
-import { ProbesInfo } from "./reducers";
 import { createAction, props } from "@ngrx/store";
 import { versionInfo } from "../../../shared/types/version-info.interface";
 import { HttpErrorResponse } from "@angular/common/http";

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProbesSummaryComponent } from './probes-summary.component';
-import { Store, StoreModule } from '@ngrx/store';
-import { ProbeReducer, ProbeState } from '../../../sub-features/probes-data/store/reducers';
+import {  StoreModule } from '@ngrx/store';
+import { ProbeDataReducer } from '../../../sub-features/probes-data/store/reducers';
 import { ProbesDataComponent } from '../../../sub-features/probes-data/components/probe-data.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,7 +20,7 @@ describe('ProbesSummaryComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ProbesSummaryComponent, ProbesDataComponent], 
       imports: [
-        StoreModule.forRoot({ probes: ProbeReducer }), 
+        StoreModule.forRoot({ probes: ProbeDataReducer }), 
         HttpClientTestingModule,
         CommonModule,
         MatCardModule,
