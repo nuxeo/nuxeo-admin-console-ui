@@ -1,7 +1,7 @@
 import {
   ProbeHistory,
   ProbeStatus,
-  ProbeCounts
+  ProbeCounts,
 } from "../../../../shared/types/probes.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { createReducer, on } from "@ngrx/store";
@@ -36,6 +36,16 @@ export const ProbeDataReducer = createReducer(
     probesInfo: probesData,
   })),
   on(ProbeActions.loadProbesDataFailure, (state, { error }) => ({
+    ...state,
+    error,
+  })),
+  on(ProbeActions.launchProbeSuccess, (state, { probeInfo }) => ({
+    ...state,
+    probesInfo: state.probesInfo.map((probe) =>
+      probe.name === probeInfo.name ? { ...probe, ...probeInfo } : probe
+    ),
+  })),
+  on(ProbeActions.launchProbeFailure, (state, { error }) => ({
     ...state,
     error,
   }))

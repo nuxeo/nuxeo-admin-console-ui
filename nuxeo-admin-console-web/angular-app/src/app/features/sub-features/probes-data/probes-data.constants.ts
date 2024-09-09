@@ -15,7 +15,10 @@ export interface Probe {
     PROBE_TITLE: "Probes",
     NEVER_EXECUTED: "Never Executed",
     CHECK_AGAIN: "Check Again",
+    DETAILS: "Details",
     NOT_RUN: 'N/A',
+    PROBE_LAUNCHED_SUCCESS: "{probeName} checked. Success: True",
+    PROBE_LAUNCHED_ERROR: "{probeName} checked. Success: False",
     COLUMN_HEADERS: {
       PROBE: "Probe",
       SUCCESS: "Success",

@@ -3,9 +3,9 @@
         <mat-card-content>
             <div class="probes-title" *ngIf="summary">
                 {{ PROBES_LABELS.PROBE_TITLE }}
-              </div>
+            </div>
             <hy-content-list [dataSource]="probesData">
-               
+
                 <ng-container *ngIf="isColumnVisible('probe')">
                     <hy-content-list-column propertyName="probe" label="Probe">
                         <ng-container *hyContentListHeader>
@@ -23,13 +23,10 @@
                             <strong>{{ PROBES_LABELS.COLUMN_HEADERS.SUCCESS }}</strong>
                         </ng-container>
                         <ng-container *hyContentListCell="let row">
-                            <img
-                                [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
+                            <img [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
                                 [alt]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
                                 [matTooltip]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
-                                matTooltipClass="hy-tooltip"
-                                matTooltipPosition="above"
-                            />
+                                matTooltipClass="hy-tooltip" matTooltipPosition="above" />
                         </ng-container>
                     </hy-content-list-column>
                 </ng-container>
@@ -41,7 +38,8 @@
                         </ng-container>
                         <ng-container *hyContentListCell="let row">
                             <span>
-                                {{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED : (row?.history?.lastRun | date: 'MMMM d, yyyy') }}
+                                {{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED : (row?.history?.lastRun |
+                                date: 'MMMM d, yyyy') }}
                             </span>
                         </ng-container>
                     </hy-content-list-column>
@@ -58,7 +56,7 @@
                     </hy-content-list-column>
                 </ng-container>
 
-                
+
                 <ng-container *ngIf="isColumnVisible('run')">
                     <hy-content-list-column propertyName="run" label="Run">
                         <ng-container *hyContentListHeader>
@@ -111,20 +109,35 @@
                         <ng-container *hyContentListCell="let row">
                             <div>
                                 <strong>Last Run: </strong>
-                                <span>{{ row?.history?.lastRun ? (row?.history?.lastRun | date: 'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
+                                <span>{{ row?.history?.lastRun ? (row?.history?.lastRun | date: 'MMMM d, yyyy') :
+                                    PROBES_LABELS.NOT_RUN }}</span>
                             </div>
                             <div>
                                 <strong>Last Success: </strong>
-                                <span>{{ row?.history?.lastSuccess ? (row?.history?.lastSuccess | date: 'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
+                                <span>{{ row?.history?.lastSuccess ? (row?.history?.lastSuccess | date: 'MMMM d, yyyy')
+                                    : PROBES_LABELS.NOT_RUN }}</span>
                             </div>
                             <div>
                                 <strong>Last Fail: </strong>
-                                <span>{{ row?.history?.lastFail ? (row?.history?.lastFail | date: 'MMMM d, yyyy') : PROBES_LABELS.NOT_RUN }}</span>
+                                <span>{{ row?.history?.lastFail ? (row?.history?.lastFail | date: 'MMMM d, yyyy') :
+                                    PROBES_LABELS.NOT_RUN }}</span>
                             </div>
                         </ng-container>
                     </hy-content-list-column>
                 </ng-container>
+                <hy-content-list-column propertyName="actions" label="Actions" *ngIf="!summary">
+                    <ng-container *hyContentListCell="let row">
+                        <button class="launch-probe-btn" mat-stroked-button color="primary" (click)="launchProbe(row)">
+                            {{PROBES_LABELS.CHECK_AGAIN}}
+                        </button>
+                    </ng-container>
+                </hy-content-list-column>
             </hy-content-list>
         </mat-card-content>
+        <mat-card-footer *ngIf="summary">
+            <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()">
+                {{ PROBES_LABELS.DETAILS }}
+            </button>
+        </mat-card-footer>
     </mat-card>
 </div>

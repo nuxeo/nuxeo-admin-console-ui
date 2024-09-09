@@ -49,4 +49,50 @@ describe("ProbeActions", () => {
     expect(action.type).toEqual("[Admin] Load Probes Data Failure");
     expect(action.error).toEqual(payload);
   });
+
+  it("should create launchProbe action", () => {
+    const action = ProbeActions.launchProbe({ probeName: 'runtime'});
+    expect(action.type).toEqual("[Admin] Launch Probe");
+  });
+
+  it("should create launchProbeSuccess action", () => {
+    const payload: ProbesInfo = 
+      {
+        name: "ldapDirectories",
+        status: {
+          neverExecuted: true,
+          success: false,
+          infos: {
+            info: "[unavailable]",
+          },
+        },
+        history: {
+          lastRun: null,
+          lastSuccess: "1970-01-01T00:00:00.000Z",
+          lastFail: "1970-01-01T00:00:00.000Z",
+        },
+        counts: {
+          run: 0,
+          success: 0,
+          failure: 0,
+        },
+        time: 0,
+      };
+    const action = ProbeActions.launchProbeSuccess({
+      probeInfo: payload,
+    });
+    expect(action.probeInfo).toEqual(payload);
+    expect(action.type).toEqual("[Admin] Launch Probe Success");
+  });
+
+  it("should create launchProbeFailure action", () => {
+    const payload = new HttpErrorResponse({
+      error: { message: "Error occurred" },
+      status: 500,
+      statusText: "Internal Server Error",
+    });
+    const action = ProbeActions.launchProbeFailure({ error: payload });
+    expect(action.type).toEqual("[Admin] Launch Probe Failure");
+    expect(action.error).toEqual(payload);
+  });
 });

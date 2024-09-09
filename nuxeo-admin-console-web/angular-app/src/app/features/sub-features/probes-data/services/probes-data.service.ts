@@ -1,19 +1,28 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { ProbesResponse } from "../../../../shared/types/probes.interface";
+import {
+  Probe,
+  ProbesResponse,
+} from "../../../../shared/types/probes.interface";
 import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../../shared/services/network.service";
-import { NuxeoJSClientService } from "../../../../shared/services/nuxeo-js-client.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProbeDataService {
-  constructor(private networkService: NetworkService,private nuxeoJsClientService: NuxeoJSClientService) {}
+  constructor(private networkService: NetworkService) {}
 
   getProbesInfo(): Observable<ProbesResponse> {
     return this.networkService.makeHttpRequest<ProbesResponse>(
       REST_END_POINTS.PROBES
+    );
+  }
+
+  launchProbe(probeName: string | null) {
+    return this.networkService.makeHttpRequest<Probe>(
+      REST_END_POINTS.LAUNCH_PROBE,
+      { urlParam: { probeName } }
     );
   }
 
