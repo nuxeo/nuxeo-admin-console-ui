@@ -9,6 +9,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
 import { of } from "rxjs";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 describe("ProbesComponent", () => {
   let component: ProbesDataComponent;
@@ -26,6 +27,7 @@ describe("ProbesComponent", () => {
         MatCardModule,
         HyContentListModule,
         MatTooltipModule,
+       BrowserAnimationsModule 
       ],
       providers: [ProbeDataService],
     }).compileComponents();
