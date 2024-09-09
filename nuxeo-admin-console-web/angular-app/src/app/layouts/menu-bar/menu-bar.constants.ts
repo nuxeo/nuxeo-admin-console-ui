@@ -23,7 +23,8 @@ export const ADMIN_MENU: Menu[] = [
     id: 3,
     name: "Probes",
     path: "probes",
-    isSelected: false,}
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
