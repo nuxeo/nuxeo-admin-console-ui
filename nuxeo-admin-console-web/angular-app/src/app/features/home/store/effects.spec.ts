@@ -29,7 +29,6 @@ describe("HomeEffects", () => {
     });
     homeService = TestBed.inject(HomeService) as jasmine.SpyObj<HomeService>;
     loadVersionInfo = TestBed.runInInjectionContext(() => loadVersionInfoEffect);
-   
   });
 
   describe("loadVersionInfoEffect", () => {

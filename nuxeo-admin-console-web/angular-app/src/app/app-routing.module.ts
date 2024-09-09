@@ -23,8 +23,7 @@ export const appRoutes: Route[] = [
     path: "bulk-action-monitoring",
     title: routeTitle.BULKACTIONMONITORING,
     loadChildren: () =>
-      import(
-        "./features/bulk-action-monitoring/bulk-action-monitoring.module"
+      import( "./features/bulk-action-monitoring/bulk-action-monitoring.module"
       ).then((m) => m.BulkActionMonitoringModule),
   },
   {
@@ -33,7 +32,6 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import("./features/probes/probes.module").then((m) => m.ProbesModule),
   },
-
   {
     path: "auth",
     loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),

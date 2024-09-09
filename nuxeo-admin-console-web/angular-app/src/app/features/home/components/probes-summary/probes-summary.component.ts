@@ -1,5 +1,4 @@
 import { Component, ViewEncapsulation } from "@angular/core";
-
 @Component({
   selector: "probes-summary",
   templateUrl: "./probes-summary.component.html",
