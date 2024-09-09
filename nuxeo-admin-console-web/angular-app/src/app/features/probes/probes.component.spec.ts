@@ -39,8 +39,6 @@ describe('ProbesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  
-
   it("should render the title in the template", () => {
     const PROBES_TITLE = "Probes";
     const compiled = fixture.nativeElement as HTMLElement;

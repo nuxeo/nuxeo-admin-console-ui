@@ -9,11 +9,9 @@ import * as HomeActions from "./actions";
 import { Action } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
 
-
 describe("HomeEffects", () => {
   let actions$: Observable<Action>;
   let loadVersionInfo: typeof loadVersionInfoEffect;
- 
   let homeService: jasmine.SpyObj<HomeService>;
 
   beforeEach(() => {
@@ -63,10 +61,4 @@ describe("HomeEffects", () => {
       });
     });
   });
-
-  
-     
-
-
- 
 });

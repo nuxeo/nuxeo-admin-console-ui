@@ -44,15 +44,9 @@ describe("ProbesDataComponent", () => {
   });
 
   it("should fetch probes info on init if probesInfo is empty", () => {
-    spyOn(store, "dispatch").and.callThrough();
-
-    
+    spyOn(store, "dispatch").and.callThrough(); 
     spyOn(store, "pipe").and.returnValue(of([]));
-
-    
     component.ngOnInit();
-
-    
     expect(store.dispatch).toHaveBeenCalledWith(ProbeActions.loadProbesData());
   });
 
@@ -75,7 +69,6 @@ describe("ProbesDataComponent", () => {
 
   it("should format tooltip text correctly", () => {
     probeServiceSpy.formatToTitleCase.and.returnValue("Formatted Text");
-
     const result = component.formatTooltipText("some text");
     expect(result).toBe("Formatted Text");
 

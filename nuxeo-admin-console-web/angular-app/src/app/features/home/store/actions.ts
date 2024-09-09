@@ -11,5 +11,3 @@ export const fetchversionInfoFailure = createAction(
   "[Admin] Fetch Version Info Failure",
   props<{ error: HttpErrorResponse | null }>()
 );
-
-

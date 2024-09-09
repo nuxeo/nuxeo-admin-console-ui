@@ -39,5 +39,4 @@ export const homeReducer = createReducer(
     ...state,
     error,
   })),
-
 );

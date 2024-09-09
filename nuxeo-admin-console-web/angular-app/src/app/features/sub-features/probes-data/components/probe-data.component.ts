@@ -39,12 +39,10 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   ) {
     this.fetchProbes$ = this.store.pipe(select((state) => state.probes?.probesInfo));
   }
-
   ngOnInit(): void {
     this.columnsToDisplay = this.defaultColumns.filter(column => 
       this.summary ? column.summaryOnly : true
     );
-
     this.hideTitle = !this.defaultColumns.some(col => col.summaryOnly && this.summary);
 
     this.fetchProbesSubscription = this.fetchProbes$.subscribe((data: ProbesInfo[]) => {

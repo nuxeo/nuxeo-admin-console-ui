@@ -10,7 +10,6 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 @NgModule({
   declarations: [
     ProbesDataComponent,
-
   ],
   imports: [
     CommonModule,

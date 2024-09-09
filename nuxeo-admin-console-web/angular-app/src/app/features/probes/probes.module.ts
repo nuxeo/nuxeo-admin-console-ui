@@ -8,12 +8,8 @@ import { HyContentListModule } from "@hyland/ui/content-list";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module";
 
-
 @NgModule({
-  declarations: [
-    ProbesComponent,
-
-  ],
+  declarations: [ProbesComponent],
   imports: [
     CommonModule,
     MatCardModule,

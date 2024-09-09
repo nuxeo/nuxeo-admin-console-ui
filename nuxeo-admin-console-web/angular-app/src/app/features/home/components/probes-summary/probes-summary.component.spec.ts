@@ -44,7 +44,6 @@ describe('ProbesSummaryComponent', () => {
       By.directive(ProbesDataComponent)
     );
     const probesDataComponent = probesDataElement.componentInstance as ProbesDataComponent;
-
     expect(probesDataComponent.summary).toBe(true);
   });
 });
