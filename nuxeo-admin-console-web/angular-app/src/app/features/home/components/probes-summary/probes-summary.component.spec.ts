@@ -11,7 +11,6 @@ import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { By } from '@angular/platform-browser';
 
-
 describe('ProbesSummaryComponent', () => {
   let component: ProbesSummaryComponent;
   let fixture: ComponentFixture<ProbesSummaryComponent>;

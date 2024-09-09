@@ -7,20 +7,17 @@ describe("Probe Reducer", () => {
   it("should return the initial state", () => {
     const action = {} as Action;
     const state = ProbeDataReducer(undefined, action);
-
     expect(state).toBe(initialState);
   });
 
   it("should handle loadProbesData", () => {
     const action = ProbeActions.loadProbesData();
-
     const expectedState: ProbeState = {
       probesInfo: [],
       error: null,
     };
 
     const state = ProbeDataReducer(initialState, action);
-
     expect(state).toEqual(expectedState);
   });
 
@@ -58,7 +55,6 @@ describe("Probe Reducer", () => {
     };
 
     const state = ProbeDataReducer(initialState, action);
-
     expect(state).toEqual(expectedState);
   });
 
@@ -69,14 +65,12 @@ describe("Probe Reducer", () => {
       statusText: "Internal Server Error",
     });
     const action = ProbeActions.loadProbesDataFailure({ error });
-
     const expectedState: ProbeState = {
       probesInfo: [],
       error: error,
     };
 
     const state = ProbeDataReducer(initialState, action);
-
     expect(state).toEqual(expectedState);
   });
 });
