@@ -1,0 +1,32 @@
+mat-card {
+    height: 97%;
+    min-height: 300px ;
+    min-width: 400px;
+  }
+  
+  .mat-mdc-card-content:first-child {
+    padding-top: 0;
+  }
+  
+  .mat-mdc-card-content {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .probes-title {
+    margin-left: 21px;
+    color: black;
+  }
+  
+  ::ng-deep .hy-content-list__custom-cell {
+    max-height: max-content !important; 
+  }
+
+  .probes-data {
+    height: 100%;
+    h1 {
+        font-size: 20px;
+        font-weight: 500;
+        width: fit-content;
+      }
+  }

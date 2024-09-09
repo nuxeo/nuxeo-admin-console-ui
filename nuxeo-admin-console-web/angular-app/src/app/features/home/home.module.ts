@@ -9,6 +9,7 @@ import { RegistrationVersionComponent } from "./components/registration-version/
 import { HomeRoutingModule } from "./home-routing.module";
 import { HyContentListModule } from "@hyland/ui/content-list";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module";
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     HyContentListModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    ProbesDataModule,
   ],
 })
 export class HomeModule {}

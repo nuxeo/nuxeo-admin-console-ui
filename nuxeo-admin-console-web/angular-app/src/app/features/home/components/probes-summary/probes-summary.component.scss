@@ -1,5 +1,5 @@
 mat-card {
-  height: 100%;
+  height: 100% !important;
   button {
     border-radius: 4px;
     width: 79px;
@@ -10,19 +10,10 @@ mat-card {
   }
 }
 
-.mat-mdc-card-content:first-child {
-  padding-top: 0;
+::ng-deep .probes-data {
+  height: 100% !important;
 }
 
-.mat-mdc-card-content {
-  height: 100%;
-  width: 100%;
-}
-
-.probes-title {
-  margin-left: 21px;
-}
-
-::ng-deep .hy-content-list__custom-cell {
-  max-height: max-content !important; 
+::ng-deep .probes-data {
+  padding: 20px !important;
 }

@@ -19,10 +19,17 @@ export const ADMIN_MENU: Menu[] = [
     path: "bulk-action-monitoring",
     isSelected: false,
   },
+  {
+    id: 3,
+    name: "Probes",
+    path: "probes",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
   HOME: "Home",
   ELASTICSEARCH_REINDEX: "ElasticSearch Reindex",
   BULKACTIONMONITORING: "Bulk Action Monitoring",
+  PROBES: "Probes",
 };

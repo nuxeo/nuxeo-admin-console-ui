@@ -13,13 +13,13 @@ export interface ProbeHistory {
   lastFail: string;
 }
 
-interface ProbeCounts {
+export interface ProbeCounts {
   run: number;
   success: number;
   failure: number;
 }
 
-interface Probe {
+export interface Probe {
   "entity-type"?: string;
   name: string;
   status: ProbeStatus;
