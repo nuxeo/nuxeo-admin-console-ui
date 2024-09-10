@@ -19,7 +19,7 @@ export class ProbeDataService {
     );
   }
 
-  launchProbe(probeName: string | null) {
+  launchProbe(probeName: string | null): Observable<Probe> {
     return this.networkService.makeHttpRequest<Probe>(
       REST_END_POINTS.LAUNCH_PROBE,
       { urlParam: { probeName } }
