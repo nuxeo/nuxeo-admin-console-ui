@@ -97,18 +97,19 @@ describe("CommonService", () => {
     });
   });
 
- 
-    it('should navigate to /bulk-action-monitoring with the correct commandId', () => {
-      spyOn(router, 'navigate');
-      const commandId = '12345';
-      service.redirectToBulkActionMonitoring(commandId);
-      expect(router.navigate).toHaveBeenCalledWith(['/bulk-action-monitoring', commandId]);
-    });
+  it("should navigate to /bulk-action-monitoring with the correct commandId", () => {
+    spyOn(router, "navigate");
+    const commandId = "12345";
+    service.redirectToBulkActionMonitoring(commandId);
+    expect(router.navigate).toHaveBeenCalledWith([
+      "/bulk-action-monitoring",
+      commandId,
+    ]);
+  });
 
- 
-    it('should navigate to /probes', () => {
-      spyOn(router, 'navigate');
-      service.redirectToProbesDetails();
-      expect(router.navigate).toHaveBeenCalledWith(['/probes']);
-    });
+  it("should navigate to /probes", () => {
+    spyOn(router, "navigate");
+    service.redirectToProbesDetails();
+    expect(router.navigate).toHaveBeenCalledWith(["/probes"]);
+  });
 });
