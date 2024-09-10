@@ -80,6 +80,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
               canBeDismissed: true,
             }
           );
+          const el = document.getElementsByClassName('hy-toast__dismiss');
+        // (el as unknown as HTMLElement)?.focus();
+      //  el[0].focus()
         }
       });
 
