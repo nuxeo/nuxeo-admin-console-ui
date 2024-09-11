@@ -1,117 +1,42 @@
 import { TestBed } from "@angular/core/testing";
 import { ProbeDataService } from "./probes-data.service";
-import { ProbesResponse } from "../../../../shared/types/probes.interface";
-import { HttpTestingController,HttpClientTestingModule } from "@angular/common/http/testing";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { NetworkService } from "../../../../shared/services/network.service";
+import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
 
 describe("ProbeDataService", () => {
   let service: ProbeDataService;
-  let httpMock: HttpTestingController;
-
-  const mockProbesResponse: ProbesResponse = {
-    entries: [
-      {
-        "entity-type": "probe",
-        name: "ldapDirectories",
-        status: {
-          "entity-type": "probeStatus",
-          neverExecuted: true,
-          success: false,
-          infos: {
-            info: "[unavailable]"
-          }
-        },
-        history: {
-          lastRun: null,
-          lastSuccess: "1970-01-01T00:00:00.000Z",
-          lastFail: "1970-01-01T00:00:00.000Z"
-        },
-        counts: {
-          run: 0,
-          success: 0,
-          failure: 0
-        },
-        time: 0
-      },
-      {
-        "entity-type": "probe",
-        name: "administrativeStatus",
-        status: {
-          "entity-type": "probeStatus",
-          neverExecuted: true,
-          success: false,
-          infos: {
-            info: "[unavailable]"
-          }
-        },
-        history: {
-          lastRun: null,
-          lastSuccess: "1970-01-01T00:00:00.000Z",
-          lastFail: "1970-01-01T00:00:00.000Z"
-        },
-        counts: {
-          run: 0,
-          success: 0,
-          failure: 0
-        },
-        time: 0
-      }
-    ]
-  };
+  let networkService: jasmine.SpyObj<NetworkService>;
 
   beforeEach(() => {
+    const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ProbeDataService],
+      providers: [ProbeDataService, { provide: NetworkService, useValue: spy }],
     });
-
     service = TestBed.inject(ProbeDataService);
-    httpMock = TestBed.inject(HttpTestingController);
+    networkService = TestBed.inject(
+      NetworkService
+    ) as jasmine.SpyObj<NetworkService>;
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  describe("fetchProbesData", () => {
-    it("should successfully fetch probe information", () => {
-      service.getProbesInfo().subscribe((data) => {
-        expect(data).toEqual(mockProbesResponse);
-      });
+  it("should call makeHttpRequest with the correct endpoint and parameters when fetchProbesData is called", () => {
+    service.getProbesInfo();
+    expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+      REST_END_POINTS.PROBES
+    );
+  });
 
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
-      );
-
-      expect(req.request.method).toBe("GET");
-      req.flush(mockProbesResponse);
-    });
-
-    it("should handle HTTP errors", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Server Error",
-      };
-
-      service.getProbesInfo().subscribe(
-        () => fail("expected an error, not probes data"),
-        (error) => {
-          expect(error.status).toBe(500);
-          expect(error.statusText).toBe("Server Error");
-        }
-      );
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
-      );
-
-      expect(req.request.method).toBe("GET");
-      req.flush(null, errorResponse);
-    });
+  it("should call makeHttpRequest with the correct endpoint and parameters when launchProbe is called", () => {
+    service.launchProbe("runtime");
+    expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+      REST_END_POINTS.LAUNCH_PROBE,
+      { urlParam: { probeName: "runtime" } }
+    );
   });
 
   describe("convertTextToTitleCase", () => {

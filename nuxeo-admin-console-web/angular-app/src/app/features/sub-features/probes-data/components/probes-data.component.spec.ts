@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ProbesDataComponent } from "./probe-data.component";
+import { ProbesDataComponent } from "./probes-data.component";
 import { provideMockStore } from "@ngrx/store/testing";
 import { Store } from "@ngrx/store";
 import { of } from "rxjs";
@@ -7,12 +7,15 @@ import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
 import { PROBES_LABELS } from "../probes-data.constants";
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CommonService } from "../../../../shared/services/common.service";
+import { HyToastService } from "@hyland/ui";
 
 describe("ProbesDataComponent", () => {
   let component: ProbesDataComponent;
   let fixture: ComponentFixture<ProbesDataComponent>;
   let store: Store;
   let probeServiceSpy: jasmine.SpyObj<ProbeDataService>;
+  let mockCommonService: jasmine.SpyObj<CommonService>;
 
   const initialState = {
     probes: {
@@ -20,7 +23,14 @@ describe("ProbesDataComponent", () => {
     },
   };
 
+  class CommonServiceStub {
+    redirectToProbesDetails() {
+      return "";
+    }
+  }
+
   beforeEach(async () => {
+    const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success", "error"]);
     probeServiceSpy = jasmine.createSpyObj("ProbeDataService", [
       "formatToTitleCase",
     ]);
@@ -28,8 +38,10 @@ describe("ProbesDataComponent", () => {
     await TestBed.configureTestingModule({
       declarations: [ProbesDataComponent],
       providers: [
-        provideMockStore({ initialState }), 
+        provideMockStore({ initialState }),
+        { provide: CommonService, useClass: CommonServiceStub }, 
         { provide: ProbeDataService, useValue: probeServiceSpy }, 
+        { provide: HyToastService, useValue: toastServiceSpy },
       ],
       schemas: [NO_ERRORS_SCHEMA], 
     }).compileComponents();
@@ -37,6 +49,9 @@ describe("ProbesDataComponent", () => {
     fixture = TestBed.createComponent(ProbesDataComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(Store); 
+    mockCommonService = TestBed.inject(
+      CommonService
+    ) as jasmine.SpyObj<CommonService>;
   });
 
   it("should test if the component is created", () => {
@@ -87,5 +102,11 @@ describe("ProbesDataComponent", () => {
     ]);
     component.ngOnDestroy();
     expect(component.fetchProbesSubscription.unsubscribe).toHaveBeenCalled();
+  });
+
+  it('should call redirectToProbesDetails on viewDetails()', () => {
+    spyOn(mockCommonService, "redirectToProbesDetails");
+    component.viewDetails();
+    expect(mockCommonService.redirectToProbesDetails).toHaveBeenCalled();
   });
 });
