@@ -80,9 +80,15 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
               canBeDismissed: true,
             }
           );
-          const el = document.getElementsByClassName('hy-toast__dismiss');
-        // (el as unknown as HTMLElement)?.focus();
-      //  el[0].focus()
+         // const el = document.getElementsByClassName('hy-toast__dismiss');
+        //  console.log(el);
+          let button = document.querySelector('button.hy-toast__dismiss.mdc-icon-button.mat-mdc-icon-button');
+
+          // Check if the button exists and then focus on it
+          if (button instanceof HTMLButtonElement) {
+            button.tabIndex = 1;
+             // button.focus();
+          } 
         }
       });
 
