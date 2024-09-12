@@ -44,6 +44,8 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
+import { PictureRenditionsModule } from "./features/picture-renditions/picture-renditions.module";
+
 
 @NgModule({
   declarations: [
@@ -94,6 +96,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     HyMaterialIconModule,
     BulkActionMonitoringModule,
     ProbesDataModule,
+    PictureRenditionsModule,
   ],
   providers: [
     {
