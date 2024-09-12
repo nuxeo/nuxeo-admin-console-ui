@@ -32,6 +32,15 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import("./features/probes/probes.module").then((m) => m.ProbesModule),
   },
+
+  {
+    path: "pictures",
+    title: routeTitle.PICTURES,
+    loadChildren: () =>
+      import(
+        "./features/picture-renditions/picture-renditions.module"
+      ).then((m) => m.PictureRenditionsModule),
+  },
   {
     path: "auth",
     loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
