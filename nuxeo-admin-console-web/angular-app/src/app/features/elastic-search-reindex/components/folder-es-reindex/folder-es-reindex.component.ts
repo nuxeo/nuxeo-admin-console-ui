@@ -192,7 +192,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           this.commonService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
+        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' 
+         OR ecm:ancestorId='${this.decodedUserInput}' AND ${ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS}`;
         this.fetchNoOfDocuments(requestQuery);
       } catch (error) {
         this.showReindexErrorModal({
