@@ -13,6 +13,7 @@ export interface Probe {
   
   export const PROBES_LABELS = {
     PROBE_TITLE: "Probes",
+    PROBE_STATUS: "Probes status",
     NEVER_EXECUTED: "Never Executed",
     CHECK_AGAIN: "Check Again",
     DETAILS: "Details",
@@ -29,6 +30,7 @@ export interface Probe {
       FAILURE_COUNT: 'Failure Count',
       TIME: 'Time',   
       HISTORY: 'History',
+      ACTIONS: "Actions",
       STATUS: 'Status'
      
     },

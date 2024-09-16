@@ -126,6 +126,9 @@
                     </hy-content-list-column>
                 </ng-container>
                 <hy-content-list-column propertyName="actions" label="Actions" *ngIf="!summary">
+                    <ng-container *hyContentListHeader>
+                        <strong>{{ PROBES_LABELS.COLUMN_HEADERS.ACTIONS }}</strong>
+                    </ng-container>
                     <ng-container *hyContentListCell="let row">
                         <button class="launch-probe-btn" mat-stroked-button color="primary" (click)="launchProbe(row)">
                             {{PROBES_LABELS.CHECK_AGAIN}}
