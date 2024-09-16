@@ -4,21 +4,21 @@ import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
 import { PictureSearchType } from "../picture-renditions.interface";
 import { PICTURE_RENDITIONS_TYPES } from "../picture-renditions.constants";
-import { PictureRendtionsService } from "../services/picture-renditons.service";
+import { PictureRenditionsService } from "../services/picture-renditons.service";
 
 @Component({
-  selector: "picture-renditions",
-  templateUrl: "./picture-renditions.component.html",
-  styleUrls: ["./picture-renditions.component.scss"],
+    selector: "picture-renditions",
+    templateUrl: "./picture-renditions.component.html",
+    styleUrls: ["./picture-renditions.component.scss"],
 })
 export class PictureRenditionsComponent implements OnInit, OnDestroy {
-  searchTabs: PictureSearchType[] = PICTURE_RENDITIONS_TYPES;
-  activeTab: PictureSearchType = this.searchTabs[0];
+    searchTabs: PictureSearchType[] = PICTURE_RENDITIONS_TYPES;
+    activeTab: PictureSearchType = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
 
   constructor(
-    private pictureRendtionsService: PictureRendtionsService,
+    private PictureRenditionsService: PictureRenditionsService,
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef
@@ -34,7 +34,7 @@ export class PictureRenditionsComponent implements OnInit, OnDestroy {
         this.updateActiveTab();
       });
 
-    this.pictureRendtionsService.pageTitle
+      this.PictureRenditionsService.pageTitle
       .pipe(takeUntil(this.activeSubscription))
       .subscribe((title) => {
         this.pageTitle = title;

@@ -5,7 +5,8 @@ export const REST_END_POINTS = {
     CURRENT_USER: "CURRENT_USER",
     CAPABILITIES: "CAPABILITIES",
     LOGOUT: "LOGOUT",
-    BULK_ACTION_MONITORING: "BULK_ACTION_MONITORING"
+    BULK_ACTION_MONITORING: "BULK_ACTION_MONITORING",
+    PICTURES_RENDITIONS: "PICTURES_RENDITIONS",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -18,6 +19,10 @@ interface RestEndpointConfig {
 export const REST_END_POINT_CONFIG: Record<RestEndpointKey, RestEndpointConfig> = {
     ELASTIC_SEARCH_REINDEX: {
         endpoint: "/management/elasticsearch/reindex",
+        method: "POST"
+    },
+    PICTURES_RENDITIONS: {
+        endpoint: "/management/pictures/recompute",
         method: "POST"
     },
     PROBES: {
