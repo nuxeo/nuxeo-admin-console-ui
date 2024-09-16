@@ -192,9 +192,10 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           this.commonService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' 
-          OR ecm:ancestorId='${this.decodedUserInput}' AND ${ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS}`;
-        this.fetchNoOfDocuments(requestQuery);
+          const requestQuery = ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY + " " +
+          "ecm:uuid='" + this.decodedUserInput + "' " + "OR ecm:ancestorId='" + this.decodedUserInput +
+          "' " + ELASTIC_SEARCH_LABELS.AND + " " + ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS;
+          this.fetchNoOfDocuments(requestQuery);
       } catch (error) {
         this.showReindexErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
