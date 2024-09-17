@@ -95,11 +95,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.inputPlaceholder =
-      ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY + " " +
-      ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS + " " +
-      ELASTIC_SEARCH_LABELS.AND + " " +
-      ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER_TITLE;
+    this.inputPlaceholder = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ${ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS} ${ELASTIC_SEARCH_LABELS.AND} ${ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER_TITLE}`;
     this.elasticSearchReindexService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );
