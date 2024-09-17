@@ -24,7 +24,7 @@ export interface PictureSearchType {
     details: ErrorStatus;
   }
   
-  export interface ReindexModalData {
+  export interface RenditionsModalData {
     title: string;
     type: number;
     documentCount: number;

@@ -21,13 +21,9 @@ import { PICTURE_RENDITIONS_LABELS } from '../../picture-renditions.constants';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
-import { ReindexInfo, ReindexModalClosedInfo } from 'src/app/features/elastic-search-reindex/elastic-search-reindex.interface';
 import { RenditionsInfo, RenditionsModalClosedInfo } from 'src/app/features/picture-renditions/picture-renditions.interface';
-import { ElasticSearchReindexModalComponent } from 'src/app/features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component';
-import { ELASTIC_SEARCH_LABELS } from 'src/app/features/elastic-search-reindex/elastic-search-reindex.constants';
-import { ElasticSearchReindexService } from 'src/app/features/elastic-search-reindex/services/elastic-search-reindex.service';
-import { DocumentReindexState } from 'src/app/features/elastic-search-reindex/store/reducers';
-import { DocumentRenditionsState } from 'src/app/features/picture-renditions/store/reducers';
+import { PictureRenditionsModalComponent } from '../picture-renditions-modal/picture-renditions-modal';
+import { DocumentRenditionsState } from '../../store/reducers';
 
 @Component({
   selector: "picture-document-renditions",
@@ -46,18 +42,18 @@ import { DocumentRenditionsState } from 'src/app/features/picture-renditions/sto
     launchedDialogClosedSubscription = new Subscription();
     errorDialogClosedSubscription = new Subscription();
     launchedDialogRef: MatDialogRef<
-      ElasticSearchReindexModalComponent,
-      ReindexModalClosedInfo
+      PictureRenditionsModalComponent,
+      RenditionsModalClosedInfo
     > = {} as MatDialogRef<
-      ElasticSearchReindexModalComponent,
-      ReindexModalClosedInfo
+      PictureRenditionsModalComponent,
+      RenditionsModalClosedInfo
     >;
     confirmDialogRef: MatDialogRef<
-      ElasticSearchReindexModalComponent,
-      ReindexModalClosedInfo
+      PictureRenditionsModalComponent,
+      RenditionsModalClosedInfo
     > = {} as MatDialogRef<
-      ElasticSearchReindexModalComponent,
-      ReindexModalClosedInfo
+      PictureRenditionsModalComponent,
+      RenditionsModalClosedInfo
     >;
     errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
       {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
@@ -132,15 +128,15 @@ import { DocumentRenditionsState } from 'src/app/features/picture-renditions/sto
   
     showRenditionsLaunchedModal(commandId: string | null): void {
       this.launchedDialogRef = this.dialogService.open(
-        ElasticSearchReindexModalComponent,
+        PictureRenditionsModalComponent,
         {
           disableClose: true,
           height: MODAL_DIMENSIONS.HEIGHT,
           width: MODAL_DIMENSIONS.WIDTH,
           data: {
-            type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
-            title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
-            launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+            type: PICTURE_RENDITIONS_LABELS.MODAL_TYPE.launched,
+            title: `${PICTURE_RENDITIONS_LABELS.RENDITIONS_LAUNCHED_MODAL_TITLE}`,
+            launchedMessage: `${PICTURE_RENDITIONS_LABELS.RENDITIONS_LAUNCHED} ${commandId}. ${PICTURE_RENDITIONS_LABELS.COPY_MONITORING_ID}`,
             commandId,
           },
         }
@@ -163,7 +159,7 @@ import { DocumentRenditionsState } from 'src/app/features/picture-renditions/sto
       if (
         this.documentRenditionsForm?.get("documentIdentifier")?.hasError("required")
       ) {
-        return ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
+        return PICTURE_RENDITIONS_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
       }
       return null;
     }

@@ -18,5 +18,14 @@ export const PICTURE_RENDITIONS_LABELS = {
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
   SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
-
+  MODAL_TYPE: {
+    confirm: 1,
+    launched: 2
+  },
+  IMPACT_MESSAGE:
+    "The query could impact performance if it involves high volumes. Documents will not be available for search while reindexing is in progress.",
+  CONTINUE_CONFIRMATION: "Would you like to continue?",
+  SEE_STATUS_LABEL: "See Status",
+  COPY_ACTION_ID_BUTTON_LABEL: "Copy Action ID",
+  RENDITIONS_LAUNCHED_MODAL_TITLE: "Action launched",
 }
