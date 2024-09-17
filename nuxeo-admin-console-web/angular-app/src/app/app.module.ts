@@ -38,7 +38,9 @@ import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
+import * as RenditionsEffects from "./features/picture-renditions/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
+import { renditionsReducer } from './features/picture-renditions/store/reducers';
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
@@ -76,9 +78,10 @@ import { PictureRenditionsModule } from "./features/picture-renditions/picture-r
       nxqlReindex: nxqlReindexReducer,
       bulkActionMonitoring:  bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
+      renditions: renditionsReducer
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects, RenditionsEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,

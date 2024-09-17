@@ -8,7 +8,7 @@ export interface PictureSearchType {
     commandId: string | null;
   }
   
-  export interface ReindexModalClosedInfo {
+  export interface RenditionsModalClosedInfo {
     isClosed: boolean;
     continue?: boolean;
     event: unknown;

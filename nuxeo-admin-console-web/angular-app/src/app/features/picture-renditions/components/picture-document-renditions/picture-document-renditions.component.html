@@ -1,13 +1,13 @@
-<form [formGroup]="documentReindexForm" (ngSubmit)="onReindexFormSubmit()" class="picture-document-renditions-container">
+<form [formGroup]="documentRenditionsForm" (ngSubmit)="onRenditionsFormSubmit()" class="picture-document-renditions-container">
     <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
-        <mat-label>{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
-        <input matInput placeholder="{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID_OR_PATH }}" type="text"
+        <mat-label>{{PICTURE_RENDITIONS_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
+        <input matInput placeholder="{{ PICTURE_RENDITIONS_LABELS.DOCUMENT_ID_OR_PATH }}" type="text"
             formControlName="documentIdentifier" id="documentIdentifier" required />
-        <mat-error *ngIf="documentReindexForm?.get('documentIdentifier')?.invalid">
+        <mat-error *ngIf="documentRenditionsForm?.get('documentIdentifier')?.invalid">
             {{getErrorMessage()}}</mat-error>
     </mat-form-field>
-    <button mat-flat-button color="primary" type="submit" class="picture-document-reindex-container__button" [disabled]="isReindexBtnDisabled">
-        {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
+    <button mat-flat-button color="primary" type="submit" class="picture-document-reindex-container__button" [disabled]="isRenditionsBtnDisabled">
+        {{ PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL }}
     </button>
   </form>

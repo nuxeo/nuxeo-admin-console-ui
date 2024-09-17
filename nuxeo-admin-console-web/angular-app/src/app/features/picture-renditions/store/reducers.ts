@@ -16,7 +16,7 @@ export const initialDocumentState: DocumentRenditionsState = {
   error: null,
 };
 
-export const reindexReducer = createReducer(
+export const renditionsReducer = createReducer(
   initialDocumentState,
   on(RenditionsActions.performDocumentPictureRenditions, (state) => ({
     ...state,

@@ -3,7 +3,7 @@ import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap } from "rxjs";
 import * as ReindexActions from "./actions";
-import { PictureRenditionsService } from "../services/picture-renditons.service";
+import { PictureRenditionsService } from "../services/picture-renditions.service";
 
 export const loadPerformDocumentReindexEffect = createEffect(
   (
