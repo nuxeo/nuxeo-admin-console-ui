@@ -1,0 +1,18 @@
+<form [formGroup]="nxqlRenditionForm" (ngSubmit)="onNxqlRenditionFormSubmit()" class="nxql-picture-rendition-container">
+    <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+    <mat-form-field hyFormField>
+        <mat-label>{{ PICTURE_RENDITIONS_LABELS.NXQL_QUERY }}</mat-label>
+        <textarea matInput [placeholder]="PICTURE_RENDITIONS_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="nxqlQuery"
+            id="nxqlQuery" required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" class="resizable-textarea"></textarea>
+        <mat-error *ngIf="nxqlRenditionForm?.get('nxqlQuery')?.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" class="nxql-picture-rendition-container__button" [disabled]="isReindexBtnDisabled">
+        {{ PICTURE_RENDITIONS_LABELS.RENDITION_BUTTON_LABEL }}
+    </button>
+    <div class="nxql-picture-rendition-hint" [innerHTML]="nxqlQueryHintSanitized"></div>
+    <div class="spinner-overlay" *ngIf="spinnerVisible">
+        <mat-progress-spinner class="custom-spinner" mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
+</form>

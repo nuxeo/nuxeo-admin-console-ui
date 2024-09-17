@@ -40,11 +40,14 @@ import * as ReindexEffects from "./features/elastic-search-reindex/store/effects
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
 import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
+import { PictureRenditionsModalComponent } from "./features/picture-renditions/components/picture-renditions-modal/picture-renditions-modal.component";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
 import { PictureRenditionsModule } from "./features/picture-renditions/picture-renditions.module";
+import { nxqlRenditionReducer } from "./features/picture-renditions/store/reducers";
+import * as RenditionsEffects from "./features/picture-renditions/store/effects";
 
 
 @NgModule({
@@ -57,6 +60,7 @@ import { PictureRenditionsModule } from "./features/picture-renditions/picture-r
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ElasticSearchReindexModalComponent,
+    PictureRenditionsModalComponent,
     ErrorModalComponent
   ],
   imports: [
@@ -76,9 +80,10 @@ import { PictureRenditionsModule } from "./features/picture-renditions/picture-r
       nxqlReindex: nxqlReindexReducer,
       bulkActionMonitoring:  bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
+      nxqlRendition: nxqlRenditionReducer
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects, RenditionsEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,

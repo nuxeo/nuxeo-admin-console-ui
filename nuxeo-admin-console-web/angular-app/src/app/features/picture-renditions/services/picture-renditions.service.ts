@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
+import { RenditionsInfo } from "../picture-renditions.interface";
 
 @Injectable({
   providedIn: "root",
@@ -14,6 +15,12 @@ export class PictureRendtionsService {
     private networkService: NetworkService
   ) {}
 
+  performNXQLRendition(nxqlQuery: string | null): Observable<RenditionsInfo> {
+    return this.networkService.makeHttpRequest<RenditionsInfo>(
+      REST_END_POINTS.RENDITION_SEARCH,
+      { query: nxqlQuery }
+    );
+  }
 
   secondsToHumanReadable(seconds: number): string {
     const SECONDS_IN_MINUTE = 60;

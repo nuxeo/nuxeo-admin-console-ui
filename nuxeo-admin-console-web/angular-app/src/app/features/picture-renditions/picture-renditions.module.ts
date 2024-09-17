@@ -11,12 +11,13 @@ import { MatInputModule } from "@angular/material/input";
 import { PictureRenditionsComponent } from "./components/picture-renditions.component";
 import { PictureRenditionsRoutingModule } from "./picture-renditions-routing.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { NXQLPictureRenditionComponent } from "./components/picture-nxql-renditions/picture-nxql-renditions.component";
 
 @NgModule({
   declarations: [
     PictureRenditionsComponent,
     PictureDocumentRenditionsComponent,
-   
+    NXQLPictureRenditionComponent
     
   ],
   imports: [

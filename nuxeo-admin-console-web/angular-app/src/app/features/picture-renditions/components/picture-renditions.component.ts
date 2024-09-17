@@ -4,7 +4,7 @@ import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
 import { PictureSearchType } from "../picture-renditions.interface";
 import { PICTURE_RENDITIONS_TYPES } from "../picture-renditions.constants";
-import { PictureRendtionsService } from "../services/picture-renditons.service";
+import { PictureRendtionsService } from "../services/picture-renditions.service";
 
 @Component({
   selector: "picture-renditions",

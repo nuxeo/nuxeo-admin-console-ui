@@ -15,7 +15,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
-import { PictureRendtionsService } from "../../services/picture-renditons.service";
+import { PictureRendtionsService } from "../../services/picture-renditions.service";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
