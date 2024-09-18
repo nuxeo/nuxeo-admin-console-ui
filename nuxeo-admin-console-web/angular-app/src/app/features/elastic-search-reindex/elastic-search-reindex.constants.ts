@@ -41,9 +41,8 @@ export const ELASTIC_SEARCH_LABELS = {
   REINDEX_BUTTON_LABEL: "Reindex",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
   SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
-  SELECT_QUERY_CONDITIONS: "ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
-  NXQL_QUERY_PLACEHOLDER_TITLE: "dc:title = 'A document to reindex'",
-  AND: "AND",
+  NXQL_QUERY_PLACEHOLDER:
+    "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A document to reindex'",
   NXQL_QUERY: "NXQL Query",
   NXQL_INPUT_HINT:
     "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
