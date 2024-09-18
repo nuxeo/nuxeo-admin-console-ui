@@ -5,7 +5,6 @@ import {
 } from "@angular/common/http/testing";
 import { HomeService } from "./home.service";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
-import { ProbesResponse } from "./../../../shared/types/probes.interface";
 
 describe("HomeService", () => {
   let service: HomeService;
@@ -18,26 +17,6 @@ describe("HomeService", () => {
     cluster: {
       enabled: true,
     },
-  };
-
-  const mockProbesResponse: ProbesResponse = {
-    entries: [
-      {
-        name: "testProbe",
-        status: {
-          neverExecuted: false,
-          success: true,
-          infos: {
-            info: "Test info",
-          },
-        },
-        history: {
-          lastRun: "2024-07-17T10:00:00Z",
-          lastSuccess: "2024-07-17T10:00:00Z",
-          lastFail: "",
-        },
-      },
-    ],
   };
 
   beforeEach(() => {
@@ -93,62 +72,5 @@ describe("HomeService", () => {
       req.flush(null, errorResponse);
     });
 
-  });
-
-  describe("getProbesInfo", () => {
-    it("should fetch probes info", () => {
-      service.getProbesInfo().subscribe((data) => {
-        expect(data).toEqual(mockProbesResponse);
-      });
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
-      );
-
-      expect(req.request.method).toBe("GET");
-      req.flush(mockProbesResponse);
-    });
-
-    it("should handle http error", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Server Error",
-      };
-      service.getProbesInfo().subscribe(
-        () => fail("expected an error, not probes info"),
-        (error) => {
-          expect(error.status).toBe(500);
-          expect(error.statusText).toBe("Server Error");
-        }
-      );
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/management/probes`
-      );
-
-      expect(req.request.method).toBe("GET");
-      req.flush(null, errorResponse);
-    });
-    
-  });
-
-  it("should convert a single word to title case", () => {
-    const result = service.convertoTitleCase("hello");
-    expect(result).toBe("Hello");
-  });
-
-  it("should convert multiple words to title case", () => {
-    const result = service.convertoTitleCase("hello world");
-    expect(result).toBe("Hello World");
-  });
-
-  it("should handle mixed case words", () => {
-    const result = service.convertoTitleCase("hElLo WoRlD");
-    expect(result).toBe("Hello World");
-  });
-
-  it("should handle empty string", () => {
-    const result = service.convertoTitleCase("");
-    expect(result).toBe("");
   });
 });

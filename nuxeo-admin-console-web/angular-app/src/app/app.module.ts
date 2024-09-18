@@ -33,7 +33,9 @@ import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
+import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
+import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
@@ -41,6 +43,7 @@ import { ElasticSearchReindexModalComponent } from "./features/elastic-search-re
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
+import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
 
 @NgModule({
   declarations: [
@@ -69,10 +72,11 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
       reindex: reindexReducer,
       folderReindex: folderReindexReducer,
       nxqlReindex: nxqlReindexReducer,
-      bulkActionMonitoring:  bulkActionMonitoringReducer
+      bulkActionMonitoring:  bulkActionMonitoringReducer,
+      probes: ProbeDataReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects),
+    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -88,7 +92,8 @@ import { ErrorModalComponent } from './shared/components/error-modal/error-modal
     FormsModule,
     MatCheckboxModule,
     HyMaterialIconModule,
-    BulkActionMonitoringModule
+    BulkActionMonitoringModule,
+    ProbesDataModule,
   ],
   providers: [
     {

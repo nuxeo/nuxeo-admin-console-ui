@@ -1,0 +1,57 @@
+mat-card {
+    height: 97%;
+    min-height: 300px ;
+    min-width: 400px;
+  }
+  
+  .mat-mdc-card-content:first-child {
+    padding-top: 0;
+  }
+  
+  .mat-mdc-card-content {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .probes-title {
+    margin-left: 21px;
+    color: black;
+  }
+  
+  ::ng-deep .hy-content-list__custom-cell {
+    max-height: max-content !important; 
+  }
+
+  .probes-data {
+    height: 100%;
+    h1 {
+        font-size: 20px;
+        font-weight: 500;
+        width: fit-content;
+      }
+  }
+
+  .redirect-details-btn {
+    border-radius: 4px;
+    width: 100px;
+    height: 36px;
+    position: relative;
+    left: 85%;
+    top: 40%;
+    margin-bottom: 20px;
+  }
+
+  .launch-probe-btn.mdc-button.mat-mdc-button-base {
+    line-height: 16px !important;
+    height: 40px !important
+  }
+
+  mat-card-footer {
+    margin-top: 30px;
+  }
+
+  @media (width < 800px) {
+    .redirect-details-btn {
+      left: 75%; 
+    }
+  }
