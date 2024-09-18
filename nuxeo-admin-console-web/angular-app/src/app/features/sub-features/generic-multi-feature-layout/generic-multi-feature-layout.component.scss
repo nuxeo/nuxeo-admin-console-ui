@@ -1,0 +1,22 @@
+.elastic-search-reindex-container {
+  background-color: #f4f4f4;
+  margin: 0px;
+  padding: 20px;
+  height: 100%;
+  &__tabs-container {
+    background-color: #fff;
+    height: 95%;
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 500;
+    width: fit-content; 
+  }
+}
+
+.mat-mdc-tab-header {
+  width: fit-content;
+}
