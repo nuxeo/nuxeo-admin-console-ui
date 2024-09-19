@@ -22,7 +22,7 @@ import { PICTURE_RENDITIONS_LABELS } from '../../picture-renditions.constants';
 // @ts-ignore
 import Nuxeo from "nuxeo";
 import { RenditionsInfo, RenditionsModalClosedInfo } from 'src/app/features/picture-renditions/picture-renditions.interface';
-import { PictureRenditionsModalComponent } from '../picture-renditions-modal/picture-renditions-modal';
+import { PictureRenditionsModalComponent } from '../picture-renditions-modal/picture-renditions-modal.component';
 import { DocumentRenditionsState } from '../../store/reducers';
 
 @Component({

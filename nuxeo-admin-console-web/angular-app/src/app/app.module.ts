@@ -47,6 +47,7 @@ import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bu
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
 import { PictureRenditionsModule } from "./features/picture-renditions/picture-renditions.module";
+import { PictureRenditionsModalComponent } from './features/picture-renditions/components/picture-renditions-modal/picture-renditions-modal.component';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { PictureRenditionsModule } from "./features/picture-renditions/picture-r
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ElasticSearchReindexModalComponent,
-    ErrorModalComponent
+    ErrorModalComponent,
+    PictureRenditionsModalComponent
   ],
   imports: [
     BrowserModule,

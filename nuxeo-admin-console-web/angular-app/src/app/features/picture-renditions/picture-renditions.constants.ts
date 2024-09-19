@@ -16,7 +16,8 @@ export const PICTURE_RENDITIONS_LABELS = {
   CONTINUE: "Continue",
   RENDITIONS_BUTTON_LABEL: "Reindex",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
-  SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
+  // SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
+  SELECT_BASE_QUERY: "SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views AND",
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   MODAL_TYPE: {
     confirm: 1,
