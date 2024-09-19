@@ -1,36 +1,67 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import {
-  Probe,
-  ProbesResponse,
-} from "../../../../shared/types/probes.interface";
-import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
-import { NetworkService } from "../../../../shared/services/network.service";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
-export class ProbeDataService {
-  constructor(private networkService: NetworkService) {}
+export class GenericMultiFeatureUtilitiesService {
+  pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
+  spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  getProbesInfo(): Observable<ProbesResponse> {
-    return this.networkService.makeHttpRequest<ProbesResponse>(
-      REST_END_POINTS.PROBES
-    );
+  secondsToHumanReadable(seconds: number): string {
+    const SECONDS_IN_MINUTE = 60;
+    const SECONDS_IN_HOUR = 3600;
+    const SECONDS_IN_DAY = 86400;
+    const SECONDS_IN_MONTH = 2592000;
+
+    const months = Math.floor(seconds / SECONDS_IN_MONTH);
+    seconds %= SECONDS_IN_MONTH;
+    const days = Math.floor(seconds / SECONDS_IN_DAY);
+    seconds %= SECONDS_IN_DAY;
+    const hours = Math.floor(seconds / SECONDS_IN_HOUR);
+    seconds %= SECONDS_IN_HOUR;
+    const minutes = Math.floor(seconds / SECONDS_IN_MINUTE);
+    const remainingSeconds = seconds % SECONDS_IN_MINUTE;
+
+    let humanReadableTime = "";
+
+    if (months > 0) {
+      humanReadableTime += `${months} month${months > 1 ? "s" : ""} `;
+    }
+    if (days > 0) {
+      humanReadableTime += `${days} day${days > 1 ? "s" : ""} `;
+    }
+    if (hours > 0) {
+      humanReadableTime += `${hours} hour${hours > 1 ? "s" : ""} `;
+    }
+    if (minutes > 0) {
+      humanReadableTime += `${minutes} minute${minutes > 1 ? "s" : ""} `;
+    }
+    if (remainingSeconds > 0) {
+      humanReadableTime += `${remainingSeconds} second${
+        remainingSeconds === 1 ? "" : "s"
+      }`;
+    }
+
+    return humanReadableTime.trim();
   }
 
-  launchProbe(probeName: string | null): Observable<Probe> {
-    return this.networkService.makeHttpRequest<Probe>(
-      REST_END_POINTS.LAUNCH_PROBE,
-      { urlParam: { probeName } }
-    );
+  removeLeadingCharacters(input: string): string {
+    if (input.startsWith("'") && input.endsWith("'")) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith('"') && input.endsWith('"')) {
+      return input.slice(1, -1);
+    }
+    if (input.startsWith("'") || input.startsWith('"')) {
+      return input.slice(1);
+    }
+    return input;
   }
 
-  formatToTitleCase(text: string): string {
-    return text
-      ?.toLowerCase()
-      ?.split(" ")
-      ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
-      ?.join(" ");
+  // tslint:disable-next-line:no-useless-escape
+  decodeAndReplaceSingleQuotes(input: string): string {
+    /* replace & decode all occurences of single & double quotes */
+    return input.replaceAll("'", "%5C%27");
   }
 }

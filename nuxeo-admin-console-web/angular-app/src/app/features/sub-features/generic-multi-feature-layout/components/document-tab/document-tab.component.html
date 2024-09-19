@@ -1,7 +1,7 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="document-tab-container">
-  <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+  <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
   <mat-form-field hyFormField>
-      <mat-label>{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
+      <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
       <input matInput placeholder="{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID_OR_PATH }}" type="text"
           formControlName="inputIdentifier" id="inputIdentifier" required />
       <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">

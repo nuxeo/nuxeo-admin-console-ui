@@ -1,141 +1,151 @@
-import { CommonService } from './../../../../shared/services/common.service';
-import { ErrorModalClosedInfo } from "./../../../../shared/types/common.interface";
-import { ErrorModalComponent } from "./../../../../shared/components/error-modal/error-modal.component";
-import {
-  COMMON_LABELS,
-  ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
-  ERROR_TYPES,
-  MODAL_DIMENSIONS,
-} from "./../../../../shared/constants/common.constants";
-import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
-import { ElasticSearchReindexModalComponent } from "../generic-modal/generic-modal.component";
+import { NXQLReindexState } from './../../../../elastic-search-reindex/store/reducers';
+
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import {
-  ReindexModalClosedInfo,
-  ReindexInfo,
-  ErrorDetails,
-} from "../../elastic-search-reindex.interface";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
-import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
-import { NXQLReindexState } from "../../store/reducers";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
+import { ActionInfo, ErrorDetails, GenericModalClosedInfo } from '../../generic-multi-feature-layout.interface';
+import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../generic-multi-feature-layout.constants';
+import { GenericMultiFeatureUtilitiesService } from '../../services/generic-multi-feature-utilities.service';
+import { GenericModalComponent } from "../generic-modal/generic-modal.component";
+import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
+import { NuxeoJSClientService } from '../../../../../shared/services/nuxeo-js-client.service';
+import { ELASTIC_SEARCH_LABELS } from '../../../../elastic-search-reindex/elastic-search-reindex.constants';
 
 @Component({
-  selector: "nxql-es-reindex",
-  templateUrl: "./nxql-es-reindex.component.html",
-  styleUrls: ["./nxql-es-reindex.component.scss"],
+  selector: "nxql-tab",
+  templateUrl: "./nxql-tab.component.html",
+  styleUrls: ["./nxql-tab.component.scss"],
 })
 export class NXQLESReindexComponent implements OnInit, OnDestroy {
-  nxqlReindexForm: FormGroup;
-  nxqlReindexingLaunched$: Observable<ReindexInfo>;
-  nxqlReindexingError$: Observable<HttpErrorResponse | null>;
-  nxqlReindexingLaunchedSubscription = new Subscription();
-  nxqlReindexingErrorSubscription = new Subscription();
-  reindexDialogClosedSubscription = new Subscription();
-  nxqlQueryHintSanitized: SafeHtml = "";
+  inputForm: FormGroup;
+  actionLaunched$: Observable<ActionInfo>;
+  actionError$: Observable<HttpErrorResponse | null>;
+  actionLaunchedSubscription = new Subscription();
+  actionErrorSubscription = new Subscription();
+  actionDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
+    GenericModalComponent,
+    GenericModalClosedInfo
   > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
-  confirmDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
+    GenericModalComponent,
+    GenericModalClosedInfo
   >;
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
-    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
-  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
+  {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+  confirmDialogRef: MatDialogRef<
+    GenericModalComponent,
+    GenericModalClosedInfo
+  > = {} as MatDialogRef<
+    GenericModalComponent,
+    GenericModalClosedInfo
+  >;
+  GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
+  isSubmitBtnDisabled = false;
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
+  userInput = "";
   decodedUserInput = "";
-  noOfDocumentsToReindex = -1;
-  isReindexBtnDisabled = false;
-  COMMON_LABELS = COMMON_LABELS;
+  documentCount = -1;
+  nxqlQueryHintSanitized: SafeHtml = "";
 
   constructor(
-    private elasticSearchReindexService: ElasticSearchReindexService,
+    private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ nxqlReindex: NXQLReindexState }>,
     private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService,
-    private commonService: CommonService
   ) {
-    this.nxqlReindexForm = this.fb.group({
+    this.inputForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
     });
-    this.nxqlReindexingLaunched$ = this.store.pipe(
+    this.actionLaunched$ = this.store.pipe(
       select((state) => state.nxqlReindex?.nxqlReindexInfo)
     );
-    this.nxqlReindexingError$ = this.store.pipe(
+    this.actionError$ = this.store.pipe(
       select((state) => state.nxqlReindex?.error)
     );
   }
 
   ngOnInit(): void {
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.elasticSearchReindexService.pageTitle.next(
+    this.genericEndUtilitiesService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
     );
     this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       ELASTIC_SEARCH_LABELS.NXQL_INPUT_HINT
     );
 
-    this.nxqlReindexingLaunchedSubscription =
-      this.nxqlReindexingLaunched$.subscribe((data) => {
-        if (data?.commandId) {
-          this.showReindexLaunchedModal(data?.commandId);
-        }
-      });
-
-    this.nxqlReindexingErrorSubscription = this.nxqlReindexingError$.subscribe(
-      (error) => {
-        if (error) {
-          this.showReindexErrorModal({
-            type: ERROR_TYPES.SERVER_ERROR,
-            details: { status: error.status, message: error.message },
-          });
-        }
+    this.actionLaunchedSubscription =
+    this.actionLaunched$.subscribe((data) => {
+      if (data?.commandId) {
+        this.showActionLaunchedModal(data?.commandId);
       }
-    );
+    });
+
+    this.actionErrorSubscription =
+    this.actionError$.subscribe((error) => {
+      if (error) {
+        this.showActionErrorModal({
+          type: ERROR_TYPES.SERVER_ERROR,
+          details: { status: error.status, message: error.message },
+        });
+      }
+    });
     this.spinnerStatusSubscription =
-      this.elasticSearchReindexService.spinnerStatus.subscribe((status) => {
+      this.genericEndUtilitiesService.spinnerStatus.subscribe((status) => {
         this.spinnerVisible = status;
       });
   }
 
-  showReindexLaunchedModal(commandId: string | null): void {
-    this.elasticSearchReindexService.spinnerStatus.next(false);
+  showActionErrorModal(error: ErrorDetails): void {
+    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+      disableClose: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        error
+      },
+    });
+    this.errorDialogClosedSubscription = this.errorDialogRef
+      ?.afterClosed()
+      ?.subscribe(() => {
+        this.onActionErrorModalClose();
+      });
+  }
+
+  onActionErrorModalClose(): void {
+    this.isSubmitBtnDisabled = false;
+    document.getElementById("inputIdentifier")?.focus();
+  }
+
+  showActionLaunchedModal(commandId: string | null): void {
+    this.genericEndUtilitiesService.spinnerStatus.next(false);
     this.launchedDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
+      GenericModalComponent,
       {
         disableClose: true,
         height: MODAL_DIMENSIONS.HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
-          launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+          type: GENERIC_LABELS.MODAL_TYPE.launched,
+          title: `${GENERIC_LABELS.ACTION_LAUNCHED_MODAL_TITLE}`,
+          launchedMessage: `${GENERIC_LABELS.ACTION_LAUNCHED} ${commandId}. ${GENERIC_LABELS.COPY_MONITORING_ID}`,
           commandId,
         },
       }
@@ -144,60 +154,42 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
       .subscribe(() => {
-        this.onReindexLaunchedModalClose();
+        this.onActionLaunchedModalClose();
       });
   }
 
-  onReindexLaunchedModalClose(): void {
-    this.isReindexBtnDisabled = false;
-    this.nxqlReindexForm?.reset();
-    document.getElementById("nxqlQuery")?.focus();
-  }
-
-  showReindexErrorModal(error: ErrorDetails): void {
-    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
-      disableClose: true,
-      height: MODAL_DIMENSIONS.HEIGHT,
-      width: MODAL_DIMENSIONS.WIDTH,
-      data: {
-        error,
-      },
-    });
-    this.errorDialogClosedSubscription = this.errorDialogRef
-      .afterClosed()
-      .subscribe(() => {
-        this.onReindexErrorModalClose();
-      });
-  }
-
-  onReindexErrorModalClose(): void {
-    this.isReindexBtnDisabled = false;
-    document.getElementById("nxqlQuery")?.focus();
+  onActionLaunchedModalClose(): void {
+    this.isSubmitBtnDisabled = false;
+    this.inputForm?.reset();
+    document.getElementById("inputIdentifier")?.focus();
   }
 
   getErrorMessage(): string | null {
-    if (this.nxqlReindexForm?.get("nxqlQuery")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.REQUIRED_NXQL_QUERY_ERROR;
+    if (
+      this.inputForm?.get("inputIdentifier")?.hasError("required")
+    ) {
+      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
 
-  onReindexFormSubmit(): void {
-    if (this.nxqlReindexForm?.valid && !this.isReindexBtnDisabled) {
-      this.isReindexBtnDisabled = true;
-      this.elasticSearchReindexService.spinnerStatus.next(true);
-      const userInput = this.nxqlReindexForm?.get("nxqlQuery")?.value?.trim();
+
+  onFormSubmit(): void {
+    if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
+      this.isSubmitBtnDisabled = true;
+      this.genericEndUtilitiesService.spinnerStatus.next(true);
+      const userInput = this.inputForm?.get("inputIdentifier")?.value?.trim();
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
       try {
         const decodedUserInput = decodeURIComponent(
           /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
-          this.commonService.removeLeadingCharacters(userInput)
+          this.genericEndUtilitiesService.removeLeadingCharacters(userInput)
         );
         this.fetchNoOfDocuments(decodedUserInput);
       } catch (error) {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
-        this.showReindexErrorModal({
+        this.genericEndUtilitiesService.spinnerStatus.next(false);
+        this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
           details: {
             message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
@@ -212,18 +204,18 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .query({ query, pageSize: 1 })
       .then((document: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
+        this.genericEndUtilitiesService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
           "resultsCount" in document
         ) {
-          this.noOfDocumentsToReindex = document.resultsCount
+          this.documentCount = document.resultsCount
             ? (document.resultsCount as number)
             : 0;
-          if (this.noOfDocumentsToReindex === 0) {
-            this.elasticSearchReindexService.spinnerStatus.next(false);
-            this.showReindexErrorModal({
+          if (this.documentCount === 0) {
+            this.genericEndUtilitiesService.spinnerStatus.next(false);
+            this.showActionErrorModal({
               type: ERROR_TYPES.NO_MATCHING_QUERY,
               details: {
                 message: ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
@@ -231,15 +223,15 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
             });
           } else {
             this.showConfirmationModal(
-              this.noOfDocumentsToReindex as number,
+              this.documentCount as number,
               query
             );
           }
         }
       })
       .catch((err: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
-        this.noOfDocumentsToReindex = -1;
+        this.genericEndUtilitiesService.spinnerStatus.next(false);
+        this.documentCount = -1;
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }
@@ -261,7 +253,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
 
   showConfirmationModal(documentCount: number, query: string): void {
     this.confirmDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
+      GenericModalComponent,
       {
         disableClose: true,
         height: MODAL_DIMENSIONS.HEIGHT,
@@ -281,12 +273,12 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
     this.confirmDialogClosedSubscription = this.confirmDialogRef
       .afterClosed()
       .subscribe((data) => {
-        this.onConfirmationModalClose(data as ReindexModalClosedInfo, query);
+        this.onConfirmationModalClose(data as GenericModalClosedInfo, query);
       });
   }
 
-  onConfirmationModalClose(data: ReindexModalClosedInfo, query: string): void {
-    this.isReindexBtnDisabled = false;
+  onConfirmationModalClose(data: GenericModalClosedInfo, query: string): void {
+    this.isSubmitBtnDisabled = false;
     if (data?.continue) {
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
@@ -303,7 +295,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           })
         );
       } catch (error) {
-        this.showReindexErrorModal({
+        this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
           details: {
             message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
@@ -311,7 +303,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
         });
       }
     } else {
-      document.getElementById("nxqlQuery")?.focus();
+      document.getElementById("inputIdentifier")?.focus();
     }
   }
 
@@ -329,14 +321,14 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   getHumanReadableTime(seconds: number): string {
-    return this.elasticSearchReindexService.secondsToHumanReadable(seconds);
+    return this.genericEndUtilitiesService.secondsToHumanReadable(seconds);
   }
 
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetNxqlReindexState());
-    this.nxqlReindexingLaunchedSubscription?.unsubscribe();
-    this.nxqlReindexingErrorSubscription?.unsubscribe();
-    this.reindexDialogClosedSubscription?.unsubscribe();
+    this.actionLaunchedSubscription?.unsubscribe();
+    this.actionErrorSubscription?.unsubscribe();
+    this.actionDialogClosedSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();

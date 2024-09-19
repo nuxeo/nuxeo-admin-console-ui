@@ -1,110 +1,98 @@
-import { CommonService } from './../../../../shared/services/common.service';
-import { ErrorModalClosedInfo } from "./../../../../shared/types/common.interface";
-import { ErrorModalComponent } from "./../../../../shared/components/error-modal/error-modal.component";
-import {
-  COMMON_LABELS,
-  ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
-  ERROR_TYPES,
-  MODAL_DIMENSIONS,
-} from "./../../../../shared/constants/common.constants";
-import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
-import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { FolderReindexState } from "../../store/reducers";
-import {
-  ErrorDetails,
-  ReindexInfo,
-  ReindexModalClosedInfo,
-} from "../../elastic-search-reindex.interface";
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  ELASTIC_SEARCH_LABELS,
-} from "../../elastic-search-reindex.constants";
+
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
-import { ElasticSearchReindexService } from "../../services/elastic-search-reindex.service";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
+import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../generic-multi-feature-layout.constants';
+import { GenericModalComponent } from '../generic-modal/generic-modal.component';
+import { ActionInfo, ErrorDetails, GenericModalClosedInfo } from '../../generic-multi-feature-layout.interface';
+import { GenericMultiFeatureUtilitiesService } from '../../services/generic-multi-feature-utilities.service';
+import { ErrorModalComponent } from '../../../../../shared/components/error-modal/error-modal.component';
+import { ErrorModalClosedInfo } from '../../../../../shared/types/common.interface';
+import { ELASTIC_SEARCH_LABELS } from '../../../../elastic-search-reindex/elastic-search-reindex.constants';
+import { NuxeoJSClientService } from '../../../../../shared/services/nuxeo-js-client.service';
 
 @Component({
-  selector: "folder-es-reindex",
-  templateUrl: "./folder-es-reindex.component.html",
-  styleUrls: ["./folder-es-reindex.component.scss"],
+  selector: "folder-tab",
+  templateUrl: "./folder-tab.component.html",
+  styleUrls: ["./folder-tab.component.scss"],
 })
 export class FolderESReindexComponent implements OnInit, OnDestroy {
-  folderReindexForm: FormGroup;
-  folderReindexingLaunched$: Observable<ReindexInfo>;
-  folderReindexingError$: Observable<HttpErrorResponse | null>;
-  folderReindexingLaunchedSubscription = new Subscription();
-  folderReindexingErrorSubscription = new Subscription();
+  inputForm: FormGroup;
+  actionLaunched$: Observable<ActionInfo>;
+  actionError$: Observable<HttpErrorResponse | null>;
+  actionLaunchedSubscription = new Subscription();
+  actionErrorSubscription = new Subscription();
+  actionDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
+    GenericModalComponent,
+    GenericModalClosedInfo
   > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
-  confirmDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
+    GenericModalComponent,
+    GenericModalClosedInfo
   >;
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
-    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
-  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
+  {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+  confirmDialogRef: MatDialogRef<
+    GenericModalComponent,
+    GenericModalClosedInfo
+  > = {} as MatDialogRef<
+    GenericModalComponent,
+    GenericModalClosedInfo
+  >;
+  GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
+  isSubmitBtnDisabled = false;
+  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
-  isReindexBtnDisabled = false;
-  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
-    private elasticSearchReindexService: ElasticSearchReindexService,
+    private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
-    private commonService: CommonService
   ) {
-    this.folderReindexForm = this.fb.group({
-      documentID: ["", Validators.required],
+    this.inputForm = this.fb.group({
+      inputIdentifier: ["", Validators.required],
     });
-    this.folderReindexingLaunched$ = this.store.pipe(
+    this.actionLaunched$ = this.store.pipe(
       select((state) => state.folderReindex?.folderReindexInfo)
     );
-    this.folderReindexingError$ = this.store.pipe(
+    this.actionError$ = this.store.pipe(
       select((state) => state.folderReindex?.error)
     );
   }
 
   ngOnInit(): void {
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.elasticSearchReindexService.pageTitle.next(
+    this.genericEndUtilitiesService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE}`
     );
-    this.folderReindexingLaunchedSubscription =
-      this.folderReindexingLaunched$.subscribe((data) => {
+    this.actionLaunchedSubscription =
+      this.actionLaunched$.subscribe((data) => {
         if (data?.commandId) {
-          this.showReindexLaunchedModal(data?.commandId);
+          this.showActionLaunchedModal(data?.commandId);
         }
       });
 
-    this.folderReindexingErrorSubscription =
-      this.folderReindexingError$.subscribe((error) => {
+      this.actionErrorSubscription =
+      this.actionError$.subscribe((error) => {
         if (error) {
-          this.showReindexErrorModal({
+          this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: { status: error.status, message: error.message },
           });
@@ -112,13 +100,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       });
 
     this.spinnerStatusSubscription =
-      this.elasticSearchReindexService.spinnerStatus.subscribe((status) => {
+      this.genericEndUtilitiesService.spinnerStatus.subscribe((status) => {
         this.spinnerVisible = status;
       });
   }
 
-  showReindexErrorModal(error: ErrorDetails): void {
-    this.elasticSearchReindexService.spinnerStatus.next(false);
+  showActionErrorModal(error: ErrorDetails): void {
+    this.genericEndUtilitiesService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
       height: MODAL_DIMENSIONS.HEIGHT,
@@ -129,59 +117,62 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       },
     });
     this.errorDialogClosedSubscription = this.errorDialogRef
-      .afterClosed()
-      .subscribe(() => {
-        this.onReindexErrorModalClose();
+      ?.afterClosed()
+      ?.subscribe(() => {
+        this.onActionErrorModalClose();
       });
   }
 
-  onReindexErrorModalClose(): void {
-    this.isReindexBtnDisabled = false;
-    this.elasticSearchReindexService.spinnerStatus.next(false);
-    document.getElementById("documentID")?.focus();
+  onActionErrorModalClose(): void {
+    this.isSubmitBtnDisabled = false;
+    this.genericEndUtilitiesService.spinnerStatus.next(false);
+    document.getElementById("inputIdentifier")?.focus();
   }
 
-  showReindexLaunchedModal(commandId: string | null): void {
+  showActionLaunchedModal(commandId: string | null): void {
     this.launchedDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
+      GenericModalComponent,
       {
         disableClose: true,
         height: MODAL_DIMENSIONS.HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
-          launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
+          type: GENERIC_LABELS.MODAL_TYPE.launched,
+          title: `${GENERIC_LABELS.ACTION_LAUNCHED_MODAL_TITLE}`,
+          launchedMessage: `${GENERIC_LABELS.ACTION_LAUNCHED} ${commandId}. ${GENERIC_LABELS.COPY_MONITORING_ID}`,
           commandId,
         },
       }
     );
+
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
       .subscribe(() => {
-        this.onReindexLaunchedModalClose();
+        this.onActionLaunchedModalClose();
       });
   }
 
-  onReindexLaunchedModalClose(): void {
-    this.isReindexBtnDisabled = false;
-    this.folderReindexForm?.reset();
-    document.getElementById("documentID")?.focus();
+  onActionLaunchedModalClose(): void {
+    this.isSubmitBtnDisabled = false;
+    this.inputForm?.reset();
+    document.getElementById("inputIdentifier")?.focus();
   }
 
   getErrorMessage(): string | null {
-    if (this.folderReindexForm?.get("documentID")?.hasError("required")) {
-      return ELASTIC_SEARCH_LABELS.REQUIRED_DOCID_ERROR;
+    if (
+      this.inputForm?.get("inputIdentifier")?.hasError("required")
+    ) {
+      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
 
-  onReindexFormSubmit(): void {
-    if (this.folderReindexForm?.valid && !this.isReindexBtnDisabled) {
-      this.isReindexBtnDisabled = true;
-      this.elasticSearchReindexService.spinnerStatus.next(true);
-      this.userInput = this.commonService.removeLeadingCharacters(
-        this.folderReindexForm?.get("documentID")?.value.trim()
+  onFormSubmit(): void {
+    if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
+      this.isSubmitBtnDisabled = true;
+      this.genericEndUtilitiesService.spinnerStatus.next(true);
+      this.userInput = this.genericEndUtilitiesService.removeLeadingCharacters(
+        this.inputForm?.get("inputIdentifier")?.value.trim()
       );
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
           for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
@@ -189,13 +180,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
         this.decodedUserInput =
-          this.commonService.decodeAndReplaceSingleQuotes(
+          this.genericEndUtilitiesService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
+        const requestQuery = `${GENERIC_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
         this.fetchNoOfDocuments(requestQuery);
       } catch (error) {
-        this.showReindexErrorModal({
+        this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
           details: {
             message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
@@ -210,7 +201,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       .repository()
       .query({ query, pageSize: 1 })
       .then((document: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
+        this.genericEndUtilitiesService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
@@ -220,7 +211,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             ? (document.resultsCount as number)
             : 0;
           if (documentCount === 0) {
-            this.showReindexErrorModal({
+            this.showActionErrorModal({
               type: ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
               details: {
                 message: ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
@@ -232,7 +223,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         }
       })
       .catch((err: unknown) => {
-        this.elasticSearchReindexService.spinnerStatus.next(false);
+        this.genericEndUtilitiesService.spinnerStatus.next(false);
         if (this.checkIfErrorHasResponse(err)) {
           return (
             err as { response: { json: () => Promise<unknown> } }
@@ -254,18 +245,18 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   showConfirmationModal(documentCount: number): void {
     this.confirmDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
+      GenericModalComponent,
       {
         disableClose: true,
         height: MODAL_DIMENSIONS.HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
-          message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
+          type: GENERIC_LABELS.MODAL_TYPE.confirm,
+          title: `${GENERIC_LABELS.ACTION_CONFIRMATION_MODAL_TITLE}`,
+          message: `${GENERIC_LABELS.ACTION_WARNING}`,
           documentCount,
-          timeTakenToReindex: this.getHumanReadableTime(
-            documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
+          timeTakenForAction: this.getHumanReadableTime(
+            documentCount / GENERIC_LABELS.REFERENCE_POINT
           ),
         },
       }
@@ -279,8 +270,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   onConfirmationModalClose(modalData: unknown): void {
-    this.isReindexBtnDisabled = false;
-    const data = modalData as ReindexModalClosedInfo;
+    this.isSubmitBtnDisabled = false;
+    const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
       const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
       this.store.dispatch(
@@ -289,7 +280,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
         })
       );
     } else {
-      document.getElementById("documentID")?.focus();
+      document.getElementById("inputIdentifier")?.focus();
     }
   }
 
@@ -307,13 +298,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   getHumanReadableTime(seconds: number): string {
-    return this.elasticSearchReindexService.secondsToHumanReadable(seconds);
+    return this.genericEndUtilitiesService.secondsToHumanReadable(seconds);
   }
 
   ngOnDestroy(): void {
     this.store.dispatch(ReindexActions.resetFolderReindexState());
-    this.folderReindexingLaunchedSubscription?.unsubscribe();
-    this.folderReindexingErrorSubscription?.unsubscribe();
+    this.actionLaunchedSubscription?.unsubscribe();
+    this.actionErrorSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
