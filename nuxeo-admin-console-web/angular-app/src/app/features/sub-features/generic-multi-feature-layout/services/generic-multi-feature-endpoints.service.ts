@@ -1,36 +1,38 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import {
-  Probe,
-  ProbesResponse,
-} from "../../../../shared/types/probes.interface";
-import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
+import { BehaviorSubject, Observable } from "rxjs";
 import { NetworkService } from "../../../../shared/services/network.service";
+import { ActionInfo } from "../generic-multi-feature-layout.interface";
+import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
 
 @Injectable({
   providedIn: "root",
 })
-export class ProbeDataService {
-  constructor(private networkService: NetworkService) {}
+export class GenericMultiFeatureEndpointsService {
+  pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
+  spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  getProbesInfo(): Observable<ProbesResponse> {
-    return this.networkService.makeHttpRequest<ProbesResponse>(
-      REST_END_POINTS.PROBES
+  constructor(
+    private networkService: NetworkService
+  ) {}
+
+  performDocumentReindex(requestQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
+      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
+      { query: requestQuery }
     );
   }
 
-  launchProbe(probeName: string | null): Observable<Probe> {
-    return this.networkService.makeHttpRequest<Probe>(
-      REST_END_POINTS.LAUNCH_PROBE,
-      { urlParam: { probeName } }
+  performFolderReindex(requestQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
+      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
+      { query: requestQuery }
     );
   }
 
-  formatToTitleCase(text: string): string {
-    return text
-      ?.toLowerCase()
-      ?.split(" ")
-      ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
-      ?.join(" ");
+  performNXQLReindex(nxqlQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
+      REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
+      { query: nxqlQuery }
+    );
   }
 }

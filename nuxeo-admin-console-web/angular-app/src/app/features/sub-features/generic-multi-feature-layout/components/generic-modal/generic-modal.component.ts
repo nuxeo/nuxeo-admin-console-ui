@@ -1,20 +1,20 @@
 import { Component, Inject } from "@angular/core";
-import { COMMON_LABELS } from './../../../../shared/constants/common.constants';
-import { ELASTIC_SEARCH_LABELS } from "./../../elastic-search-reindex.constants";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { GenericModalData } from "../../elastic-search-reindex.interface";
-import { CommonService } from "../../../../shared/services/common.service";
+import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
+import { COMMON_LABELS } from "../../../../../shared/constants/common.constants";
+import { CommonService } from "../../../../../shared/services/common.service";
+import { GenericModalData } from "../../generic-multi-feature-layout.interface";
 
 @Component({
-  selector: "elastic-search-reindex-modal",
-  templateUrl: "./elastic-search-reindex-modal.component.html",
-  styleUrls: ["./elastic-search-reindex-modal.component.scss"],
+  selector: "generic-modal",
+  templateUrl: "./generic-modal.component.html",
+  styleUrls: ["./generic-modal.component.scss"],
 })
-export class ElasticSearchReindexModalComponent  {
-  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
+export class GenericModalComponent  {
+  GENERIC_LABELS = GENERIC_LABELS;
   COMMON_LABELS = COMMON_LABELS;
   constructor(
-    private dialogRef: MatDialogRef<ElasticSearchReindexModalComponent>,
+    private dialogRef: MatDialogRef<GenericModalComponent>,
     public commonService: CommonService,
     @Inject(MAT_DIALOG_DATA) public data: GenericModalData
   ) {}
@@ -34,7 +34,7 @@ export class ElasticSearchReindexModalComponent  {
 
   copyActionId(): void {
     navigator.clipboard.writeText(this.data.commandId).then(() => {
-      alert(ELASTIC_SEARCH_LABELS.ACTION_ID_COPIED_ALERT);
+      alert(GENERIC_LABELS.ACTION_ID_COPIED_ALERT);
     });
   }
 

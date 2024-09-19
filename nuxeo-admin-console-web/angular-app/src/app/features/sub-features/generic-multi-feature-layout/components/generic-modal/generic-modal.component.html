@@ -6,14 +6,14 @@
   </hy-dialog-box-header>
 
   <hy-dialog-box-content class="hy-dialog-box__content">
-    <div *ngIf="data.type === ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm else launchMessage;">
+    <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm else launchMessage;">
       <div>
         <p>
-          {{ ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE }}
+          {{ GENERIC_LABELS.IMPACT_MESSAGE }}
         </p>
         <p>This action will impact {{data.documentCount}} 
           {{data.documentCount === 1 ? 'document' : 'documents'}}
-          and could take approximately {{data.timeTakenToReindex}}. {{ ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION }}
+          and could take approximately {{data.timeTakenToReindex}}. {{ GENERIC_LABELS.CONTINUE_CONFIRMATION }}
         </p>
       </div>
     </div>
@@ -23,12 +23,12 @@
       <div id="action-buttons-container">
         <div class="action-button-group">
           <button mat-stroked-button color="primary" (click)="seeStatus()">
-            {{ ELASTIC_SEARCH_LABELS.SEE_STATUS_LABEL }}
+            {{ GENERIC_LABELS.SEE_STATUS_LABEL }}
           </button>
         </div>
         <div class="action-button-group">
           <button mat-stroked-button color="primary" (click)="copyActionId()">
-            {{ ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL }}
+            {{ GENERIC_LABELS.COPY_ACTION_ID_BUTTON_LABEL }}
           </button>
         </div>
       </div>
@@ -36,12 +36,12 @@
   </hy-dialog-box-content>
 
   <hy-dialog-box-footer class="hy-dialog-box__footer">
-    <div *ngIf="data.type === ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm; else closeBtn" class="hy-dialog-box__button-group">
+    <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn" class="hy-dialog-box__button-group">
       <button mat-stroked-button color="primary" (click)="close()">
-        {{ ELASTIC_SEARCH_LABELS.ABORT_LABEL }}
+        {{ GENERIC_LABELS.ABORT_LABEL }}
       </button>
       <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">
-        {{ ELASTIC_SEARCH_LABELS.CONTINUE }}
+        {{ GENERIC_LABELS.CONTINUE }}
       </button>
     </div>
 

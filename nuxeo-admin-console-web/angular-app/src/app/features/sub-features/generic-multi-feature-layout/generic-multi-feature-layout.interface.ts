@@ -28,7 +28,7 @@ export interface GenericModalData {
   title: string;
   type: number;
   documentCount: number;
-  timeTakenToReindex: string;
+  timeTakenForAction: string;
   error: ErrorDetails;
   launchedMessage: string;
   commandId: string;
