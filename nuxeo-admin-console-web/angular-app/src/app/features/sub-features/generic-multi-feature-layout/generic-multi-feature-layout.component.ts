@@ -2,23 +2,23 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import { ElasticSearchType } from "../elastic-search-reindex.interface";
-import { ELASTIC_SEARCH_REINDEX_TYPES } from "../elastic-search-reindex.constants";
-import { ElasticSearchReindexService } from "../services/elastic-search-reindex.service";
+import { TAB_TYPES } from "./generic-multi-feature-layout.constants";
+import { TabType } from "./generic-multi-feature-layout.interface";
+import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
 
 @Component({
-  selector: "elastic-search-reindex",
-  templateUrl: "./elastic-search-reindex.component.html",
-  styleUrls: ["./elastic-search-reindex.component.scss"],
+  selector: "generic-multi-feature-layout",
+  templateUrl: "./generic-multi-feature-layout.component.html",
+  styleUrls: ["./generic-multi-feature-layout.component.scss"],
 })
-export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
-  searchTabs: ElasticSearchType[] = ELASTIC_SEARCH_REINDEX_TYPES;
-  activeTab: ElasticSearchType = this.searchTabs[0];
+export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
+  searchTabs: TabType[] = TAB_TYPES;
+  activeTab: TabType = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
 
   constructor(
-    private elasticSearchReindexService: ElasticSearchReindexService,
+    private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef
@@ -34,7 +34,7 @@ export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
         this.updateActiveTab();
       });
 
-    this.elasticSearchReindexService.pageTitle
+    this.genericEndUtilitiesService.pageTitle
       .pipe(takeUntil(this.activeSubscription))
       .subscribe((title) => {
         this.pageTitle = title;
@@ -53,7 +53,7 @@ export class ElasticSearchReindexComponent implements OnInit, OnDestroy {
     }
   }
 
-  activateTab(tab: ElasticSearchType): void {
+  activateTab(tab: TabType): void {
     this.activeTab = tab;
   }
 

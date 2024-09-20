@@ -1,8 +1,12 @@
+import { DocumentReindexState } from './../store/reducers';
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
+import { Store } from '@ngrx/store';
+import { ELASTIC_SEARCH_LABELS } from '../elastic-search-reindex.constants';
+import { GENERIC_LABELS } from '../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
 
 @Injectable({
   providedIn: "root",
@@ -72,5 +76,27 @@ export class ElasticSearchReindexService {
     }
 
     return humanReadableTime.trim();
+  }
+
+  getData(): Observable<any> {
+   const store = Store<{ reindex: DocumentReindexState }>
+    const data = {
+      featureName: "elasticSearchReindex",
+      labelSrc: ELASTIC_SEARCH_LABELS,
+      store
+    }
+    return of(data);
+  }
+
+  getRequestQuery(param: string, featureName: string): string {
+      return `${GENERIC_LABELS.SELECT_BASE_QUERY} ecm:path='${param}'`;
+  }
+
+  getActionLaunchedConfig(state: any) {
+    return state.reindex?.ActionInfo
+  }
+
+  getActionErrorConfig(state: any) {
+    return state.reindex?.error();
   }
 }

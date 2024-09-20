@@ -1,3 +1,5 @@
+import { GenericMultiFeatureLayoutModule } from './features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module';
+import { GenericModalComponent } from './features/sub-features/generic-multi-feature-layout/components/generic-modal/generic-modal.component';
 import { bulkActionMonitoringReducer } from './features/bulk-action-monitoring/store/reducers';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
@@ -55,6 +57,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     ElasticSearchReindexModalComponent,
+    GenericModalComponent,
     ErrorModalComponent
   ],
   imports: [
@@ -94,6 +97,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     HyMaterialIconModule,
     BulkActionMonitoringModule,
     ProbesDataModule,
+    GenericMultiFeatureLayoutModule
   ],
   providers: [
     {
