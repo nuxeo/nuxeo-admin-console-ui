@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-import * as ReindexActions from "../../store/actions";
+// import * as ReindexActions from "../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -24,10 +24,10 @@ import { NuxeoJSClientService } from '../../../../../shared/services/nuxeo-js-cl
   templateUrl: "./folder-tab.component.html",
   styleUrls: ["./folder-tab.component.scss"],
 })
-export class FolderESReindexComponent implements OnInit, OnDestroy {
+export class FolderTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
-  actionLaunched$: Observable<ActionInfo>;
-  actionError$: Observable<HttpErrorResponse | null>;
+  // actionLaunched$: Observable<ActionInfo>;
+  // actionError$: Observable<HttpErrorResponse | null>;
   actionLaunchedSubscription = new Subscription();
   actionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
@@ -63,18 +63,18 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ folderReindex: FolderReindexState }>,
+   // private store: Store<{ folderReindex: FolderReindexState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
     });
-    this.actionLaunched$ = this.store.pipe(
+   /* this.actionLaunched$ = this.store.pipe(
       select((state) => state.folderReindex?.folderReindexInfo)
     );
     this.actionError$ = this.store.pipe(
       select((state) => state.folderReindex?.error)
-    );
+    ); */
   }
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.genericEndUtilitiesService.pageTitle.next(
       `${ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE}`
     );
-    this.actionLaunchedSubscription =
+  /*  this.actionLaunchedSubscription =
       this.actionLaunched$.subscribe((data) => {
         if (data?.commandId) {
           this.showActionLaunchedModal(data?.commandId);
@@ -97,7 +97,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             details: { status: error.status, message: error.message },
           });
         }
-      });
+      }); */
 
     this.spinnerStatusSubscription =
       this.genericEndUtilitiesService.spinnerStatus.subscribe((status) => {
@@ -234,11 +234,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
+        /*  this.store.dispatch(
             ReindexActions.onFolderReindexFailure({
               error: errorJson as HttpErrorResponse,
             })
-          );
+          ); */
         }
       });
   }
@@ -274,11 +274,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
       const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
-      this.store.dispatch(
+     /* this.store.dispatch(
         ReindexActions.performFolderReindex({
           requestQuery,
         })
-      );
+      ); */
     } else {
       document.getElementById("inputIdentifier")?.focus();
     }
@@ -302,7 +302,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(ReindexActions.resetFolderReindexState());
+   // this.store.dispatch(ReindexActions.resetFolderReindexState());
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();

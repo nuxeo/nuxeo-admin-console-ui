@@ -5,7 +5,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-import * as ReindexActions from "../../store/actions";
+// import * as ReindexActions from "../../store/actions";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -26,7 +26,7 @@ import { ELASTIC_SEARCH_LABELS } from '../../../../elastic-search-reindex/elasti
   templateUrl: "./nxql-tab.component.html",
   styleUrls: ["./nxql-tab.component.scss"],
 })
-export class NXQLESReindexComponent implements OnInit, OnDestroy {
+export class NXQLTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
   actionLaunched$: Observable<ActionInfo>;
   actionError$: Observable<HttpErrorResponse | null>;
@@ -242,11 +242,11 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
+         /* this.store.dispatch(
             ReindexActions.onNxqlReindexFailure({
               error: errorJson as HttpErrorResponse,
             })
-          );
+          ); */
         }
       });
   }
@@ -289,11 +289,11 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
           /\\'/g,
           "%5C%27"
         );
-        this.store.dispatch(
+       /* this.store.dispatch(
           ReindexActions.performNxqlReindex({
             nxqlQuery: this.decodedUserInput,
           })
-        );
+        ); */
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
@@ -325,7 +325,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(ReindexActions.resetNxqlReindexState());
+   // this.store.dispatch(ReindexActions.resetNxqlReindexState());
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();

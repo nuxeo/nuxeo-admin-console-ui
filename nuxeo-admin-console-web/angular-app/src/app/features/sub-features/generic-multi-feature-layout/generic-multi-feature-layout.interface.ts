@@ -1,3 +1,4 @@
+import { Store } from '@ngrx/store';
 export interface TabType {
   label: string;
   path: string;
@@ -33,4 +34,15 @@ export interface GenericModalData {
   launchedMessage: string;
   commandId: string;
   userInput: string;
+}
+
+export const actionsMap = {
+  elasticSearchReindex: () => import('../../elastic-search-reindex/store/actions'),
+  // Add other mappings here
+};
+
+export interface TemplateConfigType {
+  featureName: string;
+  labelSrc: string;
+  store: unknown
 }

@@ -1,22 +1,27 @@
+import { DocumentReindexDataResolver } from './document-reindex-data.resolver';
+import { DocumentTabComponent } from './../sub-features/generic-multi-feature-layout/components/document-tab/document-tab.component';
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";
-import { ElasticSearchReindexComponent } from "./components/elastic-search-reindex.component";
-import { DocumentESReindexComponent } from "./components/document-es-reindex/document-es-reindex.component";
 import { FolderESReindexComponent } from "./components/folder-es-reindex/folder-es-reindex.component";
 import { NXQLESReindexComponent } from "./components/nxql-es-reindex/nxql-es-reindex.component";
 import { ELASTIC_SEARCH_LABELS } from "./elastic-search-reindex.constants";
+import { GenericMultiFeatureLayoutComponent } from "../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.component";
+import { ElasticSearchReindexService } from './services/elastic-search-reindex.service';
 
 const elasticSearchLabels = ELASTIC_SEARCH_LABELS;
 export const ElasticSearchReindexRoutes: Route[] = [
   {
     path: "",
-    component: ElasticSearchReindexComponent,
+    component: GenericMultiFeatureLayoutComponent,
     children: [
       {
         path: "document",
         title: elasticSearchLabels.DOCUMENT_REINDEX_TITLE,
-        component: DocumentESReindexComponent,
+        component: DocumentTabComponent,
+        resolve: {
+          data: DocumentReindexDataResolver
+        }
       },
       {
         path: "folder",
@@ -37,4 +42,8 @@ export const ElasticSearchReindexRoutes: Route[] = [
   imports: [RouterModule.forChild(ElasticSearchReindexRoutes)],
   exports: [RouterModule],
 })
-export class ElasticSearchReindexRoutingModule {}
+export class ElasticSearchReindexRoutingModule {
+  constructor(private elasticSearchReindexService: ElasticSearchReindexService) {
+
+  }
+}
