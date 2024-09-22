@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import {
   FEATURE_NAMES,
   GENERIC_LABELS,
+  TAB_TYPES,
 } from "../generic-multi-feature-layout.constants";
 import { ActionInfo } from "../generic-multi-feature-layout.interface";
 
@@ -71,39 +72,63 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getActionLaunchedConfig(state: any): ActionInfo {
+  getActionLaunchedConfig(state: any, featureName: string, tabType: string): ActionInfo {
     let actionConfigObj: ActionInfo = {
       commandId: "",
     };
-    if (state?.reindex?.reindexInfo) {
-      actionConfigObj = state.reindex.reindexInfo;
-    }
     /* Add required state object as per feature in an else-if block */
+    switch (featureName) {
+      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+        if (tabType === TAB_TYPES.DOCUMENT) {
+          actionConfigObj = state?.reindex?.reindexInfo;
+        } else if (tabType === TAB_TYPES.FOLDER) {
+          actionConfigObj = state?.folderReindex?.folderReindexInfo;
+        } else if (tabType === TAB_TYPES.NXQL) {
+          actionConfigObj = state?.nxqlReindex?.nxqlReindexxInfo;
+        }
+        break;
+    }
     return actionConfigObj;
   }
 
-  getActionErrorConfig(state: any): HttpErrorResponse | null {
+  getActionErrorConfig(state: any, featureName: string, tabType: string): HttpErrorResponse | null {
     let actionErrorObj: HttpErrorResponse | null = null;
-    if (state?.reindex) {
-      actionErrorObj = state.reindex?.error;
-    }
     /* Add required state object as per feature in an else-if block */
+    switch (featureName) {
+      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+        if (tabType === TAB_TYPES.DOCUMENT) {
+          actionErrorObj = state?.reindex?.error;
+        } else if (tabType === TAB_TYPES.FOLDER) {
+          actionErrorObj = state?.folderReindex?.error;
+        } else if (tabType === TAB_TYPES.NXQL) {
+          actionErrorObj = state?.nxqlReindex?.error;
+        }
+        break;
+    }
     return actionErrorObj;
   }
 
-  buildQuery(queryParam: string, featureName: string): string {
+  buildQuery(queryParam: string, featureName: string, tabType: string): string {
     let query = "";
     switch (featureName) {
       case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        query = `ecm:path='${queryParam}'`;
+        switch (tabType) {
+          case "Document":
+            query = `ecm:path='${queryParam}'`;
+            break;
+          case "Folder":
+            query = `ecm:uuid='${queryParam}' OR ecm:ancestorId='${queryParam}''`;
+            break;
+        }
     }
     return query;
   }
 
-  getRequestQuery(param: string, featureName: string): string {
+  getRequestQuery(param: string, featureName: string, tabType: string): string {
     return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.buildQuery(
       param,
-      featureName
+      featureName,
+      tabType
     )}`;
   }
 }

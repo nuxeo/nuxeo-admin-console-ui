@@ -41,7 +41,6 @@ import * as ProbesEffects from "./features/sub-features/probes-data/store/effect
 import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
-import { ElasticSearchReindexModalComponent } from "./features/elastic-search-reindex/components/elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
@@ -56,7 +55,6 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     BackendErrorMessagesComponent,
     HylandSSOManagerComponent,
     BaseLayoutComponent,
-    ElasticSearchReindexModalComponent,
     GenericModalComponent,
     ErrorModalComponent
   ],

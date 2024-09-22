@@ -1,6 +1,6 @@
 import { Store } from '@ngrx/store';
 
-export interface TabType {
+export interface TabInfo {
   label: string;
   path: string;
   isSelected: boolean;
@@ -53,3 +53,14 @@ export interface labelsList {
   pageTitle: string;
   submitBtnLabel: string;
 }
+
+export interface FeatureData {
+  featureName: string;
+  tabType: string;
+  labels: {
+    pageTitle: string;
+    submitBtnLabel: string;
+  };
+  store: Store<unknown>; 
+}
+

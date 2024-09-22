@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import { TAB_TYPES } from "./generic-multi-feature-layout.constants";
-import { TabType } from "./generic-multi-feature-layout.interface";
+import { TAB_INFO } from "./generic-multi-feature-layout.constants";
+import { TabInfo } from "./generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
 
 @Component({
@@ -12,8 +12,8 @@ import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-fe
   styleUrls: ["./generic-multi-feature-layout.component.scss"],
 })
 export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
-  searchTabs: TabType[] = TAB_TYPES;
-  activeTab: TabType = this.searchTabs[0];
+  searchTabs: TabInfo[] = TAB_INFO;
+  activeTab: TabInfo = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
 
@@ -53,7 +53,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  activateTab(tab: TabType): void {
+  activateTab(tab: TabInfo): void {
     this.activeTab = tab;
   }
 

@@ -1,14 +1,14 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="folder-tab-container">
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
-        <mat-label>{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID }}</mat-label>
-        <input matInput placeholder="{{ ELASTIC_SEARCH_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier" id="inputIdentifier" required />
+        <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID }}</mat-label>
+        <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier" id="inputIdentifier" required />
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
             {{getErrorMessage()}}
         </mat-error>
     </mat-form-field>
     <button mat-flat-button color="primary" type="submit" class="folder-tab-container__button" [disabled]="isSubmitBtnDisabled">
-        {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
+        {{ templateLabels.submitBtnLabel }}
     </button>
     <div class="spinner-overlay" *ngIf="spinnerVisible">
         <mat-progress-spinner class="custom-spinner" mode="indeterminate">

@@ -27,6 +27,7 @@ import {
   FEATURE_NAMES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
+  TAB_TYPES,
 } from "../../generic-multi-feature-layout.constants";
 import { ActivatedRoute } from "@angular/router";
 type ActionsImportFunction = () => Promise<unknown>;
@@ -89,7 +90,9 @@ export class DocumentTabComponent implements OnDestroy {
         this.actionLaunched$ = this.store.pipe(
           select((state) =>
             this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
-              state
+              state,
+              this.templateConfigData.featureName,
+              TAB_TYPES.DOCUMENT
             )
           )
         );
@@ -97,7 +100,9 @@ export class DocumentTabComponent implements OnDestroy {
           select(
             (state) =>
               this.genericMultiFeatureUtilitiesService.getActionErrorConfig(
-                state
+                state,
+                this.templateConfigData.featureName,
+                TAB_TYPES.DOCUMENT
               ) as HttpErrorResponse
           )
         );
@@ -230,7 +235,8 @@ export class DocumentTabComponent implements OnDestroy {
                 requestQuery =
                   this.genericMultiFeatureUtilitiesService.getRequestQuery(
                     decodedPath,
-                    FEATURE_NAMES.ELASTIC_SEARCH_REINDEX
+                    FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
+                    TAB_TYPES.DOCUMENT
                   );
                 this.store.dispatch(
                   this.taskActions.performDocumentReindex({
