@@ -1,4 +1,5 @@
 import { Store } from '@ngrx/store';
+
 export interface TabType {
   label: string;
   path: string;
@@ -36,13 +37,19 @@ export interface GenericModalData {
   userInput: string;
 }
 
-export const actionsMap = {
+export const actionsMap: { [key: string]: () => Promise<any> } = {
   elasticSearchReindex: () => import('../../elastic-search-reindex/store/actions'),
   // Add other mappings here
 };
 
+
 export interface TemplateConfigType {
   featureName: string;
-  labelSrc: string;
-  store: unknown
+  labels: labelsList;
+  store: Store<unknown>
+}
+
+export interface labelsList {
+  pageTitle: string;
+  submitBtnLabel: string;
 }

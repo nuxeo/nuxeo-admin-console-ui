@@ -1,12 +1,15 @@
-import { DocumentReindexState } from './../store/reducers';
+import { DocumentReindexState } from "./../store/reducers";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
-import { Store } from '@ngrx/store';
-import { ELASTIC_SEARCH_LABELS } from '../elastic-search-reindex.constants';
-import { GENERIC_LABELS } from '../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
+import { Store } from "@ngrx/store";
+import { ELASTIC_SEARCH_LABELS } from "../elastic-search-reindex.constants";
+import {
+  FEATURE_NAMES,
+  GENERIC_LABELS,
+} from "../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 
 @Injectable({
   providedIn: "root",
@@ -16,7 +19,8 @@ export class ElasticSearchReindexService {
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private networkService: NetworkService
+    private networkService: NetworkService,
+    private documentStore: Store<{ reindex: DocumentReindexState }>
   ) {}
 
   performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
@@ -78,25 +82,15 @@ export class ElasticSearchReindexService {
     return humanReadableTime.trim();
   }
 
-  getData(): Observable<any> {
-   const store = Store<{ reindex: DocumentReindexState }>
+  getDocumentTabData(): Observable<any> {
     const data = {
-      featureName: "elasticSearchReindex",
-      labelSrc: ELASTIC_SEARCH_LABELS,
-      store
-    }
+      featureName: FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
+      labels: {
+        pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
+        submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+      },
+      store: this.documentStore,
+    };
     return of(data);
-  }
-
-  getRequestQuery(param: string, featureName: string): string {
-      return `${GENERIC_LABELS.SELECT_BASE_QUERY} ecm:path='${param}'`;
-  }
-
-  getActionLaunchedConfig(state: any) {
-    return state.reindex?.ActionInfo
-  }
-
-  getActionErrorConfig(state: any) {
-    return state.reindex?.error();
   }
 }

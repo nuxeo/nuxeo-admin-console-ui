@@ -1,3 +1,4 @@
+import { DocumentTabComponent } from './components/document-tab/document-tab.component';
 import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
 import { FolderTabComponent } from "./components/folder-tab/folder-tab.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -18,7 +19,6 @@ import {
   HyMaterialTabsModule,
 } from "@hyland/ui";
 import { ReactiveFormsModule } from "@angular/forms";
-import { DocumentTabComponent } from "./components/document-tab/document-tab.component";
 
 @NgModule({
   declarations: [
