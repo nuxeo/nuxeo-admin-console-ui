@@ -1,10 +1,16 @@
-import { TabType } from "./generic-multi-feature-layout.interface";
+import { TabInfo } from "./generic-multi-feature-layout.interface";
 
-export const TAB_TYPES: TabType[] = [
+export const TAB_INFO: TabInfo[] = [
   { label: "Document", path: "document", isSelected: true },
   { label: "Folder", path: "folder", isSelected: false },
   { label: "NXQL Query", path: "nxql", isSelected: false },
 ];
+
+export const TAB_TYPES = {
+  DOCUMENT: "Document",
+  FOLDER: "Folder",
+  NXQL: "Nxql",
+};
 
 export const GENERIC_LABELS = {
   CLOSE_LABEL: "Close",
