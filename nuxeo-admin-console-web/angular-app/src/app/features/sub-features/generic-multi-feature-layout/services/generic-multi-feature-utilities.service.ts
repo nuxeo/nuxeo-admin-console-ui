@@ -1,5 +1,11 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
+import {
+  FEATURE_NAMES,
+  GENERIC_LABELS,
+} from "../generic-multi-feature-layout.constants";
+import { ActionInfo } from "../generic-multi-feature-layout.interface";
 
 @Injectable({
   providedIn: "root",
@@ -63,5 +69,41 @@ export class GenericMultiFeatureUtilitiesService {
   decodeAndReplaceSingleQuotes(input: string): string {
     /* replace & decode all occurences of single & double quotes */
     return input.replaceAll("'", "%5C%27");
+  }
+
+  getActionLaunchedConfig(state: any): ActionInfo {
+    let actionConfigObj: ActionInfo = {
+      commandId: "",
+    };
+    if (state?.reindex?.reindexInfo) {
+      actionConfigObj = state.reindex.reindexInfo;
+    }
+    /* Add required state object as per feature in an else-if block */
+    return actionConfigObj;
+  }
+
+  getActionErrorConfig(state: any): HttpErrorResponse | null {
+    let actionErrorObj: HttpErrorResponse | null = null;
+    if (state?.reindex) {
+      actionErrorObj = state.reindex?.error;
+    }
+    /* Add required state object as per feature in an else-if block */
+    return actionErrorObj;
+  }
+
+  buildQuery(queryParam: string, featureName: string): string {
+    let query = "";
+    switch (featureName) {
+      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+        query = `ecm:path='${queryParam}'`;
+    }
+    return query;
+  }
+
+  getRequestQuery(param: string, featureName: string): string {
+    return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.buildQuery(
+      param,
+      featureName
+    )}`;
   }
 }
