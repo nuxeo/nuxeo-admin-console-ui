@@ -11,7 +11,7 @@
   <packaging>zip</packaging>
   <name>Nuxeo admin console package - Admin console package</name>
   <properties>
-    <nuxeoadmin.package.version>23.0.4-beta.001</nuxeoadmin.package.version>
+    <nuxeoadmin.package.version>${project.version}</nuxeoadmin.package.version>
   </properties>
 
   <dependencies>
