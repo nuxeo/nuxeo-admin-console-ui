@@ -22,8 +22,8 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import {
   ActionInfo,
   ErrorDetails,
+  FeatureData,
   GenericModalClosedInfo,
-  TemplateConfigType,
   actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
@@ -65,7 +65,7 @@ export class FolderTabComponent implements OnDestroy {
   GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
-  templateConfigData: TemplateConfigType = {} as TemplateConfigType;
+  templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   taskActions: any;
@@ -103,7 +103,8 @@ export class FolderTabComponent implements OnDestroy {
               state,
               this.templateConfigData.featureName,
               TAB_TYPES.FOLDER
-            )
+            ) 
+         //   state[this.templateConfigData.stateSelector as string]
           )
         );
         this.actionError$ = this.store.pipe(
@@ -220,18 +221,12 @@ export class FolderTabComponent implements OnDestroy {
           this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-        let requestQuery;
-        switch (this.templateConfigData.featureName) {
-          case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-            this.requestQuery =
-              this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                this.decodedUserInput,
-                FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
-                TAB_TYPES.FOLDER
-              );
-            break;
-          /* Add actions as per feature */
-        }
+
+        this.requestQuery =
+          this.genericMultiFeatureUtilitiesService.getRequestQuery(
+            this.templateConfigData.requestQuery as string,
+            this.decodedUserInput
+          );
         this.fetchNoOfDocuments(this.requestQuery as string);
       } catch (error) {
         this.showActionErrorModal({
@@ -282,15 +277,11 @@ export class FolderTabComponent implements OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-          switch (this.templateConfigData.featureName) {
-            case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-              this.store.dispatch(
-                this.taskActions.onFolderReindexFailure({
-                  error: errorJson as HttpErrorResponse,
-                })
-              );
-              break;
-          }
+          this.store.dispatch(
+            this.taskActions[this.templateConfigData.taskFailureAction]({
+              error: errorJson as HttpErrorResponse,
+            })
+          );
         }
       });
   }
@@ -322,15 +313,11 @@ export class FolderTabComponent implements OnDestroy {
     this.isSubmitBtnDisabled = false;
     const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
-      switch (this.templateConfigData.featureName) {
-        case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-          this.store.dispatch(
-            this.taskActions.performFolderReindex({
-              requestQuery: this.requestQuery,
-            })
-          );
-          break;
-      }
+      this.store.dispatch(
+        this.taskActions[this.templateConfigData.primaryAction as string]({
+          requestQuery: this.requestQuery,
+        })
+      );
     } else {
       document.getElementById("inputIdentifier")?.focus();
     }
@@ -356,12 +343,9 @@ export class FolderTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    switch (this.templateConfigData.featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        this.store.dispatch(this.taskActions.resetFolderReindexState());
-        break;
-      /* Add actions as per feature */
-    }
+    this.store.dispatch(
+      this.taskActions[this.templateConfigData.resetStateAction]()
+    );
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();

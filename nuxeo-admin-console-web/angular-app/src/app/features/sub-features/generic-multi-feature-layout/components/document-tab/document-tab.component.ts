@@ -4,8 +4,8 @@ import { ErrorModalComponent } from "./../../../../../shared/components/error-mo
 import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
 import {
   ErrorDetails,
+  FeatureData,
   GenericModalClosedInfo,
-  TemplateConfigType,
   actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
@@ -24,7 +24,6 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURE_NAMES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
   TAB_TYPES,
@@ -56,7 +55,7 @@ export class DocumentTabComponent implements OnDestroy {
   GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
-  templateConfigData: TemplateConfigType = {} as TemplateConfigType;
+  templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   taskActions: any;
@@ -87,13 +86,15 @@ export class DocumentTabComponent implements OnDestroy {
         });
       }
       if (this.store) {
+      //  const stateType = this.templateConfigData.stateType;
         this.actionLaunched$ = this.store.pipe(
           select((state) =>
-            this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
+             this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
               state,
               this.templateConfigData.featureName,
               TAB_TYPES.DOCUMENT
-            )
+            ) 
+           // state[this.templateConfigData.stateSelector as string]
           )
         );
         this.actionError$ = this.store.pipe(
@@ -228,24 +229,18 @@ export class DocumentTabComponent implements OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            // const requestQuery = `${GENERIC_LABELS.SELECT_BASE_QUERY} ecm:path='${decodedPath}'`;
-            let requestQuery;
-            switch (this.templateConfigData.featureName) {
-              case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-                requestQuery =
-                  this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                    decodedPath,
-                    FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
-                    TAB_TYPES.DOCUMENT
-                  );
-                this.store.dispatch(
-                  this.taskActions.performDocumentReindex({
-                    requestQuery,
-                  })
-                );
-                break;
-              /* Add actions as per feature */
-            }
+            let requestQuery =
+              this.genericMultiFeatureUtilitiesService.getRequestQuery(
+                this.templateConfigData.requestQuery as string,
+                decodedPath
+              );
+            this.store.dispatch(
+              this.taskActions[this.templateConfigData.primaryAction as string](
+                {
+                  requestQuery,
+                }
+              )
+            );
           } catch (error) {
             this.showActionErrorModal({
               type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
@@ -267,16 +262,11 @@ export class DocumentTabComponent implements OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-          switch (this.templateConfigData.featureName) {
-            case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-              this.store.dispatch(
-                this.taskActions.onDocumentReindexFailure({
-                  error: errorJson as HttpErrorResponse,
-                })
-              );
-              break;
-            /* Add actions as per feature */
-          }
+          this.store.dispatch(
+            this.taskActions[this.templateConfigData.taskFailureAction]({
+              error: errorJson as HttpErrorResponse,
+            })
+          );
         }
       });
   }
@@ -295,12 +285,9 @@ export class DocumentTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    switch (this.templateConfigData.featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        this.store.dispatch(this.taskActions.resetDocumentReindexState());
-        break;
-      /* Add actions as per feature */
-    }
+    this.store.dispatch(
+      this.taskActions[this.templateConfigData.resetStateAction]()
+    );
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();
