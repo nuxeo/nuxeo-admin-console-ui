@@ -1,6 +1,6 @@
 import { createAction, props } from "@ngrx/store";
-import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { HttpErrorResponse } from "@angular/common/http";
+import { ActionInfo } from "../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
 
 export const performDocumentReindex = createAction(
   "[Admin] Perform Reindex",
@@ -8,7 +8,7 @@ export const performDocumentReindex = createAction(
 );
 export const onDocumentReindexLaunch = createAction(
   "[Admin] On Reindex Launch",
-  props<{ reindexInfo: ReindexInfo }>()
+  props<{ reindexInfo: ActionInfo }>()
 );
 export const onDocumentReindexFailure = createAction(
   "[Admin] Perform Reindex Failure",
@@ -23,7 +23,7 @@ export const performFolderReindex = createAction(
 );
 export const onFolderReindexLaunch = createAction(
   "[Admin] On Folder Reindex Launch",
-  props<{ folderReindexInfo: ReindexInfo }>()
+  props<{ folderReindexInfo: ActionInfo }>()
 );
 export const onFolderReindexFailure = createAction(
   "[Admin] On Folder Reindex Failure",
@@ -38,7 +38,7 @@ export const performNxqlReindex = createAction(
 );
 export const onNxqlReindexLaunch = createAction(
   "[Admin] On NXQL Reindex Launch",
-  props<{ nxqlReindexInfo: ReindexInfo }>()
+  props<{ nxqlReindexInfo: ActionInfo }>()
 );
 export const onNxqlReindexFailure = createAction(
   "[Admin] On NXQL Reindex Failure",

@@ -1,14 +1,14 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="nxql-tab-container">
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
-        <mat-label>{{ ELASTIC_SEARCH_LABELS.NXQL_QUERY }}</mat-label>
-        <textarea matInput [placeholder]="ELASTIC_SEARCH_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="inputIdentifier"
+        <mat-label>{{ GENERIC_LABELS.NXQL_QUERY }}</mat-label>
+        <textarea matInput [placeholder]="GENERIC_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="inputIdentifier"
             id="inputIdentifier" required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" class="resizable-textarea"></textarea>
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
 
     <button mat-flat-button color="primary" type="submit" class="nxql-tab-container__button" [disabled]="isSubmitBtnDisabled">
-        {{ ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL }}
+        {{ templateLabels.submitBtnLabel }}
     </button>
     <div class="nxql-tab-hint" [innerHTML]="nxqlQueryHintSanitized"></div>
     <div class="spinner-overlay" *ngIf="spinnerVisible">

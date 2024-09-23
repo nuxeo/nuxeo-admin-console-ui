@@ -1,7 +1,6 @@
-import { DocumentReindexState, FolderReindexState } from "./../store/reducers";
+import { DocumentReindexState, FolderReindexState, NXQLReindexState } from "./../store/reducers";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { ReindexInfo } from "../elastic-search-reindex.interface";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
 import { Store } from "@ngrx/store";
@@ -11,7 +10,7 @@ import {
   GENERIC_LABELS,
   TAB_TYPES,
 } from "../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
-import { FeatureData } from "../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
+import { ActionInfo, FeatureData } from "../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
 
 @Injectable({
   providedIn: "root",
@@ -23,66 +22,29 @@ export class ElasticSearchReindexService {
   constructor(
     private networkService: NetworkService,
     private documentStore: Store<{ reindex: DocumentReindexState }>,
-    private folderStore: Store<{ folderReindex: FolderReindexState }>
+    private folderStore: Store<{ folderReindex: FolderReindexState }>,
+    private nxqlStore: Store<{ nxqlReindex: NXQLReindexState }>,
   ) {}
 
-  performDocumentReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
+  performDocumentReindex(requestQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: requestQuery }
     );
   }
 
-  performFolderReindex(requestQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
+  performFolderReindex(requestQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: requestQuery }
     );
   }
 
-  performNXQLReindex(nxqlQuery: string | null): Observable<ReindexInfo> {
-    return this.networkService.makeHttpRequest<ReindexInfo>(
+  performNXQLReindex(nxqlQuery: string | null): Observable<ActionInfo> {
+    return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS.ELASTIC_SEARCH_REINDEX,
       { query: nxqlQuery }
     );
-  }
-
-  secondsToHumanReadable(seconds: number): string {
-    const SECONDS_IN_MINUTE = 60;
-    const SECONDS_IN_HOUR = 3600;
-    const SECONDS_IN_DAY = 86400;
-    const SECONDS_IN_MONTH = 2592000;
-
-    const months = Math.floor(seconds / SECONDS_IN_MONTH);
-    seconds %= SECONDS_IN_MONTH;
-    const days = Math.floor(seconds / SECONDS_IN_DAY);
-    seconds %= SECONDS_IN_DAY;
-    const hours = Math.floor(seconds / SECONDS_IN_HOUR);
-    seconds %= SECONDS_IN_HOUR;
-    const minutes = Math.floor(seconds / SECONDS_IN_MINUTE);
-    const remainingSeconds = seconds % SECONDS_IN_MINUTE;
-
-    let humanReadableTime = "";
-
-    if (months > 0) {
-      humanReadableTime += `${months} month${months > 1 ? "s" : ""} `;
-    }
-    if (days > 0) {
-      humanReadableTime += `${days} day${days > 1 ? "s" : ""} `;
-    }
-    if (hours > 0) {
-      humanReadableTime += `${hours} hour${hours > 1 ? "s" : ""} `;
-    }
-    if (minutes > 0) {
-      humanReadableTime += `${minutes} minute${minutes > 1 ? "s" : ""} `;
-    }
-    if (remainingSeconds > 0) {
-      humanReadableTime += `${remainingSeconds} second${
-        remainingSeconds === 1 ? "" : "s"
-      }`;
-    }
-
-    return humanReadableTime.trim();
   }
 
   getDocumentTabData(): Observable<FeatureData> {
@@ -107,6 +69,19 @@ export class ElasticSearchReindexService {
         submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
       },
       store: this.folderStore,
+    };
+    return of(data);
+  }
+
+  getNXQLTabData(): Observable<FeatureData> {
+    const data = {
+      featureName: FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
+      tabType: TAB_TYPES.NXQL,
+      labels: {
+        pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
+        submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+      },
+      store: this.nxqlStore,
     };
     return of(data);
   }
