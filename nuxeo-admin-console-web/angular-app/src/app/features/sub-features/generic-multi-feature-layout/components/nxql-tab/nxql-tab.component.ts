@@ -1,12 +1,9 @@
 import { ActivatedRoute } from "@angular/router";
-import { NXQLReindexState } from "./../../../../elastic-search-reindex/store/reducers";
-
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
-// import * as ReindexActions from "../../store/actions";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -16,8 +13,8 @@ import Nuxeo from "nuxeo";
 import {
   ActionInfo,
   ErrorDetails,
+  FeatureData,
   GenericModalClosedInfo,
-  TemplateConfigType,
   actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
@@ -25,7 +22,6 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURE_NAMES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
   TAB_TYPES,
@@ -35,7 +31,6 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
-import { ELASTIC_SEARCH_LABELS } from "../../../../elastic-search-reindex/elastic-search-reindex.constants";
 type ActionsImportFunction = () => Promise<unknown>;
 
 @Component({
@@ -70,7 +65,7 @@ export class NXQLTabComponent implements OnDestroy {
   GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
-  templateConfigData: TemplateConfigType = {} as TemplateConfigType;
+  templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   taskActions: any;
@@ -109,11 +104,12 @@ export class NXQLTabComponent implements OnDestroy {
       if (this.store) {
         this.actionLaunched$ = this.store.pipe(
           select((state) =>
-            this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
+             this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
               state,
               this.templateConfigData.featureName,
               TAB_TYPES.NXQL
-            )
+            ) 
+           // state[this.templateConfigData.stateSelector as string]
           )
         );
         this.actionError$ = this.store.pipe(
@@ -279,15 +275,11 @@ export class NXQLTabComponent implements OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-          switch (this.templateConfigData.featureName) {
-            case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-              this.store.dispatch(
-                this.taskActions.onNxqlReindexFailure({
-                  error: errorJson as HttpErrorResponse,
-                })
-              );
-              break;
-          }
+          this.store.dispatch(
+            this.taskActions[this.templateConfigData.taskFailureAction]({
+              error: errorJson as HttpErrorResponse,
+            })
+          );
         }
       });
   }
@@ -327,15 +319,11 @@ export class NXQLTabComponent implements OnDestroy {
           /\\'/g,
           "%5C%27"
         );
-        switch (this.templateConfigData.featureName) {
-          case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-            this.store.dispatch(
-              this.taskActions.performNxqlReindex({
-                nxqlQuery: this.decodedUserInput,
-              })
-            );
-            break;
-        }
+        this.store.dispatch(
+          this.taskActions[this.templateConfigData.primaryAction as string]({
+            nxqlQuery: this.decodedUserInput,
+          })
+        );
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
@@ -369,12 +357,9 @@ export class NXQLTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    switch (this.templateConfigData.featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        this.store.dispatch(this.taskActions.resetNxqlReindexState());
-        break;
-      /* Add actions as per feature */
-    }
+    this.store.dispatch(
+      this.taskActions[this.templateConfigData.resetStateAction]()
+    );
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();

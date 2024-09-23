@@ -75,7 +75,7 @@ export class GenericMultiFeatureUtilitiesService {
   getActionLaunchedConfig(
     state: any,
     featureName: string,
-    tabType: string
+    tabType: string,
   ): ActionInfo {
     let actionConfigObj: ActionInfo = {
       commandId: "",
@@ -125,18 +125,24 @@ export class GenericMultiFeatureUtilitiesService {
             query = `ecm:path='${queryParam}'`;
             break;
           case "Folder":
-            query = `ecm:uuid='${queryParam}' OR ecm:ancestorId='${queryParam}''`;
+            query = `ecm:uuid='${queryParam}' OR ecm:ancestorId='${queryParam}'`;
             break;
         }
     }
     return query;
   }
 
-  getRequestQuery(param: string, featureName: string, tabType: string): string {
-    return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.buildQuery(
+  getRequestQuery(requestQuery: string, param: string): string {
+   /* return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.buildQuery(
       param,
       featureName,
       tabType
-    )}`;
+    )}`; */
+
+    return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(requestQuery, param)}`;
+  }
+
+  insertParamInQuery(requestQuery: string, param: string,) {
+    return requestQuery.replaceAll('{queryParam}', param);
   }
 }

@@ -51,11 +51,16 @@ export class ElasticSearchReindexService {
     const data = {
       featureName: FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
       tabType: TAB_TYPES.DOCUMENT,
+      requestQuery: `ecm:path='{queryParam}'`,
       labels: {
         pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
         submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
       },
       store: this.documentStore,
+      stateType: 'DocumentReindexState',
+      primaryAction: 'performDocumentReindex',
+      resetStateAction: 'resetDocumentReindexState',
+      taskFailureAction: 'onDocumentReindexFailure'
     };
     return of(data);
   }
@@ -64,11 +69,17 @@ export class ElasticSearchReindexService {
     const data = {
       featureName: FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
       tabType: TAB_TYPES.FOLDER,
+      requestQuery: `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}'`,
       labels: {
         pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
         submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
       },
       store: this.folderStore,
+      stateType: 'FolderReindexState',
+      primaryAction: 'performFolderReindex',
+      resetStateAction: 'resetFolderReindexState',
+      taskFailureAction: 'onFolderReindexFailure',
+      stateSelector: 'reindex?.reindexInfo'
     };
     return of(data);
   }
@@ -77,11 +88,16 @@ export class ElasticSearchReindexService {
     const data = {
       featureName: FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
       tabType: TAB_TYPES.NXQL,
+      requestQuery: `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}'`,
       labels: {
         pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
         submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
       },
+      stateType: 'NXQLReindexState',
       store: this.nxqlStore,
+      primaryAction: 'performNxqlReindex',
+      resetStateAction: 'resetNxqlReindexState',
+      taskFailureAction: 'onNxqlReindexFailure'
     };
     return of(data);
   }

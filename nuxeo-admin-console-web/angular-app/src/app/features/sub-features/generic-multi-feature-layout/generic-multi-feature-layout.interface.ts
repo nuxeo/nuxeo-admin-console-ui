@@ -42,13 +42,6 @@ export const actionsMap: { [key: string]: () => Promise<any> } = {
   // Add other mappings here
 };
 
-
-export interface TemplateConfigType {
-  featureName: string;
-  labels: labelsList;
-  store: Store<unknown>
-}
-
 export interface labelsList {
   pageTitle: string;
   submitBtnLabel: string;
@@ -57,10 +50,13 @@ export interface labelsList {
 export interface FeatureData {
   featureName: string;
   tabType: string;
-  labels: {
-    pageTitle: string;
-    submitBtnLabel: string;
-  };
+  requestQuery?: string;
+  labels: labelsList;
   store: Store<unknown>; 
+  primaryAction: string;
+  resetStateAction: string;
+  taskFailureAction: string;
+  stateSelector?: string;
+  stateType?: unknown;
 }
 
