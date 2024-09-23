@@ -1,9 +1,8 @@
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -31,7 +30,6 @@ import {
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
-import { ELASTIC_SEARCH_LABELS } from "../../../../elastic-search-reindex/elastic-search-reindex.constants";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 type ActionsImportFunction = () => Promise<unknown>;
 
@@ -71,6 +69,7 @@ export class FolderTabComponent implements OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   taskActions: any;
+  requestQuery = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -224,7 +223,7 @@ export class FolderTabComponent implements OnDestroy {
         let requestQuery;
         switch (this.templateConfigData.featureName) {
           case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-            requestQuery =
+            this.requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
                 this.decodedUserInput,
                 FEATURE_NAMES.ELASTIC_SEARCH_REINDEX,
@@ -233,7 +232,7 @@ export class FolderTabComponent implements OnDestroy {
             break;
           /* Add actions as per feature */
         }
-        this.fetchNoOfDocuments(requestQuery as string);
+        this.fetchNoOfDocuments(this.requestQuery as string);
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
@@ -323,12 +322,11 @@ export class FolderTabComponent implements OnDestroy {
     this.isSubmitBtnDisabled = false;
     const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
       switch (this.templateConfigData.featureName) {
         case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
           this.store.dispatch(
             this.taskActions.performFolderReindex({
-              requestQuery,
+              requestQuery: this.requestQuery,
             })
           );
           break;

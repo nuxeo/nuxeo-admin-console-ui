@@ -1,4 +1,4 @@
-import { ErrorDetails } from './../../../../elastic-search-reindex/elastic-search-reindex.interface';
+import { GenericMultiFeatureUtilitiesService } from './../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service';
 import { CommonService } from './../../../../../shared/services/common.service';
 import { COMMON_LABELS, ERROR_MODAL_LABELS, MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
 import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
@@ -20,6 +20,7 @@ import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
 import { ActivatedRoute } from '@angular/router';
+import { ErrorDetails } from '../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface';
 
 @Component({
   selector: "bulk-action-monitoring-form",
@@ -46,7 +47,8 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
   ) {
     this.bulkActionMonitoringForm = this.fb.group({
       bulkActionId: ["", Validators.required],
@@ -133,7 +135,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   onBulkActionFormSubmit(): void {
     if (this.bulkActionMonitoringForm?.valid && !this.isBulkActionBtnDisabled) {
       this.isBulkActionBtnDisabled = true;
-      this.userInput = this.commonService.removeLeadingCharacters(
+      this.userInput = this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
         this.bulkActionMonitoringForm?.get("bulkActionId")?.value.trim()
       );
       this.store.dispatch(

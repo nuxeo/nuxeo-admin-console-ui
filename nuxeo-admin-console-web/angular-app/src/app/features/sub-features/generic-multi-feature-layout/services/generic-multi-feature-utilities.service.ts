@@ -72,7 +72,11 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getActionLaunchedConfig(state: any, featureName: string, tabType: string): ActionInfo {
+  getActionLaunchedConfig(
+    state: any,
+    featureName: string,
+    tabType: string
+  ): ActionInfo {
     let actionConfigObj: ActionInfo = {
       commandId: "",
     };
@@ -84,14 +88,18 @@ export class GenericMultiFeatureUtilitiesService {
         } else if (tabType === TAB_TYPES.FOLDER) {
           actionConfigObj = state?.folderReindex?.folderReindexInfo;
         } else if (tabType === TAB_TYPES.NXQL) {
-          actionConfigObj = state?.nxqlReindex?.nxqlReindexxInfo;
+          actionConfigObj = state?.nxqlReindex?.nxqlReindexInfo;
         }
         break;
     }
     return actionConfigObj;
   }
 
-  getActionErrorConfig(state: any, featureName: string, tabType: string): HttpErrorResponse | null {
+  getActionErrorConfig(
+    state: any,
+    featureName: string,
+    tabType: string
+  ): HttpErrorResponse | null {
     let actionErrorObj: HttpErrorResponse | null = null;
     /* Add required state object as per feature in an else-if block */
     switch (featureName) {

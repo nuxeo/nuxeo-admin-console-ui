@@ -1,4 +1,5 @@
-import { NXQLReindexState } from './../../../../elastic-search-reindex/store/reducers';
+import { ActivatedRoute } from "@angular/router";
+import { NXQLReindexState } from "./../../../../elastic-search-reindex/store/reducers";
 
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnInit, OnDestroy } from "@angular/core";
@@ -12,24 +13,44 @@ import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
-import { ActionInfo, ErrorDetails, GenericModalClosedInfo } from '../../generic-multi-feature-layout.interface';
-import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../generic-multi-feature-layout.constants';
-import { GenericMultiFeatureUtilitiesService } from '../../services/generic-multi-feature-utilities.service';
+import {
+  ActionInfo,
+  ErrorDetails,
+  GenericModalClosedInfo,
+  TemplateConfigType,
+  actionsMap,
+  labelsList,
+} from "../../generic-multi-feature-layout.interface";
+import {
+  ERROR_MESSAGES,
+  ERROR_MODAL_LABELS,
+  ERROR_TYPES,
+  FEATURE_NAMES,
+  GENERIC_LABELS,
+  MODAL_DIMENSIONS,
+  TAB_TYPES,
+} from "../../generic-multi-feature-layout.constants";
+import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
-import { NuxeoJSClientService } from '../../../../../shared/services/nuxeo-js-client.service';
-import { ELASTIC_SEARCH_LABELS } from '../../../../elastic-search-reindex/elastic-search-reindex.constants';
+import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
+import { ELASTIC_SEARCH_LABELS } from "../../../../elastic-search-reindex/elastic-search-reindex.constants";
+type ActionsImportFunction = () => Promise<unknown>;
 
 @Component({
   selector: "nxql-tab",
   templateUrl: "./nxql-tab.component.html",
   styleUrls: ["./nxql-tab.component.scss"],
 })
-export class NXQLTabComponent implements OnInit, OnDestroy {
+export class NXQLTabComponent implements OnDestroy {
   inputForm: FormGroup;
-  actionLaunched$: Observable<ActionInfo>;
-  actionError$: Observable<HttpErrorResponse | null>;
+  spinnerVisible = false;
+  spinnerStatusSubscription: Subscription = new Subscription();
+  userInput = "";
+  decodedUserInput = "";
+  actionLaunched$!: Observable<ActionInfo>;
+  actionError$!: Observable<HttpErrorResponse | null>;
   actionLaunchedSubscription = new Subscription();
   actionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
@@ -39,87 +60,110 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
-  > = {} as MatDialogRef<
-    GenericModalComponent,
-    GenericModalClosedInfo
-  >;
+  > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
-  {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   confirmDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
-  > = {} as MatDialogRef<
-    GenericModalComponent,
-    GenericModalClosedInfo
-  >;
+  > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
-  ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS
-  spinnerVisible = false;
-  spinnerStatusSubscription: Subscription = new Subscription();
-  userInput = "";
-  decodedUserInput = "";
+  templateConfigData: TemplateConfigType = {} as TemplateConfigType;
+  templateLabels: labelsList = {} as labelsList;
+  actionsImportFn: ActionsImportFunction | null = null;
+  taskActions: any;
   documentCount = -1;
   nxqlQueryHintSanitized: SafeHtml = "";
 
   constructor(
-    private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ nxqlReindex: NXQLReindexState }>,
-    private sanitizer: DomSanitizer,
+    private store: Store<unknown>,
     private nuxeoJSClientService: NuxeoJSClientService,
+    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer
   ) {
     this.inputForm = this.fb.group({
-      nxqlQuery: ["", Validators.required],
+      inputIdentifier: ["", Validators.required],
     });
-    this.actionLaunched$ = this.store.pipe(
-      select((state) => state.nxqlReindex?.nxqlReindexInfo)
-    );
-    this.actionError$ = this.store.pipe(
-      select((state) => state.nxqlReindex?.error)
-    );
-  }
-
-  ngOnInit(): void {
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.genericEndUtilitiesService.pageTitle.next(
-      `${ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE}`
-    );
-    this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
-      ELASTIC_SEARCH_LABELS.NXQL_INPUT_HINT
-    );
-
-    this.actionLaunchedSubscription =
-    this.actionLaunched$.subscribe((data) => {
-      if (data?.commandId) {
-        this.showActionLaunchedModal(data?.commandId);
+    this.route.data.subscribe((data) => {
+      this.templateConfigData = data["data"];
+      this.templateLabels = this.templateConfigData.labels;
+      this.store = this.templateConfigData?.store;
+      this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
+        GENERIC_LABELS.NXQL_INPUT_HINT
+      );
+      this.actionsImportFn =
+        actionsMap[
+          this.templateConfigData.featureName as keyof typeof actionsMap
+        ] || null;
+      if (this.actionsImportFn) {
+        this.actionsImportFn().then((actionsModule) => {
+          this.taskActions = actionsModule;
+        });
       }
-    });
+      if (this.store) {
+        this.actionLaunched$ = this.store.pipe(
+          select((state) =>
+            this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
+              state,
+              this.templateConfigData.featureName,
+              TAB_TYPES.NXQL
+            )
+          )
+        );
+        this.actionError$ = this.store.pipe(
+          select(
+            (state) =>
+              this.genericMultiFeatureUtilitiesService.getActionErrorConfig(
+                state,
+                this.templateConfigData.featureName,
+                TAB_TYPES.NXQL
+              ) as HttpErrorResponse
+          )
+        );
+        this.genericMultiFeatureUtilitiesService.pageTitle?.next(
+          `${this.templateLabels.pageTitle}`
+        );
+        this.actionLaunchedSubscription = this.actionLaunched$?.subscribe(
+          (data) => {
+            if (data?.commandId) {
+              this.showActionLaunchedModal(data?.commandId);
+            }
+          }
+        );
 
-    this.actionErrorSubscription =
-    this.actionError$.subscribe((error) => {
-      if (error) {
-        this.showActionErrorModal({
-          type: ERROR_TYPES.SERVER_ERROR,
-          details: { status: error.status, message: error.message },
+        this.actionErrorSubscription = this.actionError$?.subscribe((error) => {
+          if (error) {
+            this.showActionErrorModal({
+              type: ERROR_TYPES.SERVER_ERROR,
+              details: { status: error.status, message: error.message },
+            });
+          }
         });
       }
     });
+
     this.spinnerStatusSubscription =
-      this.genericEndUtilitiesService.spinnerStatus.subscribe((status) => {
-        this.spinnerVisible = status;
-      });
+      this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
+        (status) => {
+          this.spinnerVisible = status;
+        }
+      );
   }
 
   showActionErrorModal(error: ErrorDetails): void {
+    this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
-        error
+        error,
       },
     });
     this.errorDialogClosedSubscription = this.errorDialogRef
@@ -131,25 +175,22 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
 
   onActionErrorModalClose(): void {
     this.isSubmitBtnDisabled = false;
+    this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
     document.getElementById("inputIdentifier")?.focus();
   }
 
   showActionLaunchedModal(commandId: string | null): void {
-    this.genericEndUtilitiesService.spinnerStatus.next(false);
-    this.launchedDialogRef = this.dialogService.open(
-      GenericModalComponent,
-      {
-        disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
-        data: {
-          type: GENERIC_LABELS.MODAL_TYPE.launched,
-          title: `${GENERIC_LABELS.ACTION_LAUNCHED_MODAL_TITLE}`,
-          launchedMessage: `${GENERIC_LABELS.ACTION_LAUNCHED} ${commandId}. ${GENERIC_LABELS.COPY_MONITORING_ID}`,
-          commandId,
-        },
-      }
-    );
+    this.launchedDialogRef = this.dialogService.open(GenericModalComponent, {
+      disableClose: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        type: GENERIC_LABELS.MODAL_TYPE.launched,
+        title: `${GENERIC_LABELS.ACTION_LAUNCHED_MODAL_TITLE}`,
+        launchedMessage: `${GENERIC_LABELS.ACTION_LAUNCHED} ${commandId}. ${GENERIC_LABELS.COPY_MONITORING_ID}`,
+        commandId,
+      },
+    });
 
     this.launchedDialogClosedSubscription = this.launchedDialogRef
       .afterClosed()
@@ -165,30 +206,29 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   }
 
   getErrorMessage(): string | null {
-    if (
-      this.inputForm?.get("inputIdentifier")?.hasError("required")
-    ) {
-      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
+    if (this.inputForm?.get("inputIdentifier")?.hasError("required")) {
+      return GENERIC_LABELS.REQUIRED_NXQL_QUERY_ERROR;
     }
     return null;
   }
 
-
   onFormSubmit(): void {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
-      this.genericEndUtilitiesService.spinnerStatus.next(true);
+      this.genericMultiFeatureUtilitiesService.spinnerStatus.next(true);
       const userInput = this.inputForm?.get("inputIdentifier")?.value?.trim();
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
       try {
         const decodedUserInput = decodeURIComponent(
           /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
-          this.genericEndUtilitiesService.removeLeadingCharacters(userInput)
+          this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
+            userInput
+          )
         );
         this.fetchNoOfDocuments(decodedUserInput);
       } catch (error) {
-        this.genericEndUtilitiesService.spinnerStatus.next(false);
+        this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
           details: {
@@ -204,7 +244,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       .repository()
       .query({ query, pageSize: 1 })
       .then((document: unknown) => {
-        this.genericEndUtilitiesService.spinnerStatus.next(false);
+        this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         if (
           typeof document === "object" &&
           document !== null &&
@@ -214,7 +254,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             ? (document.resultsCount as number)
             : 0;
           if (this.documentCount === 0) {
-            this.genericEndUtilitiesService.spinnerStatus.next(false);
+            this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
             this.showActionErrorModal({
               type: ERROR_TYPES.NO_MATCHING_QUERY,
               details: {
@@ -222,15 +262,12 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
               },
             });
           } else {
-            this.showConfirmationModal(
-              this.documentCount as number,
-              query
-            );
+            this.showConfirmationModal(this.documentCount as number, query);
           }
         }
       })
       .catch((err: unknown) => {
-        this.genericEndUtilitiesService.spinnerStatus.next(false);
+        this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         this.documentCount = -1;
         if (this.checkIfErrorHasResponse(err)) {
           return (
@@ -242,33 +279,34 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       })
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
-         /* this.store.dispatch(
-            ReindexActions.onNxqlReindexFailure({
-              error: errorJson as HttpErrorResponse,
-            })
-          ); */
+          switch (this.templateConfigData.featureName) {
+            case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+              this.store.dispatch(
+                this.taskActions.onNxqlReindexFailure({
+                  error: errorJson as HttpErrorResponse,
+                })
+              );
+              break;
+          }
         }
       });
   }
 
   showConfirmationModal(documentCount: number, query: string): void {
-    this.confirmDialogRef = this.dialogService.open(
-      GenericModalComponent,
-      {
-        disableClose: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
-        width: MODAL_DIMENSIONS.WIDTH,
-        data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
-          message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
-          documentCount,
-          timeTakenToReindex: this.getHumanReadableTime(
-            documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
-          ),
-        },
-      }
-    );
+    this.confirmDialogRef = this.dialogService.open(GenericModalComponent, {
+      disableClose: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        type: GENERIC_LABELS.MODAL_TYPE.confirm,
+        title: `${GENERIC_LABELS.ACTION_CONFIRMATION_MODAL_TITLE}`,
+        message: `${GENERIC_LABELS.ACTION_WARNING}`,
+        documentCount,
+        timeTakenForAction: this.getHumanReadableTime(
+          documentCount / GENERIC_LABELS.REFERENCE_POINT
+        ),
+      },
+    });
 
     this.confirmDialogClosedSubscription = this.confirmDialogRef
       .afterClosed()
@@ -289,11 +327,15 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           /\\'/g,
           "%5C%27"
         );
-       /* this.store.dispatch(
-          ReindexActions.performNxqlReindex({
-            nxqlQuery: this.decodedUserInput,
-          })
-        ); */
+        switch (this.templateConfigData.featureName) {
+          case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+            this.store.dispatch(
+              this.taskActions.performNxqlReindex({
+                nxqlQuery: this.decodedUserInput,
+              })
+            );
+            break;
+        }
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
@@ -321,11 +363,18 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   }
 
   getHumanReadableTime(seconds: number): string {
-    return this.genericEndUtilitiesService.secondsToHumanReadable(seconds);
+    return this.genericMultiFeatureUtilitiesService.secondsToHumanReadable(
+      seconds
+    );
   }
 
   ngOnDestroy(): void {
-   // this.store.dispatch(ReindexActions.resetNxqlReindexState());
+    switch (this.templateConfigData.featureName) {
+      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
+        this.store.dispatch(this.taskActions.resetNxqlReindexState());
+        break;
+      /* Add actions as per feature */
+    }
     this.actionLaunchedSubscription?.unsubscribe();
     this.actionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();

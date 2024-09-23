@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { ReindexInfo } from "../elastic-search-reindex.interface";
+import { ActionInfo } from "../elastic-search-reindex.interface";
 import * as ReindexActions from "./actions";
 
 describe("ReindexActions", () => {
@@ -12,7 +12,7 @@ describe("ReindexActions", () => {
   });
 
   it("should create onDocumentReindexLaunch action", () => {
-    const payload: ReindexInfo = {
+    const payload: ActionInfo = {
       commandId: "20956167-dc5c-4c93-874c-67b3f598e877",
     };
     const action = ReindexActions.onDocumentReindexLaunch({
