@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import {
-  FeaturesKey,
   GENERIC_LABELS,
 } from "../generic-multi-feature-layout.constants";
+import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 
 @Injectable({
   providedIn: "root",

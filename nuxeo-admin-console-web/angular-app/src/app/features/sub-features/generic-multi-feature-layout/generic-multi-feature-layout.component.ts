@@ -2,9 +2,11 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import { FeaturesKey, TAB_INFO } from "./generic-multi-feature-layout.constants";
+import { TAB_INFO } from "./generic-multi-feature-layout.constants";
 import { TabInfo } from "./generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
+import { GenericPageTitle } from "./generic-page-title";
+import { FeaturesKey } from "./generic-multi-feature-layout.mapping";
 
 @Component({
   selector: "generic-multi-feature-layout",
@@ -19,16 +21,17 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   activeFeatureService: any;
 
   constructor(
-    private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
+    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private genericPageTitle: GenericPageTitle
   ) {}
 
   ngOnInit(): void {
     const featureRoute = this.router.routerState.snapshot.url.split('/')[1];
     if(featureRoute) {
-      this.genericEndUtilitiesService.setActiveFeature(featureRoute as FeaturesKey);
+      this.genericMultiFeatureUtilitiesService.setActiveFeature(featureRoute as FeaturesKey);
     }
     this.router.events
       .pipe(
@@ -39,7 +42,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
         this.updateActiveTab();
       });
 
-    this.genericEndUtilitiesService.pageTitle
+    this.genericMultiFeatureUtilitiesService.pageTitle
       .pipe(takeUntil(this.activeSubscription))
       .subscribe((title) => {
         this.pageTitle = title;
@@ -56,6 +59,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
         this.searchTabs.find((tab) => tab.path === currentRoute) ||
         this.searchTabs[0];
     }
+    this.genericPageTitle.updateTitle(this.router.routerState.snapshot);
   }
 
   activateTab(tab: TabInfo): void {

@@ -93,10 +93,3 @@ export const ERROR_MODAL_LABELS = {
   UNEXPECTED_ERROR: "Unexpected error format",
   UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",
 };
-
-export const FEATURES = {
-  ELASTIC_SEARCH_REINDEX: 'elasticsearch-reindex', // Key should be consistent with what you use in featureMap
-  // Add other features here as needed
-} as const;
-
-export type FeaturesKey = keyof typeof FEATURES; // This will create a type that includes 'ELASTIC_SEARCH_REINDEX'

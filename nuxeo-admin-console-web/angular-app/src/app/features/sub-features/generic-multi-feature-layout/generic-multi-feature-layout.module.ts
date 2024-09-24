@@ -1,3 +1,4 @@
+import { GenericPageTitle } from './generic-page-title';
 import { genericMultiFeatureLayoutRoutingModule } from './generic-multi-feature-layout-routing.module';
 import { DocumentTabComponent } from './components/document-tab/document-tab.component';
 import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
@@ -13,7 +14,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { HyContentListModule } from "@hyland/ui/content-list";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
-import { RouterModule } from "@angular/router";
+import { RouterModule, TitleStrategy } from "@angular/router";
 import {
   HyFormContainerModule,
   HyMaterialModule,
@@ -42,6 +43,7 @@ import { ReactiveFormsModule } from "@angular/forms";
     RouterModule,
     genericMultiFeatureLayoutRoutingModule
   ],
+ // providers: [{ provide: TitleStrategy, useClass: GenericPageTitle }],
   exports: [GenericMultiFeatureLayoutComponent],
 })
 export class GenericMultiFeatureLayoutModule {}

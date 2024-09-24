@@ -1,11 +1,11 @@
-import { GenericMultiFeatureLayoutModule } from './features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module';
-import { GenericModalComponent } from './features/sub-features/generic-multi-feature-layout/components/generic-modal/generic-modal.component';
-import { bulkActionMonitoringReducer } from './features/bulk-action-monitoring/store/reducers';
+import { GenericMultiFeatureLayoutModule } from "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module";
+import { GenericModalComponent } from "./features/sub-features/generic-multi-feature-layout/components/generic-modal/generic-modal.component";
+import { bulkActionMonitoringReducer } from "./features/bulk-action-monitoring/store/reducers";
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { RouterModule } from "@angular/router";
+import { RouterModule, TitleStrategy } from "@angular/router";
 import { StoreModule } from "@ngrx/store";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { EffectsModule } from "@ngrx/effects";
@@ -30,7 +30,11 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { HyDialogBoxModule, HyDialogModule, HyMaterialIconModule } from "@hyland/ui";
+import {
+  HyDialogBoxModule,
+  HyDialogModule,
+  HyMaterialIconModule,
+} from "@hyland/ui";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { homeReducer } from "./features/home/store/reducers";
@@ -39,11 +43,16 @@ import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/sub-features/generic-multi-feature-layout/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
-import { folderActionReducer, documentActionReducer, nxqlActionReducer } from "./features/sub-features/generic-multi-feature-layout/store/reducers";
+import {
+  folderActionReducer,
+  documentActionReducer,
+  nxqlActionReducer,
+} from "./features/sub-features/generic-multi-feature-layout/store/reducers";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
-import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
-import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
+import { ErrorModalComponent } from "./shared/components/error-modal/error-modal.component";
+import { ProbesDataModule } from "./features/sub-features/probes-data/probes-data.module";
+import { GenericPageTitle } from "./features/sub-features/generic-multi-feature-layout/generic-page-title";
 
 @NgModule({
   declarations: [
@@ -55,7 +64,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     HylandSSOManagerComponent,
     BaseLayoutComponent,
     GenericModalComponent,
-    ErrorModalComponent
+    ErrorModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,14 +78,20 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
-      reindex: documentActionReducer,
-      folderReindex: folderActionReducer,
-      nxqlReindex: nxqlActionReducer,
-      bulkActionMonitoring:  bulkActionMonitoringReducer,
+      documentAction: documentActionReducer,
+      folderAction: folderActionReducer,
+      nxqlAction: nxqlActionReducer,
+      bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects),
+    EffectsModule.forRoot(
+      authEffects,
+      HomeEffects,
+      ReindexEffects,
+      BulkActionMonitoringEffects,
+      ProbesEffects
+    ),
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -93,7 +108,7 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     HyMaterialIconModule,
     BulkActionMonitoringModule,
     ProbesDataModule,
-    GenericMultiFeatureLayoutModule
+    GenericMultiFeatureLayoutModule,
   ],
   providers: [
     {
@@ -101,12 +116,11 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
       useClass: AuthInterceptorService,
       multi: true,
     },
+  //  { provide: TitleStrategy, useClass: GenericPageTitle },
     ngrxDevtools,
   ],
   bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(
-    private _hyKeyboardFocusService: HyKeyboardFocusService
-  ) {}
+  constructor(private _hyKeyboardFocusService: HyKeyboardFocusService) {}
 }

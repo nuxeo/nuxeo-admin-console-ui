@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, TitleStrategy } from '@angular/router';
 import { NXQLTabComponent } from './components/nxql-tab/nxql-tab.component';
 import { FolderTabComponent } from './components/folder-tab/folder-tab.component';
 import { DocumentTabComponent } from './components/document-tab/document-tab.component';
 import { Route } from '@angular/router';
 import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
-import { ELASTIC_SEARCH_LABELS } from '../../elastic-search-reindex/elastic-search-reindex.constants';
+import { GenericPageTitle } from './generic-page-title';
 
-
- const elasticSearchLabels = ELASTIC_SEARCH_LABELS;
 export const GenericMultiFeatureRoutes: Route[] = [
   {
     path: "",
@@ -16,18 +14,18 @@ export const GenericMultiFeatureRoutes: Route[] = [
     children: [
       {
         path: "document",
-       // title: elasticSearchLabels.DOCUMENT_REINDEX_TITLE,
         component: DocumentTabComponent,
+        data: { titleStrategy: GenericPageTitle } 
       },
       {
         path: "folder",
-       // title: elasticSearchLabels.FOLDER_REINDEX_TITLE,
         component: FolderTabComponent,
+        data: { titleStrategy: GenericPageTitle } 
       },
       {
         path: "nxql",
-       // title: elasticSearchLabels.NXQL_QUERY_REINDEX_TITLE,
         component: NXQLTabComponent,
+        data: { titleStrategy: GenericPageTitle } 
       },
       { path: "**", redirectTo: "document" },
     ],
@@ -37,5 +35,11 @@ export const GenericMultiFeatureRoutes: Route[] = [
 @NgModule({
   imports: [RouterModule.forChild(GenericMultiFeatureRoutes)],
   exports: [RouterModule],
+  providers: [
+    {
+      provide: TitleStrategy,
+      useClass: GenericPageTitle // Use your custom title strategy
+    }
+  ],
 })
 export class genericMultiFeatureLayoutRoutingModule {}

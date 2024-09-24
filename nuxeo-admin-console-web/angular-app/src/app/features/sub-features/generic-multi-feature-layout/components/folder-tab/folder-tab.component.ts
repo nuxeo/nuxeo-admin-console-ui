@@ -1,5 +1,4 @@
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
-import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
@@ -14,8 +13,6 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURES,
-  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
 } from "../../generic-multi-feature-layout.constants";
@@ -34,6 +31,8 @@ import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-cl
 import { FolderActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store/actions";
 import {
+  FEATURES,
+  FeaturesKey,
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
@@ -79,20 +78,19 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ action: FolderActionState }>,
+    private store: Store<{ folderAction: FolderActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
-    private route: ActivatedRoute
+    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.folderActionLaunched$ = this.store.pipe(
-      select((state) => state.action?.folderActionInfo)
+      select((state) => state.folderAction?.folderActionInfo)
     );
     this.folderActionError$ = this.store.pipe(
-      select((state) => state.action?.error)
+      select((state) => state.folderAction?.error)
     );
     this.spinnerStatusSubscription =
       this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
@@ -303,15 +301,19 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     this.isSubmitBtnDisabled = false;
     const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
-      this.store.dispatch(
-        FeatureActions.performFolderAction({
-          requestQuery: this.requestQuery,
-          endpoint:
-            REST_END_POINTS[
-              getFeatureKeyByValue(this.activeFeature) as FeaturesKey
-            ],
-        })
-      );
+      const featureKey = getFeatureKeyByValue(
+        this.activeFeature
+      ) as FeaturesKey;
+      if (featureKey in FEATURES) {
+        this.store.dispatch(
+          FeatureActions.performFolderAction({
+            requestQuery: this.requestQuery,
+            endpoint: REST_END_POINTS[featureKey as FeaturesKey],
+          })
+        );
+      } else {
+        console.error(`Invalid feature key: ${featureKey}`);
+      }
     } else {
       document.getElementById("inputIdentifier")?.focus();
     }
