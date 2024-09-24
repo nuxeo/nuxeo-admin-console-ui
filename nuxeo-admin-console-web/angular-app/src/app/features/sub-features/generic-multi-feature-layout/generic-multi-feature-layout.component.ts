@@ -18,7 +18,6 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   activeTab: TabInfo = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
-  activeFeatureService: any;
 
   constructor(
     private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,

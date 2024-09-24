@@ -73,8 +73,7 @@ export class NXQLTabComponent implements OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   documentCount = -1;
   nxqlQueryHintSanitized: SafeHtml = "";
-  activeFeatureService: any;
-  activeFeature: any;
+  activeFeature: FeaturesKey | undefined = {} as FeaturesKey;
 
   constructor(
     public dialogService: MatDialog,
