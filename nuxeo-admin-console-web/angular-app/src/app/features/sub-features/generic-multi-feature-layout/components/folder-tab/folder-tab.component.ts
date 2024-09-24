@@ -72,9 +72,8 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
-  activeFeatureService: any;
-  activeFeature: any;
-
+  activeFeature: FeaturesKey | undefined = {} as FeaturesKey;
+  
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
