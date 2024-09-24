@@ -13,7 +13,6 @@ export const appRoutes: Route[] = [
   },
   {
     path: "elasticsearch-reindex",
-    title: routeTitle.ELASTICSEARCH_REINDEX,
     loadChildren: () =>
       import(
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"

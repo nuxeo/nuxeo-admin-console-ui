@@ -1,8 +1,8 @@
+import { ERROR_MODAL_LABELS, GENERIC_LABELS, MODAL_DIMENSIONS } from './../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
 import { GenericMultiFeatureUtilitiesService } from './../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service';
 import { CommonService } from './../../../../../shared/services/common.service';
-import { COMMON_LABELS, ERROR_MODAL_LABELS, MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
 import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
-import { ErrorModalComponent } from './../../../../../shared/components/error-modal/error-modal.component';
+import { ErrorModalComponent } from '../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component';
 import { ErrorModalClosedInfo } from './../../../../../shared/types/common.interface';
 import { BulkActionMonitoringInfo } from './../../../bulk-action-monitoring.interface';
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -39,7 +39,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   isBulkActionBtnDisabled = false;
   userInput = "";
-  COMMON_LABELS = COMMON_LABELS;
+  GENERIC_LABELS = GENERIC_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
 
   constructor(

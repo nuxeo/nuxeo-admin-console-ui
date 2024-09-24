@@ -25,7 +25,7 @@ import {
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
-import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import { FolderActionState } from "../../store/reducers";

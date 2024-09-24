@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, TitleStrategy } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { NXQLTabComponent } from './components/nxql-tab/nxql-tab.component';
 import { FolderTabComponent } from './components/folder-tab/folder-tab.component';
 import { DocumentTabComponent } from './components/document-tab/document-tab.component';
 import { Route } from '@angular/router';
 import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
-import { GenericPageTitle } from './generic-page-title';
 
 export const GenericMultiFeatureRoutes: Route[] = [
   {
@@ -14,18 +13,15 @@ export const GenericMultiFeatureRoutes: Route[] = [
     children: [
       {
         path: "document",
-        component: DocumentTabComponent,
-        data: { titleStrategy: GenericPageTitle } 
+        component: DocumentTabComponent, 
       },
       {
         path: "folder",
         component: FolderTabComponent,
-        data: { titleStrategy: GenericPageTitle } 
       },
       {
         path: "nxql",
         component: NXQLTabComponent,
-        data: { titleStrategy: GenericPageTitle } 
       },
       { path: "**", redirectTo: "document" },
     ],
@@ -34,12 +30,6 @@ export const GenericMultiFeatureRoutes: Route[] = [
 
 @NgModule({
   imports: [RouterModule.forChild(GenericMultiFeatureRoutes)],
-  exports: [RouterModule],
-  providers: [
-    {
-      provide: TitleStrategy,
-      useClass: GenericPageTitle // Use your custom title strategy
-    }
-  ],
+  exports: [RouterModule]
 })
 export class genericMultiFeatureLayoutRoutingModule {}
