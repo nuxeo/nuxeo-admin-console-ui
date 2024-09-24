@@ -11,11 +11,11 @@ export function getFeatureKeyByValue(
   value: string | undefined
 ): FeaturesKey | undefined {
   const featureEntries = Object.entries(FEATURES) as [FeaturesKey, string][];
-  const foundEntry = featureEntries.find(
+  const featureKey = featureEntries.find(
     ([, featureValue]) => featureValue === value
   );
 
-  return foundEntry ? foundEntry[0] : undefined;
+  return featureKey ? featureKey[0] : undefined;
 }
 
 export const featureMap = () => ({

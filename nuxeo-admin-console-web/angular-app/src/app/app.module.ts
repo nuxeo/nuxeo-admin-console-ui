@@ -50,7 +50,7 @@ import {
 } from "./features/sub-features/generic-multi-feature-layout/store/reducers";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
-import { ErrorModalComponent } from "./shared/components/error-modal/error-modal.component";
+import { ErrorModalComponent } from "./features/sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
 import { ProbesDataModule } from "./features/sub-features/probes-data/probes-data.module";
 
 @NgModule({

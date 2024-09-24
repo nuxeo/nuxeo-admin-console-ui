@@ -1,7 +1,7 @@
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
-import { ErrorModalComponent } from "./../../../../../shared/components/error-modal/error-modal.component";
+import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
 import {
   ErrorDetails,

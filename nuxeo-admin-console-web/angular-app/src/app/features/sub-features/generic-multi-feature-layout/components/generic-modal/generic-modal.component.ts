@@ -1,7 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
-import { COMMON_LABELS } from "../../../../../shared/constants/common.constants";
 import { CommonService } from "../../../../../shared/services/common.service";
 import { GenericModalData } from "../../generic-multi-feature-layout.interface";
 
@@ -12,7 +11,6 @@ import { GenericModalData } from "../../generic-multi-feature-layout.interface";
 })
 export class GenericModalComponent  {
   GENERIC_LABELS = GENERIC_LABELS;
-  COMMON_LABELS = COMMON_LABELS;
   constructor(
     private dialogRef: MatDialogRef<GenericModalComponent>,
     public commonService: CommonService,

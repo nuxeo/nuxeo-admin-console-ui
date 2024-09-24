@@ -2,11 +2,18 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import { TAB_INFO } from "./generic-multi-feature-layout.constants";
+import {
+  TAB_INFO,
+} from "./generic-multi-feature-layout.constants";
 import { TabInfo } from "./generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
-import { GenericPageTitle } from "./generic-page-title";
-import { FeaturesKey } from "./generic-multi-feature-layout.mapping";
+import {
+  FEATURES,
+  FeaturesKey,
+  featureMap,
+  getFeatureKeyByValue,
+} from "./generic-multi-feature-layout.mapping";
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: "generic-multi-feature-layout",
@@ -24,13 +31,15 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef,
-    private genericPageTitle: GenericPageTitle
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
-    const featureRoute = this.router.routerState.snapshot.url.split('/')[1];
-    if(featureRoute) {
-      this.genericMultiFeatureUtilitiesService.setActiveFeature(featureRoute as FeaturesKey);
+    const featureRoute = this.router.routerState.snapshot.url.split("/")[1];
+    if (featureRoute) {
+      this.genericMultiFeatureUtilitiesService.setActiveFeature(
+        featureRoute as FeaturesKey
+      );
     }
     this.router.events
       .pipe(
@@ -53,12 +62,23 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
 
   updateActiveTab(): void {
     const currentRoute = this.route?.snapshot?.firstChild?.routeConfig?.path;
+    const subFeatureRoute: string =
+      this.router.routerState.snapshot.url.split("/")[2];
     if (currentRoute) {
       this.activeTab =
         this.searchTabs.find((tab) => tab.path === currentRoute) ||
         this.searchTabs[0];
     }
-    this.genericPageTitle.updateTitle(this.router.routerState.snapshot);
+    const activeFeature =
+      this.genericMultiFeatureUtilitiesService.getActiveFeature();
+    const featureConfig = featureMap();
+    const featureKey = getFeatureKeyByValue(activeFeature) as FeaturesKey;
+    if (activeFeature && activeFeature in featureConfig) {
+      const templateConfigData =
+        featureConfig[FEATURES[featureKey]](subFeatureRoute);
+      const templateLabels = templateConfigData?.labels;
+      this.titleService.setTitle(templateLabels.pageTitle);
+    }
   }
 
   activateTab(tab: TabInfo): void {

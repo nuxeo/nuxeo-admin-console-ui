@@ -6,12 +6,6 @@ export const TAB_INFO: TabInfo[] = [
   { label: "NXQL Query", path: "nxql", isSelected: false },
 ];
 
-export const TAB_TYPES = {
-  DOCUMENT: "Document",
-  FOLDER: "Folder",
-  NXQL: "Nxql",
-};
-
 export const GENERIC_LABELS = {
   DOCUMENT: 'document',
   FOLDER: 'folder',
@@ -20,7 +14,6 @@ export const GENERIC_LABELS = {
   CONTINUE: "Continue",
   REQUIRED_FIELD_INDICATOR: "* indicates a required field",
   SELECT_BASE_QUERY: "SELECT * FROM Document WHERE",
-  DOCUMENT_TEXT: "document",
   ERROR_TEXT: "error",
   REQUIRED_DOCID_OR_PATH_ERROR:
     "Please provide a document ID or a document path",
