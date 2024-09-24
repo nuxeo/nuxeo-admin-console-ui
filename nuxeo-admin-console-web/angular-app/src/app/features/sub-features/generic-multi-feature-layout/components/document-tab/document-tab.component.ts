@@ -24,15 +24,14 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURES,
-  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
 } from "../../generic-multi-feature-layout.constants";
-import { ActivatedRoute } from "@angular/router";
 import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store/actions";
 import {
+  FEATURES,
+  FeaturesKey,
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
@@ -69,20 +68,19 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ action: DocumentActionState }>,
+    private store: Store<{ documentAction: DocumentActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
-    private route: ActivatedRoute
+    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.documentActionLaunched$ = this.store.pipe(
-      select((state) => state.action?.documentActionInfo)
+      select((state) => state.documentAction?.documentActionInfo)
     );
     this.documentActionError$ = this.store.pipe(
-      select((state) => state.action?.error)
+      select((state) => state.documentAction?.error)
     );
   }
 
@@ -225,15 +223,19 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                 this.templateConfigData.requestQuery as string,
                 decodedPath
               );
-            this.store.dispatch(
-              FeatureActions.performDocumentAction({
-                requestQuery,
-                endpoint:
-                  REST_END_POINTS[
-                    getFeatureKeyByValue(this.activeFeature) as FeaturesKey
-                  ],
-              })
-            );
+            const featureKey = getFeatureKeyByValue(
+              this.activeFeature
+            ) as FeaturesKey;
+            if (featureKey in FEATURES) {
+              this.store.dispatch(
+                FeatureActions.performDocumentAction({
+                  requestQuery,
+                  endpoint: REST_END_POINTS[featureKey],
+                })
+              );
+            } else {
+              console.error(`Invalid feature key: ${featureKey}`);
+            }
           } catch (error) {
             this.showActionErrorModal({
               type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,

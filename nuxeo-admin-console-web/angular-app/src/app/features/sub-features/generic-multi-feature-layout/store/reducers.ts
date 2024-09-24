@@ -50,12 +50,15 @@ export const documentActionReducer = createReducer(
     ...state,
     error: null,
   })),
-  on(FeatureActions.onDocumentActionLaunch, (state, { documentActionInfo }) => ({
-    ...state,
-    documentActionInfo: {
-      commandId: documentActionInfo?.commandId,
-    },
-  })),
+  on(FeatureActions.onDocumentActionLaunch, (state, { documentActionInfo }) => {
+    return {
+      ...state,
+      documentActionInfo: {
+        commandId: documentActionInfo?.commandId,
+      },
+    };
+  }),
+  
   on(FeatureActions.onDocumentActionFailure, (state, { error }) => ({
     ...state,
     error,

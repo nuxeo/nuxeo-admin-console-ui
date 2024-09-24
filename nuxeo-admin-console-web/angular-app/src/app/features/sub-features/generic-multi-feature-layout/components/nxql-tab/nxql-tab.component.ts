@@ -1,5 +1,4 @@
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
-import { ActivatedRoute } from "@angular/router";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -21,8 +20,6 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURES,
-  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
 } from "../../generic-multi-feature-layout.constants";
@@ -34,6 +31,8 @@ import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-cl
 import * as FeatureActions from "../../store/actions";
 import { NXQLActionState } from "../../store/reducers";
 import {
+  FEATURES,
+  FeaturesKey,
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
@@ -80,21 +79,28 @@ export class NXQLTabComponent implements OnDestroy {
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ action: NXQLActionState }>,
+    private store: Store<{ nxqlAction: NXQLActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
     private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
-    private route: ActivatedRoute,
     private sanitizer: DomSanitizer
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
     });
+
+    this.nxqlActionLaunched$ = this.store.pipe(
+      select((state) => state.nxqlAction?.nxqlActionInfo)
+    );
+
+    this.nxqlActionError$ = this.store.pipe(
+      select((state) => state.nxqlAction?.error)
+    );
+  }
+
+  ngOnInit(): void {
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       GENERIC_LABELS.NXQL_INPUT_HINT
-    );
-    this.nxqlActionLaunched$ = this.store.pipe(
-      select((state) => state.action?.nxqlActionInfo)
     );
     const featureConfig = featureMap();
     this.activeFeature =
@@ -109,17 +115,30 @@ export class NXQLTabComponent implements OnDestroy {
         this.templateLabels.pageTitle
       );
     }
-
-    this.nxqlActionError$ = this.store.pipe(
-      select((state) => state.action?.error)
-    );
-
     this.spinnerStatusSubscription =
       this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
         (status) => {
           this.spinnerVisible = status;
         }
       );
+    this.nxqlActionLaunchedSubscription = this.nxqlActionLaunched$.subscribe(
+      (data) => {
+        if (data?.commandId) {
+          this.showActionLaunchedModal(data?.commandId);
+        }
+      }
+    );
+
+    this.nxqlActionErrorSubscription = this.nxqlActionError$.subscribe(
+      (error) => {
+        if (error) {
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
+          });
+        }
+      }
+    );
   }
 
   showActionErrorModal(error: ErrorDetails): void {
@@ -289,15 +308,19 @@ export class NXQLTabComponent implements OnDestroy {
           /\\'/g,
           "%5C%27"
         );
-        this.store.dispatch(
-          FeatureActions.performNxqlAction({
-            nxqlQuery: this.decodedUserInput,
-            endpoint:
-              REST_END_POINTS[
-                getFeatureKeyByValue(this.activeFeature) as FeaturesKey
-              ],
-          })
-        );
+        const featureKey = getFeatureKeyByValue(
+          this.activeFeature
+        ) as FeaturesKey;
+        if (featureKey in FEATURES) {
+          this.store.dispatch(
+            FeatureActions.performNxqlAction({
+              nxqlQuery: this.decodedUserInput,
+              endpoint: REST_END_POINTS[featureKey as FeaturesKey],
+            })
+          );
+        } else {
+          console.error(`Invalid feature key: ${featureKey}`);
+        }
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
