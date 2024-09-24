@@ -13,6 +13,9 @@ export const TAB_TYPES = {
 };
 
 export const GENERIC_LABELS = {
+  DOCUMENT: 'document',
+  FOLDER: 'folder',
+  NXQL: 'nxql',
   CLOSE_LABEL: "Close",
   CONTINUE: "Continue",
   REQUIRED_FIELD_INDICATOR: "* indicates a required field",
@@ -91,6 +94,9 @@ export const ERROR_MODAL_LABELS = {
   UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",
 };
 
-export const FEATURE_NAMES = {
-  ELASTIC_SEARCH_REINDEX: "elasticSearchReindex",
-};
+export const FEATURES = {
+  ELASTIC_SEARCH_REINDEX: 'elasticsearch-reindex', // Key should be consistent with what you use in featureMap
+  // Add other features here as needed
+} as const;
+
+export type FeaturesKey = keyof typeof FEATURES; // This will create a type that includes 'ELASTIC_SEARCH_REINDEX'

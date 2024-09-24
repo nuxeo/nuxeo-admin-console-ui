@@ -37,26 +37,21 @@ export interface GenericModalData {
   userInput: string;
 }
 
-export const actionsMap: { [key: string]: () => Promise<any> } = {
-  elasticSearchReindex: () => import('../../elastic-search-reindex/store/actions'),
-  // Add other mappings here
-};
-
 export interface labelsList {
   pageTitle: string;
   submitBtnLabel: string;
 }
 
 export interface FeatureData {
-  featureName: string;
-  tabType: string;
+  // featureName: string;
+  // tabType: string;
   requestQuery?: string;
   labels: labelsList;
-  store: Store<unknown>; 
-  primaryAction: string;
-  resetStateAction: string;
-  taskFailureAction: string;
-  stateSelector?: string;
-  stateType?: unknown;
+  // store: Store<unknown>; 
+  // primaryAction: string;
+  // resetStateAction: string;
+  // taskFailureAction: string;
+  // stateSelector?: string;
+  // stateType?: unknown;
 }
 

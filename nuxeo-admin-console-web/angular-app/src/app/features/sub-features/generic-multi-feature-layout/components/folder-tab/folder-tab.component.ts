@@ -1,7 +1,8 @@
+import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
@@ -13,10 +14,10 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
-  FEATURE_NAMES,
+  FEATURES,
+  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
-  TAB_TYPES,
 } from "../../generic-multi-feature-layout.constants";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import {
@@ -24,30 +25,34 @@ import {
   ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
-  actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
-type ActionsImportFunction = () => Promise<unknown>;
+import { FolderActionState } from "../../store/reducers";
+import * as FeatureActions from "../../store/actions";
+import {
+  featureMap,
+  getFeatureKeyByValue,
+} from "../../generic-multi-feature-layout.mapping";
 
 @Component({
   selector: "folder-tab",
   templateUrl: "./folder-tab.component.html",
   styleUrls: ["./folder-tab.component.scss"],
 })
-export class FolderTabComponent implements OnDestroy {
+export class FolderTabComponent implements OnInit, OnDestroy {
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
   inputForm: FormGroup;
-  actionLaunched$!: Observable<ActionInfo>;
-  actionError$!: Observable<HttpErrorResponse | null>;
-  actionLaunchedSubscription = new Subscription();
-  actionErrorSubscription = new Subscription();
+  folderActionLaunched$: Observable<ActionInfo>;
+  folderActionError$: Observable<HttpErrorResponse | null>;
+  folderActionLaunchedSubscription = new Subscription();
+  folderActionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
@@ -67,14 +72,14 @@ export class FolderTabComponent implements OnDestroy {
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
-  actionsImportFn: ActionsImportFunction | null = null;
-  taskActions: any;
   requestQuery = "";
+  activeFeatureService: any;
+  activeFeature: any;
 
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<unknown>,
+    private store: Store<{ action: FolderActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
     private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
     private route: ActivatedRoute
@@ -83,68 +88,53 @@ export class FolderTabComponent implements OnDestroy {
       inputIdentifier: ["", Validators.required],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.route.data.subscribe((data) => {
-      this.templateConfigData = data["data"];
-      this.templateLabels = this.templateConfigData.labels;
-      this.store = this.templateConfigData?.store;
-      this.actionsImportFn =
-        actionsMap[
-          this.templateConfigData.featureName as keyof typeof actionsMap
-        ] || null;
-      if (this.actionsImportFn) {
-        this.actionsImportFn().then((actionsModule) => {
-          this.taskActions = actionsModule;
-        });
-      }
-      if (this.store) {
-        this.actionLaunched$ = this.store.pipe(
-          select((state) =>
-            this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
-              state,
-              this.templateConfigData.featureName,
-              TAB_TYPES.FOLDER
-            ) 
-         //   state[this.templateConfigData.stateSelector as string]
-          )
-        );
-        this.actionError$ = this.store.pipe(
-          select(
-            (state) =>
-              this.genericMultiFeatureUtilitiesService.getActionErrorConfig(
-                state,
-                this.templateConfigData.featureName,
-                TAB_TYPES.FOLDER
-              ) as HttpErrorResponse
-          )
-        );
-        this.genericMultiFeatureUtilitiesService.pageTitle?.next(
-          `${this.templateLabels.pageTitle}`
-        );
-        this.actionLaunchedSubscription = this.actionLaunched$?.subscribe(
-          (data) => {
-            if (data?.commandId) {
-              this.showActionLaunchedModal(data?.commandId);
-            }
-          }
-        );
-
-        this.actionErrorSubscription = this.actionError$?.subscribe((error) => {
-          if (error) {
-            this.showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: { status: error.status, message: error.message },
-            });
-          }
-        });
-      }
-    });
-
+    this.folderActionLaunched$ = this.store.pipe(
+      select((state) => state.action?.folderActionInfo)
+    );
+    this.folderActionError$ = this.store.pipe(
+      select((state) => state.action?.error)
+    );
     this.spinnerStatusSubscription =
       this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
         (status) => {
           this.spinnerVisible = status;
         }
       );
+  }
+
+  ngOnInit(): void {
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
+    const featureConfig = featureMap();
+    this.activeFeature =
+      this.genericMultiFeatureUtilitiesService.getActiveFeature();
+    const featureKey = getFeatureKeyByValue(this.activeFeature) as FeaturesKey;
+    if (this.activeFeature && this.activeFeature in featureConfig) {
+      this.templateConfigData = featureConfig[FEATURES[featureKey]](
+        GENERIC_LABELS.FOLDER
+      ) as FeatureData;
+      this.templateLabels = this.templateConfigData?.labels;
+      this.genericMultiFeatureUtilitiesService.pageTitle.next(
+        this.templateLabels.pageTitle
+      );
+    }
+
+    this.folderActionLaunchedSubscription =
+      this.folderActionLaunched$.subscribe((data) => {
+        if (data?.commandId) {
+          this.showActionLaunchedModal(data?.commandId);
+        }
+      });
+
+    this.folderActionErrorSubscription = this.folderActionError$.subscribe(
+      (error) => {
+        if (error) {
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
+          });
+        }
+      }
+    );
   }
 
   showActionErrorModal(error: ErrorDetails): void {
@@ -278,7 +268,7 @@ export class FolderTabComponent implements OnDestroy {
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
           this.store.dispatch(
-            this.taskActions[this.templateConfigData.taskFailureAction]({
+            FeatureActions.onFolderActionFailure({
               error: errorJson as HttpErrorResponse,
             })
           );
@@ -314,8 +304,12 @@ export class FolderTabComponent implements OnDestroy {
     const data = modalData as GenericModalClosedInfo;
     if (data?.continue) {
       this.store.dispatch(
-        this.taskActions[this.templateConfigData.primaryAction as string]({
+        FeatureActions.performFolderAction({
           requestQuery: this.requestQuery,
+          endpoint:
+            REST_END_POINTS[
+              getFeatureKeyByValue(this.activeFeature) as FeaturesKey
+            ],
         })
       );
     } else {
@@ -343,11 +337,9 @@ export class FolderTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(
-      this.taskActions[this.templateConfigData.resetStateAction]()
-    );
-    this.actionLaunchedSubscription?.unsubscribe();
-    this.actionErrorSubscription?.unsubscribe();
+    this.store.dispatch(FeatureActions.resetFolderActionState());
+    this.folderActionLaunchedSubscription?.unsubscribe();
+    this.folderActionErrorSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();

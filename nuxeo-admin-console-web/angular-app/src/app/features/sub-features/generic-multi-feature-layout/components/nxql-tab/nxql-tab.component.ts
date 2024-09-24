@@ -1,12 +1,12 @@
+import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
@@ -15,23 +15,28 @@ import {
   ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
-  actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
+  FEATURES,
+  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
-  TAB_TYPES,
 } from "../../generic-multi-feature-layout.constants";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
 import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
-type ActionsImportFunction = () => Promise<unknown>;
+import * as FeatureActions from "../../store/actions";
+import { NXQLActionState } from "../../store/reducers";
+import {
+  featureMap,
+  getFeatureKeyByValue,
+} from "../../generic-multi-feature-layout.mapping";
 
 @Component({
   selector: "nxql-tab",
@@ -44,10 +49,10 @@ export class NXQLTabComponent implements OnDestroy {
   spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
-  actionLaunched$!: Observable<ActionInfo>;
-  actionError$!: Observable<HttpErrorResponse | null>;
-  actionLaunchedSubscription = new Subscription();
-  actionErrorSubscription = new Subscription();
+  nxqlActionLaunched$: Observable<ActionInfo>;
+  nxqlActionError$: Observable<HttpErrorResponse | null>;
+  nxqlActionLaunchedSubscription = new Subscription();
+  nxqlActionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
@@ -67,15 +72,15 @@ export class NXQLTabComponent implements OnDestroy {
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
-  actionsImportFn: ActionsImportFunction | null = null;
-  taskActions: any;
   documentCount = -1;
   nxqlQueryHintSanitized: SafeHtml = "";
+  activeFeatureService: any;
+  activeFeature: any;
 
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<unknown>,
+    private store: Store<{ action: NXQLActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
     private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
     private route: ActivatedRoute,
@@ -85,64 +90,29 @@ export class NXQLTabComponent implements OnDestroy {
       inputIdentifier: ["", Validators.required],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.route.data.subscribe((data) => {
-      this.templateConfigData = data["data"];
-      this.templateLabels = this.templateConfigData.labels;
-      this.store = this.templateConfigData?.store;
-      this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
-        GENERIC_LABELS.NXQL_INPUT_HINT
+    this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
+      GENERIC_LABELS.NXQL_INPUT_HINT
+    );
+    this.nxqlActionLaunched$ = this.store.pipe(
+      select((state) => state.action?.nxqlActionInfo)
+    );
+    const featureConfig = featureMap();
+    this.activeFeature =
+      this.genericMultiFeatureUtilitiesService.getActiveFeature();
+    const featureKey = getFeatureKeyByValue(this.activeFeature) as FeaturesKey;
+    if (this.activeFeature && this.activeFeature in featureConfig) {
+      this.templateConfigData = featureConfig[FEATURES[featureKey]](
+        GENERIC_LABELS.NXQL
+      ) as FeatureData;
+      this.templateLabels = this.templateConfigData?.labels;
+      this.genericMultiFeatureUtilitiesService.pageTitle.next(
+        this.templateLabels.pageTitle
       );
-      this.actionsImportFn =
-        actionsMap[
-          this.templateConfigData.featureName as keyof typeof actionsMap
-        ] || null;
-      if (this.actionsImportFn) {
-        this.actionsImportFn().then((actionsModule) => {
-          this.taskActions = actionsModule;
-        });
-      }
-      if (this.store) {
-        this.actionLaunched$ = this.store.pipe(
-          select((state) =>
-             this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
-              state,
-              this.templateConfigData.featureName,
-              TAB_TYPES.NXQL
-            ) 
-           // state[this.templateConfigData.stateSelector as string]
-          )
-        );
-        this.actionError$ = this.store.pipe(
-          select(
-            (state) =>
-              this.genericMultiFeatureUtilitiesService.getActionErrorConfig(
-                state,
-                this.templateConfigData.featureName,
-                TAB_TYPES.NXQL
-              ) as HttpErrorResponse
-          )
-        );
-        this.genericMultiFeatureUtilitiesService.pageTitle?.next(
-          `${this.templateLabels.pageTitle}`
-        );
-        this.actionLaunchedSubscription = this.actionLaunched$?.subscribe(
-          (data) => {
-            if (data?.commandId) {
-              this.showActionLaunchedModal(data?.commandId);
-            }
-          }
-        );
+    }
 
-        this.actionErrorSubscription = this.actionError$?.subscribe((error) => {
-          if (error) {
-            this.showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: { status: error.status, message: error.message },
-            });
-          }
-        });
-      }
-    });
+    this.nxqlActionError$ = this.store.pipe(
+      select((state) => state.action?.error)
+    );
 
     this.spinnerStatusSubscription =
       this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
@@ -276,7 +246,7 @@ export class NXQLTabComponent implements OnDestroy {
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
           this.store.dispatch(
-            this.taskActions[this.templateConfigData.taskFailureAction]({
+            FeatureActions.onNxqlActionFailure({
               error: errorJson as HttpErrorResponse,
             })
           );
@@ -320,8 +290,12 @@ export class NXQLTabComponent implements OnDestroy {
           "%5C%27"
         );
         this.store.dispatch(
-          this.taskActions[this.templateConfigData.primaryAction as string]({
+          FeatureActions.performNxqlAction({
             nxqlQuery: this.decodedUserInput,
+            endpoint:
+              REST_END_POINTS[
+                getFeatureKeyByValue(this.activeFeature) as FeaturesKey
+              ],
           })
         );
       } catch (error) {
@@ -357,11 +331,9 @@ export class NXQLTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(
-      this.taskActions[this.templateConfigData.resetStateAction]()
-    );
-    this.actionLaunchedSubscription?.unsubscribe();
-    this.actionErrorSubscription?.unsubscribe();
+    this.store.dispatch(FeatureActions.resetNxqlActionState());
+    this.nxqlActionLaunchedSubscription?.unsubscribe();
+    this.nxqlActionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();

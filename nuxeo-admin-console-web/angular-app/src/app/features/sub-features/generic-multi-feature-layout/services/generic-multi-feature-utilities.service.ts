@@ -1,12 +1,9 @@
-import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import {
-  FEATURE_NAMES,
+  FeaturesKey,
   GENERIC_LABELS,
-  TAB_TYPES,
 } from "../generic-multi-feature-layout.constants";
-import { ActionInfo } from "../generic-multi-feature-layout.interface";
 
 @Injectable({
   providedIn: "root",
@@ -14,6 +11,14 @@ import { ActionInfo } from "../generic-multi-feature-layout.interface";
 export class GenericMultiFeatureUtilitiesService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  activeFeature: FeaturesKey | undefined;
+  setActiveFeature(activeFeature: FeaturesKey): void {
+    this.activeFeature = activeFeature;
+  }
+
+  getActiveFeature(): FeaturesKey | undefined {
+    return this.activeFeature;
+  }
 
   secondsToHumanReadable(seconds: number): string {
     const SECONDS_IN_MINUTE = 60;
@@ -72,77 +77,14 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getActionLaunchedConfig(
-    state: any,
-    featureName: string,
-    tabType: string,
-  ): ActionInfo {
-    let actionConfigObj: ActionInfo = {
-      commandId: "",
-    };
-    /* Add required state object as per feature in an else-if block */
-    switch (featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        if (tabType === TAB_TYPES.DOCUMENT) {
-          actionConfigObj = state?.reindex?.reindexInfo;
-        } else if (tabType === TAB_TYPES.FOLDER) {
-          actionConfigObj = state?.folderReindex?.folderReindexInfo;
-        } else if (tabType === TAB_TYPES.NXQL) {
-          actionConfigObj = state?.nxqlReindex?.nxqlReindexInfo;
-        }
-        break;
-    }
-    return actionConfigObj;
-  }
-
-  getActionErrorConfig(
-    state: any,
-    featureName: string,
-    tabType: string
-  ): HttpErrorResponse | null {
-    let actionErrorObj: HttpErrorResponse | null = null;
-    /* Add required state object as per feature in an else-if block */
-    switch (featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        if (tabType === TAB_TYPES.DOCUMENT) {
-          actionErrorObj = state?.reindex?.error;
-        } else if (tabType === TAB_TYPES.FOLDER) {
-          actionErrorObj = state?.folderReindex?.error;
-        } else if (tabType === TAB_TYPES.NXQL) {
-          actionErrorObj = state?.nxqlReindex?.error;
-        }
-        break;
-    }
-    return actionErrorObj;
-  }
-
-  buildQuery(queryParam: string, featureName: string, tabType: string): string {
-    let query = "";
-    switch (featureName) {
-      case FEATURE_NAMES.ELASTIC_SEARCH_REINDEX:
-        switch (tabType) {
-          case "Document":
-            query = `ecm:path='${queryParam}'`;
-            break;
-          case "Folder":
-            query = `ecm:uuid='${queryParam}' OR ecm:ancestorId='${queryParam}'`;
-            break;
-        }
-    }
-    return query;
-  }
-
   getRequestQuery(requestQuery: string, param: string): string {
-   /* return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.buildQuery(
-      param,
-      featureName,
-      tabType
-    )}`; */
-
-    return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(requestQuery, param)}`;
+    return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(
+      requestQuery,
+      param
+    )}`;
   }
 
-  insertParamInQuery(requestQuery: string, param: string,) {
-    return requestQuery.replaceAll('{queryParam}', param);
+  insertParamInQuery(requestQuery: string, param: string) {
+    return requestQuery.replaceAll("{queryParam}", param);
   }
 }

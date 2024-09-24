@@ -1,3 +1,4 @@
+import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
 import { ErrorModalComponent } from "./../../../../../shared/components/error-modal/error-modal.component";
@@ -6,7 +7,6 @@ import {
   ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
-  actionsMap,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -24,11 +24,18 @@ import {
   ERROR_MESSAGES,
   ERROR_MODAL_LABELS,
   ERROR_TYPES,
+  FEATURES,
+  FeaturesKey,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
-  TAB_TYPES,
 } from "../../generic-multi-feature-layout.constants";
 import { ActivatedRoute } from "@angular/router";
+import { DocumentActionState } from "../../store/reducers";
+import * as FeatureActions from "../../store/actions";
+import {
+  featureMap,
+  getFeatureKeyByValue,
+} from "../../generic-multi-feature-layout.mapping";
 type ActionsImportFunction = () => Promise<unknown>;
 
 @Component({
@@ -36,12 +43,12 @@ type ActionsImportFunction = () => Promise<unknown>;
   templateUrl: "./document-tab.component.html",
   styleUrls: ["./document-tab.component.scss"],
 })
-export class DocumentTabComponent implements OnDestroy {
+export class DocumentTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
-  actionLaunched$!: Observable<ActionInfo>;
-  actionError$!: Observable<HttpErrorResponse | null>;
-  actionLaunchedSubscription = new Subscription();
-  actionErrorSubscription = new Subscription();
+  documentActionLaunched$: Observable<ActionInfo>;
+  documentActionError$: Observable<HttpErrorResponse | null>;
+  documentActionLaunchedSubscription = new Subscription();
+  documentActionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
@@ -58,12 +65,11 @@ export class DocumentTabComponent implements OnDestroy {
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
-  taskActions: any;
-
+  activeFeature: FeaturesKey | undefined = {} as FeaturesKey;
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<unknown>,
+    private store: Store<{ action: DocumentActionState }>,
     private nuxeoJSClientService: NuxeoJSClientService,
     private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
     private route: ActivatedRoute
@@ -72,62 +78,47 @@ export class DocumentTabComponent implements OnDestroy {
       inputIdentifier: ["", Validators.required],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
-    this.route.data.subscribe((data) => {
-      this.templateConfigData = data["data"];
-      this.templateLabels = this.templateConfigData.labels;
-      this.store = this.templateConfigData?.store;
-      this.actionsImportFn =
-        actionsMap[
-          this.templateConfigData.featureName as keyof typeof actionsMap
-        ] || null;
-      if (this.actionsImportFn) {
-        this.actionsImportFn().then((actionsModule) => {
-          this.taskActions = actionsModule;
-        });
-      }
-      if (this.store) {
-      //  const stateType = this.templateConfigData.stateType;
-        this.actionLaunched$ = this.store.pipe(
-          select((state) =>
-             this.genericMultiFeatureUtilitiesService.getActionLaunchedConfig(
-              state,
-              this.templateConfigData.featureName,
-              TAB_TYPES.DOCUMENT
-            ) 
-           // state[this.templateConfigData.stateSelector as string]
-          )
-        );
-        this.actionError$ = this.store.pipe(
-          select(
-            (state) =>
-              this.genericMultiFeatureUtilitiesService.getActionErrorConfig(
-                state,
-                this.templateConfigData.featureName,
-                TAB_TYPES.DOCUMENT
-              ) as HttpErrorResponse
-          )
-        );
-        this.genericMultiFeatureUtilitiesService.pageTitle?.next(
-          `${this.templateLabels.pageTitle}`
-        );
-        this.actionLaunchedSubscription = this.actionLaunched$?.subscribe(
-          (data) => {
-            if (data?.commandId) {
-              this.showActionLaunchedModal(data?.commandId);
-            }
-          }
-        );
+    this.documentActionLaunched$ = this.store.pipe(
+      select((state) => state.action?.documentActionInfo)
+    );
+    this.documentActionError$ = this.store.pipe(
+      select((state) => state.action?.error)
+    );
+  }
 
-        this.actionErrorSubscription = this.actionError$?.subscribe((error) => {
-          if (error) {
-            this.showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: { status: error.status, message: error.message },
-            });
-          }
-        });
+  ngOnInit(): void {
+    this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
+    const featureConfig = featureMap();
+    this.activeFeature =
+      this.genericMultiFeatureUtilitiesService.getActiveFeature();
+    const featureKey = getFeatureKeyByValue(this.activeFeature) as FeaturesKey;
+    if (this.activeFeature && this.activeFeature in featureConfig) {
+      this.templateConfigData = featureConfig[FEATURES[featureKey]](
+        GENERIC_LABELS.DOCUMENT
+      ) as FeatureData;
+      this.templateLabels = this.templateConfigData?.labels;
+      this.genericMultiFeatureUtilitiesService.pageTitle.next(
+        this.templateLabels.pageTitle
+      );
+    }
+
+    this.documentActionLaunchedSubscription =
+      this.documentActionLaunched$.subscribe((data) => {
+        if (data?.commandId) {
+          this.showActionLaunchedModal(data?.commandId);
+        }
+      });
+
+    this.documentActionErrorSubscription = this.documentActionError$.subscribe(
+      (error) => {
+        if (error) {
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: { status: error.status, message: error.message },
+          });
+        }
       }
-    });
+    );
   }
 
   showActionErrorModal(error: ErrorDetails): void {
@@ -219,7 +210,7 @@ export class DocumentTabComponent implements OnDestroy {
         ) {
           const doc = document as { path: string };
           /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
-          for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
+          for elasticsearch Action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
           try {
@@ -235,11 +226,13 @@ export class DocumentTabComponent implements OnDestroy {
                 decodedPath
               );
             this.store.dispatch(
-              this.taskActions[this.templateConfigData.primaryAction as string](
-                {
-                  requestQuery,
-                }
-              )
+              FeatureActions.performDocumentAction({
+                requestQuery,
+                endpoint:
+                  REST_END_POINTS[
+                    getFeatureKeyByValue(this.activeFeature) as FeaturesKey
+                  ],
+              })
             );
           } catch (error) {
             this.showActionErrorModal({
@@ -263,7 +256,7 @@ export class DocumentTabComponent implements OnDestroy {
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
           this.store.dispatch(
-            this.taskActions[this.templateConfigData.taskFailureAction]({
+            FeatureActions.onDocumentActionFailure({
               error: errorJson as HttpErrorResponse,
             })
           );
@@ -285,11 +278,9 @@ export class DocumentTabComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(
-      this.taskActions[this.templateConfigData.resetStateAction]()
-    );
-    this.actionLaunchedSubscription?.unsubscribe();
-    this.actionErrorSubscription?.unsubscribe();
+    this.store.dispatch(FeatureActions.resetDocumentActionState());
+    this.documentActionLaunchedSubscription?.unsubscribe();
+    this.documentActionErrorSubscription?.unsubscribe();
     this.actionDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
