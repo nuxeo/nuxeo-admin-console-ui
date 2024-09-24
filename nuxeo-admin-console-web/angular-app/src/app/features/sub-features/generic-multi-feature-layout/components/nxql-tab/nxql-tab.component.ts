@@ -1,6 +1,6 @@
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
@@ -42,7 +42,7 @@ import {
   templateUrl: "./nxql-tab.component.html",
   styleUrls: ["./nxql-tab.component.scss"],
 })
-export class NXQLTabComponent implements OnDestroy {
+export class NXQLTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
   spinnerVisible = false;
   spinnerStatusSubscription: Subscription = new Subscription();

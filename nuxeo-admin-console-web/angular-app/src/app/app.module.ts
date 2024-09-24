@@ -5,7 +5,7 @@ import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { RouterModule, TitleStrategy } from "@angular/router";
+import { RouterModule } from "@angular/router";
 import { StoreModule } from "@ngrx/store";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { EffectsModule } from "@ngrx/effects";
@@ -52,7 +52,6 @@ import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from "./shared/components/error-modal/error-modal.component";
 import { ProbesDataModule } from "./features/sub-features/probes-data/probes-data.module";
-import { GenericPageTitle } from "./features/sub-features/generic-multi-feature-layout/generic-page-title";
 
 @NgModule({
   declarations: [

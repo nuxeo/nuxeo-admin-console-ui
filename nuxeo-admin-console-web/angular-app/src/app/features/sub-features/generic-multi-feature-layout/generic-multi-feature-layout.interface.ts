@@ -1,5 +1,3 @@
-import { Store } from '@ngrx/store';
-
 export interface TabInfo {
   label: string;
   path: string;
@@ -43,15 +41,7 @@ export interface labelsList {
 }
 
 export interface FeatureData {
-  // featureName: string;
-  // tabType: string;
   requestQuery?: string;
   labels: labelsList;
-  // store: Store<unknown>; 
-  // primaryAction: string;
-  // resetStateAction: string;
-  // taskFailureAction: string;
-  // stateSelector?: string;
-  // stateType?: unknown;
 }
 
