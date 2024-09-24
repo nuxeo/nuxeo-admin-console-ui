@@ -15,7 +15,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthRoutingModule } from "./auth/auth-routing.module";
-import { ElasticSearchReindexModule } from "./features/elastic-search-reindex/elastic-search-reindex.module";
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
 import { HylandSSOManagerComponent } from "./auth/components/SSO/hylandSSOManager.component";
@@ -38,9 +37,9 @@ import { homeReducer } from "./features/home/store/reducers";
 import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
-import * as ReindexEffects from "./features/elastic-search-reindex/store/effects";
+import * as ReindexEffects from "./features/sub-features/generic-multi-feature-layout/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
-import { folderReindexReducer, reindexReducer, nxqlReindexReducer } from "./features/elastic-search-reindex/store/reducers";
+import { folderActionReducer, documentActionReducer, nxqlActionReducer } from "./features/sub-features/generic-multi-feature-layout/store/reducers";
 import { HyKeyboardFocusService } from "@hyland/ui/keyboard-focus";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
@@ -70,9 +69,9 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
-      reindex: reindexReducer,
-      folderReindex: folderReindexReducer,
-      nxqlReindex: nxqlReindexReducer,
+      reindex: documentActionReducer,
+      folderReindex: folderActionReducer,
+      nxqlReindex: nxqlActionReducer,
       bulkActionMonitoring:  bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
     }),
@@ -84,7 +83,6 @@ import { ProbesDataModule } from './features/sub-features/probes-data/probes-dat
     MatSidenavModule,
     HomeModule,
     MatListModule,
-    ElasticSearchReindexModule,
     BaseLayoutModule,
     HyDialogModule,
     MatSidenavModule,

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import { TAB_INFO } from "./generic-multi-feature-layout.constants";
+import { FeaturesKey, TAB_INFO } from "./generic-multi-feature-layout.constants";
 import { TabInfo } from "./generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
 
@@ -16,6 +16,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   activeTab: TabInfo = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
+  activeFeatureService: any;
 
   constructor(
     private genericEndUtilitiesService: GenericMultiFeatureUtilitiesService,
@@ -25,6 +26,10 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const featureRoute = this.router.routerState.snapshot.url.split('/')[1];
+    if(featureRoute) {
+      this.genericEndUtilitiesService.setActiveFeature(featureRoute as FeaturesKey);
+    }
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
