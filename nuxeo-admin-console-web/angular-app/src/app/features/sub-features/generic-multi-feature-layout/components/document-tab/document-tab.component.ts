@@ -218,7 +218,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            let requestQuery =
+            const requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
                 this.templateConfigData.requestQuery as string,
                 decodedPath
