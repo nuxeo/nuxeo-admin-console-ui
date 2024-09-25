@@ -1,164 +1,126 @@
-// import { GenericMultiFeatureEndpointsService } from './services/generic-multi-feature-endpoints.service';
-// import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
-// import { MatTabsModule } from "@angular/material/tabs";
-// import { MatDialogModule } from "@angular/material/dialog";
-// import { ComponentFixture, TestBed } from "@angular/core/testing";
-// import { CommonModule } from "@angular/common";
-// import { provideMockStore } from "@ngrx/store/testing";
-// import { StoreModule } from "@ngrx/store";
-// import { BehaviorSubject, Observable, ReplaySubject, of } from "rxjs";
-// import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
-// import {
-//   ActivatedRoute,
-//   NavigationEnd,
-//   Router,
-//   RouterEvent,
-//   RouterModule,
-// } from "@angular/router";
-// import { ChangeDetectorRef } from "@angular/core";
-// import { Title } from "@angular/platform-browser";
-// import { takeUntil, filter } from "rxjs/operators";
-// import { GenericMultiFeatureUtilitiesService } from './services/generic-multi-feature-utilities.service';
-// import { ActionInfo } from './generic-multi-feature-layout.interface';
+import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatDialogModule } from "@angular/material/dialog";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { CommonModule } from "@angular/common";
+import { provideMockStore } from "@ngrx/store/testing";
+import { StoreModule } from "@ngrx/store";
+import { BehaviorSubject, ReplaySubject, of } from "rxjs";
+import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
+import {
+  ActivatedRoute,
+  Router,
+  RouterEvent,
+  RouterModule,
+} from "@angular/router";
+import { ChangeDetectorRef } from "@angular/core";
+import { GenericMultiFeatureUtilitiesService } from './services/generic-multi-feature-utilities.service';
 
-// describe("GenericMultiFeatureLayoutComponent", () => {
-//   let component: GenericMultiFeatureLayoutComponent;
-//   let fixture: ComponentFixture<GenericMultiFeatureLayoutComponent>;
-//   let mockCdRef: jasmine.SpyObj<ChangeDetectorRef>;
-//   let mockUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
-//   let mockTitleService: jasmine.SpyObj<Title>;
-  
-//   class GenericMultiFeatureEndpointsServiceStub {
-//     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
-//     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
-    
-//     performDocumentAction() {
-//       return of({} as ActionInfo); // Return an observable with mock data
-//     }
+describe("GenericMultiFeatureLayoutComponent", () => {
+  let component: GenericMultiFeatureLayoutComponent;
+  let fixture: ComponentFixture<GenericMultiFeatureLayoutComponent>;
+  let mockCdRef: jasmine.SpyObj<ChangeDetectorRef>;
+  let genericMultiFeatureUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+  class genericMultiFeatureUtilitiesServiceStub {
+    pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
+    spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    getActiveFeature() {
+        return "ELASTIC_SEARCH_REINDEX";
+      }
+  }
 
-//     performFolderAction() {
-//       return of({} as ActionInfo); // Return an observable with mock data
-//     }
+  class nuxeoJsClientServiceStub {
+    nuxeoInstance = {};
 
-//     performNXQLAction() {
-//       return of({} as ActionInfo); // Return an observable with mock data
-//     }
-//   }
+    getBaseUrl() {
+      return "";
+    }
 
-//   class NuxeoJsClientServiceStub {
-//     nuxeoInstance = {};
+    getApiUrl() {
+      return "";
+    }
 
-//     getBaseUrl() {
-//       return "";
-//     }
+    getNuxeoInstance() {
+      return {};
+    }
+  }
 
-//     getApiUrl() {
-//       return "";
-//     }
+  class mockActivatedRoute {
+    params = of({ id: "123" });
+  }
 
-//     getNuxeoInstance() {
-//       return {};
-//     }
-//   }
+  const eventSubject = new ReplaySubject<RouterEvent>(1);
+  const mockRouter = {
+    navigate: jasmine.createSpy("navigate"),
+    events: eventSubject.asObservable(),
+    url: "test/url",
+  };
 
-//   class mockActivatedRoute {
-//     params = of({ id: "123" });
-//   }
+  beforeEach(async () => {
+    mockCdRef = jasmine.createSpyObj("ChangeDetectorRef", ["detectChanges"]);
+    await TestBed.configureTestingModule({
+      declarations: [GenericMultiFeatureLayoutComponent],
+      imports: [
+        CommonModule,
+        MatDialogModule,
+        MatTabsModule,
+        RouterModule,
+        StoreModule.forRoot(provideMockStore),
+      ],
+      providers: [
+        {
+          provide: GenericMultiFeatureUtilitiesService,
+          useClass: genericMultiFeatureUtilitiesServiceStub,
+        },
+        {
+          provide: NuxeoJSClientService,
+          useClass: nuxeoJsClientServiceStub,
+        },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: Router, useValue: mockRouter },
+        { provide: ChangeDetectorRef, useValue: mockCdRef },
+      ],
+    }).compileComponents();
 
-//   const eventSubject = new ReplaySubject<RouterEvent>(1);
-//   const mockRouter = {
-//     navigate: jasmine.createSpy("navigate"),
-//     events: eventSubject.asObservable(),
-//     url: "test/url",
-//     // routerState: {
-//     //   snapshot: {
-//     //     url: '/home'
-//     //   }
-//     // }
-//   };
-//   beforeEach(async () => {
-//     mockCdRef = jasmine.createSpyObj("ChangeDetectorRef", ["detectChanges"]);
-//     mockUtilitiesService = jasmine.createSpyObj(
-//       "GenericMultiFeatureUtilitiesService",
-//       ["setActiveFeature", "getActiveFeature", "pageTitle"]
-//     );
-//     mockTitleService = jasmine.createSpyObj("Title", ["setTitle"]);
+    fixture = TestBed.createComponent(GenericMultiFeatureLayoutComponent);
+    component = fixture.componentInstance;
+    genericMultiFeatureUtilitiesService = TestBed.inject(
+        GenericMultiFeatureUtilitiesService
+      ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+    spyOn(genericMultiFeatureUtilitiesService, 'getActiveFeature');
+  });
 
-//     mockUtilitiesService.pageTitle = new BehaviorSubject<string>("Elastic Search Action");
+  it("should test if component is created", () => {
+    expect(component).toBeTruthy();
+  });
 
-//     await TestBed.configureTestingModule({
-//       declarations: [GenericMultiFeatureLayoutComponent],
-//       imports: [
-//         CommonModule,
-//         MatDialogModule,
-//         MatTabsModule,
-//         RouterModule,
-//         StoreModule.forRoot(provideMockStore),
-//       ],
-//       providers: [
-//         {
-//           provide: GenericMultiFeatureEndpointsService,
-//           useClass: GenericMultiFeatureEndpointsServiceStub,
-//         },
-//         {
-//           provide: NuxeoJSClientService,
-//           useClass: NuxeoJsClientServiceStub,
-//         },
-//         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-//         { provide: Router, useValue: mockRouter },
-//         { provide: ChangeDetectorRef, useValue: mockCdRef },
-//         { provide: Title, useValue: mockTitleService },
-//         { provide: GenericMultiFeatureUtilitiesService, useValue: mockUtilitiesService },
-//       ],
-//     }).compileComponents();
+  it("should complete any active subscriptions", () => {
+    spyOn(component["activeSubscription"], "next");
+    spyOn(component["activeSubscription"], "complete");
+    component.ngOnDestroy();
+    expect(component["activeSubscription"].next).toHaveBeenCalled();
+    expect(component["activeSubscription"].complete).toHaveBeenCalled();
+  });
 
-//     fixture = TestBed.createComponent(GenericMultiFeatureLayoutComponent);
-//     component = fixture.componentInstance;
+  it("should assign current activated tab to activeTab", () => {
+    const tab = {
+      label: "document",
+      path: "/document",
+      isSelected: true,
+    };
+    component.activateTab(tab);
+    expect(component.activeTab).toEqual(tab);
+  });
 
-//     // Emit a NavigationEnd event to simulate navigation
-//     eventSubject.next(new NavigationEnd(0, "/elasticsearch-reindex/document", "/elasticsearch-reindex/folder"));
-//   });
-
-//   it("should create the component", () => {
-//     expect(component).toBeTruthy();
-//   });
-
-//   it("should complete any active subscriptions", () => {
-//     spyOn(component["activeSubscription"], "next");
-//     spyOn(component["activeSubscription"], "complete");
-//     component.ngOnDestroy();
-//     expect(component["activeSubscription"].next).toHaveBeenCalled();
-//     expect(component["activeSubscription"].complete).toHaveBeenCalled();
-//   });
-
-//   it("should set the active feature on initialization", () => {
-//     component.ngOnInit();
-//     expect(mockUtilitiesService.setActiveFeature).toHaveBeenCalledWith("ELASTIC_SEARCH_REINDEX");
-//   });
-
-//   it("should update activetab to current route if currentroute exists", () => {
-//     const tab = {
-//       label: "Document",
-//       path: "document",
-//       isSelected: true,
-//     };
-//     component.updateActiveTab();
-//     expect(component.activeTab).toEqual(tab);
-//   });
-
-//   it("should set page title from the utility service", () => {
-//     component.ngOnInit();
-//     expect(component.pageTitle).toBe("Elastic Search Action");
-//     expect(mockCdRef.detectChanges).toHaveBeenCalled();
-//   });
-
-//   it("should assign current activated tab to activeTab", () => {
-//     const tab = {
-//       label: "document",
-//       path: "/document",
-//       isSelected: true,
-//     };
-//     component.activateTab(tab);
-//     expect(component.activeTab).toEqual(tab);
-//   });
-// });
+  describe("test updateActiveTab", () => {
+    it("should update activetab to current route if currentroute exists", () => {
+      const tab = {
+        label: "Document",
+        path: "document",
+        isSelected: true,
+      };
+      component.updateActiveTab();
+      expect(component.activeTab).toEqual(tab);
+    });
+  });
+});
