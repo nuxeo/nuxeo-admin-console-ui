@@ -2,7 +2,7 @@
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ GENERIC_LABELS.NXQL_QUERY }}</mat-label>
-        <textarea matInput [placeholder]="GENERIC_LABELS.NXQL_QUERY_PLACEHOLDER" formControlName="inputIdentifier"
+        <textarea matInput [placeholder]="inputPlaceholder" formControlName="inputIdentifier"
             id="inputIdentifier" required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" class="resizable-textarea"></textarea>
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>

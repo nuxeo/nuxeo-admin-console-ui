@@ -74,6 +74,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   documentCount = -1;
   nxqlQueryHintSanitized: SafeHtml = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  inputPlaceholder = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -101,6 +102,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       GENERIC_LABELS.NXQL_INPUT_HINT
     );
+    this.inputPlaceholder = `${GENERIC_LABELS.SELECT_BASE_QUERY} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS} ${GENERIC_LABELS.AND} ${GENERIC_LABELS.NXQL_QUERY_PLACEHOLDER_TITLE}`;
     const featureConfig = featureMap();
     this.activeFeature =
       this.genericMultiFeatureUtilitiesService.getActiveFeature();

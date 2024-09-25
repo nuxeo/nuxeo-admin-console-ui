@@ -33,7 +33,7 @@ export const featureMap = () => ({
         break;
 
       case GENERIC_LABELS.FOLDER:
-        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}'`),
+        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`),
           (labels = {
             pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
             submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
@@ -41,7 +41,7 @@ export const featureMap = () => ({
         break;
 
       case GENERIC_LABELS.NXQL:
-        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}'`),
+        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`),
           (labels = {
             pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
             submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
