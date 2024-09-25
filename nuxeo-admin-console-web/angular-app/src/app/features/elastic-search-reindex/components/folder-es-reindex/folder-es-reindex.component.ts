@@ -1,4 +1,4 @@
-import { CommonService } from './../../../../shared/services/common.service';
+import { CommonService } from "./../../../../shared/services/common.service";
 import { ErrorModalClosedInfo } from "./../../../../shared/types/common.interface";
 import { ErrorModalComponent } from "./../../../../shared/components/error-modal/error-modal.component";
 import {
@@ -19,9 +19,7 @@ import {
 } from "../../elastic-search-reindex.interface";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  ELASTIC_SEARCH_LABELS,
-} from "../../elastic-search-reindex.constants";
+import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as ReindexActions from "../../store/actions";
@@ -125,7 +123,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
         error,
-        userInput: this.userInput
+        userInput: this.userInput,
       },
     });
     this.errorDialogClosedSubscription = this.errorDialogRef
@@ -188,12 +186,11 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
-        this.decodedUserInput =
-          this.commonService.decodeAndReplaceSingleQuotes(
-            decodeURIComponent(this.userInput)
-          );
-          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
-          this.fetchNoOfDocuments(requestQuery);
+        this.decodedUserInput = this.commonService.decodeAndReplaceSingleQuotes(
+          decodeURIComponent(this.userInput)
+        );
+        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}' ${ELASTIC_SEARCH_LABELS.AND} ${ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS}`;
+        this.fetchNoOfDocuments(requestQuery);
       } catch (error) {
         this.showReindexErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
@@ -282,7 +279,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     this.isReindexBtnDisabled = false;
     const data = modalData as ReindexModalClosedInfo;
     if (data?.continue) {
-      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
+      const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}' ${ELASTIC_SEARCH_LABELS.AND} ${ELASTIC_SEARCH_LABELS.SELECT_QUERY_CONDITIONS}`;
       this.store.dispatch(
         ReindexActions.performFolderReindex({
           requestQuery,
