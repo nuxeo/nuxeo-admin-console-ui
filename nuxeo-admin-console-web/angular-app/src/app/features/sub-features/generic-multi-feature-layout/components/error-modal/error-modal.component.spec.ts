@@ -1,14 +1,12 @@
+import { ErrorModalComponent } from '../error-modal/error-modal.component';
 import { HyDialogBoxModule } from "@hyland/ui";
 import { MatDialogRef } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ErrorModalComponent } from "./error-modal.component";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import {
-  ERROR_MESSAGES,
-  ERROR_TYPES,
-} from "./../../constants/common.constants";
-import { ErrorDetails, ErrorModalData } from "../../types/common.interface";
 import { CommonModule } from "@angular/common";
+import { ErrorDetails } from '../../generic-multi-feature-layout.interface';
+import { ERROR_MESSAGES, ERROR_TYPES } from '../../generic-multi-feature-layout.constants';
+import { ErrorModalData } from '../../../../../shared/types/common.interface';
 describe("ErrorModalComponent", () => {
   let component: ErrorModalComponent;
   let fixture: ComponentFixture<ErrorModalComponent>;

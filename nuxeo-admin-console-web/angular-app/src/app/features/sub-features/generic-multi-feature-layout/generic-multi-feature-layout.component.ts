@@ -35,7 +35,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const featureRoute = this.router.routerState.snapshot.url.split("/")[1];
+    const featureRoute = this.router?.routerState?.snapshot?.url?.split("/")[1];
     if (featureRoute) {
       this.genericMultiFeatureUtilitiesService.setActiveFeature(
         featureRoute as FeaturesKey
