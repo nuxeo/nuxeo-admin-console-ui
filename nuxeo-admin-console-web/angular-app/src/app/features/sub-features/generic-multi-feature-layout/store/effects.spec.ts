@@ -50,7 +50,7 @@ describe("GenericMultiFeatureEffects", () => {
       const documentActionInfo = { commandId: "12345" };
       const action = FeatureActions.performDocumentAction({
         requestQuery: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
-        endpoint: "/document-endpoint",
+        featureEndpoint: "/document-featureEndpoint",
       });
       
       genericMultiFeatureService.performDocumentAction.and.returnValue(of(documentActionInfo));
@@ -71,7 +71,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
       const action = FeatureActions.performDocumentAction({
         requestQuery: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
-        endpoint: "/document-endpoint",
+        featureEndpoint: "/document-featureEndpoint",
       });
 
       genericMultiFeatureService.performDocumentAction.and.returnValue(throwError(() => error));
@@ -90,7 +90,7 @@ describe("GenericMultiFeatureEffects", () => {
       const folderActionInfo = { commandId: "67890" };
       const action = FeatureActions.performFolderAction({
         requestQuery: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
-        endpoint: "/folder-endpoint",
+        featureEndpoint: "/folder-featureEndpoint",
       });
 
       genericMultiFeatureService.performFolderAction.and.returnValue(of(folderActionInfo));
@@ -111,7 +111,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
       const action = FeatureActions.performFolderAction({
         requestQuery: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
-        endpoint: "/folder-endpoint",
+        featureEndpoint: "/folder-featureEndpoint",
       });
 
       genericMultiFeatureService.performFolderAction.and.returnValue(throwError(() => error));
@@ -130,7 +130,7 @@ describe("GenericMultiFeatureEffects", () => {
       const nxqlActionInfo = { commandId: "99999" };
       const action = FeatureActions.performNxqlAction({
         nxqlQuery: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
-        endpoint: "/nxql-endpoint",
+        featureEndpoint: "/nxql-featureEndpoint",
       });
 
       genericMultiFeatureService.performNXQLAction.and.returnValue(of(nxqlActionInfo));
@@ -151,7 +151,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
       const action = FeatureActions.performNxqlAction({
         nxqlQuery: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
-        endpoint: "/nxql-endpoint",
+        featureEndpoint: "/nxql-featureEndpoint",
       });
 
       genericMultiFeatureService.performNXQLAction.and.returnValue(throwError(() => error));

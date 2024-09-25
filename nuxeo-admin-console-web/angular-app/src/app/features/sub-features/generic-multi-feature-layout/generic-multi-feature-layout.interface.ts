@@ -41,7 +41,7 @@ export interface labelsList {
 }
 
 export interface FeatureData {
-  requestQuery?: string;
+  requestQuery: string;
   labels: labelsList;
 }
 

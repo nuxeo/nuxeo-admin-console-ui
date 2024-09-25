@@ -303,7 +303,7 @@ describe("NXQLTabComponent", () => {
   });
 
   it("should get human readable time", () => {
-    const seconds = 3661; // 1 hour, 1 minute, and 1 second
+    const seconds = 3661;
     const humanReadableTime = "1 hour 1 minute 1 second";
     spyOn(
       genericMultiFeatureUtilitiesService,

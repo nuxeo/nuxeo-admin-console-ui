@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NXQLTabComponent } from './components/nxql-tab/nxql-tab.component';
-import { FolderTabComponent } from './components/folder-tab/folder-tab.component';
-import { DocumentTabComponent } from './components/document-tab/document-tab.component';
-import { Route } from '@angular/router';
-import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
+import { NgModule } from "@angular/core";
+import { RouterModule } from "@angular/router";
+import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
+import { FolderTabComponent } from "./components/folder-tab/folder-tab.component";
+import { DocumentTabComponent } from "./components/document-tab/document-tab.component";
+import { Route } from "@angular/router";
+import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
 
 export const GenericMultiFeatureRoutes: Route[] = [
   {
@@ -13,7 +13,7 @@ export const GenericMultiFeatureRoutes: Route[] = [
     children: [
       {
         path: "document",
-        component: DocumentTabComponent, 
+        component: DocumentTabComponent,
       },
       {
         path: "folder",
@@ -30,6 +30,6 @@ export const GenericMultiFeatureRoutes: Route[] = [
 
 @NgModule({
   imports: [RouterModule.forChild(GenericMultiFeatureRoutes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class genericMultiFeatureLayoutRoutingModule {}

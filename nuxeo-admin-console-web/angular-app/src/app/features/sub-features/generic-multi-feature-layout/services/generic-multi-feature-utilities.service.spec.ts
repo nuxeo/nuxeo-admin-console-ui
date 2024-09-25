@@ -23,13 +23,9 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     });
 
     it("should set and get activeFeature", () => {
-      const feature: FeaturesKey = "ELASTIC_SEARCH_REINDEX"; // Replace with actual FeaturesKey
+      const feature: FeaturesKey = "ELASTIC_SEARCH_REINDEX";
       service.setActiveFeature(feature);
       expect(service.getActiveFeature()).toBe(feature);
-    });
-
-    it("should return undefined for activeFeature if not set", () => {
-      expect(service.getActiveFeature()).toBeUndefined();
     });
   });
 
@@ -51,7 +47,6 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     });
   });
 
-
   describe("removeLeadingCharacters", () => {
     it("should remove leading and trailing quotes", () => {
       expect(service.removeLeadingCharacters("'file1'")).toBe("file1");
@@ -65,7 +60,8 @@ describe("GenericMultiFeatureUtilitiesService", () => {
   describe("decodeAndReplaceSingleQuotes", () => {
     it("should replace single quotes in the string", () => {
       const input = "/default-domain/workspaces/ws1/John's Dad's file";
-      const expectedOutput = "/default-domain/workspaces/ws1/John%5C%27s Dad%5C%27s file";
+      const expectedOutput =
+        "/default-domain/workspaces/ws1/John%5C%27s Dad%5C%27s file";
       expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
     });
   });
@@ -74,17 +70,24 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     it("should return a properly formatted request query", () => {
       const queryParam = "/ws2";
       const requestQuery = "{queryParam} WHERE ecm:path=/ws2";
-      const expectedQuery = `${GENERIC_LABELS.SELECT_BASE_QUERY} ${requestQuery.replaceAll("{queryParam}", queryParam)}`;
-      expect(service.getRequestQuery(requestQuery, queryParam)).toBe(expectedQuery);
+      const expectedQuery = `${
+        GENERIC_LABELS.SELECT_BASE_QUERY
+      } ${requestQuery.replaceAll("{queryParam}", queryParam)}`;
+      expect(service.getRequestQuery(requestQuery, queryParam)).toBe(
+        expectedQuery
+      );
     });
   });
 
   describe("insertParamInQuery", () => {
     it("should insert the parameter into the request query", () => {
       const param = "/ws1";
-      const requestQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='{queryParam}'";
+      const requestQuery =
+        "SELECT * FROM DOCUMENT WHERE ecm:path='{queryParam}'";
       const expectedQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='/ws1'";
-      expect(service.insertParamInQuery(requestQuery, param)).toBe(expectedQuery);
+      expect(service.insertParamInQuery(requestQuery, param)).toBe(
+        expectedQuery
+      );
     });
   });
 });

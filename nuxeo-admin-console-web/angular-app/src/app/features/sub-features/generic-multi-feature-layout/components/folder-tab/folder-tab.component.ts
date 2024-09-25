@@ -72,7 +72,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
-  activeFeature: FeaturesKey | undefined = {} as FeaturesKey;
+  activeFeature: FeaturesKey = {} as FeaturesKey;
 
   constructor(
     public dialogService: MatDialog,
@@ -200,7 +200,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           this.inputForm?.get("inputIdentifier")?.value.trim()
         );
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
-          for elasticsearch reindex endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
+          for the action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
@@ -307,7 +307,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.store.dispatch(
           FeatureActions.performFolderAction({
             requestQuery: this.requestQuery,
-            endpoint: REST_END_POINTS[featureKey as FeaturesKey],
+            featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
           })
         );
       } else {

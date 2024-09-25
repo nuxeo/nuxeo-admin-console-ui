@@ -115,7 +115,6 @@ import { ProbesDataModule } from "./features/sub-features/probes-data/probes-dat
       useClass: AuthInterceptorService,
       multi: true,
     },
-  //  { provide: TitleStrategy, useClass: GenericPageTitle },
     ngrxDevtools,
   ],
   bootstrap: [AppComponent],

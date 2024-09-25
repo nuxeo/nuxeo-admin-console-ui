@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import {
-  GENERIC_LABELS,
-} from "../generic-multi-feature-layout.constants";
+import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 
 @Injectable({
@@ -11,12 +9,11 @@ import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 export class GenericMultiFeatureUtilitiesService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  activeFeature: FeaturesKey | undefined;
+  activeFeature: FeaturesKey = {} as FeaturesKey;
   setActiveFeature(activeFeature: FeaturesKey): void {
     this.activeFeature = activeFeature;
   }
-
-  getActiveFeature(): FeaturesKey | undefined {
+  getActiveFeature(): FeaturesKey {
     return this.activeFeature;
   }
 

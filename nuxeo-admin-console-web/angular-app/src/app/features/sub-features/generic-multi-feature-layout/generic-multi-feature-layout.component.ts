@@ -2,9 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
-import {
-  TAB_INFO,
-} from "./generic-multi-feature-layout.constants";
+import { TAB_INFO } from "./generic-multi-feature-layout.constants";
 import { TabInfo } from "./generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
 import {
@@ -62,11 +60,11 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
 
   updateActiveTab(): void {
     const currentRoute = this.route?.snapshot?.firstChild?.routeConfig?.path;
-    const subFeatureRoute: string =
-      this.router.routerState.snapshot.url.split("/")[2];
+    const tabType: string =
+      this.router?.routerState?.snapshot?.url?.split("/")[2];
     if (currentRoute) {
       this.activeTab =
-        this.searchTabs.find((tab) => tab.path === currentRoute) ||
+        this.searchTabs?.find((tab) => tab?.path === currentRoute) ||
         this.searchTabs[0];
     }
     const activeFeature =
@@ -75,7 +73,7 @@ export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
     const featureKey = getFeatureKeyByValue(activeFeature) as FeaturesKey;
     if (activeFeature && activeFeature in featureConfig) {
       const templateConfigData =
-        featureConfig[FEATURES[featureKey]](subFeatureRoute);
+        featureConfig[FEATURES[featureKey]](tabType);
       const templateLabels = templateConfigData?.labels;
       this.titleService.setTitle(templateLabels.pageTitle);
     }

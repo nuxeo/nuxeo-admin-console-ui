@@ -9,7 +9,7 @@ describe("DocumentActionReducer", () => {
   });
 
   it("should handle performDocumentAction", () => {
-    const action = FeatureActions.performDocumentAction({ requestQuery: "query", endpoint: "/document" });
+    const action = FeatureActions.performDocumentAction({ requestQuery: "query", featureEndpoint: "/document" });
     const state = documentActionReducer(initialDocumentState, action);
     expect(state.error).toBeNull();
   });
@@ -45,7 +45,7 @@ describe("FolderActionReducer", () => {
   });
 
   it("should handle performFolderAction", () => {
-    const action = FeatureActions.performFolderAction({ requestQuery: "query", endpoint: "/folder" });
+    const action = FeatureActions.performFolderAction({ requestQuery: "query", featureEndpoint: "/folder" });
     const state = folderActionReducer(initialFolderActionState, action);
     expect(state.error).toBeNull();
   });
@@ -81,7 +81,7 @@ describe("NXQLActionReducer", () => {
   });
 
   it("should handle performNxqlAction", () => {
-    const action = FeatureActions.performNxqlAction({ nxqlQuery: "SELECT * FROM NXQL", endpoint: "/nxql" });
+    const action = FeatureActions.performNxqlAction({ nxqlQuery: "SELECT * FROM NXQL", featureEndpoint: "/nxql" });
     const state = nxqlActionReducer(initialNXQLActionState, action);
     expect(state.error).toBeNull();
   });
