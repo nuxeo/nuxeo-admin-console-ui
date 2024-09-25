@@ -13,17 +13,17 @@ export const appRoutes: Route[] = [
   },
   {
     path: "elasticsearch-reindex",
-    title: routeTitle.ELASTICSEARCH_REINDEX,
     loadChildren: () =>
       import(
-        "./features/elastic-search-reindex/elastic-search-reindex.module"
-      ).then((m) => m.ElasticSearchReindexModule),
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule)
   },
   {
     path: "bulk-action-monitoring",
     title: routeTitle.BULKACTIONMONITORING,
     loadChildren: () =>
-      import( "./features/bulk-action-monitoring/bulk-action-monitoring.module"
+      import(
+        "./features/bulk-action-monitoring/bulk-action-monitoring.module"
       ).then((m) => m.BulkActionMonitoringModule),
   },
   {

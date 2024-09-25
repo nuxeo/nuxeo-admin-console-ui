@@ -1,0 +1,13 @@
+<form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="document-tab-container">
+  <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+   <mat-form-field hyFormField>
+       <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label> 
+      <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}" type="text"
+          formControlName="inputIdentifier" id="inputIdentifier" required />
+       <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
+          {{getErrorMessage()}}</mat-error> 
+  </mat-form-field> 
+  <button mat-flat-button color="primary" type="submit" class="document-tab-container__button" [disabled]="isSubmitBtnDisabled">
+      {{ templateLabels.submitBtnLabel }}
+  </button>
+</form>

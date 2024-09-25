@@ -1,0 +1,93 @@
+import { TestBed } from "@angular/core/testing";
+import { GenericMultiFeatureUtilitiesService } from "./generic-multi-feature-utilities.service";
+import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
+import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+
+describe("GenericMultiFeatureUtilitiesService", () => {
+  let service: GenericMultiFeatureUtilitiesService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [GenericMultiFeatureUtilitiesService],
+    });
+    service = TestBed.inject(GenericMultiFeatureUtilitiesService);
+  });
+
+  describe("BehaviorSubjects", () => {
+    it("should initialize pageTitle with an empty string", () => {
+      expect(service.pageTitle.value).toBe("");
+    });
+
+    it("should initialize spinnerStatus with false", () => {
+      expect(service.spinnerStatus.value).toBe(false);
+    });
+
+    it("should set and get activeFeature", () => {
+      const feature: FeaturesKey = "ELASTIC_SEARCH_REINDEX";
+      service.setActiveFeature(feature);
+      expect(service.getActiveFeature()).toBe(feature);
+    });
+  });
+
+  describe("secondsToHumanReadable", () => {
+    it("should convert seconds to human readable format", () => {
+      expect(service.secondsToHumanReadable(0)).toBe("");
+      expect(service.secondsToHumanReadable(59)).toBe("59 seconds");
+      expect(service.secondsToHumanReadable(60)).toBe("1 minute");
+      expect(service.secondsToHumanReadable(61)).toBe("1 minute 1 second");
+      expect(service.secondsToHumanReadable(3600)).toBe("1 hour");
+      expect(service.secondsToHumanReadable(3661)).toBe(
+        "1 hour 1 minute 1 second"
+      );
+      expect(service.secondsToHumanReadable(86400)).toBe("1 day");
+      expect(service.secondsToHumanReadable(90061)).toBe(
+        "1 day 1 hour 1 minute 1 second"
+      );
+      expect(service.secondsToHumanReadable(2592000)).toBe("1 month");
+    });
+  });
+
+  describe("removeLeadingCharacters", () => {
+    it("should remove leading and trailing quotes", () => {
+      expect(service.removeLeadingCharacters("'file1'")).toBe("file1");
+      expect(service.removeLeadingCharacters('"file1"')).toBe("file1");
+      expect(service.removeLeadingCharacters("'file1")).toBe("file1");
+      expect(service.removeLeadingCharacters('"file1')).toBe("file1");
+      expect(service.removeLeadingCharacters("file1")).toBe("file1");
+    });
+  });
+
+  describe("decodeAndReplaceSingleQuotes", () => {
+    it("should replace single quotes in the string", () => {
+      const input = "/default-domain/workspaces/ws1/John's Dad's file";
+      const expectedOutput =
+        "/default-domain/workspaces/ws1/John%5C%27s Dad%5C%27s file";
+      expect(service.decodeAndReplaceSingleQuotes(input)).toBe(expectedOutput);
+    });
+  });
+
+  describe("getRequestQuery", () => {
+    it("should return a properly formatted request query", () => {
+      const queryParam = "/ws2";
+      const requestQuery = "{queryParam} WHERE ecm:path=/ws2";
+      const expectedQuery = `${
+        GENERIC_LABELS.SELECT_BASE_QUERY
+      } ${requestQuery.replaceAll("{queryParam}", queryParam)}`;
+      expect(service.getRequestQuery(requestQuery, queryParam)).toBe(
+        expectedQuery
+      );
+    });
+  });
+
+  describe("insertParamInQuery", () => {
+    it("should insert the parameter into the request query", () => {
+      const param = "/ws1";
+      const requestQuery =
+        "SELECT * FROM DOCUMENT WHERE ecm:path='{queryParam}'";
+      const expectedQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='/ws1'";
+      expect(service.insertParamInQuery(requestQuery, param)).toBe(
+        expectedQuery
+      );
+    });
+  });
+});
