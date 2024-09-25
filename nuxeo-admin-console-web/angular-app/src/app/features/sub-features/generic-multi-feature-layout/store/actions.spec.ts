@@ -5,13 +5,13 @@ import * as DocumentActions from "./actions";
 describe("DocumentActions", () => {
   const requestQuery =
     "SELECT * FROM DOCUMENT WHERE ecm:path='805c8feb-308c-48df-b74f-d09b4758f778'";
-  const endpoint = "/document";
+  const featureEndpoint = "/document";
   
   it("should create performDocumentAction action", () => {
-    const action = DocumentActions.performDocumentAction({ requestQuery, endpoint });
+    const action = DocumentActions.performDocumentAction({ requestQuery, featureEndpoint });
     expect(action.type).toEqual("[Admin] Perform Action");
     expect(action.requestQuery).toEqual(requestQuery);
-    expect(action.endpoint).toEqual(endpoint);
+    expect(action.featureEndpoint).toEqual(featureEndpoint);
   });
 
   it("should create onDocumentActionLaunch action", () => {
@@ -41,13 +41,13 @@ describe("DocumentActions", () => {
 describe("FolderActions", () => {
   const requestQuery =
     "SELECT * FROM FOLDER WHERE ecm:path='c8feb-308c-48df-b74f-d09b4758f778'";
-  const endpoint = "/folder";
+  const featureEndpoint = "/folder";
 
   it("should create performFolderAction action", () => {
-    const action = DocumentActions.performFolderAction({ requestQuery, endpoint });
+    const action = DocumentActions.performFolderAction({ requestQuery, featureEndpoint });
     expect(action.type).toEqual("[Admin] Perform Folder Action");
     expect(action.requestQuery).toEqual(requestQuery);
-    expect(action.endpoint).toEqual(endpoint);
+    expect(action.featureEndpoint).toEqual(featureEndpoint);
   });
 
   it("should create onFolderActionLaunch action", () => {
@@ -76,13 +76,13 @@ describe("FolderActions", () => {
 
 describe("NxqlActions", () => {
   const nxqlQuery = "SELECT * FROM NXQL WHERE ecm:path='f77b67b3-308c-48df-b74f'";
-  const endpoint = "/nxql";
+  const featureEndpoint = "/nxql";
 
   it("should create performNxqlAction action", () => {
-    const action = DocumentActions.performNxqlAction({ nxqlQuery, endpoint });
+    const action = DocumentActions.performNxqlAction({ nxqlQuery, featureEndpoint });
     expect(action.type).toEqual("[Admin] Perform NXQL Action");
     expect(action.nxqlQuery).toEqual(nxqlQuery);
-    expect(action.endpoint).toEqual(endpoint);
+    expect(action.featureEndpoint).toEqual(featureEndpoint);
   });
 
   it("should create onNxqlActionLaunch action", () => {

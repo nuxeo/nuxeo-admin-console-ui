@@ -7,9 +7,9 @@ export const TAB_INFO: TabInfo[] = [
 ];
 
 export const GENERIC_LABELS = {
-  DOCUMENT: 'document',
-  FOLDER: 'folder',
-  NXQL: 'nxql',
+  DOCUMENT: "document",
+  FOLDER: "folder",
+  NXQL: "nxql",
   CLOSE_LABEL: "Close",
   CONTINUE: "Continue",
   REQUIRED_FIELD_INDICATOR: "* indicates a required field",

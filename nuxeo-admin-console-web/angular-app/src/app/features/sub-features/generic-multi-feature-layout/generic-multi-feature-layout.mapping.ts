@@ -3,6 +3,7 @@ import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
 
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex"
+  // Add other features here. Value MUST match route name
 } as const;
 
 export type FeaturesKey = keyof typeof FEATURES;
@@ -14,16 +15,15 @@ export function getFeatureKeyByValue(
   const featureKey = featureEntries.find(
     ([, featureValue]) => featureValue === value
   );
-
   return featureKey ? featureKey[0] : undefined;
 }
 
 export const featureMap = () => ({
-  [FEATURES.ELASTIC_SEARCH_REINDEX]: (type: string) => {
+  [FEATURES.ELASTIC_SEARCH_REINDEX]: (tabType: string) => {
     let requestQuery: string;
     let labels: { pageTitle: string; submitBtnLabel: string };
 
-    switch (type) {
+    switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
         (requestQuery = `ecm:path='{queryParam}'`),
           (labels = {
@@ -49,7 +49,7 @@ export const featureMap = () => ({
         break;
 
       default:
-        throw new Error(`Unsupported type: ${type}`);
+        throw new Error(`Unsupported type: ${tabType}`);
     }
 
     return {

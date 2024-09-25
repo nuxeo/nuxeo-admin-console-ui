@@ -62,7 +62,6 @@ describe("FolderTabComponent", () => {
       "NuxeoJSClientService",
       ["getNuxeoInstance"]
     );
-    //  const genericMultiFeatureUtilitiesServiceSpy = jasmine.createSpyObj("GenericMultiFeatureUtilitiesService", ["secondsToHumanReadable", "pageTitle"]);
     const initialState: FolderActionState = {
       folderActionInfo: {
         commandId: "mockCommandId",
