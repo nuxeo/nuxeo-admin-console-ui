@@ -23,7 +23,7 @@ import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import * as RenditionsActions from "../../store/actions";
 import { PictureRendtionsService } from "../../services/picture-renditions.service";
-import { NXQLRenditionState } from "../../store/reducers";
+import { NxqlPictureRenditionsState } from "../../store/reducers";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -37,13 +37,13 @@ import Nuxeo from "nuxeo";
   styleUrls: ["./picture-nxql-renditions.component.scss"],
 })
 export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
-  nxqlRenditionForm: FormGroup;
-  nxqlRenditionLaunched$: Observable<RenditionsInfo>;
-  nxqlRenditionError$: Observable<HttpErrorResponse | null>;
-  nxqlRenditionLaunchedSubscription = new Subscription();
-  nxqlRenditionErrorSubscription = new Subscription();
-  reindexDialogClosedSubscription = new Subscription();
-  nxqlQueryHintSanitized: SafeHtml = "";
+  nxqlPictureRenditionsForm: FormGroup;
+  nxqlPictureRenditionsLaunched$: Observable<RenditionsInfo>;
+  nxqlPictureRenditionsError$: Observable<HttpErrorResponse | null>;
+  nxqlPictureRenditionsLaunchedSubscription = new Subscription();
+  nxqlPictureRenditionsErrorSubscription = new Subscription();
+  pictureDialogClosedSubscription = new Subscription();
+  nxqlPictureRenditionsQueryHintSanitized: SafeHtml = "";
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
@@ -69,48 +69,52 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
   spinnerStatusSubscription: Subscription = new Subscription();
   decodedUserInput = "";
   noOfDocumentsToReindex = -1;
-  isReindexBtnDisabled = false;
+  isRenditionsBtnDisabled = false;
   COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     private pictureRenditionService: PictureRendtionsService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
-    private store: Store<{ nxqlReindex: NXQLRenditionState }>,
+    private store: Store<{ nxqlPictureRenditions: NxqlPictureRenditionsState }>,
     private sanitizer: DomSanitizer,
     private nuxeoJSClientService: NuxeoJSClientService,
     private commonService: CommonService
   ) {
-    this.nxqlRenditionForm = this.fb.group({
+    this.nxqlPictureRenditionsForm = this.fb.group({
       nxqlQuery: ["", Validators.required],
     });
-    this.nxqlRenditionLaunched$ = this.store.pipe(
-      select((state) => state.nxqlReindex?.nxqlRenditionInfo)
+    this.nxqlPictureRenditionsLaunched$ = this.store.pipe(
+      select((state) => {
+        console.log(state);
+        return state.nxqlPictureRenditions?.nxqlPictureRenditionsInfo})
     );
-    this.nxqlRenditionError$ = this.store.pipe(
-      select((state) => state.nxqlReindex?.error)
+    this.nxqlPictureRenditionsError$ = this.store.pipe(
+      select((state) => state.nxqlPictureRenditions?.error)
     );
   }
 
   ngOnInit(): void {
+    console.log('1test');
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.pictureRenditionService.pageTitle.next(
       `${PICTURE_RENDITIONS_LABELS.NXQL_QUERY_RENDITION_TITLE}`
     );
-    this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
+    this.nxqlPictureRenditionsQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       PICTURE_RENDITIONS_LABELS.NXQL_INPUT_HINT
     );
 
-    this.nxqlRenditionLaunchedSubscription =
-      this.nxqlRenditionLaunched$.subscribe((data) => {
+    this.nxqlPictureRenditionsLaunchedSubscription =
+      this.nxqlPictureRenditionsLaunched$.subscribe((data) => {
         console.log('test');
+        console.log(data);
         if (data?.commandId) {
           console.log('test');
-          this.showRenditionLaunchedModal(data?.commandId);
+          this.showRenditionsLaunchedModal(data?.commandId);
         }
       });
 
-    this.nxqlRenditionErrorSubscription = this.nxqlRenditionError$.subscribe(
+    this.nxqlPictureRenditionsErrorSubscription = this.nxqlPictureRenditionsError$.subscribe(
       (error) => {
         if (error) {
           this.showRenditionErrorModal({
@@ -126,7 +130,7 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
       });
   }
 
-  showRenditionLaunchedModal(commandId: string | null): void {
+  showRenditionsLaunchedModal(commandId: string | null): void {
     this.pictureRenditionService.spinnerStatus.next(false);
     this.launchedDialogRef = this.dialogService.open(
       PictureRenditionsModalComponent,
@@ -137,7 +141,7 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
         data: {
           type: PICTURE_RENDITIONS_LABELS.MODAL_TYPE.launched,
           title: `${PICTURE_RENDITIONS_LABELS.RENDITION_LAUNCHED_MODAL_TITLE}`,
-          launchedMessage: `${PICTURE_RENDITIONS_LABELS.REINDEX_LAUNCHED} ${commandId}. ${PICTURE_RENDITIONS_LABELS.COPY_MONITORING_ID}`,
+          launchedMessage: `${PICTURE_RENDITIONS_LABELS.RENDITION_LAUNCHED} ${commandId}. ${PICTURE_RENDITIONS_LABELS.COPY_MONITORING_ID}`,
           commandId,
         },
       }
@@ -151,8 +155,8 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
   }
 
   onRenditionLaunchedModalClose(): void {
-    this.isReindexBtnDisabled = false;
-    this.nxqlRenditionForm?.reset();
+    this.isRenditionsBtnDisabled = false;
+    this.nxqlPictureRenditionsForm?.reset();
     document.getElementById("nxqlQuery")?.focus();
   }
 
@@ -173,23 +177,23 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
   }
 
   onReindexErrorModalClose(): void {
-    this.isReindexBtnDisabled = false;
+    this.isRenditionsBtnDisabled = false;
     document.getElementById("nxqlQuery")?.focus();
   }
 
   getErrorMessage(): string | null {
-    if (this.nxqlRenditionForm?.get("nxqlQuery")?.hasError("required")) {
+    if (this.nxqlPictureRenditionsForm?.get("nxqlQuery")?.hasError("required")) {
       return PICTURE_RENDITIONS_LABELS.REQUIRED_NXQL_QUERY_ERROR;
     }
     return null;
   }
 
-  onNxqlRenditionFormSubmit(): void {
+  onNxqlPictureRenditionsFormSubmit(): void {
     console.log(1);
-    if (this.nxqlRenditionForm?.valid && !this.isReindexBtnDisabled) {
-      this.isReindexBtnDisabled = true;
+    if (this.nxqlPictureRenditionsForm?.valid && !this.isRenditionsBtnDisabled) {
+      this.isRenditionsBtnDisabled = true;
       this.pictureRenditionService.spinnerStatus.next(true);
-      const userInput = this.nxqlRenditionForm?.get("nxqlQuery")?.value?.trim();
+      const userInput = this.nxqlPictureRenditionsForm?.get("nxqlQuery")?.value?.trim();
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
       try {
@@ -254,7 +258,7 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
       .then((errorJson: unknown) => {
         if (typeof errorJson === "object" && errorJson !== null) {
           this.store.dispatch(
-            RenditionsActions.onNxqlRenditionsFailure({
+            RenditionsActions.onNxqlPictureRenditionsFailure({
               error: errorJson as HttpErrorResponse,
             })
           );
@@ -289,7 +293,7 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
   }
 
   onConfirmationModalClose(data: RenditionsModalClosedInfo, query: string): void {
-    this.isReindexBtnDisabled = false;
+    this.isRenditionsBtnDisabled = false;
     if (data?.continue) {
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
           for picture rendition endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
@@ -302,7 +306,7 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
           "%5C%27"
         );
         this.store.dispatch(
-          RenditionsActions.performNxqlRenditions({
+          RenditionsActions.performNxqlPictureRenditions({
             nxqlQuery: this.decodedUserInput,
           })
         );
@@ -337,10 +341,10 @@ export class NXQLPictureRenditionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(RenditionsActions.resetNxqlRenditionsState());
-    this.nxqlRenditionLaunchedSubscription?.unsubscribe();
-    this.nxqlRenditionErrorSubscription?.unsubscribe();
-    this.reindexDialogClosedSubscription?.unsubscribe();
+    this.store.dispatch(RenditionsActions.resetNxqlPictureRenditionsState());
+    this.nxqlPictureRenditionsLaunchedSubscription?.unsubscribe();
+    this.nxqlPictureRenditionsErrorSubscription?.unsubscribe();
+    this.pictureDialogClosedSubscription?.unsubscribe();
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();

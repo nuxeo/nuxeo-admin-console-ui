@@ -46,7 +46,7 @@ import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bu
 import { ErrorModalComponent } from './shared/components/error-modal/error-modal.component';
 import { ProbesDataModule } from './features/sub-features/probes-data/probes-data.module';
 import { PictureRenditionsModule } from "./features/picture-renditions/picture-renditions.module";
-import { nxqlRenditionReducer } from "./features/picture-renditions/store/reducers";
+import { nxqlPictureRenditionsReducer } from "./features/picture-renditions/store/reducers";
 import * as RenditionsEffects from "./features/picture-renditions/store/effects";
 
 
@@ -80,7 +80,7 @@ import * as RenditionsEffects from "./features/picture-renditions/store/effects"
       nxqlReindex: nxqlReindexReducer,
       bulkActionMonitoring:  bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
-      nxqlRendition: nxqlRenditionReducer
+      nxqlPictureRenditions: nxqlPictureRenditionsReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(authEffects, HomeEffects, ReindexEffects, BulkActionMonitoringEffects, ProbesEffects, RenditionsEffects),

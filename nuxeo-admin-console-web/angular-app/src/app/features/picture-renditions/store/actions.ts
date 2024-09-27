@@ -2,18 +2,18 @@ import { createAction, props } from "@ngrx/store";
 import { RenditionsInfo } from "../picture-renditions.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 
-export const performNxqlRenditions = createAction(
+export const performNxqlPictureRenditions = createAction(
   "[Admin] Perform NXQL Renditions",
   props<{ nxqlQuery: string | null }>()
 );
-export const onNxqlRenditionsLaunch = createAction(
+export const onNxqlPictureRenditionsLaunch = createAction(
   "[Admin] On NXQL Renditions Launch",
-  props<{ nxqlRenditionInfo: RenditionsInfo }>()
+  props<{ nxqlPictureRenditionsInfo: RenditionsInfo }>()
 );
-export const onNxqlRenditionsFailure = createAction(
+export const onNxqlPictureRenditionsFailure = createAction(
   "[Admin] On NXQL Renditions Failure",
   props<{ error: HttpErrorResponse }>()
 );
-export const resetNxqlRenditionsState = createAction(
+export const resetNxqlPictureRenditionsState = createAction(
   "[Admin] Reset NXQL Renditions State"
 );

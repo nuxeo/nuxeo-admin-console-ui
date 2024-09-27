@@ -11,20 +11,20 @@ export const loadPerformNxqlReindexEffect = createEffect(
     pictureRenditionService = inject(PictureRendtionsService)
   ) => {
     return actions$.pipe(
-      ofType(RenditionActions.performNxqlRenditions),
+      ofType(RenditionActions.performNxqlPictureRenditions),
       switchMap((action) => {
         return pictureRenditionService
-          .performNXQLRendition(action?.nxqlQuery)
+          .performNXQLPictureRenditions(action?.nxqlQuery)
           .pipe(
             map((data) => {
-              return RenditionActions.onNxqlRenditionsLaunch({
-                nxqlRenditionInfo: {
+              return RenditionActions.onNxqlPictureRenditionsLaunch({
+                nxqlPictureRenditionsInfo: {
                   commandId: data?.commandId,
                 },
               });
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(RenditionActions.onNxqlRenditionsFailure({ error }));
+              return of(RenditionActions.onNxqlPictureRenditionsFailure({ error }));
             })
           );
       })

@@ -103,6 +103,7 @@ export class NXQLESReindexComponent implements OnInit, OnDestroy {
 
     this.nxqlReindexingLaunchedSubscription =
       this.nxqlReindexingLaunched$.subscribe((data) => {
+        console.log(data);
         if (data?.commandId) {
           this.showReindexLaunchedModal(data?.commandId);
         }

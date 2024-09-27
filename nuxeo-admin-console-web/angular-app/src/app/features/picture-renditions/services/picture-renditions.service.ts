@@ -15,7 +15,7 @@ export class PictureRendtionsService {
     private networkService: NetworkService
   ) {}
 
-  performNXQLRendition(nxqlQuery: string | null): Observable<RenditionsInfo> {
+  performNXQLPictureRenditions(nxqlQuery: string | null): Observable<RenditionsInfo> {
     return this.networkService.makeHttpRequest<RenditionsInfo>(
       REST_END_POINTS.RENDITION_SEARCH,
       { query: nxqlQuery }

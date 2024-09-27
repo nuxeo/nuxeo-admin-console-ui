@@ -2,39 +2,39 @@ import { createReducer, on } from "@ngrx/store";
 import * as RenditionsActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
 
-export interface NXQLRenditionState {
-  nxqlRenditionInfo: {
+export interface NxqlPictureRenditionsState {
+  nxqlPictureRenditionsInfo: {
     commandId: string | null;
   };
   error: HttpErrorResponse | null;
 }
 
-export const initialNXQLRenditionState: NXQLRenditionState = {
-    nxqlRenditionInfo: {
+export const initialNxqlLPictureRenditionsState: NxqlPictureRenditionsState = {
+    nxqlPictureRenditionsInfo: {
     commandId: null,
   },
   error: null,
 };
 
-export const nxqlRenditionReducer = createReducer(
-  initialNXQLRenditionState,
-  on(RenditionsActions.performNxqlRenditions, (state) => ({
+export const nxqlPictureRenditionsReducer = createReducer(
+  initialNxqlLPictureRenditionsState,
+  on(RenditionsActions.performNxqlPictureRenditions, (state) => ({
     ...state,
     error: null,
   })),
-  on(RenditionsActions.onNxqlRenditionsLaunch, (state, { nxqlRenditionInfo }) => ({
+  on(RenditionsActions.onNxqlPictureRenditionsLaunch, (state, { nxqlPictureRenditionsInfo }) => ({
     ...state,
-    nxqlRenditionInfo: {
-      commandId: nxqlRenditionInfo?.commandId,
+    nxqlPictureRenditionsInfo: {
+      commandId: nxqlPictureRenditionsInfo?.commandId,
     },
   })),
-  on(RenditionsActions.onNxqlRenditionsFailure, (state, { error }) => ({
+  on(RenditionsActions.onNxqlPictureRenditionsFailure, (state, { error }) => ({
     ...state,
     error,
   })),
-  on(RenditionsActions.resetNxqlRenditionsState, (state) => ({
+  on(RenditionsActions.resetNxqlPictureRenditionsState, (state) => ({
     ...state,
-    nxqlRenditionInfo: {
+    nxqlPictureRenditionsInfo: {
       commandId: null,
     },
     error: null,

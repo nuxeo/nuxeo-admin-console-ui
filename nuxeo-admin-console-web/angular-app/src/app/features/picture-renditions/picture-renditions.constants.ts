@@ -16,8 +16,8 @@ export const PICTURE_RENDITIONS_LABELS = {
       launched: 2
     },
     RENDITION_LAUNCHED_MODAL_TITLE: "Action launched",
-    REINDEX_LAUNCHED: "Congratulations! Your action is launched with ID",
-    REQUIRED_NXQL_QUERY_ERROR: "Please provide a valid NXQL query",
+    RENDITION_LAUNCHED: "Congratulations! Your action is launched with ID",
+    REQUIRED_NXQL_QUERY_ERROR: "Please provide a valid NXQL rendition query",
     COPY_MONITORING_ID:
     "Remember to take note of the ID if you want to monitor it later on.",
     REINDEX_WARNING:
@@ -26,7 +26,7 @@ export const PICTURE_RENDITIONS_LABELS = {
     NXQL_QUERY: "NXQL Query",
     NXQL_QUERY_PLACEHOLDER:
     "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND dc:title = 'A picture document to rendition'",
-    RENDITION_BUTTON_LABEL: "RENDITION",
+    RENDITION_BUTTON_LABEL: "Rendition",
     ABORT_LABEL: "Abort",
     CONTINUE: "Continue",
     CONTINUE_CONFIRMATION: "Would you like to continue?",
