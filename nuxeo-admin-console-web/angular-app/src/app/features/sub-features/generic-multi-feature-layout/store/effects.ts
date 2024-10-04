@@ -68,7 +68,7 @@ export const loadPerformNxqlActionEffect = createEffect(
       ofType(FeatureActions.performNxqlAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performNXQLAction(action?.nxqlQuery, action?.featureEndpoint)
+          .performNXQLAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onNxqlActionLaunch({

@@ -75,6 +75,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   nxqlQueryHintSanitized: SafeHtml = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
   inputPlaceholder = "";
+  requestQuery = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -206,13 +207,13 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
       try {
-        const decodedUserInput = decodeURIComponent(
+        this.requestQuery = decodeURIComponent(
           /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
           this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
             userInput
           )
         );
-        this.fetchNoOfDocuments(decodedUserInput);
+        this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         this.showActionErrorModal({
@@ -313,9 +314,19 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           this.activeFeature
         ) as FeaturesKey;
         if (featureKey in FEATURES) {
+          let requestUrl = "";
+          let requestParams = this.templateConfigData?.data["bodyParam"];
+          if (requestParams) {
+            // Since, it is bodyParam, the query would be part of body params object & not the url
+            requestParams["query"] = this.requestQuery;
+          } else {
+            // since it is queryParam, the query would be appended to the url
+            requestUrl = this.requestQuery;
+          }
           this.store.dispatch(
             FeatureActions.performNxqlAction({
-              nxqlQuery: this.decodedUserInput,
+              requestUrl: this.requestQuery,
+              requestParams,
               featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
             })
           );

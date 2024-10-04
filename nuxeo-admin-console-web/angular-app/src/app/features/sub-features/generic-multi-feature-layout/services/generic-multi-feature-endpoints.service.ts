@@ -42,12 +42,13 @@ export class GenericMultiFeatureEndpointsService {
   }
 
   performNXQLAction(
-    nxqlQuery: string | null,
+    requestUrl: string | null,
+    requestParams: unknown,
     featureEndpoint: string
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { query: nxqlQuery }
+      { queryParam: { requestUrl }, bodyParam: { requestParams } }
     );
   }
 }
