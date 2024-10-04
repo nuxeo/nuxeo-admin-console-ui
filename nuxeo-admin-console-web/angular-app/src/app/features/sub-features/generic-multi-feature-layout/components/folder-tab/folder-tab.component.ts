@@ -307,7 +307,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
         let requestUrl = "";
-        let requestParams = this.templateConfigData?.data["bodyParam"];
+        const requestParams = this.templateConfigData?.data["bodyParam"];
         // Prepare body params object with dynamic parameters & their values entered as input
         if (requestParams) {
           // Since, it is bodyParam, the query would be part of body params object & not the url

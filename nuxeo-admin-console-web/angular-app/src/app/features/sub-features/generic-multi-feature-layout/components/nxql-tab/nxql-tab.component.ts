@@ -315,7 +315,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         ) as FeaturesKey;
         if (featureKey in FEATURES) {
           let requestUrl = "";
-          let requestParams = this.templateConfigData?.data["bodyParam"];
+          const requestParams = this.templateConfigData?.data["bodyParam"];
           if (requestParams) {
             // Since, it is bodyParam, the query would be part of body params object & not the url
             requestParams["query"] = this.requestQuery;
@@ -325,7 +325,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           }
           this.store.dispatch(
             FeatureActions.performNxqlAction({
-              requestUrl: this.requestQuery,
+              requestUrl,
               requestParams,
               featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
             })

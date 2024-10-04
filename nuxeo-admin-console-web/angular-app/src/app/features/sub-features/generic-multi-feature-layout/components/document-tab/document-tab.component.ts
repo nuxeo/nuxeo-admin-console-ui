@@ -65,8 +65,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  endpointData = {} as unknown;
-  requestQuery = '';
+  requestQuery = "";
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -97,7 +96,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         GENERIC_LABELS.DOCUMENT
       ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
-      this.endpointData = this.templateConfigData?.data;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
@@ -221,25 +219,23 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-           
-            /*  const requestQuery =
+            this.requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                this.templateConfigData.requestParams as string,
+                this.templateConfigData?.data["queryParam"]
+                  ? (this.templateConfigData?.data["queryParam"][
+                      "query"
+                    ] as string)
+                  : (this.templateConfigData?.data["bodyParam"][
+                      "query"
+                    ] as string),
                 decodedPath
-              ); */
-              this.requestQuery =
-              this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                (this.templateConfigData?.data["queryParam"])
-                  ? this.templateConfigData?.data["queryParam"]["query"] as string
-                  : this.templateConfigData?.data["bodyParam"]["query"] as string,
-                  decodedPath
               );
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
               let requestUrl = "";
-              let requestParams = this.templateConfigData?.data["bodyParam"];
+              const requestParams = this.templateConfigData?.data["bodyParam"];
               // Prepare body params object with dynamic parameters & their values entered as input
               if (requestParams) {
                 // Since, it is bodyParam, the query would be part of body params object & not the url
