@@ -38,10 +38,17 @@ export interface GenericModalData {
 export interface labelsList {
   pageTitle: string;
   submitBtnLabel: string;
+  nxqlQueryDefault?: string;
 }
 
 export interface FeatureData {
-  requestQuery: string;
+  requestParams: string;
   labels: labelsList;
+  data: RequestParamType;
 }
 
+export interface RequestParamType {
+  queryParam: { [key: string]: any };
+  bodyParam: { [key: string]: any };
+  urlParam: { [key: string]: any };
+}

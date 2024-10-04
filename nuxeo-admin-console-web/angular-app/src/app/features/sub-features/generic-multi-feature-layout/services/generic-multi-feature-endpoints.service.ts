@@ -10,22 +10,24 @@ import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.con
 export class GenericMultiFeatureEndpointsService {
   constructor(private networkService: NetworkService) {}
   performDocumentAction(
-    requestQuery: string | null,
-    featureEndpoint: string
+    requestQueryParam: string | null,
+    requestBodyParam: string | null,
+    featureEndpoint: string,
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { query: requestQuery }
+      {queryParam: {query: requestQueryParam}, bodyParam: {query: requestBodyParam}}
     );
   }
 
   performFolderAction(
-    requestQuery: string | null,
-    featureEndpoint: string
+    requestQueryParam: string | null,
+    requestBodyParam: string | null,
+    featureEndpoint: string,
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { query: requestQuery }
+      {queryParam: {query: requestQueryParam}, bodyParam: {query: requestBodyParam}}
     );
   }
 

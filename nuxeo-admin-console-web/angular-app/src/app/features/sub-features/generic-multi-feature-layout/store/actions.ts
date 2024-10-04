@@ -4,7 +4,7 @@ import { ActionInfo } from "../generic-multi-feature-layout.interface";
 
 export const performDocumentAction = createAction(
   "[Admin] Perform Action",
-  props<{ requestQuery: string | null; featureEndpoint: string }>()
+  props<{ requestQueryParam: string | null; requestBodyParam: string | null; featureEndpoint: string }>()
 );
 export const onDocumentActionLaunch = createAction(
   "[Admin] On Action Launch",
@@ -19,7 +19,7 @@ export const resetDocumentActionState = createAction(
 );
 export const performFolderAction = createAction(
   "[Admin] Perform Folder Action",
-  props<{ requestQuery: string | null; featureEndpoint: string }>()
+  props<{ requestQueryParam: string | null; requestBodyParam: string | null; featureEndpoint: string }>()
 );
 export const onFolderActionLaunch = createAction(
   "[Admin] On Folder Action Launch",

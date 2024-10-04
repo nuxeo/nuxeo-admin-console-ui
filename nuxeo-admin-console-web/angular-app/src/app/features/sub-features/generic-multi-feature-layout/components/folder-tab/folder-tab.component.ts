@@ -73,6 +73,8 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  requestQueryParam = "";
+  requestBodyParam = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -108,7 +110,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.FOLDER
-      ) as FeatureData;
+      ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
@@ -209,11 +211,28 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             decodeURIComponent(this.userInput)
           );
 
-        this.requestQuery =
+          const featureEndpointData = this.templateConfigData?.data;
+          if ("queryParam" in featureEndpointData) {
+            this.requestQueryParam =
+            this.genericMultiFeatureUtilitiesService.getRequestQuery(
+              this.templateConfigData.requestParams as string,
+              this.decodedUserInput
+            );
+          }
+
+          if ("bodyParam" in featureEndpointData) {
+            this.requestBodyParam =
+            this.genericMultiFeatureUtilitiesService.getRequestQuery(
+              this.templateConfigData.requestParams as string,
+              this.decodedUserInput
+            );
+          }
+
+       /* this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            this.templateConfigData.requestQuery as string,
+            this.templateConfigData.requestParams as string,
             this.decodedUserInput
-          );
+          ); */
         this.fetchNoOfDocuments(this.requestQuery as string);
       } catch (error) {
         this.showActionErrorModal({
@@ -306,7 +325,8 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       if (featureKey in FEATURES) {
         this.store.dispatch(
           FeatureActions.performFolderAction({
-            requestQuery: this.requestQuery,
+            requestQueryParam: this.requestQueryParam,
+            requestBodyParam: this.requestBodyParam,
             featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
           })
         );

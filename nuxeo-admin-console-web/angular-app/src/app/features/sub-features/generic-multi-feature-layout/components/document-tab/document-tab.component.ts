@@ -65,6 +65,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  endpointData = {} as unknown;
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -93,8 +94,9 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.DOCUMENT
-      ) as FeatureData;
+      ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
+      this.endpointData = this.templateConfigData?.data;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
@@ -218,18 +220,37 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            const requestQuery =
+            const featureEndpointData = this.templateConfigData?.data;
+            let requestQueryParam = "";
+            let requestBodyParam = "";
+            if ("queryParam" in featureEndpointData) {
+              requestQueryParam =
+                this.genericMultiFeatureUtilitiesService.getRequestQuery(
+                  this.templateConfigData.requestParams as string,
+                  decodedPath
+                );
+            }
+
+            if ("bodyParam" in featureEndpointData) {
+              requestBodyParam =
+                this.genericMultiFeatureUtilitiesService.getRequestQuery(
+                  this.templateConfigData.requestParams as string,
+                  decodedPath
+                );
+            }
+            /*  const requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                this.templateConfigData.requestQuery as string,
+                this.templateConfigData.requestParams as string,
                 decodedPath
-              );
+              ); */
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
               this.store.dispatch(
                 FeatureActions.performDocumentAction({
-                  requestQuery,
+                  requestQueryParam,
+                  requestBodyParam,
                   featureEndpoint: REST_END_POINTS[featureKey],
                 })
               );
