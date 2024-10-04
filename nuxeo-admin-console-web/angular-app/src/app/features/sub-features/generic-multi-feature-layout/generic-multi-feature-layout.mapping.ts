@@ -3,7 +3,7 @@ import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
 import { labelsList } from "./generic-multi-feature-layout.interface";
 
 export const FEATURES = {
-  ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex"
+  ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -27,25 +27,25 @@ export const featureMap = () => ({
 
     switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
-        (requestParams = `ecm:path='{queryParam}'`),
-          (labels = {
-            pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
-            submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          });
-          (data = {
-            queryParam: { query: requestParams}
-          })
+        labels = {
+          pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
+          submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          queryParam: { query: `ecm:path='{query}'` },
+        };
         break;
 
       case GENERIC_LABELS.FOLDER:
-        (requestParams = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`),
-          (labels = {
-            pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
-            submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          });
-          (data = {
-            bodyParam: { query: requestParams}
-          })
+        labels = {
+          pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
+          submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          queryParam: {
+            query: `ecm:uuid='{query}' OR ecm:ancestorId='{query}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`,
+          },
+        };
         break;
 
       case GENERIC_LABELS.NXQL:
@@ -61,9 +61,8 @@ export const featureMap = () => ({
     }
 
     return {
-      requestParams,
       labels,
-      data
+      data,
     };
-  }
+  },
 });

@@ -66,6 +66,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
   endpointData = {} as unknown;
+  requestQuery = '';
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -220,37 +221,46 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            const featureEndpointData = this.templateConfigData?.data;
-            let requestQueryParam = "";
-            let requestBodyParam = "";
-            if ("queryParam" in featureEndpointData) {
-              requestQueryParam =
-                this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                  this.templateConfigData.requestParams as string,
-                  decodedPath
-                );
-            }
-
-            if ("bodyParam" in featureEndpointData) {
-              requestBodyParam =
-                this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                  this.templateConfigData.requestParams as string,
-                  decodedPath
-                );
-            }
+           
             /*  const requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
                 this.templateConfigData.requestParams as string,
                 decodedPath
               ); */
+              this.requestQuery =
+              this.genericMultiFeatureUtilitiesService.getRequestQuery(
+                (this.templateConfigData?.data["queryParam"])
+                  ? this.templateConfigData?.data["queryParam"]["query"] as string
+                  : this.templateConfigData?.data["bodyParam"]["query"] as string,
+                  decodedPath
+              );
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
+              let requestUrl = "";
+              let requestParams = this.templateConfigData?.data["bodyParam"];
+              // Prepare body params object with dynamic parameters & their values entered as input
+              if (requestParams) {
+                // Since, it is bodyParam, the query would be part of body params object & not the url
+                requestParams["query"] = this.requestQuery;
+                Object.keys(requestParams).forEach((key) => {
+                  if (key in this) {
+                    const paramValue = this[key as keyof DocumentTabComponent];
+                    /* Only add the param to body params object list if user has enetered a value for it */
+                    if (paramValue) {
+                      requestParams[key] = paramValue;
+                    }
+                  }
+                });
+              } else {
+                // since it is queryParam, the query would be appended to the url
+                requestUrl = this.requestQuery;
+              }
               this.store.dispatch(
                 FeatureActions.performDocumentAction({
-                  requestQueryParam,
-                  requestBodyParam,
+                  requestUrl,
+                  requestParams,
                   featureEndpoint: REST_END_POINTS[featureKey],
                 })
               );

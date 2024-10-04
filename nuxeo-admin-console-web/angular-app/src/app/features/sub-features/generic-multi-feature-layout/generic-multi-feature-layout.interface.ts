@@ -48,7 +48,7 @@ export interface FeatureData {
 }
 
 export interface RequestParamType {
-  queryParam: { [key: string]: any };
-  bodyParam: { [key: string]: any };
-  urlParam: { [key: string]: any };
+  queryParam: { [key: string]: unknown };
+  bodyParam: { [key: string]: unknown };
+  urlParam: { [key: string]: unknown };
 }

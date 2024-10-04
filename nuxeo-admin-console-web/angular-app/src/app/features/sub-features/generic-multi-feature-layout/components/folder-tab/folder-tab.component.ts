@@ -73,8 +73,6 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  requestQueryParam = "";
-  requestBodyParam = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -211,29 +209,14 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             decodeURIComponent(this.userInput)
           );
 
-          const featureEndpointData = this.templateConfigData?.data;
-          if ("queryParam" in featureEndpointData) {
-            this.requestQueryParam =
-            this.genericMultiFeatureUtilitiesService.getRequestQuery(
-              this.templateConfigData.requestParams as string,
-              this.decodedUserInput
-            );
-          }
-
-          if ("bodyParam" in featureEndpointData) {
-            this.requestBodyParam =
-            this.genericMultiFeatureUtilitiesService.getRequestQuery(
-              this.templateConfigData.requestParams as string,
-              this.decodedUserInput
-            );
-          }
-
-       /* this.requestQuery =
+        this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            this.templateConfigData.requestParams as string,
+            (this.templateConfigData?.data["queryParam"])
+              ? this.templateConfigData?.data["queryParam"]["query"] as string
+              : this.templateConfigData?.data["bodyParam"]["query"] as string,
             this.decodedUserInput
-          ); */
-        this.fetchNoOfDocuments(this.requestQuery as string);
+          );
+        this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
@@ -323,10 +306,30 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.activeFeature
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
+        let requestUrl = "";
+        let requestParams = this.templateConfigData?.data["bodyParam"];
+        // Prepare body params object with dynamic parameters & their values entered as input
+        if (requestParams) {
+          // Since, it is bodyParam, the query would be part of body params object & not the url
+          requestParams["query"] = this.requestQuery;
+          Object.keys(requestParams).forEach((key) => {
+            if (key in this) {
+              const paramValue = this[key as keyof FolderTabComponent];
+              /* Only add the param to body params object list if user has enetered a value for it */
+              if (paramValue) {
+                requestParams[key] = paramValue;
+              }
+            }
+          });
+        } else {
+          // since it is queryParam, the query would be appended to the url
+          requestUrl = this.requestQuery;
+        }
+
         this.store.dispatch(
           FeatureActions.performFolderAction({
-            requestQueryParam: this.requestQueryParam,
-            requestBodyParam: this.requestBodyParam,
+            requestUrl,
+            requestParams,
             featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
           })
         );

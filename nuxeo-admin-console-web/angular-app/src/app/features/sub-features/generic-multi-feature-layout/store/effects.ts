@@ -14,7 +14,7 @@ export const loadPerformDocumentActionEffect = createEffect(
       ofType(FeatureActions.performDocumentAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performDocumentAction(action?.requestQueryParam, action?.requestBodyParam, action?.featureEndpoint)
+        .performDocumentAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onDocumentActionLaunch({
@@ -41,7 +41,7 @@ export const loadPerformFolderActionEffect = createEffect(
       ofType(FeatureActions.performFolderAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performFolderAction(action?.requestQueryParam, action?.requestBodyParam, action?.featureEndpoint)
+          .performFolderAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onFolderActionLaunch({

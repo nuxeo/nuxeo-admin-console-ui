@@ -82,6 +82,6 @@ export class GenericMultiFeatureUtilitiesService {
   }
 
   insertParamInQuery(requestQuery: string, param: string) {
-    return requestQuery.replaceAll("{queryParam}", param);
+    return requestQuery.replaceAll("{query}", param);
   }
 }

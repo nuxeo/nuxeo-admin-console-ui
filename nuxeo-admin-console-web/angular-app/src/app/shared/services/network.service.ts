@@ -44,41 +44,17 @@ export class NetworkService {
       delete data["urlParam"];
     }
 
-    // iterate & add
     if (data?.["queryParam"]) {
-      const queryParam = data["queryParam"] as { query: string };
-      url += `?query=${queryParam["query"]}`;
-      delete data["query"];
-    }
-
-    /* if (data?.["bodyParam"]) {
-      const renamedObj = Object.fromEntries(
-        Object.entries(data).map(([key, value]) => 
-          [`query`, value]
-        )
-      )
-      data = renamedObj;
-    } */
-    let bodyParam = {} as { query: string };
-    if (data?.["bodyParam"]) {
-      bodyParam = data["bodyParam"] as { query: string };
-    }
-
-    if (
-      data?.["bodyParam"] &&
-      typeof data["bodyParam"] === "object" && // Ensure it's an object
-      "query" in data["bodyParam"] && // Check if "query" exists
-      typeof (data["bodyParam"] as Record<string, any>)["query"] === "object" && // Check if 'query' is an object
-      Object.keys((data["bodyParam"] as Record<string, any>)["query"]).length >
-        0
-    ) {
-      // 'query' is an object and it is not empty
-      bodyParam = data["bodyParam"] as { query: string };
+      const queryParam = data["queryParam"] as { requestUrl: string };
+      if (queryParam["requestUrl"] !== "") {
+        url += `?query=${queryParam["requestUrl"]}`;
+        delete data["queryParam"];
+      }
     }
 
     switch (method) {
       case "POST":
-        return this.http.post<T>(url, bodyParam["query"] || {});
+        return this.http.post<T>(url, data?.["bodyParam"] || {});
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});
