@@ -68,12 +68,12 @@ describe("GenericMultiFeatureUtilitiesService", () => {
 
   describe("getRequestQuery", () => {
     it("should return a properly formatted request query", () => {
-      const queryParam = "/ws2";
-      const requestQuery = "{queryParam} WHERE ecm:path=/ws2";
+      const query = "/ws2";
+      const requestQuery = "{query} WHERE ecm:path=/ws2";
       const expectedQuery = `${
         GENERIC_LABELS.SELECT_BASE_QUERY
-      } ${requestQuery.replaceAll("{queryParam}", queryParam)}`;
-      expect(service.getRequestQuery(requestQuery, queryParam)).toBe(
+      } ${requestQuery.replaceAll("{query}", query)}`;
+      expect(service.getRequestQuery(requestQuery, query)).toBe(
         expectedQuery
       );
     });
@@ -83,7 +83,7 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     it("should insert the parameter into the request query", () => {
       const param = "/ws1";
       const requestQuery =
-        "SELECT * FROM DOCUMENT WHERE ecm:path='{queryParam}'";
+        "SELECT * FROM DOCUMENT WHERE ecm:path='{query}'";
       const expectedQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='/ws1'";
       expect(service.insertParamInQuery(requestQuery, param)).toBe(
         expectedQuery

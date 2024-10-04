@@ -1,22 +1,35 @@
-import { documentActionReducer, folderActionReducer, initialDocumentState, initialFolderActionState, initialNXQLActionState, nxqlActionReducer } from './reducers';
+import {
+  documentActionReducer,
+  folderActionReducer,
+  initialDocumentState,
+  initialFolderActionState,
+  initialNXQLActionState,
+  nxqlActionReducer,
+} from "./reducers";
 import { HttpErrorResponse } from "@angular/common/http";
 import * as FeatureActions from "./actions";
 
 describe("DocumentActionReducer", () => {
   it("should return initial state", () => {
-    const state = documentActionReducer(undefined, { type: '' });
+    const state = documentActionReducer(undefined, { type: "" });
     expect(state).toEqual(initialDocumentState);
   });
 
   it("should handle performDocumentAction", () => {
-    const action = FeatureActions.performDocumentAction({ requestQuery: "query", featureEndpoint: "/document" });
+    const action = FeatureActions.performDocumentAction({
+      requestUrl: "query",
+      requestParams: {},
+      featureEndpoint: "/document",
+    });
     const state = documentActionReducer(initialDocumentState, action);
     expect(state.error).toBeNull();
   });
 
   it("should handle onDocumentActionLaunch", () => {
     const documentActionInfo = { commandId: "12345" };
-    const action = FeatureActions.onDocumentActionLaunch({ documentActionInfo });
+    const action = FeatureActions.onDocumentActionLaunch({
+      documentActionInfo,
+    });
     const state = documentActionReducer(initialDocumentState, action);
     expect(state.documentActionInfo.commandId).toEqual("12345");
   });
@@ -30,22 +43,29 @@ describe("DocumentActionReducer", () => {
 
   it("should handle resetDocumentActionState", () => {
     const action = FeatureActions.resetDocumentActionState();
-    const state = documentActionReducer({
-      documentActionInfo: { commandId: "12345" },
-      error: new HttpErrorResponse({ error: "500" })
-    }, action);
+    const state = documentActionReducer(
+      {
+        documentActionInfo: { commandId: "12345" },
+        error: new HttpErrorResponse({ error: "500" }),
+      },
+      action
+    );
     expect(state).toEqual(initialDocumentState);
   });
 });
 
 describe("FolderActionReducer", () => {
   it("should return initial state", () => {
-    const state = folderActionReducer(undefined, { type: '' });
+    const state = folderActionReducer(undefined, { type: "" });
     expect(state).toEqual(initialFolderActionState);
   });
 
   it("should handle performFolderAction", () => {
-    const action = FeatureActions.performFolderAction({ requestQuery: "query", featureEndpoint: "/folder" });
+    const action = FeatureActions.performFolderAction({
+      requestUrl: "query",
+      requestParams: {},
+      featureEndpoint: "/folder",
+    });
     const state = folderActionReducer(initialFolderActionState, action);
     expect(state.error).toBeNull();
   });
@@ -66,22 +86,29 @@ describe("FolderActionReducer", () => {
 
   it("should handle resetFolderActionState", () => {
     const action = FeatureActions.resetFolderActionState();
-    const state = folderActionReducer({
-      folderActionInfo: { commandId: "67890" },
-      error: new HttpErrorResponse({ error: "404" })
-    }, action);
+    const state = folderActionReducer(
+      {
+        folderActionInfo: { commandId: "67890" },
+        error: new HttpErrorResponse({ error: "404" }),
+      },
+      action
+    );
     expect(state).toEqual(initialFolderActionState);
   });
 });
 
 describe("NXQLActionReducer", () => {
   it("should return initial state", () => {
-    const state = nxqlActionReducer(undefined, { type: '' });
+    const state = nxqlActionReducer(undefined, { type: "" });
     expect(state).toEqual(initialNXQLActionState);
   });
 
   it("should handle performNxqlAction", () => {
-    const action = FeatureActions.performNxqlAction({ nxqlQuery: "SELECT * FROM NXQL", featureEndpoint: "/nxql" });
+    const action = FeatureActions.performNxqlAction({
+      requestUrl: "SELECT * FROM NXQL",
+      requestParams: {},
+      featureEndpoint: "/nxql",
+    });
     const state = nxqlActionReducer(initialNXQLActionState, action);
     expect(state.error).toBeNull();
   });
@@ -102,10 +129,13 @@ describe("NXQLActionReducer", () => {
 
   it("should handle resetNxqlActionState", () => {
     const action = FeatureActions.resetNxqlActionState();
-    const state = nxqlActionReducer({
-      nxqlActionInfo: { commandId: "99999" },
-      error: new HttpErrorResponse({ error: "403" })
-    }, action);
+    const state = nxqlActionReducer(
+      {
+        nxqlActionInfo: { commandId: "99999" },
+        error: new HttpErrorResponse({ error: "403" }),
+      },
+      action
+    );
     expect(state).toEqual(initialNXQLActionState);
   });
 });

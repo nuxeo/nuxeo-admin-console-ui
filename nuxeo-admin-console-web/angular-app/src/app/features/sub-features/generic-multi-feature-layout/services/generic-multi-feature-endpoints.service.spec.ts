@@ -28,15 +28,16 @@ describe("GenericMultiFeatureEndpointsService", () => {
   describe("performDocumentAction", () => {
     it("should make a network request with the correct endpoint and query", (done) => {
       const mockResponse: ActionInfo = { commandId: "12345" };
-      const requestQuery = "SELECT * FROM Document WHERE ecm:path='some/path'";
+      const requestUrl = "SELECT * FROM Document WHERE ecm:path='some/path'";
+      const requestParams = {};
       const featureEndpoint = "ELASTIC_SEARCH_REINDEX";
       const restEndpoint = REST_END_POINTS[featureEndpoint];
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performDocumentAction(requestQuery, featureEndpoint).subscribe((response) => {
+      service.performDocumentAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { query: requestQuery });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
         done();
       });
     });
@@ -45,15 +46,16 @@ describe("GenericMultiFeatureEndpointsService", () => {
   describe("performFolderAction", () => {
     it("should make a network request with the correct endpoint and query", (done) => {
       const mockResponse: ActionInfo = { commandId: "67890" };
-      const requestQuery = "SELECT * FROM Folder WHERE ecm:path='some/folder/path'";
+      const requestUrl = "SELECT * FROM Folder WHERE ecm:path='some/folder/path'";
+      const requestParams = {};
       const featureEndpoint = "ELASTIC_SEARCH_REINDEX";
       const restEndpoint = REST_END_POINTS[featureEndpoint];
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performFolderAction(requestQuery, featureEndpoint).subscribe((response) => {
+      service.performFolderAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { query: requestQuery });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
         done();
       });
     });
@@ -62,15 +64,16 @@ describe("GenericMultiFeatureEndpointsService", () => {
   describe("performNXQLAction", () => {
     it("should make a network request with the correct endpoint and query", (done) => {
       const mockResponse: ActionInfo = { commandId: "99999" };
-      const nxqlQuery = "SELECT * FROM NXQL WHERE ecm:path='nxql/path'";
+      const requestUrl = "SELECT * FROM NXQL WHERE ecm:path='nxql/path'";
+      const requestParams = {};
       const featureEndpoint = "ELASTIC_SEARCH_REINDEX";
       const restEndpoint = REST_END_POINTS[featureEndpoint];
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performNXQLAction(nxqlQuery, featureEndpoint).subscribe((response) => {
+      service.performNXQLAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { query: nxqlQuery });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
         done();
       });
     });
