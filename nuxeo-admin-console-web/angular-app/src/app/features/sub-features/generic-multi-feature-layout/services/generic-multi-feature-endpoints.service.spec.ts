@@ -37,7 +37,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
 
       service.performDocumentAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
         done();
       });
     });
@@ -55,7 +55,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
 
       service.performFolderAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
         done();
       });
     });
@@ -73,7 +73,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
 
       service.performNXQLAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
         expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: { requestParams } });
+        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
         done();
       });
     });

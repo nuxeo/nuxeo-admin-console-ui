@@ -237,7 +237,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
               let requestUrl = "";
               // Prepare request payload body
               const requestParams = new URLSearchParams();
-              let bodyParams = this.templateConfigData?.data["bodyParam"];
+              const bodyParams = this.templateConfigData?.data["bodyParam"];
                // Prepare body params object with dynamic parameters & their values entered as input
               if (bodyParams) {
                 // Since, it is bodyParam, the query would be part of body params object & not the url
