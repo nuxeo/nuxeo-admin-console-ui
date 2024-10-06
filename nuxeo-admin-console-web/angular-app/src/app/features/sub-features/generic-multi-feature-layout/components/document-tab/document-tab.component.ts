@@ -235,17 +235,21 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
               let requestUrl = "";
-              const requestParams = this.templateConfigData?.data["bodyParam"];
-              // Prepare body params object with dynamic parameters & their values entered as input
-              if (requestParams) {
+              // Prepare request payload body
+              const requestParams = new URLSearchParams();
+              let bodyParams = this.templateConfigData?.data["bodyParam"];
+               // Prepare body params object with dynamic parameters & their values entered as input
+              if (bodyParams) {
                 // Since, it is bodyParam, the query would be part of body params object & not the url
-                requestParams["query"] = this.requestQuery;
-                Object.keys(requestParams).forEach((key) => {
+                bodyParams["query"] = this.requestQuery;
+                requestParams.append("query", bodyParams["query"] as string);
+                Object.keys(bodyParams).forEach((key) => {
                   if (key in this) {
                     const paramValue = this[key as keyof DocumentTabComponent];
                     /* Only add the param to body params object list if user has enetered a value for it */
                     if (paramValue) {
-                      requestParams[key] = paramValue;
+                      bodyParams[key] = paramValue;
+                      requestParams.append(key, bodyParams[key] as string);
                     }
                   }
                 });

@@ -103,7 +103,6 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       GENERIC_LABELS.NXQL_INPUT_HINT
     );
-    this.inputPlaceholder = `${GENERIC_LABELS.SELECT_BASE_QUERY} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS} ${GENERIC_LABELS.AND} ${GENERIC_LABELS.NXQL_QUERY_PLACEHOLDER_TITLE}`;
     const featureConfig = featureMap();
     this.activeFeature =
       this.genericMultiFeatureUtilitiesService.getActiveFeature();
@@ -113,6 +112,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         GENERIC_LABELS.NXQL
       ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
+      this.inputPlaceholder =  this.templateLabels.nxqlQueryDefault as string;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
@@ -315,10 +315,14 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         ) as FeaturesKey;
         if (featureKey in FEATURES) {
           let requestUrl = "";
-          const requestParams = this.templateConfigData?.data["bodyParam"];
-          if (requestParams) {
+          // Prepare request payload body
+          const requestParams = new URLSearchParams();
+          let bodyParams = this.templateConfigData?.data["bodyParam"];
+          // Prepare body params object with dynamic parameters & their values entered as input
+          if (bodyParams) {
             // Since, it is bodyParam, the query would be part of body params object & not the url
-            requestParams["query"] = this.requestQuery;
+            bodyParams["query"] = this.requestQuery;
+            requestParams.append("query", bodyParams["query"] as string);
           } else {
             // since it is queryParam, the query would be appended to the url
             requestUrl = this.requestQuery;
