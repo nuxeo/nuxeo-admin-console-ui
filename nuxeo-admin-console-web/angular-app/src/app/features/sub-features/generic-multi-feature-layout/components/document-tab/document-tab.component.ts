@@ -221,13 +221,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                 : doc.path;
             this.requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                this.templateConfigData?.data["queryParam"]
-                  ? (this.templateConfigData?.data["queryParam"][
-                      GENERIC_LABELS.QUERY
-                    ] as string)
-                  : (this.templateConfigData?.data["bodyParam"][
-                      GENERIC_LABELS.QUERY
-                    ] as string),
+                (this.templateConfigData?.data["queryParam"]?.[
+                  GENERIC_LABELS.QUERY
+                ] as string) ||
+                  (this.templateConfigData?.data["bodyParam"]?.[
+                    GENERIC_LABELS.QUERY
+                  ] as string) ||
+                  "",
                 decodedPath
               );
 
@@ -236,11 +236,11 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
               const { requestUrl, requestParams } =
-              this.genericMultiFeatureUtilitiesService.buildRequestParams(
-                this.templateConfigData.data,
-                this.requestQuery,
-                this.inputForm
-              );
+                this.genericMultiFeatureUtilitiesService.buildRequestParams(
+                  this.templateConfigData.data,
+                  this.requestQuery,
+                  this.inputForm
+                );
               this.store.dispatch(
                 FeatureActions.performDocumentAction({
                   requestUrl,

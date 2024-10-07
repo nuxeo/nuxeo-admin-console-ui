@@ -211,13 +211,13 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
         this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            this.templateConfigData?.data["queryParam"]
-              ? (this.templateConfigData?.data["queryParam"][
-                  GENERIC_LABELS.QUERY
-                ] as string)
-              : (this.templateConfigData?.data["bodyParam"][
-                  GENERIC_LABELS.QUERY
-                ] as string),
+            (this.templateConfigData?.data["queryParam"]?.[
+              GENERIC_LABELS.QUERY
+            ] as string) ||
+              (this.templateConfigData?.data["bodyParam"]?.[
+                GENERIC_LABELS.QUERY
+              ] as string) ||
+              "",
             this.decodedUserInput
           );
 
