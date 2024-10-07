@@ -250,7 +250,10 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   fetchNoOfDocuments(query: string | null): void {
     this.nuxeo
       .repository()
-      .query({ query, pageSize: 1 })
+      .query({
+        query,
+        pageSize: 1,
+      })
       .then((document: unknown) => {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         if (
@@ -344,15 +347,6 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     } else {
       document.getElementById("inputIdentifier")?.focus();
     }
-  }
-
-  splitConversionNamesParam(
-    conversionName: String[],
-    requestParams: any
-  ): void {
-    conversionName.forEach((conversionName) => {
-      requestParams.append("conversionName", conversionName);
-    });
   }
 
   checkIfErrorHasResponse(err: unknown): boolean {

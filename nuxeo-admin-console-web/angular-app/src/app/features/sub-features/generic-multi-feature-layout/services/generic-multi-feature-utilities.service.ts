@@ -1,3 +1,4 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../video-renditions-generation/video-renditions-generation.constants";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
@@ -76,7 +77,7 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getRequestQuery(requestQuery: string, params: any): string {
+  getRequestQuery(requestQuery: string, params: string): string {
     return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(
       requestQuery,
       params

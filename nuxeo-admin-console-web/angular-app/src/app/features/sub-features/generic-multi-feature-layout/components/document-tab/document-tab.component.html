@@ -13,7 +13,7 @@
     <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
       <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
       <mat-select formControlName="conversionName" id="conversionName" multiple>
-        <mat-option *ngFor="let conversionName of conversionNamesArr"
+        <mat-option *ngFor="let conversionName of conversionNamessArr"
           [value]="conversionName">{{conversionName}}</mat-option>
       </mat-select>
     </mat-form-field>

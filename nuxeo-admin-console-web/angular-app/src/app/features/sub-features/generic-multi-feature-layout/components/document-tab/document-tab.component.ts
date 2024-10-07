@@ -72,7 +72,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionNamesArr = ["", "", ""];
+  conversionNamessArr = ["", "", ""];
   FEATURES = FEATURES;
   requestQuery = "";
   constructor(
@@ -103,13 +103,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.DOCUMENT
-      ) as unknown as FeatureData;
+      ) as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
       if (this.isFeatureVideoRenditions()) {
-        this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+        this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
         this.inputForm.addControl("conversionName", new FormControl(""));
         this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
       }
@@ -214,8 +214,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   triggerAction(userInput: string | null): void {
     this.nuxeo
       .repository()
-      .fetch(userInput)
-      .then((document: unknown) => {
+      .fetch(userInput, {
+        headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        },
+      })
+      .then((document: Nuxeo) => {
         if (
           typeof document === "object" &&
           document !== null &&
@@ -293,15 +298,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
           );
         }
       });
-  }
-
-  splitConversionNamesParam(
-    conversionName: String[],
-    requestParams: any
-  ): void {
-    conversionName.forEach((conversionName) => {
-      requestParams.append("conversionName", conversionName);
-    });
   }
 
   checkIfErrorHasResponse(err: unknown): boolean {
