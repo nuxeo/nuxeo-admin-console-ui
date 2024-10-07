@@ -1,8 +1,14 @@
+import { VIDEO_RENDITIONS_LABELS } from './../../../../video-renditions-generation/video-renditions-generation.constants';
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -67,12 +73,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     GenericModalClosedInfo
   > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  conversionName = "";
+  conversionNamesArr = ["", "", ""];
+  recomputeAllVideoInfo = false;
 
   constructor(
     public dialogService: MatDialog,
@@ -108,10 +118,19 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.FOLDER
-      ) as FeatureData;
+      ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
+      );
+    }
+
+    if (this.isFeatureVideoRenditions()) {
+      this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+      this.inputForm.addControl("conversionName", new FormControl(""));
+      this.inputForm.addControl(
+        "recomputeAllVideoInfo",
+        new FormControl("")
       );
     }
 
@@ -199,6 +218,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
           this.inputForm?.get("inputIdentifier")?.value.trim()
         );
+      if (this.isFeatureVideoRenditions()) {
+        this.conversionName = this.inputForm?.get("conversionName")?.value;
+        this.recomputeAllVideoInfo = this.inputForm
+          ?.get("recomputeAllVideoInfo")
+          ?.value?.trim();
+      }
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
           for the action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
@@ -332,6 +357,15 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
   }
 
+  splitConversionNamesParam(
+    conversionName: String[],
+    requestParams: any
+  ): void {
+    conversionName.forEach((conversionName) => {
+      requestParams.append("conversionName", conversionName);
+    });
+  }
+
   checkIfErrorHasResponse(err: unknown): boolean {
     return (
       typeof err === "object" &&
@@ -348,6 +382,13 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   getHumanReadableTime(seconds: number): string {
     return this.genericMultiFeatureUtilitiesService.secondsToHumanReadable(
       seconds
+    );
+  }
+
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
   }
 

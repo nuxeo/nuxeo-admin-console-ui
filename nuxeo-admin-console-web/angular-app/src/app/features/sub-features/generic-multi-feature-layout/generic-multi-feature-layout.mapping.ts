@@ -1,11 +1,11 @@
-import { VIDEO_RENDITIONS_LABELS } from './../../video-renditions-generation/video-renditions-generation.constants';
+import { VIDEO_RENDITIONS_LABELS } from "./../../video-renditions-generation/video-renditions-generation.constants";
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex/elastic-search-reindex.constants";
 import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
-import { labelsList } from './generic-multi-feature-layout.interface';
+import { labelsList } from "./generic-multi-feature-layout.interface";
 
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
-  VIDEO_RENDITIONS_GENERATION: "video-renditions-generation"
+  VIDEO_RENDITIONS_GENERATION: "video-renditions-generation",
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -67,8 +67,8 @@ export const featureMap = () => ({
     }
 
     return {
-      data,
       labels,
+      data,
     };
   },
   [FEATURES.VIDEO_RENDITIONS_GENERATION]: (tabType: string) => {

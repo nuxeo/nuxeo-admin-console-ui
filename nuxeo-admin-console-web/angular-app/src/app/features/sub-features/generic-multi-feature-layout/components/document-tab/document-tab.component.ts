@@ -72,9 +72,11 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  requestQuery = "";
+  conversionName = "";
   conversionNamesArr = ["", "", ""];
+  recomputeAllVideoInfo: boolean = false;
   FEATURES = FEATURES;
+  requestQuery = "";
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -103,17 +105,17 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.DOCUMENT
-      ) as FeatureData;
+      ) as unknown as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
       if (this.isFeatureVideoRenditions()) {
         this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
-        this.inputForm.addControl("conversionNames", new FormControl(""));
+        this.inputForm.addControl("conversionName", new FormControl(""));
         this.inputForm.addControl(
-          "recomputeVideoInfo",
-          new FormControl("true")
+          "recomputeAllVideoInfo",
+          new FormControl("")
         );
       }
     }
@@ -195,27 +197,20 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
       const userInput = this.inputForm?.get("inputIdentifier")?.value?.trim();
-
+      if (this.isFeatureVideoRenditions()) {
+        this.conversionName = this.inputForm?.get("conversionName")?.value;
+        this.recomputeAllVideoInfo = this.inputForm
+          ?.get("recomputeAllVideoInfo")
+          ?.value?.trim();
+      }
       let decodedUserInput: string | null = null;
-      let inputParams = [];
       try {
         decodedUserInput = decodeURIComponent(
           this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
             userInput
           )
         );
-        inputParams.push({ decodedUserInput });
-        if (this.isFeatureVideoRenditions()) {
-          const conversionNames = this.inputForm?.get("conversionNames")?.value;
-          const recomputeAllVideoInfo = this.inputForm
-            ?.get("recomputeVideoInfo")
-            ?.value?.trim();
-          console.log(
-            userInput + " " + conversionNames + " " + recomputeAllVideoInfo
-          );
-          inputParams.push({ conversionNames }, { recomputeAllVideoInfo });
-        }
-        this.triggerAction(inputParams);
+        this.triggerAction(decodedUserInput);
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
@@ -227,10 +222,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  triggerAction(userInput: any): void {
+  triggerAction(userInput: string | null): void {
     this.nuxeo
       .repository()
-      .fetch(userInput?.decodedUserInput)
+      .fetch(userInput)
       .then((document: unknown) => {
         if (
           typeof document === "object" &&
@@ -309,6 +304,15 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
           );
         }
       });
+  }
+
+  splitConversionNamesParam(
+    conversionName: String[],
+    requestParams: any
+  ): void {
+    conversionName.forEach((conversionName) => {
+      requestParams.append("conversionName", conversionName);
+    });
   }
 
   checkIfErrorHasResponse(err: unknown): boolean {

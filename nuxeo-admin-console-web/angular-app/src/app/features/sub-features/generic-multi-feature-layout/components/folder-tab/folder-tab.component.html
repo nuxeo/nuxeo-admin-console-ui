@@ -2,12 +2,37 @@
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID }}</mat-label>
-        <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier" id="inputIdentifier" required />
+        <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier"
+            id="inputIdentifier" required />
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
             {{getErrorMessage()}}
         </mat-error>
     </mat-form-field>
-    <button mat-flat-button color="primary" type="submit" class="folder-tab-container__button" [disabled]="isSubmitBtnDisabled">
+    <ng-container
+        *ngIf="isFeatureVideoRenditions() && inputForm.get('conversionName') && inputForm.get('recomputeAllVideoInfo')">
+        <br />
+        <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
+            <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
+            <mat-select formControlName="conversionName" id="conversionName" multiple>
+                <mat-option *ngFor="let conversionName of conversionNamesArr"
+                    [value]="conversionName">{{conversionName}}</mat-option>
+            </mat-select>
+        </mat-form-field><br />
+        <div class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</div>
+        <br />
+
+        <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
+            <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
+            <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
+
+        </mat-form-field>
+        <br>
+    </ng-container>
+    <button mat-flat-button color="primary" type="submit" class="folder-tab-container__button" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}"
+        [disabled]=" isSubmitBtnDisabled">
         {{ templateLabels.submitBtnLabel }}
     </button>
     <div class="spinner-overlay" *ngIf="spinnerVisible">
