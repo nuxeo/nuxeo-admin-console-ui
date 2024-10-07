@@ -1,9 +1,11 @@
+import { VIDEO_RENDITIONS_LABELS } from './../../video-renditions-generation/video-renditions-generation.constants';
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex/elastic-search-reindex.constants";
 import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
-import { labelsList } from "./generic-multi-feature-layout.interface";
+import { labelsList } from './generic-multi-feature-layout.interface';
 
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
+  VIDEO_RENDITIONS_GENERATION: "video-renditions-generation"
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -56,6 +58,60 @@ export const featureMap = () => ({
         data = {
           queryParam: {
             query: `${ELASTIC_SEARCH_LABELS.NXQL_QUERY}`,
+          },
+        };
+        break;
+
+      default:
+        throw new Error(`Unsupported type: ${tabType}`);
+    }
+
+    return {
+      data,
+      labels,
+    };
+  },
+  [FEATURES.VIDEO_RENDITIONS_GENERATION]: (tabType: string) => {
+    let labels: labelsList;
+    let data = {};
+    switch (tabType) {
+      case GENERIC_LABELS.DOCUMENT:
+        labels = {
+          pageTitle: VIDEO_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE,
+          submitBtnLabel: VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: {
+            query: `${VIDEO_RENDITIONS_LABELS.DOCUMENT_QUERY}`,
+            conversionName: `{conversionName}`,
+            recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
+          },
+        };
+        break;
+
+      case GENERIC_LABELS.FOLDER:
+        labels = {
+          pageTitle: VIDEO_RENDITIONS_LABELS.FOLDER_RENDITIONS_TITLE,
+          submitBtnLabel: VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: {
+            query: `${VIDEO_RENDITIONS_LABELS.FOLDER_QUERY}`,
+            conversionName: `{conversionName}`,
+            recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
+          },
+        };
+        break;
+
+      case GENERIC_LABELS.NXQL:
+        labels = {
+          pageTitle: VIDEO_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE,
+          submitBtnLabel: VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL,
+          nxqlQueryPlaceholder: VIDEO_RENDITIONS_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+        };
+        data = {
+          bodyParam: {
+            query: `${VIDEO_RENDITIONS_LABELS.NXQL_QUERY}`
           },
         };
         break;
