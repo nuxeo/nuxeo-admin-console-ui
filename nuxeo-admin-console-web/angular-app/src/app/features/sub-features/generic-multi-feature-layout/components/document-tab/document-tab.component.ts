@@ -1,3 +1,4 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
@@ -12,7 +13,12 @@ import {
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ActionInfo } from "../../generic-multi-feature-layout.interface";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -59,6 +65,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
@@ -66,6 +73,8 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
   requestQuery = "";
+  conversionNamesArr = ["", "", ""];
+  FEATURES = FEATURES;
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -99,6 +108,14 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
+      if (this.isFeatureVideoRenditions()) {
+        this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+        this.inputForm.addControl("conversionNames", new FormControl(""));
+        this.inputForm.addControl(
+          "recomputeVideoInfo",
+          new FormControl("true")
+        );
+      }
     }
 
     this.documentActionLaunchedSubscription =
@@ -178,14 +195,27 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
       const userInput = this.inputForm?.get("inputIdentifier")?.value?.trim();
+
       let decodedUserInput: string | null = null;
+      let inputParams = [];
       try {
         decodedUserInput = decodeURIComponent(
           this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
             userInput
           )
         );
-        this.triggerAction(decodedUserInput);
+        inputParams.push({ decodedUserInput });
+        if (this.isFeatureVideoRenditions()) {
+          const conversionNames = this.inputForm?.get("conversionNames")?.value;
+          const recomputeAllVideoInfo = this.inputForm
+            ?.get("recomputeVideoInfo")
+            ?.value?.trim();
+          console.log(
+            userInput + " " + conversionNames + " " + recomputeAllVideoInfo
+          );
+          inputParams.push({ conversionNames }, { recomputeAllVideoInfo });
+        }
+        this.triggerAction(inputParams);
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
@@ -197,10 +227,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  triggerAction(userInput: string | null): void {
+  triggerAction(userInput: any): void {
     this.nuxeo
       .repository()
-      .fetch(userInput)
+      .fetch(userInput?.decodedUserInput)
       .then((document: unknown) => {
         if (
           typeof document === "object" &&
@@ -291,6 +321,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       "json" in (err as { response: { json: unknown } }).response &&
       typeof (err as { response: { json: () => Promise<unknown> } }).response
         .json === "function"
+    );
+  }
+
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
   }
 

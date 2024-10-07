@@ -15,9 +15,20 @@
     font-size: 16px;
     bottom: 3px;
   }
+  &__button.video-renditions {
+    left: 0;
+    bottom: 0;
+  }
+  mat-form-field.hy-form-field {
+    margin-top: 10px;
+    max-width: 350px;
+    width: 80%;
+  }
+  mat-form-field.hy-form-field.video-renditions {
+    margin-top: 30px;
+    max-width: 350px;
+    width: 80%;
+  }
+  
 }
-mat-form-field.hy-form-field {
-  margin-top: 10px;
-  max-width: 350px;
-  width: 80%;
-}
+

@@ -76,10 +76,10 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getRequestQuery(requestQuery: string, param: string): string {
+  getRequestQuery(requestQuery: string, params: any): string {
     return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(
       requestQuery,
-      param
+      params
     )}`;
   }
 

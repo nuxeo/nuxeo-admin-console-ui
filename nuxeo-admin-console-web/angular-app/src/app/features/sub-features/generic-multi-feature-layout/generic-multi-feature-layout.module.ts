@@ -1,3 +1,4 @@
+import { MatSelectModule } from "@angular/material/select";
 import { genericMultiFeatureLayoutRoutingModule } from "./generic-multi-feature-layout-routing.module";
 import { DocumentTabComponent } from "./components/document-tab/document-tab.component";
 import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
@@ -32,6 +33,7 @@ import { ReactiveFormsModule } from "@angular/forms";
     HyFormContainerModule,
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatSelectModule,
     MatInputModule,
     MatButtonModule,
     HyMaterialTabsModule,
