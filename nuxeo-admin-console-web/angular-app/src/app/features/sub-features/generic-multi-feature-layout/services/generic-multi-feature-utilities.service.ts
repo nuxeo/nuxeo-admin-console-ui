@@ -106,7 +106,8 @@ export class GenericMultiFeatureUtilitiesService {
         if (!paramValue) return;
         requestParams.append(key, paramValue as string);
       });
-    } else {
+    }
+    if (data["queryParam"]) {
       // since it is queryParam, the query would be appended to the url
       requestUrl = requestQuery;
     }
