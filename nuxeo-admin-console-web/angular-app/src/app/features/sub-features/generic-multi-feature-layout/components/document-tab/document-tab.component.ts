@@ -72,9 +72,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionName = "";
   conversionNamesArr = ["", "", ""];
-  recomputeAllVideoInfo: boolean = false;
   FEATURES = FEATURES;
   requestQuery = "";
   constructor(
@@ -113,10 +111,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       if (this.isFeatureVideoRenditions()) {
         this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
         this.inputForm.addControl("conversionName", new FormControl(""));
-        this.inputForm.addControl(
-          "recomputeAllVideoInfo",
-          new FormControl("")
-        );
+        this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
       }
     }
 
@@ -197,12 +192,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
       const userInput = this.inputForm?.get("inputIdentifier")?.value?.trim();
-      if (this.isFeatureVideoRenditions()) {
-        this.conversionName = this.inputForm?.get("conversionName")?.value;
-        this.recomputeAllVideoInfo = this.inputForm
-          ?.get("recomputeAllVideoInfo")
-          ?.value?.trim();
-      }
       let decodedUserInput: string | null = null;
       try {
         decodedUserInput = decodeURIComponent(
