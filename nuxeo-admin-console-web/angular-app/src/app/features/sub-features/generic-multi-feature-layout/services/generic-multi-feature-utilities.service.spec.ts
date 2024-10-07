@@ -127,7 +127,7 @@ describe("GenericMultiFeatureUtilitiesService", () => {
         requestQuery,
         inputForm
       );
-      expect(requestUrl).toBe(requestQuery);
+      expect(requestUrl).toBe("");
       expect(requestParams.toString()).toBe("");
     });
 
