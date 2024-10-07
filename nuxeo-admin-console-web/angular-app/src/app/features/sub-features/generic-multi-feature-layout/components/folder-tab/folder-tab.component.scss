@@ -32,24 +32,27 @@
     background-color: rgba(255, 255, 255, 0.7);
     z-index: 9999;
   }
-  
+
   .custom-spinner {
     width: 80px !important;
     height: 80px !important;
     stroke-width: 5px !important;
   }
-  
+
   mat-form-field.hy-form-field {
     margin-top: 10px;
     max-width: 350px;
     width: 80%;
   }
-  
+
   mat-form-field.hy-form-field.video-renditions {
     margin-top: 30px;
     max-width: 350px;
     width: 80%;
   }
-  
-}
 
+  .conversion-helper-text {
+    font-size: 14px;
+    margin-top: -15px;
+  }
+}

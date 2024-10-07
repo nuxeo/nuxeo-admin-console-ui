@@ -3,7 +3,7 @@
   <mat-form-field hyFormField>
     <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
     <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}" type="text" formControlName="inputIdentifier"
-      id="inputIdentifier" required />
+      id="inputIdentifier" required (blur)="getConversionNames(inputForm.get('inputIdentifier')?.value)"/>
     <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
       {{getErrorMessage()}}</mat-error>
   </mat-form-field>
@@ -17,7 +17,7 @@
           [value]="conversionName">{{conversionName}}</mat-option>
       </mat-select>
     </mat-form-field>
-    <div class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</div>
+    <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
     <br />
 
     <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">

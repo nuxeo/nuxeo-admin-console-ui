@@ -109,7 +109,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
       if (this.isFeatureVideoRenditions()) {
-        this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+       // this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
         this.inputForm.addControl("conversionName", new FormControl(""));
         this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
       }
@@ -318,6 +318,32 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       this.activeFeature ===
       (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
+  }
+
+  getConversionNames(userInput: string): void {
+    let conversionNamesList: string[] = [];
+
+    this.nuxeo
+      .repository()
+      .fetch(userInput, {
+        headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        },
+      })
+      .then((document: Nuxeo) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "path" in document
+        ) {
+          const transcodedVideos = document.properties["vid:transcodedVideos"].map((item: any) => item.name);
+          conversionNamesList.push(...transcodedVideos);
+          console.log(conversionNamesList);
+          this.conversionNamessArr = conversionNamesList;
+        }
+      });
+   
   }
 
   ngOnDestroy(): void {
