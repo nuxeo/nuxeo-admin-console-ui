@@ -211,9 +211,9 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
         this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            (this.templateConfigData?.data["queryParam"])
-              ? this.templateConfigData?.data["queryParam"]["query"] as string
-              : this.templateConfigData?.data["bodyParam"]["query"] as string,
+            this.templateConfigData?.data["queryParam"]
+              ? (this.templateConfigData?.data["queryParam"]["query"] as string)
+              : (this.templateConfigData?.data["bodyParam"]["query"] as string),
             this.decodedUserInput
           );
         this.fetchNoOfDocuments(this.requestQuery);
@@ -310,19 +310,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         // Prepare request payload body
         const requestParams = new URLSearchParams();
         const bodyParams = this.templateConfigData?.data["bodyParam"];
-         // Prepare body params object with dynamic parameters & their values entered as input
+        // Prepare body params object with dynamic parameters & their values entered as input
         if (bodyParams) {
           // Since, it is bodyParam, the query would be part of body params object & not the url
           bodyParams["query"] = this.requestQuery;
           requestParams.append("query", bodyParams["query"] as string);
           Object.keys(bodyParams).forEach((key) => {
-            if (key in this) {
-              const paramValue = this.inputForm.get(key)?.value;
-              /* Only add the param to body params object list if user has enetered a value for it */
-              if (paramValue) {
-                bodyParams[key] = paramValue;
-                requestParams.append(key, bodyParams[key] as string);
-              }
+            const paramValue = this.inputForm.get(key)?.value;
+            /* Only add the param to body params object list if user has enetered a value for it */
+            if (paramValue) {
+              bodyParams[key] = paramValue;
+              requestParams.append(key, bodyParams[key] as string);
             }
           });
         } else {
