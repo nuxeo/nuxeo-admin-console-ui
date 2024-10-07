@@ -245,7 +245,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                 requestParams.append("query", bodyParams["query"] as string);
                 Object.keys(bodyParams).forEach((key) => {
                   if (key in this) {
-                    const paramValue = this[key as keyof DocumentTabComponent];
+                    const paramValue = this.inputForm.get(key)?.value;
                     /* Only add the param to body params object list if user has enetered a value for it */
                     if (paramValue) {
                       bodyParams[key] = paramValue;
