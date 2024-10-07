@@ -25,12 +25,6 @@ export const ADMIN_MENU: Menu[] = [
     path: "probes",
     isSelected: false,
   },
-  {
-    id: 4,
-    name: "Thumbnail Generation",
-    path: "thumbnail-generation",
-    isSelected: false,
-  },
 ];
 
 export const ROUTES_TITLE = {
@@ -38,5 +32,4 @@ export const ROUTES_TITLE = {
   ELASTICSEARCH_REINDEX: "ElasticSearch Reindex",
   BULKACTIONMONITORING: "Bulk Action Monitoring",
   PROBES: "Probes",
-  THUMBNAIL_GENERATION: "Thumbnail Generation",
 };

@@ -33,14 +33,6 @@ export const appRoutes: Route[] = [
       import("./features/probes/probes.module").then((m) => m.ProbesModule),
   },
   {
-    path: "thumbnail-generation",
-    title: routeTitle.THUMBNAIL_GENERATION,
-    loadChildren: () =>
-      import(
-        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
-      ).then((m) => m.GenericMultiFeatureLayoutModule)
-  },
-  {
     path: "auth",
     loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
   },
