@@ -65,6 +65,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  requestQuery = "";
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -218,18 +219,32 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            const requestQuery =
+            this.requestQuery =
               this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                this.templateConfigData.requestQuery as string,
+                (this.templateConfigData?.data["queryParam"]?.[
+                  GENERIC_LABELS.QUERY
+                ] as string) ||
+                  (this.templateConfigData?.data["bodyParam"]?.[
+                    GENERIC_LABELS.QUERY
+                  ] as string) ||
+                  "",
                 decodedPath
               );
+
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
+              const { requestUrl, requestParams } =
+                this.genericMultiFeatureUtilitiesService.buildRequestParams(
+                  this.templateConfigData.data,
+                  this.requestQuery,
+                  this.inputForm
+                );
               this.store.dispatch(
                 FeatureActions.performDocumentAction({
-                  requestQuery,
+                  requestUrl,
+                  requestParams,
                   featureEndpoint: REST_END_POINTS[featureKey],
                 })
               );

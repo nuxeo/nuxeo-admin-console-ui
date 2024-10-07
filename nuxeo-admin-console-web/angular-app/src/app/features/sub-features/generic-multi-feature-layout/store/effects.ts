@@ -14,7 +14,7 @@ export const loadPerformDocumentActionEffect = createEffect(
       ofType(FeatureActions.performDocumentAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performDocumentAction(action?.requestQuery, action?.featureEndpoint)
+        .performDocumentAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onDocumentActionLaunch({
@@ -41,7 +41,7 @@ export const loadPerformFolderActionEffect = createEffect(
       ofType(FeatureActions.performFolderAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performFolderAction(action?.requestQuery, action?.featureEndpoint)
+          .performFolderAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onFolderActionLaunch({
@@ -68,7 +68,7 @@ export const loadPerformNxqlActionEffect = createEffect(
       ofType(FeatureActions.performNxqlAction),
       switchMap((action) => {
         return genericMultiFeatureEndpointsService
-          .performNXQLAction(action?.nxqlQuery, action?.featureEndpoint)
+          .performNXQLAction(action?.requestUrl, action?.requestParams, action?.featureEndpoint)
           .pipe(
             map((data) => {
               return FeatureActions.onNxqlActionLaunch({

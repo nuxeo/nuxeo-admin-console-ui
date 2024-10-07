@@ -1,8 +1,9 @@
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex/elastic-search-reindex.constants";
 import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
+import { labelsList } from "./generic-multi-feature-layout.interface";
 
 export const FEATURES = {
-  ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex"
+  ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -20,32 +21,43 @@ export function getFeatureKeyByValue(
 
 export const featureMap = () => ({
   [FEATURES.ELASTIC_SEARCH_REINDEX]: (tabType: string) => {
-    let requestQuery: string;
-    let labels: { pageTitle: string; submitBtnLabel: string };
+    let labels: labelsList;
+    let data = {};
 
     switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
-        (requestQuery = `ecm:path='{queryParam}'`),
-          (labels = {
-            pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
-            submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          });
+        labels = {
+          pageTitle: ELASTIC_SEARCH_LABELS.DOCUMENT_REINDEX_TITLE,
+          submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          queryParam: { query: `${ELASTIC_SEARCH_LABELS.DOCUMENT_QUERY}` },
+        };
         break;
 
       case GENERIC_LABELS.FOLDER:
-        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`),
-          (labels = {
-            pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
-            submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          });
+        labels = {
+          pageTitle: ELASTIC_SEARCH_LABELS.FOLDER_REINDEX_TITLE,
+          submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          queryParam: {
+            query: `${ELASTIC_SEARCH_LABELS.FOLDER_QUERY}`,
+          },
+        };
         break;
 
       case GENERIC_LABELS.NXQL:
-        (requestQuery = `ecm:uuid='{queryParam}' OR ecm:ancestorId='{queryParam}' ${GENERIC_LABELS.AND} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS}`),
-          (labels = {
-            pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
-            submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          });
+        labels = {
+          pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
+          submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
+          nxqlQueryPlaceholder: ELASTIC_SEARCH_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+        };
+        data = {
+          queryParam: {
+            query: `${ELASTIC_SEARCH_LABELS.NXQL_QUERY}`,
+          },
+        };
         break;
 
       default:
@@ -53,8 +65,8 @@ export const featureMap = () => ({
     }
 
     return {
-      requestQuery,
       labels,
+      data,
     };
-  }
+  },
 });

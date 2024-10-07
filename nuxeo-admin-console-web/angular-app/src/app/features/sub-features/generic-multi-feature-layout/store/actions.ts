@@ -4,7 +4,7 @@ import { ActionInfo } from "../generic-multi-feature-layout.interface";
 
 export const performDocumentAction = createAction(
   "[Admin] Perform Action",
-  props<{ requestQuery: string | null; featureEndpoint: string }>()
+  props<{ requestUrl: string | null; requestParams: unknown; featureEndpoint: string }>()
 );
 export const onDocumentActionLaunch = createAction(
   "[Admin] On Action Launch",
@@ -19,7 +19,7 @@ export const resetDocumentActionState = createAction(
 );
 export const performFolderAction = createAction(
   "[Admin] Perform Folder Action",
-  props<{ requestQuery: string | null; featureEndpoint: string }>()
+  props<{ requestUrl: string | null; requestParams: unknown; featureEndpoint: string }>()
 );
 export const onFolderActionLaunch = createAction(
   "[Admin] On Folder Action Launch",
@@ -34,7 +34,7 @@ export const resetFolderActionState = createAction(
 );
 export const performNxqlAction = createAction(
   "[Admin] Perform NXQL Action",
-  props<{ nxqlQuery: string | null; featureEndpoint: string }>()
+  props<{ requestUrl: string | null; requestParams: unknown; featureEndpoint: string }>()
 );
 export const onNxqlActionLaunch = createAction(
   "[Admin] On NXQL Action Launch",

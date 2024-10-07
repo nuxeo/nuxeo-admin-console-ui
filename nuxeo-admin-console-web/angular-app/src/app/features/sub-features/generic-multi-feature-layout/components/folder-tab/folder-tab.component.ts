@@ -211,10 +211,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
         this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            this.templateConfigData.requestQuery as string,
+            (this.templateConfigData?.data["queryParam"]?.[
+              GENERIC_LABELS.QUERY
+            ] as string) ||
+              (this.templateConfigData?.data["bodyParam"]?.[
+                GENERIC_LABELS.QUERY
+              ] as string) ||
+              "",
             this.decodedUserInput
           );
-        this.fetchNoOfDocuments(this.requestQuery as string);
+
+        this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID,
@@ -304,10 +311,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.activeFeature
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
+        const { requestUrl, requestParams } =
+          this.genericMultiFeatureUtilitiesService.buildRequestParams(
+            this.templateConfigData.data,
+            this.requestQuery,
+            this.inputForm
+          );
         this.store.dispatch(
           FeatureActions.performFolderAction({
-            requestQuery: this.requestQuery,
-            featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
+            requestUrl,
+            requestParams,
+            featureEndpoint: REST_END_POINTS[featureKey],
           })
         );
       } else {

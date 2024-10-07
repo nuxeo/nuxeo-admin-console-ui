@@ -42,13 +42,12 @@ export const GENERIC_LABELS = {
   DOCUMENT_ID_OR_PATH: "Document ID or Path",
   DOCUMENT_ID: "Document ID",
   ACTION_ID_COPIED_ALERT: "Action ID copied to clipboard!",
-  SELECT_QUERY_CONDITIONS:
-    "ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   NXQL_QUERY_PLACEHOLDER_TITLE: "dc:title = 'A document to reindex'",
   AND: "AND",
   NXQL_QUERY: "NXQL Query",
   NXQL_INPUT_HINT:
     "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
+  QUERY: "query",
 };
 
 export const MODAL_DIMENSIONS = {

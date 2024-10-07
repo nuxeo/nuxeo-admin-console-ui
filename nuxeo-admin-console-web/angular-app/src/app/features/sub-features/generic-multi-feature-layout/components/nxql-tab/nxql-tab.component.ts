@@ -75,6 +75,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   nxqlQueryHintSanitized: SafeHtml = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
   inputPlaceholder = "";
+  requestQuery = "";
 
   constructor(
     public dialogService: MatDialog,
@@ -102,7 +103,6 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.nxqlQueryHintSanitized = this.sanitizer.bypassSecurityTrustHtml(
       GENERIC_LABELS.NXQL_INPUT_HINT
     );
-    this.inputPlaceholder = `${GENERIC_LABELS.SELECT_BASE_QUERY} ${GENERIC_LABELS.SELECT_QUERY_CONDITIONS} ${GENERIC_LABELS.AND} ${GENERIC_LABELS.NXQL_QUERY_PLACEHOLDER_TITLE}`;
     const featureConfig = featureMap();
     this.activeFeature =
       this.genericMultiFeatureUtilitiesService.getActiveFeature();
@@ -112,6 +112,8 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         GENERIC_LABELS.NXQL
       ) as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
+      this.inputPlaceholder = this.templateLabels
+        .nxqlQueryPlaceholder as string;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
@@ -206,13 +208,13 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       /* decode user input to handle path names that contain spaces, 
       which would not be decoded by default by nuxeo js client & would result in invalid api parameter */
       try {
-        const decodedUserInput = decodeURIComponent(
+        this.requestQuery = decodeURIComponent(
           /* Remove leading single & double quotes in case of path, to avoid invalid nuxeo js client api parameter */
           this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
             userInput
           )
         );
-        this.fetchNoOfDocuments(decodedUserInput);
+        this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         this.showActionErrorModal({
@@ -313,9 +315,16 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           this.activeFeature
         ) as FeaturesKey;
         if (featureKey in FEATURES) {
+          const { requestUrl, requestParams } =
+            this.genericMultiFeatureUtilitiesService.buildRequestParams(
+              this.templateConfigData.data,
+              this.requestQuery,
+              this.inputForm
+            );
           this.store.dispatch(
             FeatureActions.performNxqlAction({
-              nxqlQuery: this.decodedUserInput,
+              requestUrl,
+              requestParams,
               featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
             })
           );

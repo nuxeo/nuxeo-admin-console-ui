@@ -44,14 +44,17 @@ export class NetworkService {
       delete data["urlParam"];
     }
 
-    if (data?.["query"]) {
-      url += `?query=${data["query"]}`;
-      delete data["query"];
+    if (data?.["queryParam"]) {
+      const queryParam = data["queryParam"] as { requestUrl: string };
+      if (queryParam["requestUrl"] !== "") {
+        url += `?query=${queryParam["requestUrl"]}`;
+        delete data["queryParam"];
+      }
     }
 
     switch (method) {
       case "POST":
-        return this.http.post<T>(url, data || {});
+        return this.http.post<T>(url, data?.["bodyParam"] || {});
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});
@@ -62,7 +65,7 @@ export class NetworkService {
       case "GET":
         if (data) {
           Object.keys(data).forEach((key) => {
-            params = params.append(key, String(data[key]));
+            params = params.append(key, String(data?.[key]));
           });
         }
         return this.http.get<T>(url, { params });

@@ -2,6 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { GenericMultiFeatureUtilitiesService } from "./generic-multi-feature-utilities.service";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+import { FormControl, FormGroup } from "@angular/forms";
 
 describe("GenericMultiFeatureUtilitiesService", () => {
   let service: GenericMultiFeatureUtilitiesService;
@@ -68,26 +69,90 @@ describe("GenericMultiFeatureUtilitiesService", () => {
 
   describe("getRequestQuery", () => {
     it("should return a properly formatted request query", () => {
-      const queryParam = "/ws2";
-      const requestQuery = "{queryParam} WHERE ecm:path=/ws2";
+      const query = "/ws2";
+      const requestQuery = "{query} WHERE ecm:path=/ws2";
       const expectedQuery = `${
         GENERIC_LABELS.SELECT_BASE_QUERY
-      } ${requestQuery.replaceAll("{queryParam}", queryParam)}`;
-      expect(service.getRequestQuery(requestQuery, queryParam)).toBe(
-        expectedQuery
-      );
+      } ${requestQuery.replaceAll("{query}", query)}`;
+      expect(service.getRequestQuery(requestQuery, query)).toBe(expectedQuery);
     });
   });
 
   describe("insertParamInQuery", () => {
     it("should insert the parameter into the request query", () => {
       const param = "/ws1";
-      const requestQuery =
-        "SELECT * FROM DOCUMENT WHERE ecm:path='{queryParam}'";
+      const requestQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='{query}'";
       const expectedQuery = "SELECT * FROM DOCUMENT WHERE ecm:path='/ws1'";
       expect(service.insertParamInQuery(requestQuery, param)).toBe(
         expectedQuery
       );
+    });
+  });
+
+  describe("buildRequestParams", () => {
+    it("should append query to requestParams when bodyParam exists", () => {
+      const data = {
+        bodyParam: {
+          query: GENERIC_LABELS.QUERY,
+          param1: "value1",
+          param2: "value2",
+        },
+      };
+
+      const inputForm = new FormGroup({
+        param1: new FormControl("testValue1"),
+        param2: new FormControl("testValue2"),
+      });
+
+      const requestQuery = "SELECT * FROM Document";
+
+      const { requestUrl, requestParams } = service.buildRequestParams(
+        data,
+        requestQuery,
+        inputForm
+      );
+      expect(requestUrl).toBe("");
+      expect(requestParams.get(GENERIC_LABELS.QUERY)).toBe(requestQuery);
+      expect(requestParams.get("param1")).toBe("testValue1");
+      expect(requestParams.get("param2")).toBe("testValue2");
+    });
+
+    it("should append requestQuery to requestUrl when bodyParam does not exist", () => {
+      const data = {};
+      const requestQuery = "SELECT * FROM Document";
+      const inputForm = new FormGroup({});
+
+      const { requestUrl, requestParams } = service.buildRequestParams(
+        data,
+        requestQuery,
+        inputForm
+      );
+      expect(requestUrl).toBe("");
+      expect(requestParams.toString()).toBe("");
+    });
+
+    it("should skip appending params if input form values are not provided", () => {
+      const data = {
+        bodyParam: {
+          param1: "value1",
+          param2: "value2",
+        },
+      };
+
+      const inputForm = new FormGroup({
+        param1: new FormControl(""),
+        param2: new FormControl(null),
+      });
+
+      const requestQuery = "SELECT * FROM Document";
+      const { requestUrl, requestParams } = service.buildRequestParams(
+        data,
+        requestQuery,
+        inputForm
+      );
+      expect(requestParams.get("param1")).toBeNull();
+      expect(requestParams.get("param2")).toBeNull();
+      expect(requestUrl).toBe("");
     });
   });
 });

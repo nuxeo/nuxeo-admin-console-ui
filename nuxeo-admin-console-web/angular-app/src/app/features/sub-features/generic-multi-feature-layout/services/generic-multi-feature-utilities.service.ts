@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
+import { FormGroup } from "@angular/forms";
+import { RequestParamType } from "../generic-multi-feature-layout.interface";
 
 @Injectable({
   providedIn: "root",
@@ -82,6 +84,33 @@ export class GenericMultiFeatureUtilitiesService {
   }
 
   insertParamInQuery(requestQuery: string, param: string) {
-    return requestQuery.replaceAll("{queryParam}", param);
+    return requestQuery.replaceAll("{query}", param);
+  }
+
+  buildRequestParams(
+    data: RequestParamType,
+    requestQuery: string,
+    inputForm: FormGroup
+  ): { requestUrl: string; requestParams: URLSearchParams } {
+    let requestUrl = "";
+    // Prepare request payload body
+    const requestParams = new URLSearchParams();
+    // Prepare body params object with dynamic parameters & their values entered as input
+    if (data["bodyParam"]) {
+      Object.keys(data["bodyParam"]).forEach((key) => {
+        if (key === GENERIC_LABELS.QUERY) {
+          requestParams.append(key, requestQuery);
+          return;
+        }
+        const paramValue = inputForm.get(key)?.value;
+        if (!paramValue) return;
+        requestParams.append(key, paramValue as string);
+      });
+    }
+    if (data["queryParam"]) {
+      // since it is queryParam, the query would be appended to the url
+      requestUrl = requestQuery;
+    }
+    return { requestUrl, requestParams };
   }
 }

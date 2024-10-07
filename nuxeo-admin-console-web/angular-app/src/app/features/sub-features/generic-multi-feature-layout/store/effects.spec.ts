@@ -49,7 +49,8 @@ describe("GenericMultiFeatureEffects", () => {
     it("should return onDocumentActionLaunch on success", (done) => {
       const documentActionInfo = { commandId: "12345" };
       const action = FeatureActions.performDocumentAction({
-        requestQuery: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
+        requestUrl: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
+        requestParams: {},
         featureEndpoint: "/document-featureEndpoint",
       });
       
@@ -70,7 +71,8 @@ describe("GenericMultiFeatureEffects", () => {
         statusText: "Server Error",
       });
       const action = FeatureActions.performDocumentAction({
-        requestQuery: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
+        requestUrl: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
+        requestParams: {},
         featureEndpoint: "/document-featureEndpoint",
       });
 
@@ -89,7 +91,8 @@ describe("GenericMultiFeatureEffects", () => {
     it("should return onFolderActionLaunch on success", (done) => {
       const folderActionInfo = { commandId: "67890" };
       const action = FeatureActions.performFolderAction({
-        requestQuery: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
+        requestUrl: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
+        requestParams: {},
         featureEndpoint: "/folder-featureEndpoint",
       });
 
@@ -110,7 +113,8 @@ describe("GenericMultiFeatureEffects", () => {
         statusText: "Not Found",
       });
       const action = FeatureActions.performFolderAction({
-        requestQuery: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
+        requestUrl: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
+        requestParams: {},
         featureEndpoint: "/folder-featureEndpoint",
       });
 
@@ -129,7 +133,8 @@ describe("GenericMultiFeatureEffects", () => {
     it("should return onNxqlActionLaunch on success", (done) => {
       const nxqlActionInfo = { commandId: "99999" };
       const action = FeatureActions.performNxqlAction({
-        nxqlQuery: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
+        requestUrl: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
+        requestParams: {},
         featureEndpoint: "/nxql-featureEndpoint",
       });
 
@@ -150,7 +155,8 @@ describe("GenericMultiFeatureEffects", () => {
         statusText: "Forbidden",
       });
       const action = FeatureActions.performNxqlAction({
-        nxqlQuery: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
+        requestUrl: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
+        requestParams: {},
         featureEndpoint: "/nxql-featureEndpoint",
       });
 
