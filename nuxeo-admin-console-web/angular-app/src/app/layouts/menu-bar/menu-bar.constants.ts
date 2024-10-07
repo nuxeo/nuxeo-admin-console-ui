@@ -25,6 +25,12 @@ export const ADMIN_MENU: Menu[] = [
     path: "probes",
     isSelected: false,
   },
+  {
+    id: 4,
+    name: "Video Renditions Generation",
+    path: "video-renditions-generation",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {

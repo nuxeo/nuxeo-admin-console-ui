@@ -1,3 +1,4 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../video-renditions-generation/video-renditions-generation.constants";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
@@ -76,10 +77,10 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getRequestQuery(requestQuery: string, param: string): string {
+  getRequestQuery(requestQuery: string, params: string): string {
     return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(
       requestQuery,
-      param
+      params
     )}`;
   }
 
@@ -104,6 +105,10 @@ export class GenericMultiFeatureUtilitiesService {
         }
         const paramValue = inputForm.get(key)?.value;
         if (!paramValue) return;
+        if (key === VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) {
+          this.splitConversionNames(requestParams, paramValue, key);
+          return;
+        }
         requestParams.append(key, paramValue as string);
       });
     }
@@ -112,5 +117,15 @@ export class GenericMultiFeatureUtilitiesService {
       requestUrl = requestQuery;
     }
     return { requestUrl, requestParams };
+  }
+
+  splitConversionNames(
+    requestParams: URLSearchParams,
+    userInput: string[],
+    key: string
+  ) {
+    userInput.forEach((item: string) => {
+      requestParams.append(key, item);
+    });
   }
 }

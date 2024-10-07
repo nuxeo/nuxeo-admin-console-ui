@@ -5,8 +5,9 @@ export const REST_END_POINTS = {
     CURRENT_USER: "CURRENT_USER",
     CAPABILITIES: "CAPABILITIES",
     LOGOUT: "LOGOUT",
-    BULK_ACTION_MONITORING: "BULK_ACTION_MONITORING"
-} as const;
+    BULK_ACTION_MONITORING: "BULK_ACTION_MONITORING",
+    VIDEO_RENDITIONS_GENERATION: "VIDEO_RENDITIONS_GENERATION"
+} as const
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
 
@@ -43,5 +44,9 @@ export const REST_END_POINT_CONFIG: Record<RestEndpointKey, RestEndpointConfig> 
     BULK_ACTION_MONITORING: {
         endpoint: "/management/bulk/{id}",
         method: "GET"
-    }
+    },
+    VIDEO_RENDITIONS_GENERATION: {
+        endpoint: "/management/videos/recompute",
+        method: "POST"
+    },
 };

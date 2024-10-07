@@ -19,6 +19,13 @@ export const appRoutes: Route[] = [
       ).then((m) => m.GenericMultiFeatureLayoutModule)
   },
   {
+    path: "video-renditions-generation",
+    loadChildren: () =>
+      import(
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule)
+  },
+  {
     path: "bulk-action-monitoring",
     title: routeTitle.BULKACTIONMONITORING,
     loadChildren: () =>

@@ -1,3 +1,4 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
@@ -12,7 +13,12 @@ import {
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ActionInfo } from "../../generic-multi-feature-layout.interface";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -59,12 +65,15 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  conversionNamessArr: string[] = [];
+  FEATURES = FEATURES;
   requestQuery = "";
   constructor(
     public dialogService: MatDialog,
@@ -99,6 +108,11 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
+      if (this.isFeatureVideoRenditions()) {
+       // this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+        this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
+        this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
+      }
     }
 
     this.documentActionLaunchedSubscription =
@@ -200,8 +214,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   triggerAction(userInput: string | null): void {
     this.nuxeo
       .repository()
-      .fetch(userInput)
-      .then((document: unknown) => {
+      .fetch(userInput, {
+        headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        },
+      })
+      .then((document: Nuxeo) => {
         if (
           typeof document === "object" &&
           document !== null &&
@@ -292,6 +311,39 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       typeof (err as { response: { json: () => Promise<unknown> } }).response
         .json === "function"
     );
+  }
+
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
+    );
+  }
+
+  getConversionNames(userInput: string): void {
+    let conversionNamesList: string[] = [];
+
+    this.nuxeo
+      .repository()
+      .fetch(userInput, {
+        headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        },
+      })
+      .then((document: Nuxeo) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "path" in document
+        ) {
+          const transcodedVideos = document.properties["vid:transcodedVideos"].map((item: any) => item.name);
+          conversionNamesList.push(...transcodedVideos);
+          console.log(conversionNamesList);
+          this.conversionNamessArr = conversionNamesList;
+        }
+      });
+   
   }
 
   ngOnDestroy(): void {
