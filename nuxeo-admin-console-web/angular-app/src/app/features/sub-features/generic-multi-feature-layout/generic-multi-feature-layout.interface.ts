@@ -38,7 +38,7 @@ export interface GenericModalData {
 export interface labelsList {
   pageTitle: string;
   submitBtnLabel: string;
-  nxqlQueryDefault?: string;
+  nxqlQueryPlaceholder?: string;
 }
 
 export interface FeatureData {

@@ -108,7 +108,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.FOLDER
-      ) as unknown as FeatureData;
+      ) as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
@@ -212,10 +212,15 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.requestQuery =
           this.genericMultiFeatureUtilitiesService.getRequestQuery(
             this.templateConfigData?.data["queryParam"]
-              ? (this.templateConfigData?.data["queryParam"]["query"] as string)
-              : (this.templateConfigData?.data["bodyParam"]["query"] as string),
+              ? (this.templateConfigData?.data["queryParam"][
+                  GENERIC_LABELS.QUERY
+                ] as string)
+              : (this.templateConfigData?.data["bodyParam"][
+                  GENERIC_LABELS.QUERY
+                ] as string),
             this.decodedUserInput
           );
+
         this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.showActionErrorModal({
@@ -306,27 +311,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.activeFeature
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
-        let requestUrl = "";
-        // Prepare request payload body
-        const requestParams = new URLSearchParams();
-        const bodyParams = this.templateConfigData?.data["bodyParam"];
-        // Prepare body params object with dynamic parameters & their values entered as input
-        if (bodyParams) {
-          // Since, it is bodyParam, the query would be part of body params object & not the url
-          bodyParams["query"] = this.requestQuery;
-          requestParams.append("query", bodyParams["query"] as string);
-          Object.keys(bodyParams).forEach((key) => {
-            const paramValue = this.inputForm.get(key)?.value;
-            /* Only add the param to body params object list if user has enetered a value for it */
-            if (paramValue) {
-              bodyParams[key] = paramValue;
-              requestParams.append(key, bodyParams[key] as string);
-            }
-          });
-        } else {
-          // since it is queryParam, the query would be appended to the url
-          requestUrl = this.requestQuery;
-        }
+        const { requestUrl, requestParams } =
+          this.genericMultiFeatureUtilitiesService.buildRequestParams(
+            this.templateConfigData.data,
+            this.requestQuery,
+            this.inputForm
+          );
         this.store.dispatch(
           FeatureActions.performFolderAction({
             requestUrl,

@@ -51,7 +51,7 @@ export const featureMap = () => ({
         labels = {
           pageTitle: ELASTIC_SEARCH_LABELS.NXQL_QUERY_REINDEX_TITLE,
           submitBtnLabel: ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL,
-          nxqlQueryDefault: ELASTIC_SEARCH_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+          nxqlQueryPlaceholder: ELASTIC_SEARCH_LABELS.NXQL_QUERY_DEFAULT_VALUE,
         };
         data = {
           queryParam: {

@@ -47,6 +47,7 @@ export const GENERIC_LABELS = {
   NXQL_QUERY: "NXQL Query",
   NXQL_INPUT_HINT:
     "See <a href='https://doc.nuxeo.com/nxdoc/nxql/' target='_blank'>NXQL documentation</a> for available options",
+  QUERY: "query",
 };
 
 export const MODAL_DIMENSIONS = {
