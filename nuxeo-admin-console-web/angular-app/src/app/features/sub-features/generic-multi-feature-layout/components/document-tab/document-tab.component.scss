@@ -34,4 +34,8 @@
     margin-top: -15px;
   }
 }
-
+.document-tab-container.container-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}

@@ -72,7 +72,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionNamessArr = ["", "", ""];
+  conversionNamessArr: string[] = [];
   FEATURES = FEATURES;
   requestQuery = "";
   constructor(
@@ -110,7 +110,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       );
       if (this.isFeatureVideoRenditions()) {
        // this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
-        this.inputForm.addControl("conversionName", new FormControl(""));
+        this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
         this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
       }
     }

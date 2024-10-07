@@ -83,7 +83,7 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.DOCUMENT_QUERY}`,
-            conversionName: `{conversionName}`,
+            [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
             recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
           },
         };
@@ -97,7 +97,7 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.FOLDER_QUERY}`,
-            conversionName: `{conversionName}`,
+            [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
             recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
           },
         };

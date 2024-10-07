@@ -105,6 +105,10 @@ export class GenericMultiFeatureUtilitiesService {
         }
         const paramValue = inputForm.get(key)?.value;
         if (!paramValue) return;
+        if (key === VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) {
+          this.splitConversionNames(requestParams, paramValue, key);
+          return;
+        }
         requestParams.append(key, paramValue as string);
       });
     }
@@ -113,5 +117,15 @@ export class GenericMultiFeatureUtilitiesService {
       requestUrl = requestQuery;
     }
     return { requestUrl, requestParams };
+  }
+
+  splitConversionNames(
+    requestParams: URLSearchParams,
+    userInput: string[],
+    key: string
+  ) {
+    userInput.forEach((item: string) => {
+      requestParams.append(key, item);
+    });
   }
 }
