@@ -32,6 +32,7 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
+import { VIDEO_RENDITIONS_LABELS } from "../../../../video-renditions-generation/video-renditions-generation.constants";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
@@ -292,10 +293,13 @@ describe("DocumentTabComponent", () => {
       await component.triggerAction(userInput);
 
       expect(component.nuxeo.repository().fetch).toHaveBeenCalledWith(
-        userInput, {headers: {
-          "fetch-document": "properties",
-          properties: "*",
-        }},
+        userInput,
+        {
+          headers: {
+            "fetch-document": "properties",
+            properties: "*",
+          },
+        }
       );
     });
   });
@@ -321,5 +325,147 @@ describe("DocumentTabComponent", () => {
 
     expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     expect(component.onActionErrorModalClose).toHaveBeenCalled();
+  });
+
+  it("should initialize the component and set up form controls and subscriptions", () => {
+    const getActiveFeatureSpy = spyOn(
+      genericMultiFeatureUtilitiesService,
+      "getActiveFeature"
+    ).and.callThrough();
+    spyOn(genericMultiFeatureUtilitiesService.pageTitle, "next");
+    const documentActionLaunchedSpy = spyOn(
+      component.documentActionLaunched$,
+      "subscribe"
+    ).and.callThrough();
+    const documentActionErrorSpy = spyOn(
+      component.documentActionError$,
+      "subscribe"
+    ).and.callThrough();
+    spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+    component.ngOnInit();
+    expect(nuxeoJSClientService.getNuxeoInstance).toHaveBeenCalled();
+    expect(component.nuxeo).toEqual({ instance: "nuxeoInstance" });
+    expect(getActiveFeatureSpy).toHaveBeenCalled();
+    expect(component.activeFeature).toBe("ELASTIC_SEARCH_REINDEX");
+    expect(component.templateConfigData).toBeDefined();
+    expect(component.templateLabels).toBeDefined();
+    expect(documentActionLaunchedSpy).toHaveBeenCalled();
+    expect(documentActionErrorSpy).toHaveBeenCalled();
+  });
+
+  describe("getConversionNames", () => {
+    it("should fetch the document and update conversionNamesArr with transcoded video names", async () => {
+      const userInput = "test-doc-id";
+      const mockDocument = {
+        path: "/path/to/doc",
+        properties: {
+          "vid:transcodedVideos": [
+            { name: "Mp4 480p" },
+            { name: "Webm 480p" },
+            { name: "Ogg 480p" },
+          ],
+        },
+      };
+
+      // Mock the Nuxeo repository fetch call to return a resolved promise with the mock document
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({
+          fetch: jasmine
+            .createSpy()
+            .and.returnValue(Promise.resolve(mockDocument)),
+        }),
+      };
+
+      // Call the method
+      await component.getConversionNames(userInput);
+
+      // Check that the repository fetch was called with the correct arguments
+      expect(component.nuxeo.repository().fetch).toHaveBeenCalledWith(
+        userInput,
+        {
+          headers: {
+            "fetch-document": "properties",
+            properties: "*",
+          },
+        }
+      );
+
+      // Check that conversionNamesArr was updated with the transcoded video names
+      expect(component.conversionNamesArr).toEqual([
+        "Mp4 480p",
+        "Webm 480p",
+        "Ogg 480p",
+      ]);
+    });
+
+    it("should handle an empty transcoded videos array gracefully", async () => {
+      const userInput = "test-doc-id";
+      const mockDocument = {
+        path: "/path/to/doc",
+        properties: {
+          "vid:transcodedVideos": [],
+        },
+      };
+
+      // Mock the Nuxeo repository fetch call to return a resolved promise with the mock document
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({
+          fetch: jasmine
+            .createSpy()
+            .and.returnValue(Promise.resolve(mockDocument)),
+        }),
+      };
+
+      // Call the method
+      await component.getConversionNames(userInput);
+
+      // Check that the repository fetch was called with the correct arguments
+      expect(component.nuxeo.repository().fetch).toHaveBeenCalledWith(
+        userInput,
+        {
+          headers: {
+            "fetch-document": "properties",
+            properties: "*",
+          },
+        }
+      );
+
+      // Check that conversionNamesArr is empty when no transcoded videos are present
+      expect(component.conversionNamesArr).toEqual([]);
+    });
+
+    it("should not update conversionNamesArr if document does not contain 'path' or is null", async () => {
+      const userInput = "test-doc-id";
+      const mockDocument = null;
+
+      // Mock the Nuxeo repository fetch call to return a resolved promise with a null document
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({
+          fetch: jasmine
+            .createSpy()
+            .and.returnValue(Promise.resolve(mockDocument)),
+        }),
+      };
+
+      // Initialize conversionNamesArr with some value
+      component.conversionNamesArr = ["initialValue"];
+
+      // Call the method
+      await component.getConversionNames(userInput);
+
+      // Check that the repository fetch was called with the correct arguments
+      expect(component.nuxeo.repository().fetch).toHaveBeenCalledWith(
+        userInput,
+        {
+          headers: {
+            "fetch-document": "properties",
+            properties: "*",
+          },
+        }
+      );
+
+      // Check that conversionNamesArr was not modified
+      expect(component.conversionNamesArr).toEqual(["initialValue"]);
+    });
   });
 });

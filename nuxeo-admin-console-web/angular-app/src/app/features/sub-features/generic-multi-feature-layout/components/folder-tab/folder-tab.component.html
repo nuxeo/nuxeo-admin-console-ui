@@ -4,7 +4,7 @@
     <mat-form-field hyFormField>
         <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID }}</mat-label>
         <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier"
-            id="inputIdentifier" (blur)="getConversionNames(inputForm.get('inputIdentifier')?.value)" required />
+            id="inputIdentifier" required />
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
             {{getErrorMessage()}}
         </mat-error>

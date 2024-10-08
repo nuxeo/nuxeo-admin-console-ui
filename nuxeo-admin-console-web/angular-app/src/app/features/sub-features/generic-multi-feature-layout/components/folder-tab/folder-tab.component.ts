@@ -124,7 +124,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
 
     if (this.isFeatureVideoRenditions()) {
-       this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+      this.conversionNamesArr = VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_LIST;
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
         new FormControl("")
@@ -259,11 +259,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           pageSize: 1,
         },
         {
-          headers: {
-            "fetch-document": "properties",
-            properties: "*",
-          },
-        }
+           headers: {
+             "fetch-document": "properties",
+             properties: "*",
+           },
+         }
       )
       .then((document: unknown) => {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
@@ -386,35 +386,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  getConversionNames(query: string): void {
-    let conversionNamesList: string[] = [];
-    this.nuxeo
-      .repository()
-      .query(
-        {
-          query,
-          pageSize: 1,
-          // headers: {
-          //   properties: "*",
-          // },
-        }
-      )
-      .then((document: Nuxeo) => {
-        if (
-          typeof document === "object" &&
-          document !== null &&
-          "path" in document
-        ) {
-          const transcodedVideos = document.properties[
-            "vid:transcodedVideos"
-          ].map((item: any) => item.name);
-          conversionNamesList.push(...transcodedVideos);
-          console.log(conversionNamesList);
-          this.conversionNamesArr = conversionNamesList;
-        }
-      });
-  }
-
+ 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetFolderActionState());
     this.folderActionLaunchedSubscription?.unsubscribe();

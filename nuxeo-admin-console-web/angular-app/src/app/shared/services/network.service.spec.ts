@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { HttpClient } from "@angular/common/http";
 import { NetworkService } from "./network.service";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
+import { REST_END_POINTS } from "../constants/rest-end-ponts.constants";
 
 describe("NetworkService", () => {
   let service: NetworkService;
@@ -18,6 +19,7 @@ describe("NetworkService", () => {
     ]);
     const nuxeoSpy = jasmine.createSpyObj("NuxeoJSClientService", [
       "getApiUrl",
+      "getBaseUrl"
     ]);
 
     TestBed.configureTestingModule({
@@ -73,6 +75,32 @@ describe("NetworkService", () => {
       {
         params: jasmine.anything(),
       }
+    );
+  });
+
+
+  xit("should append query parameters to the URL", () => {
+    const endpointName = "ELASTIC_SEARCH_REINDEX";
+    const requestData = { queryParam: { requestUrl: "select * from Document" } };
+    nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
+      "http://localhost:8080/nuxeo/api/v1"
+    );
+    service.makeHttpRequest(endpointName, requestData);
+    expect(httpClientSpy.get).toHaveBeenCalledWith(
+      "http://localhost:8080/nuxeo/api/v1/management/reindex?query=select * from Document",
+      { params: jasmine.anything() }
+    );
+  });
+
+  it("should handle missing URL parameters without errors", () => {
+    const endpointName = REST_END_POINTS.PROBES
+    nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
+      "http://localhost:8080/nuxeo/api/v1"
+    );
+    service.makeHttpRequest(endpointName, {});
+    expect(httpClientSpy.get).toHaveBeenCalledWith(
+      "http://localhost:8080/nuxeo/api/v1/management/probes",
+      { params: jasmine.anything() }
     );
   });
 });

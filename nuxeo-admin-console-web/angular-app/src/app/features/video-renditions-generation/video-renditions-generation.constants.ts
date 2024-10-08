@@ -19,5 +19,6 @@ export const VIDEO_RENDITIONS_LABELS = {
     "SELECT * FROM Document WHERE ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND vid:transcodedVideos/0/name IS NULL AND dc:title = 'A video without renditions'",
   VID_TRANSCODED: "vid:transcodedVideos/0/name",
   VIDEO: "Video",
-  CONVERSION_NAME_KEY: "conversionNames"
+  CONVERSION_NAME_KEY: "conversionNames",
+  CONVERSION_NAMES_LIST: ["WebM 480p", "Ogg 480p", "MP4 480p"]
 };
