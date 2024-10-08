@@ -1,9 +1,11 @@
 import { ELASTIC_SEARCH_LABELS } from "../../elastic-search-reindex/elastic-search-reindex.constants";
 import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
+import { THUMBNAIL_GENERATION_LABELS } from "../../thumbnail-generation/thumbnail-generation.constants";
 import { labelsList } from "./generic-multi-feature-layout.interface";
 
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
+  THUMBNAIL_GENERATION: "thumbnail-generation",
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -57,6 +59,29 @@ export const featureMap = () => ({
           queryParam: {
             query: `${ELASTIC_SEARCH_LABELS.NXQL_QUERY}`,
           },
+        };
+        break;
+
+      default:
+        throw new Error(`Unsupported type: ${tabType}`);
+    }
+
+    return {
+      labels,
+      data,
+    };
+  },
+  [FEATURES.THUMBNAIL_GENERATION]: (tabType: string) => {
+    let labels: labelsList;
+    let data = {};
+    switch (tabType) {
+      case GENERIC_LABELS.DOCUMENT:
+        labels = {
+          pageTitle: THUMBNAIL_GENERATION_LABELS.DOCUMENT_THUMBNAIL_GENERATION_TITLE,
+          submitBtnLabel: THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY}` },
         };
         break;
 
