@@ -80,7 +80,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionNamessArr: string[] = [];
+  conversionNamesArr: string[] = [];
 
   constructor(
     public dialogService: MatDialog,
@@ -116,7 +116,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.FOLDER
-      ) as unknown as FeatureData;
+      ) as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
@@ -124,8 +124,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
 
     if (this.isFeatureVideoRenditions()) {
-      this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
-      this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
+       this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+      this.inputForm.addControl(
+        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+        new FormControl("")
+      );
       this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
     }
 
@@ -250,10 +253,18 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   fetchNoOfDocuments(query: string | null): void {
     this.nuxeo
       .repository()
-      .query({
-        query,
-        pageSize: 1,
-      })
+      .query(
+        {
+          query,
+          pageSize: 1,
+        },
+        {
+          headers: {
+            "fetch-document": "properties",
+            properties: "*",
+          },
+        }
+      )
       .then((document: unknown) => {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         if (
@@ -373,6 +384,35 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       this.activeFeature ===
       (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
+  }
+
+  getConversionNames(query: string): void {
+    let conversionNamesList: string[] = [];
+    this.nuxeo
+      .repository()
+      .query(
+        {
+          query,
+          pageSize: 1,
+          // headers: {
+          //   properties: "*",
+          // },
+        }
+      )
+      .then((document: Nuxeo) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "path" in document
+        ) {
+          const transcodedVideos = document.properties[
+            "vid:transcodedVideos"
+          ].map((item: any) => item.name);
+          conversionNamesList.push(...transcodedVideos);
+          console.log(conversionNamesList);
+          this.conversionNamesArr = conversionNamesList;
+        }
+      });
   }
 
   ngOnDestroy(): void {

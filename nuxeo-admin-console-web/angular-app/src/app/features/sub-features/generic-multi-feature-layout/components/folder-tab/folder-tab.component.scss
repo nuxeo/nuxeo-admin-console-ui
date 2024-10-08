@@ -56,8 +56,8 @@
     margin-top: -15px;
   }
 }
-.folder-tab-container.container-flex {
+.folder-tab-container.vertical-flex {
   display: flex;
-    flex-direction: column;
-    align-items: stretch; 
+  flex-direction: column;
+  align-items: stretch;
 }

@@ -72,7 +72,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionNamessArr: string[] = [];
+  conversionNamesArr: string[] = [];
   FEATURES = FEATURES;
   requestQuery = "";
   constructor(
@@ -109,7 +109,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
       if (this.isFeatureVideoRenditions()) {
-       // this.conversionNamessArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
+       // this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
         this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
         this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
       }
@@ -322,7 +322,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
 
   getConversionNames(userInput: string): void {
     let conversionNamesList: string[] = [];
-
     this.nuxeo
       .repository()
       .fetch(userInput, {
@@ -340,7 +339,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
           const transcodedVideos = document.properties["vid:transcodedVideos"].map((item: any) => item.name);
           conversionNamesList.push(...transcodedVideos);
           console.log(conversionNamesList);
-          this.conversionNamessArr = conversionNamesList;
+          this.conversionNamesArr = conversionNamesList;
         }
       });
    

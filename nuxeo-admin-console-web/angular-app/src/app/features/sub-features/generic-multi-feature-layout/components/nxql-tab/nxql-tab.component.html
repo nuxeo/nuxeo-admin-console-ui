@@ -6,7 +6,6 @@
             id="inputIdentifier" required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" class="resizable-textarea"></textarea>
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
-
     <button mat-flat-button color="primary" type="submit" class="nxql-tab-container__button" [disabled]="isSubmitBtnDisabled">
         {{ templateLabels.submitBtnLabel }}
     </button>

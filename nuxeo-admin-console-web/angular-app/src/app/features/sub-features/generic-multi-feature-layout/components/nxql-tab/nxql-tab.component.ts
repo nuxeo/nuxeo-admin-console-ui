@@ -110,7 +110,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     if (this.activeFeature && this.activeFeature in featureConfig) {
       this.templateConfigData = featureConfig[FEATURES[featureKey]](
         GENERIC_LABELS.NXQL
-      ) as unknown as FeatureData;
+      ) as FeatureData;
       this.templateLabels = this.templateConfigData?.labels;
       this.inputPlaceholder = this.templateLabels
         .nxqlQueryPlaceholder as string;

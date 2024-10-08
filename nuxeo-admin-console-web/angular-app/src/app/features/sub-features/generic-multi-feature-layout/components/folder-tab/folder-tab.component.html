@@ -1,25 +1,24 @@
-<form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="folder-tab-container" [ngClass]="{'container-flex': isFeatureVideoRenditions()}">
+<form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="folder-tab-container"
+    [ngClass]="{'vertical-flex': isFeatureVideoRenditions()}">
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID }}</mat-label>
         <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID }}" type="text" formControlName="inputIdentifier"
-            id="inputIdentifier" required />
+            id="inputIdentifier" (blur)="getConversionNames(inputForm.get('inputIdentifier')?.value)" required />
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
             {{getErrorMessage()}}
         </mat-error>
     </mat-form-field>
     <ng-container
         *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get('recomputeAllVideoInfo')">
-
         <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
             <mat-select formControlName="conversionNames" id="conversionNames" multiple>
-                <mat-option *ngFor="let conversionName of conversionNamessArr"
+                <mat-option *ngFor="let conversionName of conversionNamesArr"
                     [value]="conversionName">{{conversionName}}</mat-option>
             </mat-select>
         </mat-form-field>
         <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
-
         <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
             <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">

@@ -5,6 +5,9 @@ import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { FormGroup } from "@angular/forms";
 import { RequestParamType } from "../generic-multi-feature-layout.interface";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Nuxeo from "nuxeo";
 
 @Injectable({
   providedIn: "root",
@@ -13,6 +16,7 @@ export class GenericMultiFeatureUtilitiesService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  nuxeo: Nuxeo;
   setActiveFeature(activeFeature: FeaturesKey): void {
     this.activeFeature = activeFeature;
   }
@@ -127,5 +131,31 @@ export class GenericMultiFeatureUtilitiesService {
     userInput.forEach((item: string) => {
       requestParams.append(key, item);
     });
+  }
+
+  fetchConversionNamesForDocument(userInput: string): string[] {
+    let conversionNamesList: string[] = [];
+    this.nuxeo
+      .repository()
+      .fetch(userInput, {
+        headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        },
+      })
+      .then((document: Nuxeo) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "path" in document
+        ) {
+          const transcodedVideos = document.properties[
+            "vid:transcodedVideos"
+          ].map((item: any) => item.name);
+          conversionNamesList.push(...transcodedVideos);
+          console.log(conversionNamesList);
+        }
+      });
+    return conversionNamesList;
   }
 }

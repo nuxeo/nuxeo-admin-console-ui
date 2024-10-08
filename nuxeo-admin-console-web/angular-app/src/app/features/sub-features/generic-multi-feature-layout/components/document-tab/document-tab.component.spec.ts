@@ -292,7 +292,10 @@ describe("DocumentTabComponent", () => {
       await component.triggerAction(userInput);
 
       expect(component.nuxeo.repository().fetch).toHaveBeenCalledWith(
-        userInput
+        userInput, {headers: {
+          "fetch-document": "properties",
+          properties: "*",
+        }},
       );
     });
   });
