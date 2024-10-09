@@ -31,6 +31,12 @@ export const ADMIN_MENU: Menu[] = [
     path: "thumbnail-generation",
     isSelected: false,
   },
+  {
+    id: 5,
+    name: "Picture Renditions Generation",
+    path: "pictures",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
@@ -39,4 +45,5 @@ export const ROUTES_TITLE = {
   BULKACTIONMONITORING: "Bulk Action Monitoring",
   PROBES: "Probes",
   THUMBNAIL_GENERATION: "Thumbnail Generation",
+  PICTURES: "PICTURES",
 };
