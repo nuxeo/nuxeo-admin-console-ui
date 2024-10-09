@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
 import {
   REST_END_POINT_CONFIG,
@@ -52,9 +52,13 @@ export class NetworkService {
       }
     }
 
+    const headers = new HttpHeaders({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
     switch (method) {
       case "POST":
-        return this.http.post<T>(url, data?.["bodyParam"] || {});
+       // return this.http.post<T>(url, data?.["bodyParam"] || {}, { headers });
+       return this.http.post<T>(url, data?.["bodyParam"] || {}, data?.["bodyParam"]? {headers} : {});
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});

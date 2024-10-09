@@ -111,7 +111,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       if (this.isFeatureVideoRenditions()) {
        // this.conversionNamesArr = ["Mp4 480p", "Webm 480p", "Ogg 480p"]; // fetch from API
         this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
-        this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
+        this.inputForm.addControl("recomputeVideoInfo", new FormControl("true"));
       }
     }
 

@@ -8,11 +8,13 @@ export const VIDEO_RENDITIONS_LABELS = {
   CONVERSION_NAMES: "Conversion names",
   CONVERSION_NAMES_HELPER_TEXT:
     "Provide a list of conversion names to generate, or leave this field empty to regenerate them all.",
-  RECOMPUTE_VIDEO_INFO: "Recompute missing information only",
+  RECOMPUTE_VIDEO_INFO: "Information to recompute",
+  RECOMPUTE_MISSING_ONLY: "Recompute missing information only",
+  RECOMPUTE_ALL: "Recompute all video information",
   DOCUMENT_QUERY:
     "ecm:path='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   FOLDER_QUERY:
-    "ecm:ancestorId='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
+    "ecm:uuid='{query}' OR ecm:ancestorId='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
   NXQL_QUERY:
     "ecm:uuid='{query}' OR ecm:ancestorId='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
   NXQL_QUERY_DEFAULT_VALUE:

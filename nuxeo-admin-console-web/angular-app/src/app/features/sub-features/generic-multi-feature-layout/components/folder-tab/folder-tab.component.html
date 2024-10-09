@@ -10,7 +10,7 @@
         </mat-error>
     </mat-form-field>
     <ng-container
-        *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get('recomputeAllVideoInfo')">
+        *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get('recomputeVideoInfo')">
         <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
             <mat-select formControlName="conversionNames" id="conversionNames" multiple>
@@ -21,9 +21,9 @@
         <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
         <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
-            <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
-                <option value="true">True</option>
-                <option value="false">False</option>
+            <select matNativeControl formControlName="recomputeVideoInfo" id="recomputeVideoInfo">
+                <option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</option>
+                <option value="false">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</option>
             </select>
         </mat-form-field>
     </ng-container>

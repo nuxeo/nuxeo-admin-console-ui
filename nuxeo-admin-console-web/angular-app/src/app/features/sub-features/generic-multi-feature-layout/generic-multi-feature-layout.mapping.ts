@@ -84,7 +84,7 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.DOCUMENT_QUERY}`,
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
-            recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
+            recomputeVideoInfo: `{recomputeVideoInfo}`,
           },
         };
         break;
@@ -98,7 +98,7 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.FOLDER_QUERY}`,
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
-            recomputeAllVideoInfo: `{recomputeAllVideoInfo}`,
+            recomputeVideoInfo: `{recomputeVideoInfo}`,
           },
         };
         break;

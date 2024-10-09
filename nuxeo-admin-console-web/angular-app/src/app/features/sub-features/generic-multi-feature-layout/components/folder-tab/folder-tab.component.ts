@@ -129,7 +129,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
         new FormControl("")
       );
-      this.inputForm.addControl("recomputeAllVideoInfo", new FormControl(""));
+      this.inputForm.addControl("recomputeVideoInfo", new FormControl("true"));
     }
 
     this.folderActionLaunchedSubscription =

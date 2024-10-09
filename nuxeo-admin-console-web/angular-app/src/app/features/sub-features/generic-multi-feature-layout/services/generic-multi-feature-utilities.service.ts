@@ -8,6 +8,7 @@ import { RequestParamType } from "../generic-multi-feature-layout.interface";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
+import { HttpParams } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
@@ -96,15 +97,15 @@ export class GenericMultiFeatureUtilitiesService {
     data: RequestParamType,
     requestQuery: string,
     inputForm: FormGroup
-  ): { requestUrl: string; requestParams: URLSearchParams } {
+  ): { requestUrl: string; requestParams: HttpParams } {
     let requestUrl = "";
     // Prepare request payload body
-    const requestParams = new URLSearchParams();
+    const requestParams = new HttpParams();
     // Prepare body params object with dynamic parameters & their values entered as input
     if (data["bodyParam"]) {
       Object.keys(data["bodyParam"]).forEach((key) => {
         if (key === GENERIC_LABELS.QUERY) {
-          requestParams.append(key, requestQuery);
+          requestParams.set(key, requestQuery);
           return;
         }
         const paramValue = inputForm.get(key)?.value;
@@ -113,7 +114,7 @@ export class GenericMultiFeatureUtilitiesService {
           this.splitConversionNames(requestParams, paramValue, key);
           return;
         }
-        requestParams.append(key, paramValue as string);
+        requestParams.set(key, paramValue as string);
       });
     }
     if (data["queryParam"]) {
@@ -124,12 +125,12 @@ export class GenericMultiFeatureUtilitiesService {
   }
 
   splitConversionNames(
-    requestParams: URLSearchParams,
+    requestParams: HttpParams,
     userInput: string[],
     key: string
   ) {
     userInput.forEach((item: string) => {
-      requestParams.append(key, item);
+      requestParams.set(key, item);
     });
   }
 
