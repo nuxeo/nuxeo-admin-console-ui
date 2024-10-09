@@ -58,7 +58,7 @@ export class NetworkService {
     switch (method) {
       case "POST":
        // return this.http.post<T>(url, data?.["bodyParam"] || {}, { headers });
-       return this.http.post<T>(url, data?.["bodyParam"] || {}, data?.["bodyParam"]? {headers} : {});
+       return this.http.post<T>(url, data?.["bodyParam"] || {});
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});
