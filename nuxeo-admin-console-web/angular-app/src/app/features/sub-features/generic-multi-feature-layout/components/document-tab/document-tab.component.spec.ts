@@ -324,7 +324,7 @@ describe("DocumentTabComponent", () => {
 
   describe('FEATURES.PICTURES', () => {
     it('should return correct labels and data for DOCUMENT tabType', () => {
-      const result = featureMap()[FEATURES.PICTURES](GENERIC_LABELS.DOCUMENT);
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.DOCUMENT);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE);
       expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
     });

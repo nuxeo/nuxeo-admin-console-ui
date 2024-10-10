@@ -339,7 +339,7 @@ describe("NXQLTabComponent", () => {
   });
   describe('FEATURES.PICTURES', () => {
     it('should return correct labels and data for NXQL tabType', () => {
-      const result = featureMap()[FEATURES.PICTURES](GENERIC_LABELS.NXQL);
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.NXQL);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE);
       expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
     });

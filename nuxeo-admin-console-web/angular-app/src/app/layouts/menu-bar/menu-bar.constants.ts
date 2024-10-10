@@ -34,7 +34,7 @@ export const ADMIN_MENU: Menu[] = [
   {
     id: 5,
     name: "Picture Renditions Generation",
-    path: "pictures",
+    path: "picture-renditions",
     isSelected: false,
   },
 ];
@@ -45,5 +45,5 @@ export const ROUTES_TITLE = {
   BULKACTIONMONITORING: "Bulk Action Monitoring",
   PROBES: "Probes",
   THUMBNAIL_GENERATION: "Thumbnail Generation",
-  PICTURES: "PICTURES",
+  PICTURE_RENDITIONS: "Picture Renditions",
 };

@@ -322,7 +322,7 @@ describe("FolderTabComponent", () => {
   });
   describe('FEATURES.PICTURES', () => {
     it('should return correct labels and data for FOLDER tabType', () => {
-      const result = featureMap()[FEATURES.PICTURES](GENERIC_LABELS.FOLDER);
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.FOLDER_RENDITIONS_TITLE);
       expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
     });

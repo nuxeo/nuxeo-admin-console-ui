@@ -7,7 +7,7 @@ import { PICTURE_RENDITIONS_LABELS } from "../../pictures/pictures-renditions.co
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
   THUMBNAIL_GENERATION: "thumbnail-generation",
-  PICTURES: "pictures"
+  PICTURE_RENDITIONS: "picture-renditions"
   // Add other features here. Value MUST match route name
 } as const;
 
@@ -96,7 +96,7 @@ export const featureMap = () => ({
       data,
     };
   },
-  [FEATURES.PICTURES]: (tabType: string) => {
+  [FEATURES.PICTURE_RENDITIONS]: (tabType: string) => {
     let labels: labelsList;
     let data = {};
     switch (tabType) {

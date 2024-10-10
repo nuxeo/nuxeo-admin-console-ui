@@ -41,7 +41,7 @@ export const appRoutes: Route[] = [
       ).then((m) => m.GenericMultiFeatureLayoutModule)
   },
   {
-    path: "pictures",
+    path: "picture-renditions",
     loadChildren: () =>
       import(
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
