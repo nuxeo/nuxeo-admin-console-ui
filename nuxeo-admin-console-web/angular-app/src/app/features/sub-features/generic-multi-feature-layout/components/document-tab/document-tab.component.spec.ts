@@ -32,6 +32,8 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
+import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
+import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
@@ -319,4 +321,13 @@ describe("DocumentTabComponent", () => {
     expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     expect(component.onActionErrorModalClose).toHaveBeenCalled();
   });
+
+  describe('FEATURES.PICTURE_RENDITIONS', () => {
+    it('should return correct labels and data for DOCUMENT tabType', () => {
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.DOCUMENT);
+      expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+    });
+  });
+
 });

@@ -34,6 +34,9 @@ import {
   MODAL_DIMENSIONS,
 } from "../../generic-multi-feature-layout.constants";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
+import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
+import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
@@ -316,5 +319,12 @@ describe("FolderTabComponent", () => {
       genericMultiFeatureUtilitiesService.secondsToHumanReadable
     ).toHaveBeenCalledWith(seconds);
     expect(result).toBe(humanReadableTime);
+  });
+  describe('FEATURES.PICTURE_RENDITIONS', () => {
+    it('should return correct labels and data for FOLDER tabType', () => {
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.FOLDER);
+      expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.FOLDER_RENDITIONS_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+    });
   });
 });

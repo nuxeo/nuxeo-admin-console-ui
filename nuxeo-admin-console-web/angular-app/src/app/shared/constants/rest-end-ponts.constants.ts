@@ -6,7 +6,8 @@ export const REST_END_POINTS = {
     CAPABILITIES: "CAPABILITIES",
     LOGOUT: "LOGOUT",
     BULK_ACTION_MONITORING: "BULK_ACTION_MONITORING",
-    THUMBNAIL_GENERATION: "THUMBNAIL_GENERATION"
+    THUMBNAIL_GENERATION: "THUMBNAIL_GENERATION",
+    PICTURE_RENDITIONS: "PICTURE_RENDITIONS"
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -47,6 +48,10 @@ export const REST_END_POINT_CONFIG: Record<RestEndpointKey, RestEndpointConfig> 
     },
     THUMBNAIL_GENERATION: {
         endpoint: "/management/thumbnails/recompute",
+        method: "POST"
+    },
+    PICTURE_RENDITIONS: {
+        endpoint: "/management/pictures/recompute",
         method: "POST"
     }
 };
