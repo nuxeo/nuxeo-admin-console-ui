@@ -73,7 +73,11 @@ export const featureMap = () => ({
   },
   [FEATURES.THUMBNAIL_GENERATION]: (tabType: string) => {
     let labels: labelsList;
-    let data = {};
+    let data = {
+      bodyParam: {
+        query:""
+      }
+    };
     switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
         labels = {
@@ -82,6 +86,18 @@ export const featureMap = () => ({
         };
         data = {
           bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY}` },
+        };
+        break;
+
+      case GENERIC_LABELS.FOLDER:
+        labels = {
+          pageTitle: THUMBNAIL_GENERATION_LABELS.FOLDER_THUMBNAIL_GENERATION_TITLE,
+          submitBtnLabel: THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: {
+            query: `${THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY}`,
+          },
         };
         break;
 
