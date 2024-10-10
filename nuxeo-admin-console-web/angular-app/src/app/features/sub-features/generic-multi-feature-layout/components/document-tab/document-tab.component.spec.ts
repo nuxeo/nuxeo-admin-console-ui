@@ -322,7 +322,7 @@ describe("DocumentTabComponent", () => {
     expect(component.onActionErrorModalClose).toHaveBeenCalled();
   });
 
-  describe('FEATURES.PICTURES', () => {
+  describe('FEATURES.PICTURE_RENDITIONS', () => {
     it('should return correct labels and data for DOCUMENT tabType', () => {
       const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.DOCUMENT);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE);

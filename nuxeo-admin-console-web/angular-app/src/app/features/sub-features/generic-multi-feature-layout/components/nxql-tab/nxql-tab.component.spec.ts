@@ -337,7 +337,7 @@ describe("NXQLTabComponent", () => {
     expect(genericMultiFeatureUtilitiesService.spinnerStatus.value).toBe(true);
     expect(component.fetchNoOfDocuments).not.toHaveBeenCalled();
   });
-  describe('FEATURES.PICTURES', () => {
+  describe('FEATURES.PICTURE_RENDITIONS', () => {
     it('should return correct labels and data for NXQL tabType', () => {
       const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.NXQL);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE);

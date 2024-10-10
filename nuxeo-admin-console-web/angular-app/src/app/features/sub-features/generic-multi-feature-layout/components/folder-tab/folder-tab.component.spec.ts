@@ -320,7 +320,7 @@ describe("FolderTabComponent", () => {
     ).toHaveBeenCalledWith(seconds);
     expect(result).toBe(humanReadableTime);
   });
-  describe('FEATURES.PICTURES', () => {
+  describe('FEATURES.PICTURE_RENDITIONS', () => {
     it('should return correct labels and data for FOLDER tabType', () => {
       const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.FOLDER_RENDITIONS_TITLE);
