@@ -33,6 +33,9 @@ import { GenericMultiFeatureUtilitiesService } from "../../services/generic-mult
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
+import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
+import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+
 
 describe("NXQLTabComponent", () => {
   let component: NXQLTabComponent;
@@ -333,5 +336,12 @@ describe("NXQLTabComponent", () => {
     component.onFormSubmit();
     expect(genericMultiFeatureUtilitiesService.spinnerStatus.value).toBe(true);
     expect(component.fetchNoOfDocuments).not.toHaveBeenCalled();
+  });
+  describe('FEATURES.PICTURES', () => {
+    it('should return correct labels and data for NXQL tabType', () => {
+      const result = featureMap()[FEATURES.PICTURES](GENERIC_LABELS.NXQL);
+      expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+    });
   });
 });
