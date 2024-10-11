@@ -200,6 +200,18 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  buildRequestQuery(input: string): string {
+    return this.genericMultiFeatureUtilitiesService.getRequestQuery(
+      (this.templateConfigData?.data["queryParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      (this.templateConfigData?.data["bodyParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      "",
+      input
+    );
+  }
   onFormSubmit(): void {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
@@ -218,17 +230,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             decodeURIComponent(this.userInput)
           );
 
-        this.requestQuery =
-          this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            (this.templateConfigData?.data["queryParam"]?.[
-              GENERIC_LABELS.QUERY
-            ] as string) ||
-            (this.templateConfigData?.data["bodyParam"]?.[
-              GENERIC_LABELS.QUERY
-            ] as string) ||
-            "",
-            this.decodedUserInput
-          );
+        this.requestQuery = this.buildRequestQuery(this.decodedUserInput)
         console.log("active feature", this.activeFeature);
         const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
         if (areIdAndPathRequired) {
@@ -265,18 +267,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
               )
               : doc.path;
           console.log("folder decoded path", decodedPath);
-          this.requestQuery =
-            this.genericMultiFeatureUtilitiesService.getRequestQuery(
-              (this.templateConfigData?.data["queryParam"]?.[
-                GENERIC_LABELS.QUERY
-              ] as string) ||
-              (this.templateConfigData?.data["bodyParam"]?.[
-                GENERIC_LABELS.QUERY
-              ] as string) ||
-              "",
-              decodedPath
-            );
-
+          this.requestQuery = this.buildRequestQuery(decodedPath)
           console.log("folder request query", this.requestQuery);
         }
       })
