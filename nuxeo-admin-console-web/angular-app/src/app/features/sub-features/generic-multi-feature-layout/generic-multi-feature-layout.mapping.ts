@@ -87,6 +87,17 @@ export const featureMap = () => ({
         };
         break;
 
+      case GENERIC_LABELS.NXQL:
+        labels = {
+          pageTitle: THUMBNAIL_GENERATION_LABELS.NXQL_THUMBNAIL_GENERATION_TITLE,
+          submitBtnLabel: THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL,
+          nxqlQueryPlaceholder: THUMBNAIL_GENERATION_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+        };
+        data = {
+          bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.NXQL_QUERY}` },
+        };
+        break;
+
       default:
         throw new Error(`Unsupported type: ${tabType}`);
     }
