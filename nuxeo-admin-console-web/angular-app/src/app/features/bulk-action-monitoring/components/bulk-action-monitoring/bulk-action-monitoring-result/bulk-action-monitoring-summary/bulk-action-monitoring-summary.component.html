@@ -2,7 +2,7 @@
     <div class="bulk-action-summary__header">
         <p class="action-details">
             <span class="action-name">
-                {{bulkActionSummary.action | titlecase}}
+                {{bulkActionSummary.action}}
             </span>
             <span
                 *ngIf="bulkActionSummary?.state !== BULK_ACTION_LABELS.RUNNING_STATE && bulkActionSummary?.state !== BULK_ACTION_LABELS.SCROLLING_RUNNING_STATE else runningState;"
