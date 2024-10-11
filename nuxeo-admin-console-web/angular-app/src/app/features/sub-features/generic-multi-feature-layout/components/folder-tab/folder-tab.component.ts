@@ -73,6 +73,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  featuresRequiringOnlyId = ["elasticsearch-reindex"];
 
   constructor(
     public dialogService: MatDialog,
@@ -184,9 +185,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     document.getElementById("inputIdentifier")?.focus();
   }
 
+  isIdAndPathRequired(activeFeature: string): boolean {
+    return !this.featuresRequiringOnlyId.includes(activeFeature);
+  }
+
   getErrorMessage(): string | null {
-    if (this.inputForm?.get("inputIdentifier")?.hasError("required")) {
+    const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && !areIdAndPathRequired) {
       return GENERIC_LABELS.REQUIRED_DOCID_ERROR;
+    }
+    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && areIdAndPathRequired) {
+      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
@@ -214,13 +223,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             (this.templateConfigData?.data["queryParam"]?.[
               GENERIC_LABELS.QUERY
             ] as string) ||
-              (this.templateConfigData?.data["bodyParam"]?.[
-                GENERIC_LABELS.QUERY
-              ] as string) ||
-              "",
+            (this.templateConfigData?.data["bodyParam"]?.[
+              GENERIC_LABELS.QUERY
+            ] as string) ||
+            "",
             this.decodedUserInput
           );
-
+        console.log("active feature", this.activeFeature);
+        const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+        if (areIdAndPathRequired) {
+          this.triggerAction(this.decodedUserInput);
+        }
         this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.showActionErrorModal({
@@ -232,6 +245,43 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  triggerAction(userInput: string | null): void {
+    this.nuxeo
+      .repository()
+      .fetch(userInput)
+      .then((document: unknown) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "path" in document
+        ) {
+          const doc = document as { path: string };
+          console.log("doc folder", doc);
+          const decodedPath =
+            doc.path.indexOf("'") > -1
+              ? this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
+                decodeURIComponent(doc.path)
+              )
+              : doc.path;
+          console.log("folder decoded path", decodedPath);
+          this.requestQuery =
+            this.genericMultiFeatureUtilitiesService.getRequestQuery(
+              (this.templateConfigData?.data["queryParam"]?.[
+                GENERIC_LABELS.QUERY
+              ] as string) ||
+              (this.templateConfigData?.data["bodyParam"]?.[
+                GENERIC_LABELS.QUERY
+              ] as string) ||
+              "",
+              decodedPath
+            );
+
+          console.log("folder request query", this.requestQuery);
+        }
+      })
+  }
+
 
   fetchNoOfDocuments(query: string | null): void {
     this.nuxeo
@@ -306,6 +356,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   onConfirmationModalClose(modalData: unknown): void {
     this.isSubmitBtnDisabled = false;
     const data = modalData as GenericModalClosedInfo;
+    console.log("onConfirmationModalClose", modalData);
     if (data?.continue) {
       const featureKey = getFeatureKeyByValue(
         this.activeFeature
@@ -317,6 +368,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             this.requestQuery,
             this.inputForm
           );
+        console.log("requestParams Folder", this.requestQuery)
         this.store.dispatch(
           FeatureActions.performFolderAction({
             requestUrl,
