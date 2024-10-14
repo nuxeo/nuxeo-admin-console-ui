@@ -58,6 +58,18 @@ describe("FolderTabComponent", () => {
     getActiveFeature() {
       return "ELASTIC_SEARCH_REINDEX";
     }
+    checkIfResponseHasError(err: unknown): boolean {
+      return (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response: unknown }).response === "object" &&
+        (err as { response: { json: unknown } }).response !== null &&
+        "json" in (err as { response: { json: unknown } }).response &&
+        typeof (err as { response: { json: () => Promise<unknown> } }).response
+          .json === "function"
+      );
+    }
   }
 
   beforeEach(async () => {
