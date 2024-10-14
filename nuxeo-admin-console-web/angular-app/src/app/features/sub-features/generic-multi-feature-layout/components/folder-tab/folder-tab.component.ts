@@ -15,6 +15,7 @@ import {
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
+  featuresRequiringOnlyId
 } from "../../generic-multi-feature-layout.constants";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import {
@@ -36,7 +37,6 @@ import {
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
-import {featuresRequiringOnlyId } from "./folder-tab.constants"
 @Component({
   selector: "folder-tab",
   templateUrl: "./folder-tab.component.html",

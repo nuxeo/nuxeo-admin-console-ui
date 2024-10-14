@@ -87,3 +87,5 @@ export const ERROR_MODAL_LABELS = {
   UNEXPECTED_ERROR: "Unexpected error format",
   UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",
 };
+
+export const featuresRequiringOnlyId = ["elasticsearch-reindex"];
