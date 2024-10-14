@@ -24,6 +24,7 @@ import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
+  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -70,6 +71,14 @@ describe("DocumentTabComponent", () => {
         typeof (err as { response: { json: () => Promise<unknown> } }).response
           .json === "function"
       );
+    }
+
+    handleError(err: unknown): Promise<unknown> {
+      if (this.checkIfResponseHasError(err)) {
+        return (err as { response: { json: () => Promise<unknown> } }).response.json();
+      } else {
+        return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+      }
     }
   }
 
