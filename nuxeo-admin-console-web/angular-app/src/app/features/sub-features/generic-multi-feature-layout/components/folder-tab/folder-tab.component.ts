@@ -73,6 +73,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  featuresRequiringOnlyId = ["elasticsearch-reindex"];
 
   constructor(
     public dialogService: MatDialog,
@@ -184,13 +185,33 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     document.getElementById("inputIdentifier")?.focus();
   }
 
+  isIdAndPathRequired(activeFeature: string): boolean {
+    return !this.featuresRequiringOnlyId.includes(activeFeature);
+  }
+
   getErrorMessage(): string | null {
-    if (this.inputForm?.get("inputIdentifier")?.hasError("required")) {
+    const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && !areIdAndPathRequired) {
       return GENERIC_LABELS.REQUIRED_DOCID_ERROR;
+    }
+    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && areIdAndPathRequired) {
+      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
 
+  buildRequestQuery(input: string): string {
+    return this.genericMultiFeatureUtilitiesService.getRequestQuery(
+      (this.templateConfigData?.data["queryParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      (this.templateConfigData?.data["bodyParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      "",
+      input
+    );
+  }
   onFormSubmit(): void {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
@@ -203,34 +224,72 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           for the action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
+      const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
       try {
         this.decodedUserInput =
           this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-
-        this.requestQuery =
-          this.genericMultiFeatureUtilitiesService.getRequestQuery(
-            (this.templateConfigData?.data["queryParam"]?.[
-              GENERIC_LABELS.QUERY
-            ] as string) ||
-              (this.templateConfigData?.data["bodyParam"]?.[
-                GENERIC_LABELS.QUERY
-              ] as string) ||
-              "",
-            this.decodedUserInput
-          );
-
-        this.fetchNoOfDocuments(this.requestQuery);
+        if (areIdAndPathRequired) {
+          this.triggerAction(this.decodedUserInput);
+        } else {
+          this.requestQuery = this.buildRequestQuery(this.decodedUserInput)
+          this.fetchNoOfDocuments(this.requestQuery);
+        }
       } catch (error) {
         this.showActionErrorModal({
-          type: ERROR_TYPES.INVALID_DOC_ID,
+          type: areIdAndPathRequired ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH : ERROR_TYPES.INVALID_DOC_ID,
           details: {
-            message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+            message: areIdAndPathRequired ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
           },
         });
       }
     }
+  }
+
+  triggerAction(userInput: string | null): void {
+    this.nuxeo
+      .repository()
+      .fetch(userInput)
+      .then((document: unknown) => {
+        if (
+          typeof document === "object" &&
+          document !== null &&
+          "uid" in document
+        ) {
+          const doc = document as { uid: string };
+          try {
+            this.requestQuery = this.buildRequestQuery(doc?.uid)
+            this.fetchNoOfDocuments(this.requestQuery);
+          } catch (error) {
+            this.showActionErrorModal({
+              type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+              details: {
+                message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+              },
+            });
+          }
+        }
+      })
+      .catch((err: unknown) => {
+        if (this.checkIfErrorHasResponse(err)) {
+          return (
+            err as { response: { json: () => Promise<unknown> } }
+          ).response.json();
+        } else {
+          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+        }
+      })
+      .then((errorJson: unknown) => {
+        if (typeof errorJson === "object" && errorJson !== null) {
+          this.store.dispatch(
+            FeatureActions.onFolderActionFailure({
+              error: errorJson as HttpErrorResponse,
+            })
+          );
+        }
+      });
+
   }
 
   fetchNoOfDocuments(query: string | null): void {
