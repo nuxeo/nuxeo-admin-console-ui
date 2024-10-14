@@ -36,7 +36,7 @@ import {
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
-
+import {featuresRequiringOnlyId } from "./folder-tab.constants"
 @Component({
   selector: "folder-tab",
   templateUrl: "./folder-tab.component.html",
@@ -73,7 +73,6 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  featuresRequiringOnlyId = ["elasticsearch-reindex"];
 
   constructor(
     public dialogService: MatDialog,
@@ -186,7 +185,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   }
 
   isIdAndPathRequired(activeFeature: string): boolean {
-    return !this.featuresRequiringOnlyId.includes(activeFeature);
+    return !featuresRequiringOnlyId.includes(activeFeature);
   }
 
   getErrorMessage(): string | null {
