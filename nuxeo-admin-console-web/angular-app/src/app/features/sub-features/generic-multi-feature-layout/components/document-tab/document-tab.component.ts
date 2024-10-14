@@ -174,6 +174,18 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  buildRequestQuery(input: string): string {
+    return this.genericMultiFeatureUtilitiesService.getRequestQuery(
+      (this.templateConfigData?.data["queryParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      (this.templateConfigData?.data["bodyParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      "",
+      input
+    );
+  }
   onFormSubmit(): void {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
@@ -219,18 +231,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                     decodeURIComponent(doc.path)
                   )
                 : doc.path;
-            this.requestQuery =
-              this.genericMultiFeatureUtilitiesService.getRequestQuery(
-                (this.templateConfigData?.data["queryParam"]?.[
-                  GENERIC_LABELS.QUERY
-                ] as string) ||
-                  (this.templateConfigData?.data["bodyParam"]?.[
-                    GENERIC_LABELS.QUERY
-                  ] as string) ||
-                  "",
-                decodedPath
-              );
-
+            this.requestQuery =this.buildRequestQuery(decodedPath);
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;

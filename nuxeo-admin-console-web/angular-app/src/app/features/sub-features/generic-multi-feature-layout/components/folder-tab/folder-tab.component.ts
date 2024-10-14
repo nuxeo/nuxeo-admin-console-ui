@@ -224,24 +224,24 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           for the action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
+      const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+
       try {
         this.decodedUserInput =
           this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-
-        this.requestQuery = this.buildRequestQuery(this.decodedUserInput)
-        console.log("active feature", this.activeFeature);
-        const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
         if (areIdAndPathRequired) {
           this.triggerAction(this.decodedUserInput);
+        } else {
+          this.requestQuery = this.buildRequestQuery(this.decodedUserInput)
+          this.fetchNoOfDocuments(this.requestQuery);
         }
-        this.fetchNoOfDocuments(this.requestQuery);
       } catch (error) {
         this.showActionErrorModal({
-          type: ERROR_TYPES.INVALID_DOC_ID,
+          type: areIdAndPathRequired ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH : ERROR_TYPES.INVALID_DOC_ID,
           details: {
-            message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+            message: areIdAndPathRequired ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
           },
         });
       }
@@ -256,21 +256,41 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         if (
           typeof document === "object" &&
           document !== null &&
-          "path" in document
+          "uid" in document
         ) {
-          const doc = document as { path: string };
-          console.log("doc folder", doc);
-          const decodedPath =
-            doc.path.indexOf("'") > -1
-              ? this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
-                decodeURIComponent(doc.path)
-              )
-              : doc.path;
-          console.log("folder decoded path", decodedPath);
-          this.requestQuery = this.buildRequestQuery(decodedPath)
-          console.log("folder request query", this.requestQuery);
+          const doc = document as { uid: string };
+          try {
+            this.requestQuery = this.buildRequestQuery(doc?.uid)
+            this.fetchNoOfDocuments(this.requestQuery);
+          } catch (error) {
+            this.showActionErrorModal({
+              type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+              details: {
+                message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+              },
+            });
+          }
         }
       })
+      .catch((err: unknown) => {
+        if (this.checkIfErrorHasResponse(err)) {
+          return (
+            err as { response: { json: () => Promise<unknown> } }
+          ).response.json();
+        } else {
+          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+        }
+      })
+      .then((errorJson: unknown) => {
+        if (typeof errorJson === "object" && errorJson !== null) {
+          this.store.dispatch(
+            FeatureActions.onFolderActionFailure({
+              error: errorJson as HttpErrorResponse,
+            })
+          );
+        }
+      });
+
   }
 
 
