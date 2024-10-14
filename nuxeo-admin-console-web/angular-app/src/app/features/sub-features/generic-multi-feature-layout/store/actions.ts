@@ -1,10 +1,11 @@
 import { createAction, props } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ActionInfo } from "../generic-multi-feature-layout.interface";
+import { Form } from "@angular/forms";
 
 export const performDocumentAction = createAction(
   "[Admin] Perform Action",
-  props<{ requestUrl: string | null; requestParams: unknown; featureEndpoint: string }>()
+  props<{ requestUrl: string | null; requestParams: URLSearchParams; featureEndpoint: string }>()
 );
 export const onDocumentActionLaunch = createAction(
   "[Admin] On Action Launch",

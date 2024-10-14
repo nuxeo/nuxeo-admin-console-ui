@@ -13,7 +13,7 @@ export class GenericMultiFeatureEndpointsService {
   constructor(private networkService: NetworkService) {}
   performDocumentAction(
     requestUrl: string | null,
-    requestParams: unknown,
+    requestParams: URLSearchParams,
     featureEndpoint: string
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(

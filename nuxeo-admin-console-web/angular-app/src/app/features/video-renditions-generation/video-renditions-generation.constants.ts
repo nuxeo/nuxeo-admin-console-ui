@@ -22,5 +22,6 @@ export const VIDEO_RENDITIONS_LABELS = {
   VID_TRANSCODED: "vid:transcodedVideos/0/name",
   VIDEO: "Video",
   CONVERSION_NAME_KEY: "conversionNames",
+  RECOMPUTE_ALL_VIDEO_INFO_KEY: "recomputeAllVideoInfo",
   CONVERSION_NAMES_LIST: ["WebM 480p", "Ogg 480p", "MP4 480p"]
 };

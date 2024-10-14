@@ -8,7 +8,6 @@ import { RequestParamType } from "../generic-multi-feature-layout.interface";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
-// import { URLSearchParams } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
@@ -98,65 +97,50 @@ export class GenericMultiFeatureUtilitiesService {
     requestQuery: string,
     inputForm: FormGroup
   ): { requestUrl: string; requestParams: URLSearchParams } {
-    let requestUrl = "";
-    // Prepare request payload body
-    const requestParams = new URLSearchParams();
-    // Prepare body params object with dynamic parameters & their values entered as input
+    let requestUrl = ""; 
+    let requestParams = new URLSearchParams(); 
     if (data["bodyParam"]) {
       Object.keys(data["bodyParam"]).forEach((key) => {
-        if (key === GENERIC_LABELS.QUERY) {
+        const paramValue = inputForm.get(key)?.value; 
+
+        if (key === GENERIC_LABELS.QUERY && requestQuery) {
           requestParams.append(key, requestQuery);
-          return;
         }
-        const paramValue = inputForm.get(key)?.value;
-        if (!paramValue) return;
-        if (key === VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) {
-          this.splitConversionNames(requestParams, paramValue, key);
-          return;
+        else if (key === VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) {
+        
+          this.appendConversionsToRequest(requestParams, paramValue, key);
         }
-        requestParams.append(key, paramValue as string);
+        else if (paramValue) {
+          requestParams.append(key, paramValue as string); 
+        }
       });
     }
     if (data["queryParam"]) {
       // since it is queryParam, the query would be appended to the url
       requestUrl = requestQuery;
     }
+    // Return the constructed request URL and URLSearchParams
     return { requestUrl, requestParams };
   }
 
-  splitConversionNames(
+  appendConversionsToRequest(
     requestParams: URLSearchParams,
-    userInput: string[],
+    userInput: string,
     key: string
-  ) {
-    userInput.forEach((item: string) => {
-      requestParams.append(key, item);
-    });
-  }
-
-  fetchConversionNamesForDocument(userInput: string): string[] {
-    let conversionNamesList: string[] = [];
-    this.nuxeo
-      .repository()
-      .fetch(userInput, {
-        headers: {
-          "fetch-document": "properties",
-          properties: "*",
-        },
-      })
-      .then((document: Nuxeo) => {
-        if (
-          typeof document === "object" &&
-          document !== null &&
-          "path" in document
-        ) {
-          const transcodedVideos = document.properties[
-            "vid:transcodedVideos"
-          ].map((item: any) => item.name);
-          conversionNamesList.push(...transcodedVideos);
-          console.log(conversionNamesList);
-        }
-      });
-    return conversionNamesList;
+  ): any {
+    try {
+      if (userInput.indexOf(",") > -1) {
+        userInput.split(",").forEach((name) => {
+          requestParams.append(key, name);
+        });
+      } else {
+        requestParams.append(key, userInput);
+      }
+      return requestParams;
+    } catch (error) {
+      console.log(error);
+      // return requestParams
+      // TODO: Show error modal
+    }
   }
 }

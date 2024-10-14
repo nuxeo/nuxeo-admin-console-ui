@@ -52,13 +52,17 @@ export class NetworkService {
       }
     }
 
-    const headers = new HttpHeaders({
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
+   
+
+     const headers = new HttpHeaders({
+       "Content-Type": "application/x-www-form-urlencoded",
+     });
+    // const body = new HttpParams({ fromObject: data?.["bodyParam"] });
     switch (method) {
       case "POST":
-       // return this.http.post<T>(url, data?.["bodyParam"] || {}, { headers });
-       return this.http.post<T>(url, data?.["bodyParam"] || {});
+         const body = data?.["bodyParam"] as URLSearchParams;
+        return this.http.post<T>(url, body.toString() || {}, {headers});
+        // return this.http.post<T>(url, data?.["bodyParam"] || {});
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});

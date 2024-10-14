@@ -2,7 +2,7 @@ import { GenericMultiFeatureEndpointsService } from './../services/generic-multi
 import { HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, of, switchMap } from "rxjs";
+import { catchError, map, of, switchMap, tap } from "rxjs";
 import * as FeatureActions from "./actions";
 
 export const loadPerformDocumentActionEffect = createEffect(
@@ -24,6 +24,7 @@ export const loadPerformDocumentActionEffect = createEffect(
               });
             }),
             catchError((error: HttpErrorResponse) => {
+            //  console.log(error);
               return of(FeatureActions.onDocumentActionFailure({ error }));
             })
           );
