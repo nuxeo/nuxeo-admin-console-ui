@@ -87,7 +87,7 @@ describe("GenericMultiFeatureLayoutComponent", () => {
     genericMultiFeatureUtilitiesService = TestBed.inject(
         GenericMultiFeatureUtilitiesService
       ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
-    spyOn(genericMultiFeatureUtilitiesService, 'getActiveFeature');
+    spyOn(genericMultiFeatureUtilitiesService, 'getActiveFeature').and.callThrough();
   });
 
   it("should test if component is created", () => {
