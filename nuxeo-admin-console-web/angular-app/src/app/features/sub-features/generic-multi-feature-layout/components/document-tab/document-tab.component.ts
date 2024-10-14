@@ -22,7 +22,6 @@ import Nuxeo from "nuxeo";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import {
   ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -266,7 +265,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'document');
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onDocumentActionFailure);
       });
   }
 

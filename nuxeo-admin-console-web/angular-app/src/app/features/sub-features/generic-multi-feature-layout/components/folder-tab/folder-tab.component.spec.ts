@@ -220,37 +220,37 @@ describe("FolderTabComponent", () => {
         json: () => Promise.resolve({}),
       },
     };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeTrue();
   });
 
   it("should return false for null error", () => {
     const err = null;
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for non-object error", () => {
     const err = "string error";
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error without response", () => {
     const err = { someProperty: "someValue" };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response but no json function", () => {
     const err = { response: {} };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response and non-function json property", () => {
     const err = { response: { json: "not a function" } };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 

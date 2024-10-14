@@ -11,7 +11,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import Nuxeo from "nuxeo";
 import {
   ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -190,10 +189,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
   getErrorMessage(): string | null {
     const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
-    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && !areIdAndPathRequired) {
+    const hasRequiredError = this.inputForm?.get("inputIdentifier")?.hasError("required");
+    if (hasRequiredError && !areIdAndPathRequired) {
       return GENERIC_LABELS.REQUIRED_DOCID_ERROR;
     }
-    if (this.inputForm?.get("inputIdentifier")?.hasError("required") && areIdAndPathRequired) {
+    if (hasRequiredError && areIdAndPathRequired) {
       return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
@@ -259,7 +259,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           return this.genericMultiFeatureUtilitiesService.handleError(err);
         })
         .then((errorJson: unknown) => {
-          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'folder');
+          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure);
         });
 
     } else {
@@ -312,7 +312,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'folder');
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure);
       });
   }
 
