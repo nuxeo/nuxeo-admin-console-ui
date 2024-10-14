@@ -229,12 +229,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-        if (areIdAndPathRequired) {
-          this.triggerAction(this.decodedUserInput);
-        } else {
-          this.requestQuery = this.buildRequestQuery(this.decodedUserInput)
-          this.fetchNoOfDocuments(this.requestQuery);
-        }
+        this.triggerAction(this.decodedUserInput);
       } catch (error) {
         this.showActionErrorModal({
           type: areIdAndPathRequired ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH : ERROR_TYPES.INVALID_DOC_ID,
@@ -246,49 +241,44 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  triggerAction(userInput: string | null): void {
-    this.nuxeo
-      .repository()
-      .fetch(userInput)
-      .then((document: unknown) => {
-        if (
-          typeof document === "object" &&
-          document !== null &&
-          "uid" in document
-        ) {
-          const doc = document as { uid: string };
-          try {
-            this.requestQuery = this.buildRequestQuery(doc?.uid)
-            this.fetchNoOfDocuments(this.requestQuery);
-          } catch (error) {
-            this.showActionErrorModal({
-              type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
-              details: {
-                message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
-              },
-            });
-          }
-        }
-      })
-      .catch((err: unknown) => {
-        if (this.checkIfErrorHasResponse(err)) {
-          return (
-            err as { response: { json: () => Promise<unknown> } }
-          ).response.json();
-        } else {
-          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
-        }
-      })
-      .then((errorJson: unknown) => {
-        if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
-            FeatureActions.onFolderActionFailure({
-              error: errorJson as HttpErrorResponse,
-            })
-          );
-        }
-      });
 
+  triggerAction(userInput: string): void {
+    const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+
+    if (areIdAndPathRequired) {
+      this.nuxeo
+        .repository()
+        .fetch(userInput)
+        .then((document: unknown) => {
+          if (typeof document === "object" && document !== null && "uid" in document) {
+            const doc = document as { uid: string };
+            this.processRequest(doc?.uid);
+          }
+        })
+        .catch((err: unknown) => {
+          return this.genericMultiFeatureUtilitiesService.handleError(err);
+        })
+        .then((errorJson: unknown) => {
+          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'folder');
+        });
+
+    } else {
+      this.processRequest(userInput);
+    }
+  }
+
+  processRequest(userInput: string): void {
+    try {
+      this.requestQuery = this.buildRequestQuery(userInput);
+      this.fetchNoOfDocuments(this.requestQuery);
+    } catch (error) {
+      this.showActionErrorModal({
+        type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+        details: {
+          message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+        },
+      });
+    }
   }
 
   fetchNoOfDocuments(query: string | null): void {
@@ -319,22 +309,10 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       })
       .catch((err: unknown) => {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
-        if (this.checkIfErrorHasResponse(err)) {
-          return (
-            err as { response: { json: () => Promise<unknown> } }
-          ).response.json();
-        } else {
-          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
-        }
+        return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
-            FeatureActions.onFolderActionFailure({
-              error: errorJson as HttpErrorResponse,
-            })
-          );
-        }
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'folder');
       });
   }
 
@@ -390,18 +368,6 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkIfErrorHasResponse(err: unknown): boolean {
-    return (
-      typeof err === "object" &&
-      err !== null &&
-      "response" in err &&
-      typeof (err as { response: unknown }).response === "object" &&
-      (err as { response: { json: unknown } }).response !== null &&
-      "json" in (err as { response: { json: unknown } }).response &&
-      typeof (err as { response: { json: () => Promise<unknown> } }).response
-        .json === "function"
-    );
-  }
 
   getHumanReadableTime(seconds: number): string {
     return this.genericMultiFeatureUtilitiesService.secondsToHumanReadable(

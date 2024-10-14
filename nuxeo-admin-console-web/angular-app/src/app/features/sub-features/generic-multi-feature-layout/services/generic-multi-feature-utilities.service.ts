@@ -1,14 +1,18 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { FormGroup } from "@angular/forms";
 import { RequestParamType } from "../generic-multi-feature-layout.interface";
+import { Store } from "@ngrx/store";
+import { HttpErrorResponse } from "@angular/common/http";
+import * as FeatureActions from "../store/actions";
 
 @Injectable({
   providedIn: "root",
 })
 export class GenericMultiFeatureUtilitiesService {
+  constructor(private store: Store) {}
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
   activeFeature: FeaturesKey = {} as FeaturesKey;
@@ -113,4 +117,42 @@ export class GenericMultiFeatureUtilitiesService {
     }
     return { requestUrl, requestParams };
   }
+
+  checkIfErrorHasResponse(err: unknown): boolean {
+    return (
+      typeof err === "object" &&
+      err !== null &&
+      "response" in err &&
+      typeof (err as { response: unknown }).response === "object" &&
+      (err as { response: { json: unknown } }).response !== null &&
+      "json" in (err as { response: { json: unknown } }).response &&
+      typeof (err as { response: { json: () => Promise<unknown> } }).response
+        .json === "function"
+    );
+  }
+  handleError(err: unknown): Promise<unknown> {
+    if (this.checkIfErrorHasResponse(err)) {
+      console.log("checkIfErrorHasResponse",err)
+      return (err as { response: { json: () => Promise<unknown> } }).response.json();
+    } else {
+      console.log("handleError",ERROR_MODAL_LABELS.UNEXPECTED_ERROR)
+
+      return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+    }
+  }
+
+  handleErrorJson(errorJson: unknown, actionType: 'document' | 'folder'): void {
+    if (typeof errorJson === "object" && errorJson !== null) {
+      const action = actionType === 'document' 
+        ? FeatureActions.onDocumentActionFailure 
+        : FeatureActions.onFolderActionFailure;
+       console.log("handleErrorJson",actionType,action)
+      this.store.dispatch(
+        action({
+          error: errorJson as HttpErrorResponse,
+        })
+      );
+    }
+  }
+
 }

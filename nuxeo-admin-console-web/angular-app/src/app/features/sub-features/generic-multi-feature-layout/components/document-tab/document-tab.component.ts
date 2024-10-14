@@ -263,37 +263,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         }
       })
       .catch((err: unknown) => {
-        if (this.checkIfErrorHasResponse(err)) {
-          return (
-            err as { response: { json: () => Promise<unknown> } }
-          ).response.json();
-        } else {
-          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
-        }
+        return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        if (typeof errorJson === "object" && errorJson !== null) {
-          this.store.dispatch(
-            FeatureActions.onDocumentActionFailure({
-              error: errorJson as HttpErrorResponse,
-            })
-          );
-        }
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, 'document');
       });
   }
 
-  checkIfErrorHasResponse(err: unknown): boolean {
-    return (
-      typeof err === "object" &&
-      err !== null &&
-      "response" in err &&
-      typeof (err as { response: unknown }).response === "object" &&
-      (err as { response: { json: unknown } }).response !== null &&
-      "json" in (err as { response: { json: unknown } }).response &&
-      typeof (err as { response: { json: () => Promise<unknown> } }).response
-        .json === "function"
-    );
-  }
 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
