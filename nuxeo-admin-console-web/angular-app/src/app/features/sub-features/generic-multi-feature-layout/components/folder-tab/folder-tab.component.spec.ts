@@ -235,7 +235,7 @@ describe("FolderTabComponent", () => {
     });
 
     const errorMessage = component.getErrorMessage();
-    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_ERROR);
+    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR);
   });
 
   it("should return null when inputIdentifier does not have a required error", () => {
