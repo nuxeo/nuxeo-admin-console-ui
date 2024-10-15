@@ -137,8 +137,7 @@ export class GenericMultiFeatureUtilitiesService {
     }
   }
 
-  handleErrorJson(errorJson: unknown, action: any, store: Store<any>): void {
-    console.log("errorJson", errorJson);
+  handleErrorJson(errorJson: unknown, action: unknown, store: Store<unknown>): void {
     if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
       store.dispatch(
         action({
