@@ -24,6 +24,7 @@ import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
+  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -58,6 +59,36 @@ describe("DocumentTabComponent", () => {
     getActiveFeature() {
       return "ELASTIC_SEARCH_REINDEX";
     }
+    checkIfResponseHasError(err: unknown): boolean {
+      return (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response: unknown }).response === "object" &&
+        (err as { response: { json: unknown } }).response !== null &&
+        "json" in (err as { response: { json: unknown } }).response &&
+        typeof (err as { response: { json: () => Promise<unknown> } }).response
+          .json === "function"
+      );
+    }
+    handleError(err: unknown): Promise<unknown> {
+      if (this.checkIfResponseHasError(err)) {
+        return (err as { response: { json: () => Promise<unknown> } }).response.json();
+      } else {
+        return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+      }
+    }
+  
+    // handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
+    //   if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
+    //     this.store.dispatch(
+    //       action({
+    //         error: errorJson as HttpErrorResponse,
+    //       })
+    //     );
+    //   }
+    // }
+
   }
 
   beforeEach(async () => {
@@ -237,37 +268,37 @@ describe("DocumentTabComponent", () => {
         json: () => Promise.resolve({}),
       },
     };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeTrue();
   });
 
   it("should return false for null error", () => {
     const err = null;
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for non-object error", () => {
     const err = "string error";
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error without response", () => {
     const err = { someProperty: "someValue" };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response but no json function", () => {
     const err = { response: {} };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response and non-function json property", () => {
     const err = { response: { json: "not a function" } };
-    const result = component.checkIfErrorHasResponse(err);
+    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
     expect(result).toBeFalse();
   });
 
