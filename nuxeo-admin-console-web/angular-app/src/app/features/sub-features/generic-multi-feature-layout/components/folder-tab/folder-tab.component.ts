@@ -190,27 +190,15 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   getErrorMessage(): string | null {
     const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
     const hasRequiredError = this.inputForm?.get("inputIdentifier")?.hasError("required");
-    if (hasRequiredError && !areIdAndPathRequired) {
+    if (hasRequiredError) {
+      if (areIdAndPathRequired) {
+        return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
+      }
       return GENERIC_LABELS.REQUIRED_DOCID_ERROR;
-    }
-    if (hasRequiredError && areIdAndPathRequired) {
-      return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
     }
     return null;
   }
 
-  buildRequestQuery(input: string): string {
-    return this.genericMultiFeatureUtilitiesService.getRequestQuery(
-      (this.templateConfigData?.data["queryParam"]?.[
-        GENERIC_LABELS.QUERY
-      ] as string) ||
-      (this.templateConfigData?.data["bodyParam"]?.[
-        GENERIC_LABELS.QUERY
-      ] as string) ||
-      "",
-      input
-    );
-  }
   onFormSubmit(): void {
     if (this.inputForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
@@ -259,7 +247,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           return this.genericMultiFeatureUtilitiesService.handleError(err);
         })
         .then((errorJson: unknown) => {
-          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure,this.store);
+          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure, this.store);
         });
 
     } else {
@@ -269,7 +257,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
   processRequest(userInput: string): void {
     try {
-      this.requestQuery = this.buildRequestQuery(userInput);
+      this.requestQuery = this.genericMultiFeatureUtilitiesService.buildRequestQuery(userInput,this.templateConfigData);
       this.fetchNoOfDocuments(this.requestQuery);
     } catch (error) {
       this.showActionErrorModal({
@@ -312,7 +300,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure,this.store);
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure, this.store);
       });
   }
 

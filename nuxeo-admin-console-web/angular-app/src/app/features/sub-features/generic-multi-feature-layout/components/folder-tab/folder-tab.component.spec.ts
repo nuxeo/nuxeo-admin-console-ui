@@ -37,8 +37,6 @@ import {
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
-import { HttpErrorResponse } from "@angular/common/http";
-
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;

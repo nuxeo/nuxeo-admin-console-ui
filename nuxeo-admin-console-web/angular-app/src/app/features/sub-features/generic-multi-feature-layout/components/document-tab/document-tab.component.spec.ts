@@ -17,14 +17,13 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Store, StoreModule } from "@ngrx/store";
+import {  StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
-  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -35,7 +34,6 @@ import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
-import { HttpErrorResponse } from "@angular/common/http";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;

@@ -3,7 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { FormGroup } from "@angular/forms";
-import { RequestParamType } from "../generic-multi-feature-layout.interface";
+import { FeatureData, RequestParamType } from "../generic-multi-feature-layout.interface";
 import { ActionCreator, Store } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
 import { TypedAction } from "@ngrx/store/src/models";
@@ -146,6 +146,19 @@ export class GenericMultiFeatureUtilitiesService {
         })
       );
     }
+  }
+
+  buildRequestQuery(input: string, templateConfigData: FeatureData): string {
+    return this.getRequestQuery(
+      (templateConfigData?.data["queryParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      (templateConfigData?.data["bodyParam"]?.[
+        GENERIC_LABELS.QUERY
+      ] as string) ||
+      "",
+      input
+    );
   }
 
 }
