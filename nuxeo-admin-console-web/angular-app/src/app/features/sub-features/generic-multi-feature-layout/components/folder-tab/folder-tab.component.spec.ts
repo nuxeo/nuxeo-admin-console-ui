@@ -19,7 +19,7 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { StoreModule } from "@ngrx/store";
+import { ActionCreator, Store, StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import * as FeatureActions from "../../store//actions";
@@ -37,6 +37,7 @@ import {
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+import { HttpErrorResponse } from "@angular/common/http";
 
 
 describe("FolderTabComponent", () => {
@@ -49,6 +50,8 @@ describe("FolderTabComponent", () => {
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<GenericModalComponent>>;
 
   class GenericMultiFeatureUtilitiesServiceStub {
+    constructor(private store: Store) { }
+    
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
