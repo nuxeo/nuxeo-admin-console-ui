@@ -57,7 +57,8 @@ describe("NetworkService", () => {
     service.makeHttpRequest(endpointName, requestData);
     expect(httpClientSpy.post).toHaveBeenCalledWith(
       "http://localhost:8080/nuxeo/api/v1/management/elasticsearch/reindex",
-      requestData
+      requestData,
+      { headers: {} }
     );
   });
 

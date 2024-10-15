@@ -54,11 +54,11 @@ export class NetworkService {
 
     switch (method) {
       case "POST":
-        const body = data?.["bodyParam"];
-        const headers = data?.["requestHeaders"]
-          ? new HttpHeaders(data?.["requestHeaders"] as {})
-          : {};
-        return this.http.post<T>(url, body || {}, { headers });
+        return this.http.post<T>(url, data?.["bodyParam"] || {}, {
+          headers: data?.["requestHeaders"]
+            ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
+            : {},
+        });
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});

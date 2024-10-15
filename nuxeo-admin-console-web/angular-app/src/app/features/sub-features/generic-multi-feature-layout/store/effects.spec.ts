@@ -52,6 +52,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
         requestParams: {},
         featureEndpoint: "/document-featureEndpoint",
+        requestHeaders: {}
       });
       
       genericMultiFeatureService.performDocumentAction.and.returnValue(of(documentActionInfo));
@@ -74,6 +75,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM DOCUMENT WHERE ecm:path='doc-path'",
         requestParams: {},
         featureEndpoint: "/document-featureEndpoint",
+        requestHeaders: {}
       });
 
       genericMultiFeatureService.performDocumentAction.and.returnValue(throwError(() => error));
@@ -94,6 +96,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
         requestParams: {},
         featureEndpoint: "/folder-featureEndpoint",
+        requestHeaders: {}
       });
 
       genericMultiFeatureService.performFolderAction.and.returnValue(of(folderActionInfo));
@@ -116,6 +119,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM FOLDER WHERE ecm:path='folder-path'",
         requestParams: {},
         featureEndpoint: "/folder-featureEndpoint",
+        requestHeaders: {}
       });
 
       genericMultiFeatureService.performFolderAction.and.returnValue(throwError(() => error));
@@ -136,6 +140,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
         requestParams: {},
         featureEndpoint: "/nxql-featureEndpoint",
+        requestHeaders: {}
       });
 
       genericMultiFeatureService.performNXQLAction.and.returnValue(of(nxqlActionInfo));
@@ -158,6 +163,7 @@ describe("GenericMultiFeatureEffects", () => {
         requestUrl: "SELECT * FROM NXQL WHERE ecm:path='nxql-path'",
         requestParams: {},
         featureEndpoint: "/nxql-featureEndpoint",
+        requestHeaders: {}
       });
 
       genericMultiFeatureService.performNXQLAction.and.returnValue(throwError(() => error));

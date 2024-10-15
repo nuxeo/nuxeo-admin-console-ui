@@ -110,7 +110,7 @@ export class GenericMultiFeatureUtilitiesService {
     requestHeaders: { [key: string]: string };
   } {
     let requestUrl = "";
-    let paramsArray: string[] = [];
+    const paramsArray: string[] = [];
     let requestHeaders = {};
 
     if (data["bodyParam"]) {
@@ -150,7 +150,7 @@ export class GenericMultiFeatureUtilitiesService {
     conversionNamesInput: string,
     key: string
   ): string {
-    let conversionNamesArr = [];
+    const conversionNamesArr = [];
     if (conversionNamesInput?.indexOf(",") > -1) {
       conversionNamesInput?.split(",").forEach((name) => {
         if (name) {
