@@ -265,7 +265,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onDocumentActionFailure);
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onDocumentActionFailure, this.store);
       });
   }
 

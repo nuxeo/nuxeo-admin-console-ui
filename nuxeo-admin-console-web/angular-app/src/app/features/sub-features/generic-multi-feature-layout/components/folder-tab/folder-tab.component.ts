@@ -259,7 +259,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           return this.genericMultiFeatureUtilitiesService.handleError(err);
         })
         .then((errorJson: unknown) => {
-          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure);
+          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure,this.store);
         });
 
     } else {
@@ -312,7 +312,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure);
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure,this.store);
       });
   }
 

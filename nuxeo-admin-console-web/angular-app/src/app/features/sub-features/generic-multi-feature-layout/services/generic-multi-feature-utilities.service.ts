@@ -11,7 +11,7 @@ import { TypedAction } from "@ngrx/store/src/models";
   providedIn: "root",
 })
 export class GenericMultiFeatureUtilitiesService {
-  constructor(private store: Store) { }
+  // constructor(private store: Store) { }
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
   activeFeature: FeaturesKey = {} as FeaturesKey;
@@ -137,9 +137,10 @@ export class GenericMultiFeatureUtilitiesService {
     }
   }
 
-  handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
+  handleErrorJson(errorJson: unknown, action: any, store: Store<any>): void {
+    console.log("errorJson", errorJson);
     if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-      this.store.dispatch(
+      store.dispatch(
         action({
           error: errorJson as HttpErrorResponse,
         })
