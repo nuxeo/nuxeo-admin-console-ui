@@ -17,7 +17,7 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { StoreModule } from "@ngrx/store";
+import {  StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DocumentActionState } from "../../store/reducers";
@@ -47,6 +47,7 @@ describe("DocumentTabComponent", () => {
   class genericMultiFeatureUtilitiesServiceStub {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    store: unknown;
     removeLeadingCharacters() {
       return "";
     }
@@ -57,6 +58,16 @@ describe("DocumentTabComponent", () => {
 
     getActiveFeature() {
       return "ELASTIC_SEARCH_REINDEX";
+    }
+    checkIfResponseHasError(): boolean {
+      return true;
+    }
+    handleError(): Promise<unknown> {
+     return Promise.resolve("");
+    }
+
+    handleErrorJson(): void {
+     return ;
     }
   }
 
@@ -231,45 +242,6 @@ describe("DocumentTabComponent", () => {
     ).toHaveBeenCalled();
   });
 
-  it("should return true for valid error object with response and json function", () => {
-    const err = {
-      response: {
-        json: () => Promise.resolve({}),
-      },
-    };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeTrue();
-  });
-
-  it("should return false for null error", () => {
-    const err = null;
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for non-object error", () => {
-    const err = "string error";
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error without response", () => {
-    const err = { someProperty: "someValue" };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error with response but no json function", () => {
-    const err = { response: {} };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error with response and non-function json property", () => {
-    const err = { response: { json: "not a function" } };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
 
   describe("test triggerAction", () => {
     it("should handle error if fetch fails", async () => {
@@ -289,7 +261,7 @@ describe("DocumentTabComponent", () => {
       };
       spyOn(store, "dispatch");
 
-      spyOn(component, "checkIfErrorHasResponse").and.returnValue(true);
+      spyOn(genericMultiFeatureUtilitiesService, "checkIfResponseHasError").and.returnValue(true);
 
       await component.triggerAction(userInput);
 

@@ -37,7 +37,6 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 
-
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
   let nuxeoJSClientService;
@@ -58,6 +57,13 @@ describe("FolderTabComponent", () => {
     getActiveFeature() {
       return "ELASTIC_SEARCH_REINDEX";
     }
+
+    checkIfResponseHasError(): boolean {
+      return true;
+    }
+    handleError(): Promise<unknown> {
+     return Promise.resolve("");
+    }  
   }
 
   beforeEach(async () => {
@@ -203,7 +209,7 @@ describe("FolderTabComponent", () => {
     });
 
     const errorMessage = component.getErrorMessage();
-    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_ERROR);
+    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR);
   });
 
   it("should return null when inputIdentifier does not have a required error", () => {
@@ -212,46 +218,6 @@ describe("FolderTabComponent", () => {
     });
     const errorMessage = component.getErrorMessage();
     expect(errorMessage).toBeNull();
-  });
-
-  it("should return true for valid error object with response and json function", () => {
-    const err = {
-      response: {
-        json: () => Promise.resolve({}),
-      },
-    };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeTrue();
-  });
-
-  it("should return false for null error", () => {
-    const err = null;
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for non-object error", () => {
-    const err = "string error";
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error without response", () => {
-    const err = { someProperty: "someValue" };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error with response but no json function", () => {
-    const err = { response: {} };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
-  });
-
-  it("should return false for error with response and non-function json property", () => {
-    const err = { response: { json: "not a function" } };
-    const result = component.checkIfErrorHasResponse(err);
-    expect(result).toBeFalse();
   });
 
   it("should dispatch resetDocumentReindexState and unsubscribe from subscriptions on ngOnDestroy", () => {

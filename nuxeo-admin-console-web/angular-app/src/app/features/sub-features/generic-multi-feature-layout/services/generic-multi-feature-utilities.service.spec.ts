@@ -89,7 +89,9 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     });
   });
 
-  describe("buildRequestParams", () => {
+
+
+  describe("buildRequestParams", () => {  
     it("should append query to requestParams when bodyParam exists", () => {
       const data = {
         bodyParam: {
@@ -153,6 +155,47 @@ describe("GenericMultiFeatureUtilitiesService", () => {
       expect(requestParams.get("param1")).toBeNull();
       expect(requestParams.get("param2")).toBeNull();
       expect(requestUrl).toBe("");
+    });
+
+
+    it("should return true for valid error object with response and json function", () => {
+      const err = {
+        response: {
+          json: () => Promise.resolve({}),
+        },
+      };
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeTrue();
+    });
+  
+    it("should return false for null error", () => {
+      const err = null;
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeFalse();
+    });
+  
+    it("should return false for non-object error", () => {
+      const err = "string error";
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeFalse();
+    });
+  
+    it("should return false for error without response", () => {
+      const err = { someProperty: "someValue" };
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeFalse();
+    });
+  
+    it("should return false for error with response but no json function", () => {
+      const err = { response: {} };
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeFalse();
+    });
+  
+    it("should return false for error with response and non-function json property", () => {
+      const err = { response: { json: "not a function" } };
+      const result = service.checkIfResponseHasError(err);
+      expect(result).toBeFalse();
     });
   });
 });
