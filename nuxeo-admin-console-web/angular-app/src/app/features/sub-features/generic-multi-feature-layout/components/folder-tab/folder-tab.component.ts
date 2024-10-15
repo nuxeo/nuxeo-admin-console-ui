@@ -80,7 +80,6 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-  conversionNamesArr: string[] = [];
 
   constructor(
     public dialogService: MatDialog,
@@ -124,12 +123,8 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
 
     if (this.isFeatureVideoRenditions()) {
-      this.conversionNamesArr = VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_LIST;
-      this.inputForm.addControl(
-        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
-        new FormControl("")
-      );
-      this.inputForm.addControl("recomputeVideoInfo", new FormControl("true"));
+      this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY, new FormControl(""));
+      this.inputForm.addControl(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY, new FormControl("true"));
     }
 
     this.folderActionLaunchedSubscription =

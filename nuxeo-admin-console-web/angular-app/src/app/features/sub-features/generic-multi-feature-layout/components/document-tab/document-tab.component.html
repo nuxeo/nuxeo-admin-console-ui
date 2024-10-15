@@ -16,7 +16,6 @@
       id="conversionNames" />
     </mat-form-field>
     <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
-    <p class="conversion-helper-text">Enter a comma-separted list for multiple conversion names</p>
     <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
       <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
       <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">

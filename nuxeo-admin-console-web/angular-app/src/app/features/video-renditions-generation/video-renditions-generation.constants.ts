@@ -7,7 +7,7 @@ export const VIDEO_RENDITIONS_LABELS = {
   RENDITIONS_BUTTON_LABEL: "Generate",
   CONVERSION_NAMES: "Conversion names",
   CONVERSION_NAMES_HELPER_TEXT:
-    "Provide a list of conversion names to generate, or leave this field empty to regenerate them all.",
+    "Provide a list of conversion names to generate, or leave this field empty to regenerate them all. Separate each entry by a comma",
   RECOMPUTE_VIDEO_INFO: "Information to recompute",
   RECOMPUTE_MISSING_ONLY: "Recompute missing information only",
   RECOMPUTE_ALL: "Recompute all video information",

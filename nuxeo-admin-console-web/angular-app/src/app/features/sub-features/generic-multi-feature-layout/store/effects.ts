@@ -24,7 +24,6 @@ export const loadPerformDocumentActionEffect = createEffect(
               });
             }),
             catchError((error: HttpErrorResponse) => {
-            //  console.log(error);
               return of(FeatureActions.onDocumentActionFailure({ error }));
             })
           );

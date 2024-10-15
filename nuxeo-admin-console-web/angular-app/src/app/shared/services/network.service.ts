@@ -51,18 +51,13 @@ export class NetworkService {
         delete data["queryParam"];
       }
     }
-
-   
-
-     const headers = new HttpHeaders({
-       "Content-Type": "application/x-www-form-urlencoded",
-     });
-    // const body = new HttpParams({ fromObject: data?.["bodyParam"] });
+    const headers = new HttpHeaders({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
     switch (method) {
       case "POST":
-         const body = data?.["bodyParam"] as URLSearchParams;
-        return this.http.post<T>(url, body.toString() || {}, {headers});
-        // return this.http.post<T>(url, data?.["bodyParam"] || {});
+        const body = data?.["bodyParam"];
+        return this.http.post<T>(url, body || {}, { headers });
         break;
       case "PUT":
         return this.http.put<T>(url, data || {});
