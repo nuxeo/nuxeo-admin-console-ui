@@ -47,9 +47,10 @@ describe("DocumentTabComponent", () => {
   let nuxeoJSClientService: jasmine.SpyObj<NuxeoJSClientService>;
 
   class genericMultiFeatureUtilitiesServiceStub {
-    constructor(private store: Store) { }
+    // constructor(private store: Store) { }
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    store: unknown;
     removeLeadingCharacters() {
       return "";
     }
