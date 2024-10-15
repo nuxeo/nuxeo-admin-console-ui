@@ -29,7 +29,6 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
-  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
