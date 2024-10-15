@@ -91,9 +91,7 @@ describe("GenericMultiFeatureUtilitiesService", () => {
 
 
 
-  describe("buildRequestParams", () => {
-  
-    // let genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService;
+  describe("buildRequestParams", () => {  
     it("should append query to requestParams when bodyParam exists", () => {
       const data = {
         bodyParam: {
