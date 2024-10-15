@@ -17,7 +17,7 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { StoreModule } from "@ngrx/store";
+import { Store, StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DocumentActionState } from "../../store/reducers";
@@ -35,6 +35,7 @@ import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+import { HttpErrorResponse } from "@angular/common/http";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
@@ -46,6 +47,7 @@ describe("DocumentTabComponent", () => {
   let nuxeoJSClientService: jasmine.SpyObj<NuxeoJSClientService>;
 
   class genericMultiFeatureUtilitiesServiceStub {
+    constructor(private store: Store) { }
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
     removeLeadingCharacters() {
@@ -79,15 +81,15 @@ describe("DocumentTabComponent", () => {
       }
     }
   
-    // handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
-    //   if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-    //     this.store.dispatch(
-    //       action({
-    //         error: errorJson as HttpErrorResponse,
-    //       })
-    //     );
-    //   }
-    // }
+    handleErrorJson(errorJson: unknown, action: unknown): void {
+      if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
+        this.store.dispatch(
+          action({
+            error: errorJson as HttpErrorResponse,
+          })
+        );
+      }
+    }
 
   }
 
