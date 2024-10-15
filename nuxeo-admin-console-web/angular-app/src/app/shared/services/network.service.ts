@@ -51,12 +51,12 @@ export class NetworkService {
         delete data["queryParam"];
       }
     }
-    const headers = new HttpHeaders({
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
     switch (method) {
       case "POST":
         const body = data?.["bodyParam"];
+        const headers = data?.["requestHeaders"]
+          ? new HttpHeaders(data?.["requestHeaders"] as {})
+          : {};
         return this.http.post<T>(url, body || {}, { headers });
         break;
       case "PUT":

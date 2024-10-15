@@ -96,9 +96,10 @@ export class GenericMultiFeatureUtilitiesService {
     data: RequestParamType,
     requestQuery: string,
     inputForm: FormGroup
-  ): { requestUrl: string; requestParams: string } {
+  ): { requestUrl: string; requestParams: string, requestHeaders: { [key: string]: string } } {
     let requestUrl = "";
     let paramsArray: string[] = [];
+    let requestHeaders = {};
 
     if (data["bodyParam"]) {
       Object.keys(data["bodyParam"]).forEach((key) => {
@@ -117,12 +118,16 @@ export class GenericMultiFeatureUtilitiesService {
       });
     }
 
+    if (data["requestHeaders"]) {
+      requestHeaders =  data["requestHeaders"]
+    }
+
     if (data["queryParam"]) {
       requestUrl = requestQuery;
     }
     const requestParams = paramsArray.join("&");
 
-    return { requestUrl, requestParams };
+    return { requestUrl, requestParams, requestHeaders };
   }
 
   appendConversionsToRequest(userInput: string, key: string): string {

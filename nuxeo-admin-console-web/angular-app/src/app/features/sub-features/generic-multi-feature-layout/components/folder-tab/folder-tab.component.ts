@@ -334,7 +334,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.activeFeature
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
-        const { requestUrl, requestParams } =
+        const { requestUrl, requestParams, requestHeaders } =
           this.genericMultiFeatureUtilitiesService.buildRequestParams(
             this.templateConfigData.data,
             this.requestQuery,
@@ -344,6 +344,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           FeatureActions.performFolderAction({
             requestUrl,
             requestParams,
+            requestHeaders,
             featureEndpoint: REST_END_POINTS[featureKey],
           })
         );

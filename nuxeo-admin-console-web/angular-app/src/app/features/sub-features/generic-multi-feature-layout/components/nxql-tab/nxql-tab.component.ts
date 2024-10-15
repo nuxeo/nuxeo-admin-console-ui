@@ -315,7 +315,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           this.activeFeature
         ) as FeaturesKey;
         if (featureKey in FEATURES) {
-          const { requestUrl, requestParams } =
+          const { requestUrl, requestParams, requestHeaders } =
             this.genericMultiFeatureUtilitiesService.buildRequestParams(
               this.templateConfigData.data,
               this.requestQuery,
@@ -325,6 +325,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             FeatureActions.performNxqlAction({
               requestUrl,
               requestParams,
+              requestHeaders,
               featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
             })
           );

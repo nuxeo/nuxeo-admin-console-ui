@@ -12,33 +12,36 @@ export class GenericMultiFeatureEndpointsService {
   performDocumentAction(
     requestUrl: string | null,
     requestParams: string | null,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 
   performFolderAction(
     requestUrl: string | null,
     requestParams: unknown,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 
   performNXQLAction(
     requestUrl: string | null,
     requestParams: unknown,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 }

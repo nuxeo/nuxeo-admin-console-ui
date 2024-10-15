@@ -252,7 +252,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
-              const { requestUrl, requestParams } =
+              const { requestUrl, requestParams, requestHeaders } =
                 this.genericMultiFeatureUtilitiesService.buildRequestParams(
                   this.templateConfigData.data,
                   this.requestQuery,
@@ -262,6 +262,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                 FeatureActions.performDocumentAction({
                   requestUrl,
                   requestParams,
+                  requestHeaders,
                   featureEndpoint: REST_END_POINTS[featureKey],
                 })
               );

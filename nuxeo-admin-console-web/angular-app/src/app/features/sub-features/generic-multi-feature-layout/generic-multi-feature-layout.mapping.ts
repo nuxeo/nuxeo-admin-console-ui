@@ -86,6 +86,7 @@ export const featureMap = () => ({
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
             [VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]: `{recomputeAllVideoInfo}`,
           },
+          requestHeaders: { "Content-Type": "application/x-www-form-urlencoded" },
         };
         break;
 
@@ -100,6 +101,7 @@ export const featureMap = () => ({
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
             recomputeVideoInfo: `{recomputeVideoInfo}`,
           },
+          requestHeaders: { "Content-Type": "application/x-www-form-urlencoded" },
         };
         break;
 
@@ -107,12 +109,14 @@ export const featureMap = () => ({
         labels = {
           pageTitle: VIDEO_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE,
           submitBtnLabel: VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL,
-          nxqlQueryPlaceholder: VIDEO_RENDITIONS_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+          nxqlQueryPlaceholder:
+            VIDEO_RENDITIONS_LABELS.NXQL_QUERY_DEFAULT_VALUE,
         };
         data = {
           bodyParam: {
-            query: `${VIDEO_RENDITIONS_LABELS.NXQL_QUERY}`
+            query: `${VIDEO_RENDITIONS_LABELS.NXQL_QUERY}`,
           },
+          requestHeaders: { "Content-Type": "application/x-www-form-urlencoded" },
         };
         break;
 
