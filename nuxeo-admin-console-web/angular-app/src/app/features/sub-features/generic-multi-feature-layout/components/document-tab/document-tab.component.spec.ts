@@ -320,7 +320,7 @@ describe("DocumentTabComponent", () => {
       };
       spyOn(store, "dispatch");
 
-      spyOn(component, "checkIfErrorHasResponse").and.returnValue(true);
+      // spyOn(component, "checkIfErrorHasResponse").and.returnValue(true);
 
       await component.triggerAction(userInput);
 
