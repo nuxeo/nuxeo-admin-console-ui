@@ -81,15 +81,6 @@ describe("FolderTabComponent", () => {
       }
     }
   
-    // handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
-    //   if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-    //     this.store.dispatch(
-    //       action({
-    //         error: errorJson as HttpErrorResponse,
-    //       })
-    //     );
-    //   }
-    // }
   }
 
   beforeEach(async () => {

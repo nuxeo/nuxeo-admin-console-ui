@@ -81,17 +81,6 @@ describe("DocumentTabComponent", () => {
         return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
       }
     }
-  
-    handleErrorJson(errorJson: unknown, action: unknown): void {
-      if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-        // this.store.dispatch(
-        //   action({
-        //     error: errorJson as HttpErrorResponse,
-        //   })
-        // );
-      }
-    }
-
   }
 
   beforeEach(async () => {
@@ -323,7 +312,7 @@ describe("DocumentTabComponent", () => {
       };
       spyOn(store, "dispatch");
 
-      // spyOn(component, "checkIfErrorHasResponse").and.returnValue(true);
+      spyOn(genericMultiFeatureUtilitiesService, "checkIfResponseHasError").and.returnValue(true);
 
       await component.triggerAction(userInput);
 
