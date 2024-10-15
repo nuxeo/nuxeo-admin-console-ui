@@ -79,6 +79,16 @@ describe("FolderTabComponent", () => {
         return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
       }
     }
+
+    handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
+      if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
+        this.store.dispatch(
+          action({
+            error: errorJson as HttpErrorResponse,
+          })
+        );
+      }
+    }
   }
 
   beforeEach(async () => {
