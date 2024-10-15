@@ -84,11 +84,11 @@ describe("DocumentTabComponent", () => {
   
     handleErrorJson(errorJson: unknown, action: unknown): void {
       if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-        this.store.dispatch(
-          action({
-            error: errorJson as HttpErrorResponse,
-          })
-        );
+        // this.store.dispatch(
+        //   action({
+        //     error: errorJson as HttpErrorResponse,
+        //   })
+        // );
       }
     }
 
