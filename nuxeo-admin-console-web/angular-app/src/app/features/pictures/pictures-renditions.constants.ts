@@ -2,7 +2,7 @@ export const PICTURE_RENDITIONS_LABELS = {
     FOLDER_RENDITIONS_TITLE: "Generate the picture renditions of a document and all of its children",
     DOCUMENT_RENDITIONS_TITLE: "Generate the renditions of a single picture",
     NXQL_QUERY_RENDITIONS_TITLE: "Generate the renditions of the pictures returned by a NXQL query",
-    RENDITIONS_BUTTON_LABEL: "GENERATE",
+    RENDITIONS_BUTTON_LABEL: "Generate",
     DOCUMENT_QUERY:
     "ecm:path='{query}' AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   FOLDER_QUERY:
