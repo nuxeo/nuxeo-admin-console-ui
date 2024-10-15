@@ -4,14 +4,12 @@ import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-lay
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { FormGroup } from "@angular/forms";
 import { FeatureData, RequestParamType } from "../generic-multi-feature-layout.interface";
-import { ActionCreator, Store } from "@ngrx/store";
+import { Store } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
-import { TypedAction } from "@ngrx/store/src/models";
 @Injectable({
   providedIn: "root",
 })
 export class GenericMultiFeatureUtilitiesService {
-  // constructor(private store: Store) { }
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
   activeFeature: FeaturesKey = {} as FeaturesKey;

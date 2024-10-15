@@ -19,7 +19,7 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { ActionCreator, StoreModule } from "@ngrx/store";
+import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import * as FeatureActions from "../../store//actions";
