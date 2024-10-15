@@ -19,7 +19,7 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { ActionCreator, Store, StoreModule } from "@ngrx/store";
+import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of } from "rxjs";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import * as FeatureActions from "../../store//actions";
@@ -29,7 +29,6 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
-  ERROR_MODAL_LABELS,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -37,8 +36,6 @@ import {
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
-import { HttpErrorResponse } from "@angular/common/http";
-import { TypedAction } from "@ngrx/store/src/models";
 
 
 describe("FolderTabComponent", () => {
@@ -51,8 +48,6 @@ describe("FolderTabComponent", () => {
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<GenericModalComponent>>;
 
   class GenericMultiFeatureUtilitiesServiceStub {
-    constructor(private store: Store) { }
-    
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
@@ -62,36 +57,6 @@ describe("FolderTabComponent", () => {
 
     getActiveFeature() {
       return "ELASTIC_SEARCH_REINDEX";
-    }
-    checkIfResponseHasError(err: unknown): boolean {
-      return (
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as { response: unknown }).response === "object" &&
-        (err as { response: { json: unknown } }).response !== null &&
-        "json" in (err as { response: { json: unknown } }).response &&
-        typeof (err as { response: { json: () => Promise<unknown> } }).response
-          .json === "function"
-      );
-    }
-
-    handleError(err: unknown): Promise<unknown> {
-      if (this.checkIfResponseHasError(err)) {
-        return (err as { response: { json: () => Promise<unknown> } }).response.json();
-      } else {
-        return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
-      }
-    }
-
-    handleErrorJson(errorJson: unknown, action: ActionCreator<string, (props: { error: HttpErrorResponse }) => { error: HttpErrorResponse } & TypedAction<string>>): void {
-      if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
-        this.store.dispatch(
-          action({
-            error: errorJson as HttpErrorResponse,
-          })
-        );
-      }
     }
   }
 
@@ -238,7 +203,7 @@ describe("FolderTabComponent", () => {
     });
 
     const errorMessage = component.getErrorMessage();
-    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR);
+    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_ERROR);
   });
 
   it("should return null when inputIdentifier does not have a required error", () => {
@@ -255,37 +220,37 @@ describe("FolderTabComponent", () => {
         json: () => Promise.resolve({}),
       },
     };
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeTrue();
   });
 
   it("should return false for null error", () => {
     const err = null;
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for non-object error", () => {
     const err = "string error";
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error without response", () => {
     const err = { someProperty: "someValue" };
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response but no json function", () => {
     const err = { response: {} };
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeFalse();
   });
 
   it("should return false for error with response and non-function json property", () => {
     const err = { response: { json: "not a function" } };
-    const result = genericMultiFeatureUtilitiesService.checkIfResponseHasError(err);
+    const result = component.checkIfErrorHasResponse(err);
     expect(result).toBeFalse();
   });
 
