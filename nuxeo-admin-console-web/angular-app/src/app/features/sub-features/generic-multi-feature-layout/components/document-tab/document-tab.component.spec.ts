@@ -36,6 +36,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { HttpErrorResponse } from "@angular/common/http";
+import { TypedAction } from "@ngrx/store/src/models";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
