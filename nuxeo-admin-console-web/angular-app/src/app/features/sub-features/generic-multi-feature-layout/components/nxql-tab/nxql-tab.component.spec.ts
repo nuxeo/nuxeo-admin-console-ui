@@ -35,6 +35,7 @@ import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-cl
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
 
 
 describe("NXQLTabComponent", () => {
@@ -342,6 +343,15 @@ describe("NXQLTabComponent", () => {
       const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.NXQL);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.NXQL_QUERY_RENDITIONS_TITLE);
       expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+    });
+  });
+
+  describe('FEATURES.THUMBNAIL_GENERATION', () => {
+    it('should return correct labels and data for NXQL tabType', () => {
+      const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.NXQL);
+      expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_THUMBNAIL_GENERATION_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
+      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_QUERY);
     });
   });
 });

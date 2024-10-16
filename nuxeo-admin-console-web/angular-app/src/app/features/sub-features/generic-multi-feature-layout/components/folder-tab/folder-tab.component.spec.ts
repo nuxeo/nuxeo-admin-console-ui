@@ -36,6 +36,7 @@ import {
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
+import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
@@ -291,6 +292,15 @@ describe("FolderTabComponent", () => {
       const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.FOLDER_RENDITIONS_TITLE);
       expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+    });
+  });
+
+  describe('FEATURES.THUMBNAIL_GENERATION', () => {
+    it('should return correct labels and data for FOLDER tabType', () => {
+      const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.FOLDER);
+      expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_THUMBNAIL_GENERATION_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
+      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY);
     });
   });
 });
