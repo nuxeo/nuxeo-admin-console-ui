@@ -14,7 +14,8 @@ export class GenericMultiFeatureEndpointsService {
   performDocumentAction(
     requestUrl: string | null,
     requestParams: unknown,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
@@ -22,14 +23,15 @@ export class GenericMultiFeatureEndpointsService {
         No params for queryParam since, the only param, i.e. 'query' is appended to the url
        & no request url for bodyParam, since endpoint is already sent as the 1st parameter here, and query is part of body params
       */
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 
   performFolderAction(
     requestUrl: string | null,
     requestParams: unknown,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
@@ -37,18 +39,19 @@ export class GenericMultiFeatureEndpointsService {
         No params for queryParam since, the only param, i.e. 'query' is appended to the url
        & no request url for bodyParam, since endpoint is already sent as the 1st parameter here, and query is part of body params
       */
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 
   performNXQLAction(
     requestUrl: string | null,
     requestParams: unknown,
-    featureEndpoint: string
+    featureEndpoint: string,
+    requestHeaders: { [key: string]: string }
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { queryParam: { requestUrl }, bodyParam: requestParams }
+      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
     );
   }
 }

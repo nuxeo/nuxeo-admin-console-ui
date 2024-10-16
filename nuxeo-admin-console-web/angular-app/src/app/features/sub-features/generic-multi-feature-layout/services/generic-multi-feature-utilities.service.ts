@@ -1,11 +1,22 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../video-renditions-generation/video-renditions-generation.constants";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+import {
+  ERROR_MODAL_LABELS,
+  GENERIC_LABELS,
+} from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { FormGroup } from "@angular/forms";
-import { FeatureData, RequestParamType } from "../generic-multi-feature-layout.interface";
+import {
+  FeatureData,
+  RequestParamType,
+} from "../generic-multi-feature-layout.interface";
 import { Store } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Nuxeo from "nuxeo";
+
 @Injectable({
   providedIn: "root",
 })
@@ -13,6 +24,7 @@ export class GenericMultiFeatureUtilitiesService {
   pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
   spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  nuxeo: Nuxeo;
   setActiveFeature(activeFeature: FeaturesKey): void {
     this.activeFeature = activeFeature;
   }
@@ -77,10 +89,10 @@ export class GenericMultiFeatureUtilitiesService {
     return input.replaceAll("'", "%5C%27");
   }
 
-  getRequestQuery(requestQuery: string, param: string): string {
+  getRequestQuery(requestQuery: string, params: string): string {
     return `${GENERIC_LABELS.SELECT_BASE_QUERY} ${this.insertParamInQuery(
       requestQuery,
-      param
+      params
     )}`;
   }
 
@@ -92,27 +104,63 @@ export class GenericMultiFeatureUtilitiesService {
     data: RequestParamType,
     requestQuery: string,
     inputForm: FormGroup
-  ): { requestUrl: string; requestParams: URLSearchParams } {
+  ): {
+    requestUrl: string;
+    requestParams: string;
+    requestHeaders: { [key: string]: string };
+  } {
     let requestUrl = "";
-    // Prepare request payload body
-    const requestParams = new URLSearchParams();
-    // Prepare body params object with dynamic parameters & their values entered as input
+    let paramsArray: string[] = [];
+    let requestHeaders = {};
+
     if (data["bodyParam"]) {
       Object.keys(data["bodyParam"]).forEach((key) => {
-        if (key === GENERIC_LABELS.QUERY) {
-          requestParams.append(key, requestQuery);
-          return;
-        }
         const paramValue = inputForm.get(key)?.value;
-        if (!paramValue) return;
-        requestParams.append(key, paramValue as string);
+        if (key === GENERIC_LABELS.QUERY && requestQuery) {
+          paramsArray.push(`${key}=${requestQuery}`);
+        } else if (
+          key === VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY &&
+          paramValue
+        ) {
+          const conversionParams = this.appendConversionsToRequest(
+            paramValue,
+            key
+          );
+
+          paramsArray.push(conversionParams);
+        } else if (paramValue) {
+          paramsArray.push(`${key}=${paramValue}`);
+        }
       });
     }
+
+    if (data["requestHeaders"]) {
+      requestHeaders = data["requestHeaders"];
+    }
+
     if (data["queryParam"]) {
-      // since it is queryParam, the query would be appended to the url
       requestUrl = requestQuery;
     }
-    return { requestUrl, requestParams };
+    const requestParams = paramsArray.join("&");
+
+    return { requestUrl, requestParams, requestHeaders };
+  }
+
+  appendConversionsToRequest(
+    conversionNamesInput: string,
+    key: string
+  ): string {
+    let conversionNamesArr = [];
+    if (conversionNamesInput?.indexOf(",") > -1) {
+      conversionNamesInput?.split(",").forEach((name) => {
+        if (name) {
+          conversionNamesArr.push(`${key}=${name?.trim()}`);
+        }
+      });
+    } else {
+      conversionNamesArr.push(`${key}=${conversionNamesInput?.trim()}`);
+    }
+    return conversionNamesArr.join("&");
   }
 
   checkIfResponseHasError(err: unknown): boolean {
@@ -129,14 +177,24 @@ export class GenericMultiFeatureUtilitiesService {
   }
   handleError(err: unknown): Promise<unknown> {
     if (this.checkIfResponseHasError(err)) {
-      return (err as { response: { json: () => Promise<unknown> } }).response.json();
+      return (
+        err as { response: { json: () => Promise<unknown> } }
+      ).response.json();
     } else {
       return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
     }
   }
 
-  handleErrorJson(errorJson: unknown, action: unknown, store: Store<unknown>): void {
-    if (typeof errorJson === "object" && errorJson !== null && typeof action === 'function') {
+  handleErrorJson(
+    errorJson: unknown,
+    action: unknown,
+    store: Store<unknown>
+  ): void {
+    if (
+      typeof errorJson === "object" &&
+      errorJson !== null &&
+      typeof action === "function"
+    ) {
       store.dispatch(
         action({
           error: errorJson as HttpErrorResponse,
@@ -150,12 +208,11 @@ export class GenericMultiFeatureUtilitiesService {
       (templateConfigData?.data["queryParam"]?.[
         GENERIC_LABELS.QUERY
       ] as string) ||
-      (templateConfigData?.data["bodyParam"]?.[
-        GENERIC_LABELS.QUERY
-      ] as string) ||
-      "",
+        (templateConfigData?.data["bodyParam"]?.[
+          GENERIC_LABELS.QUERY
+        ] as string) ||
+        "",
       input
     );
   }
-
 }

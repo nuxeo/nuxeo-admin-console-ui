@@ -51,4 +51,5 @@ export interface RequestParamType {
   queryParam?: { [key: string]: unknown };
   bodyParam?: { [key: string]: unknown };
   urlParam?: { [key: string]: unknown };
+  requestHeaders?: { [key: string]: string };
 }
