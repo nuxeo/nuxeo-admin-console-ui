@@ -11,7 +11,9 @@ describe("GenericMultiFeatureEndpointsService", () => {
   let networkService: jasmine.SpyObj<NetworkService>;
 
   beforeEach(() => {
-    const networkServiceSpy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
+    const networkServiceSpy = jasmine.createSpyObj("NetworkService", [
+      "makeHttpRequest",
+    ]);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -22,7 +24,9 @@ describe("GenericMultiFeatureEndpointsService", () => {
     });
 
     service = TestBed.inject(GenericMultiFeatureEndpointsService);
-    networkService = TestBed.inject(NetworkService) as jasmine.SpyObj<NetworkService>;
+    networkService = TestBed.inject(
+      NetworkService
+    ) as jasmine.SpyObj<NetworkService>;
   });
 
   describe("performDocumentAction", () => {
@@ -35,29 +39,48 @@ describe("GenericMultiFeatureEndpointsService", () => {
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performDocumentAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
-        expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
-        done();
-      });
+      service
+        .performDocumentAction(requestUrl, requestParams, featureEndpoint, {})
+        .subscribe((response) => {
+          expect(response).toEqual(mockResponse);
+          expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+            restEndpoint,
+            {
+              queryParam: { requestUrl },
+              bodyParam: requestParams,
+              requestHeaders: {},
+            }
+          );
+          done();
+        });
     });
   });
 
   describe("performFolderAction", () => {
     it("should make a network request with the correct endpoint and query", (done) => {
       const mockResponse: ActionInfo = { commandId: "67890" };
-      const requestUrl = "SELECT * FROM Folder WHERE ecm:path='some/folder/path'";
+      const requestUrl =
+        "SELECT * FROM Folder WHERE ecm:path='some/folder/path'";
       const requestParams = {};
       const featureEndpoint = "ELASTIC_SEARCH_REINDEX";
       const restEndpoint = REST_END_POINTS[featureEndpoint];
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performFolderAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
-        expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
-        done();
-      });
+      service
+        .performFolderAction(requestUrl, requestParams, featureEndpoint, {})
+        .subscribe((response) => {
+          expect(response).toEqual(mockResponse);
+          expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+            restEndpoint,
+            {
+              queryParam: { requestUrl },
+              bodyParam: requestParams,
+              requestHeaders: {},
+            }
+          );
+          done();
+        });
     });
   });
 
@@ -71,11 +94,20 @@ describe("GenericMultiFeatureEndpointsService", () => {
 
       networkService.makeHttpRequest.and.returnValue(of(mockResponse));
 
-      service.performNXQLAction(requestUrl, requestParams, featureEndpoint).subscribe((response) => {
-        expect(response).toEqual(mockResponse);
-        expect(networkService.makeHttpRequest).toHaveBeenCalledWith(restEndpoint, { queryParam: { requestUrl }, bodyParam: requestParams });
-        done();
-      });
+      service
+        .performNXQLAction(requestUrl, requestParams, featureEndpoint, {})
+        .subscribe((response) => {
+          expect(response).toEqual(mockResponse);
+          expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+            restEndpoint,
+            {
+              queryParam: { requestUrl },
+              bodyParam: requestParams,
+              requestHeaders: {},
+            }
+          );
+          done();
+        });
     });
   });
 });

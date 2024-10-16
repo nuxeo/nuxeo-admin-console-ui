@@ -7,10 +7,11 @@ describe("DocumentActions", () => {
     "SELECT * FROM DOCUMENT WHERE ecm:path='805c8feb-308c-48df-b74f-d09b4758f778'";
   const featureEndpoint = "/document";
 
-  const requestParams = {}
+  const requestParams = {};
+  const requestHeaders = {};
   
   it("should create performDocumentAction action", () => {
-    const action = DocumentActions.performDocumentAction({ requestUrl, requestParams, featureEndpoint });
+    const action = DocumentActions.performDocumentAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
     expect(action.type).toEqual("[Admin] Perform Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);
@@ -46,9 +47,10 @@ describe("FolderActions", () => {
     "SELECT * FROM FOLDER WHERE ecm:path='c8feb-308c-48df-b74f-d09b4758f778'";
   const featureEndpoint = "/folder";
   const requestParams = {};
+  const requestHeaders = {};
 
   it("should create performFolderAction action", () => {
-    const action = DocumentActions.performFolderAction({ requestUrl, requestParams, featureEndpoint });
+    const action = DocumentActions.performFolderAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
     expect(action.type).toEqual("[Admin] Perform Folder Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);
@@ -83,9 +85,10 @@ describe("NxqlActions", () => {
   const requestUrl = "SELECT * FROM NXQL WHERE ecm:path='f77b67b3-308c-48df-b74f'";
   const featureEndpoint = "/nxql";
   const requestParams = {};
+  const requestHeaders = {};
 
   it("should create performNxqlAction action", () => {
-    const action = DocumentActions.performNxqlAction({ requestUrl, requestParams, featureEndpoint });
+    const action = DocumentActions.performNxqlAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
     expect(action.type).toEqual("[Admin] Perform NXQL Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);

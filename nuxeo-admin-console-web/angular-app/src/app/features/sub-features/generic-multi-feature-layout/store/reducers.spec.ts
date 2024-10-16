@@ -20,6 +20,7 @@ describe("DocumentActionReducer", () => {
       requestUrl: "query",
       requestParams: {},
       featureEndpoint: "/document",
+      requestHeaders: {}
     });
     const state = documentActionReducer(initialDocumentState, action);
     expect(state.error).toBeNull();
@@ -65,6 +66,7 @@ describe("FolderActionReducer", () => {
       requestUrl: "query",
       requestParams: {},
       featureEndpoint: "/folder",
+      requestHeaders: {}
     });
     const state = folderActionReducer(initialFolderActionState, action);
     expect(state.error).toBeNull();
@@ -108,6 +110,7 @@ describe("NXQLActionReducer", () => {
       requestUrl: "SELECT * FROM NXQL",
       requestParams: {},
       featureEndpoint: "/nxql",
+      requestHeaders: {}
     });
     const state = nxqlActionReducer(initialNXQLActionState, action);
     expect(state.error).toBeNull();

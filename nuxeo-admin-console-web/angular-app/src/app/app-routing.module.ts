@@ -16,7 +16,14 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import(
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
-      ).then((m) => m.GenericMultiFeatureLayoutModule)
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
+  },
+  {
+    path: "video-renditions-generation",
+    loadChildren: () =>
+      import(
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
     path: "bulk-action-monitoring",
@@ -38,14 +45,14 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import(
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
-      ).then((m) => m.GenericMultiFeatureLayoutModule)
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
     path: "picture-renditions",
     loadChildren: () =>
       import(
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
-      ).then((m) => m.GenericMultiFeatureLayoutModule)
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
     path: "auth",

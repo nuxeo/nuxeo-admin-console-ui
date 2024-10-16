@@ -1,8 +1,9 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -14,7 +15,7 @@ import {
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
-  featuresRequiringOnlyId
+  featuresRequiringOnlyId,
 } from "../../generic-multi-feature-layout.constants";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import {
@@ -66,6 +67,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     GenericModalClosedInfo
   > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
@@ -111,6 +113,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       this.templateLabels = this.templateConfigData?.labels;
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
+      );
+    }
+
+    if (this.isFeatureVideoRenditions()) {
+      this.inputForm.addControl(
+        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+        new FormControl("")
+      );
+      this.inputForm.addControl(
+        VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
+        new FormControl("true")
       );
     }
 
@@ -188,8 +201,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   }
 
   getErrorMessage(): string | null {
-    const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
-    const hasRequiredError = this.inputForm?.get("inputIdentifier")?.hasError("required");
+    const areIdAndPathRequired = this.isIdAndPathRequired(
+      this.activeFeature as string
+    );
+    const hasRequiredError = this.inputForm
+      ?.get("inputIdentifier")
+      ?.hasError("required");
     if (hasRequiredError) {
       if (areIdAndPathRequired) {
         return GENERIC_LABELS.REQUIRED_DOCID_OR_PATH_ERROR;
@@ -211,7 +228,9 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           for the action endpoint, for paths containing single quote e.g. /default-domain/ws1/Harry's-file will be built like
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
-      const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+      const areIdAndPathRequired = this.isIdAndPathRequired(
+        this.activeFeature as string
+      );
       try {
         this.decodedUserInput =
           this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
@@ -220,25 +239,34 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.triggerAction(this.decodedUserInput);
       } catch (error) {
         this.showActionErrorModal({
-          type: areIdAndPathRequired ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH : ERROR_TYPES.INVALID_DOC_ID,
+          type: areIdAndPathRequired
+            ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH
+            : ERROR_TYPES.INVALID_DOC_ID,
           details: {
-            message: areIdAndPathRequired ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+            message: areIdAndPathRequired
+              ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
+              : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
           },
         });
       }
     }
   }
 
-
   triggerAction(userInput: string): void {
-    const areIdAndPathRequired = this.isIdAndPathRequired(this.activeFeature as string);
+    const areIdAndPathRequired = this.isIdAndPathRequired(
+      this.activeFeature as string
+    );
 
     if (areIdAndPathRequired) {
       this.nuxeo
         .repository()
         .fetch(userInput)
         .then((document: unknown) => {
-          if (typeof document === "object" && document !== null && "uid" in document) {
+          if (
+            typeof document === "object" &&
+            document !== null &&
+            "uid" in document
+          ) {
             const doc = document as { uid: string };
             this.processRequest(doc?.uid);
           }
@@ -247,9 +275,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           return this.genericMultiFeatureUtilitiesService.handleError(err);
         })
         .then((errorJson: unknown) => {
-          this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure, this.store);
+          this.genericMultiFeatureUtilitiesService.handleErrorJson(
+            errorJson,
+            FeatureActions.onFolderActionFailure,
+            this.store
+          );
         });
-
     } else {
       this.processRequest(userInput);
     }
@@ -257,7 +288,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
   processRequest(userInput: string): void {
     try {
-      this.requestQuery = this.genericMultiFeatureUtilitiesService.buildRequestQuery(userInput,this.templateConfigData);
+      this.requestQuery =
+        this.genericMultiFeatureUtilitiesService.buildRequestQuery(
+          userInput,
+          this.templateConfigData
+        );
       this.fetchNoOfDocuments(this.requestQuery);
     } catch (error) {
       this.showActionErrorModal({
@@ -300,7 +335,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onFolderActionFailure, this.store);
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(
+          errorJson,
+          FeatureActions.onFolderActionFailure,
+          this.store
+        );
       });
   }
 
@@ -335,7 +374,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.activeFeature
       ) as FeaturesKey;
       if (featureKey in FEATURES) {
-        const { requestUrl, requestParams } =
+        const { requestUrl, requestParams, requestHeaders } =
           this.genericMultiFeatureUtilitiesService.buildRequestParams(
             this.templateConfigData.data,
             this.requestQuery,
@@ -346,6 +385,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
             requestUrl,
             requestParams,
             featureEndpoint: REST_END_POINTS[featureKey],
+            requestHeaders,
           })
         );
       } else {
@@ -356,10 +396,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     }
   }
 
-
   getHumanReadableTime(seconds: number): string {
     return this.genericMultiFeatureUtilitiesService.secondsToHumanReadable(
       seconds
+    );
+  }
+
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
   }
 

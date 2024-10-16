@@ -3,6 +3,7 @@ import { GenericMultiFeatureUtilitiesService } from "./generic-multi-feature-uti
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
 import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FormControl, FormGroup } from "@angular/forms";
+import { RequestParamType } from "../generic-multi-feature-layout.interface";
 
 describe("GenericMultiFeatureUtilitiesService", () => {
   let service: GenericMultiFeatureUtilitiesService;
@@ -89,113 +90,116 @@ describe("GenericMultiFeatureUtilitiesService", () => {
     });
   });
 
+  describe("appendConversionsToRequest", () => {
+    it("should append multiple conversion names correctly", () => {
+      const result = service.appendConversionsToRequest(
+        "Mp4 480p, Ogg 480p",
+        "conversionName"
+      );
+      expect(result).toEqual("conversionName=Mp4 480p&conversionName=Ogg 480p");
+    });
 
+    it("should append a single conversion name correctly", () => {
+      const result = service.appendConversionsToRequest(
+        "Mp4 480p",
+        "conversionName"
+      );
+      expect(result).toEqual("conversionName=Mp4 480p");
+    });
 
-  describe("buildRequestParams", () => {  
-    it("should append query to requestParams when bodyParam exists", () => {
-      const data = {
-        bodyParam: {
-          query: GENERIC_LABELS.QUERY,
-          param1: "value1",
-          param2: "value2",
-        },
-      };
+    it("should return an empty string if no conversion names are provided", () => {
+      const result = service.appendConversionsToRequest("", "conversionName");
+      expect(result).toEqual("conversionName=");
+    });
 
-      const inputForm = new FormGroup({
-        param1: new FormControl("testValue1"),
-        param2: new FormControl("testValue2"),
+    describe("buildRequestParams", () => {
+      it("should build request params and URL with body params", () => {
+        const inputForm = new FormGroup({
+          query: new FormControl("SELECT * FROM Document"),
+          conversionName: new FormControl("Mp4 480p"),
+          anotherParam: new FormControl("someValue"),
+        });
+
+        const data: RequestParamType = {
+          bodyParam: {
+            query: true,
+            conversionName: true,
+            anotherParam: true,
+          },
+        };
+
+        const result = service.buildRequestParams(
+          data,
+          "SELECT * FROM Document",
+          inputForm
+        );
+
+        expect(result.requestUrl).toEqual("");
+        expect(result.requestParams).toEqual(
+          "query=SELECT * FROM Document&conversionName=Mp4 480p&anotherParam=someValue"
+        );
+        expect(result.requestHeaders).toEqual({});
       });
 
-      const requestQuery = "SELECT * FROM Document";
+      it("should build request params with multiple conversions", () => {
+        const inputForm = new FormGroup({
+          conversionNames: new FormControl("Mp4 480p, Ogg 480p"),
+        });
 
-      const { requestUrl, requestParams } = service.buildRequestParams(
-        data,
-        requestQuery,
-        inputForm
-      );
-      expect(requestUrl).toBe("");
-      expect(requestParams.get(GENERIC_LABELS.QUERY)).toBe(requestQuery);
-      expect(requestParams.get("param1")).toBe("testValue1");
-      expect(requestParams.get("param2")).toBe("testValue2");
-    });
+        const data: RequestParamType = {
+          bodyParam: {
+            conversionNames: true,
+          },
+        };
 
-    it("should append requestQuery to requestUrl when bodyParam does not exist", () => {
-      const data = {};
-      const requestQuery = "SELECT * FROM Document";
-      const inputForm = new FormGroup({});
+        const result = service.buildRequestParams(data, "", inputForm);
 
-      const { requestUrl, requestParams } = service.buildRequestParams(
-        data,
-        requestQuery,
-        inputForm
-      );
-      expect(requestUrl).toBe("");
-      expect(requestParams.toString()).toBe("");
-    });
-
-    it("should skip appending params if input form values are not provided", () => {
-      const data = {
-        bodyParam: {
-          param1: "value1",
-          param2: "value2",
-        },
-      };
-
-      const inputForm = new FormGroup({
-        param1: new FormControl(""),
-        param2: new FormControl(null),
+        expect(result.requestParams).toEqual(
+          "conversionNames=Mp4 480p&conversionNames=Ogg 480p"
+        );
       });
 
-      const requestQuery = "SELECT * FROM Document";
-      const { requestUrl, requestParams } = service.buildRequestParams(
-        data,
-        requestQuery,
-        inputForm
-      );
-      expect(requestParams.get("param1")).toBeNull();
-      expect(requestParams.get("param2")).toBeNull();
-      expect(requestUrl).toBe("");
-    });
+      it("should include request headers if provided", () => {
+        const inputForm = new FormGroup({
+          query: new FormControl("SELECT * FROM Document"),
+        });
 
+        const data: RequestParamType = {
+          bodyParam: {
+            query: true,
+          },
+          requestHeaders: {
+            "Content-type": "application/xxx-form-urlencoded",
+          },
+        };
 
-    it("should return true for valid error object with response and json function", () => {
-      const err = {
-        response: {
-          json: () => Promise.resolve({}),
-        },
-      };
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeTrue();
-    });
-  
-    it("should return false for null error", () => {
-      const err = null;
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeFalse();
-    });
-  
-    it("should return false for non-object error", () => {
-      const err = "string error";
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeFalse();
-    });
-  
-    it("should return false for error without response", () => {
-      const err = { someProperty: "someValue" };
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeFalse();
-    });
-  
-    it("should return false for error with response but no json function", () => {
-      const err = { response: {} };
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeFalse();
-    });
-  
-    it("should return false for error with response and non-function json property", () => {
-      const err = { response: { json: "not a function" } };
-      const result = service.checkIfResponseHasError(err);
-      expect(result).toBeFalse();
+        const result = service.buildRequestParams(
+          data,
+          "SELECT * FROM Document",
+          inputForm
+        );
+
+        expect(result.requestHeaders).toEqual({
+          "Content-type": "application/xxx-form-urlencoded",
+        });
+      });
+
+      it("should return an empty requestUrl if no queryParam is provided", () => {
+        const inputForm = new FormGroup({
+          anotherParam: new FormControl("value"),
+        });
+
+        const data: RequestParamType = {
+          bodyParam: {
+            anotherParam: true,
+          },
+        };
+
+        const result = service.buildRequestParams(data, "", inputForm);
+
+        expect(result.requestUrl).toEqual("");
+        expect(result.requestParams).toEqual("anotherParam=value");
+      });
     });
   });
 });

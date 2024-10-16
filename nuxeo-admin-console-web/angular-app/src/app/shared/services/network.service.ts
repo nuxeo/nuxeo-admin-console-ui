@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
 import {
   REST_END_POINT_CONFIG,
@@ -54,13 +54,26 @@ export class NetworkService {
 
     switch (method) {
       case "POST":
-        return this.http.post<T>(url, data?.["bodyParam"] || {});
+        return this.http.post<T>(url, data?.["bodyParam"] || {}, {
+          headers: data?.["requestHeaders"]
+            ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
+            : {},
+        });
         break;
       case "PUT":
-        return this.http.put<T>(url, data || {});
+        return this.http.put<T>(url, data || {}, {
+          headers: data?.["requestHeaders"]
+            ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
+            : {},
+        });
         break;
       case "DELETE":
-        return this.http.delete<T>(url, { body: data });
+        return this.http.delete<T>(url, {
+          body: data,
+          headers: data?.["requestHeaders"]
+            ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
+            : {},
+        });
         break;
       case "GET":
         if (data) {
@@ -68,7 +81,12 @@ export class NetworkService {
             params = params.append(key, String(data?.[key]));
           });
         }
-        return this.http.get<T>(url, { params });
+        return this.http.get<T>(url, {
+          params,
+          headers: data?.["requestHeaders"]
+            ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
+            : {},
+        });
         break;
       default:
         throw new Error(`Unsupported HTTP method: ${method}`);

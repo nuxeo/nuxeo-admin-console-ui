@@ -1,3 +1,4 @@
+import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
@@ -12,7 +13,12 @@ import {
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ActionInfo } from "../../generic-multi-feature-layout.interface";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -65,6 +71,8 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   actionsImportFn: ActionsImportFunction | null = null;
   activeFeature: FeaturesKey = {} as FeaturesKey;
   requestQuery = "";
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
+  FEATURES = FEATURES;
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -98,6 +106,16 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       this.genericMultiFeatureUtilitiesService.pageTitle.next(
         this.templateLabels.pageTitle
       );
+      if (this.isFeatureVideoRenditions()) {
+        this.inputForm.addControl(
+          VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+          new FormControl("")
+        );
+        this.inputForm.addControl(
+          VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
+          new FormControl("true")
+        );
+      }
     }
 
     this.documentActionLaunchedSubscription =
@@ -215,15 +233,19 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
             const decodedPath =
               doc.path.indexOf("'") > -1
                 ? this.genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes(
-                  decodeURIComponent(doc.path)
-                )
+                    decodeURIComponent(doc.path)
+                  )
                 : doc.path;
-            this.requestQuery = this.genericMultiFeatureUtilitiesService.buildRequestQuery(decodedPath,this.templateConfigData);
+            this.requestQuery =
+              this.genericMultiFeatureUtilitiesService.buildRequestQuery(
+                decodedPath,
+                this.templateConfigData
+              );
             const featureKey = getFeatureKeyByValue(
               this.activeFeature
             ) as FeaturesKey;
             if (featureKey in FEATURES) {
-              const { requestUrl, requestParams } =
+              const { requestUrl, requestParams, requestHeaders } =
                 this.genericMultiFeatureUtilitiesService.buildRequestParams(
                   this.templateConfigData.data,
                   this.requestQuery,
@@ -233,6 +255,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
                 FeatureActions.performDocumentAction({
                   requestUrl,
                   requestParams,
+                  requestHeaders,
                   featureEndpoint: REST_END_POINTS[featureKey],
                 })
               );
@@ -253,10 +276,20 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         return this.genericMultiFeatureUtilitiesService.handleError(err);
       })
       .then((errorJson: unknown) => {
-        this.genericMultiFeatureUtilitiesService.handleErrorJson(errorJson, FeatureActions.onDocumentActionFailure, this.store);
+        this.genericMultiFeatureUtilitiesService.handleErrorJson(
+          errorJson,
+          FeatureActions.onDocumentActionFailure,
+          this.store
+        );
       });
   }
 
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
+    );
+  }
 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
