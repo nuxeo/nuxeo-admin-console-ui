@@ -24,7 +24,7 @@ export const loadPerformDocumentActionEffect = createEffect(
               });
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(FeatureActions.onDocumentActionFailure({ error }));
+              return of(FeatureActions.onDocumentActionFailure({ error: error?.error ? error?.error : error }));
             })
           );
       })
@@ -51,7 +51,7 @@ export const loadPerformFolderActionEffect = createEffect(
               });
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(FeatureActions.onFolderActionFailure({ error }));
+              return of(FeatureActions.onFolderActionFailure({ error: error?.error ? error?.error : error }));
             })
           );
       })
@@ -78,7 +78,7 @@ export const loadPerformNxqlActionEffect = createEffect(
               });
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(FeatureActions.onNxqlActionFailure({ error }));
+              return of(FeatureActions.onNxqlActionFailure({ error: error?.error ? error?.error : error }));
             })
           );
       })

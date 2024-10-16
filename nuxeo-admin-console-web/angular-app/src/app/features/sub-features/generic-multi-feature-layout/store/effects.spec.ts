@@ -79,7 +79,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
 
       genericMultiFeatureService.performDocumentAction.and.returnValue(throwError(() => error));
-      const outcome = FeatureActions.onDocumentActionFailure({ error });
+      const outcome = FeatureActions.onDocumentActionFailure({ error: error?.error ? error?.error : error });
       actions$ = of(action);
 
       loadPerformDocumentAction(actions$, genericMultiFeatureService).subscribe((result: Action) => {
@@ -123,7 +123,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
 
       genericMultiFeatureService.performFolderAction.and.returnValue(throwError(() => error));
-      const outcome = FeatureActions.onFolderActionFailure({ error });
+      const outcome = FeatureActions.onFolderActionFailure({ error: error?.error ? error?.error : error });
       actions$ = of(action);
 
       loadPerformFolderAction(actions$, genericMultiFeatureService).subscribe((result: Action) => {
@@ -167,7 +167,7 @@ describe("GenericMultiFeatureEffects", () => {
       });
 
       genericMultiFeatureService.performNXQLAction.and.returnValue(throwError(() => error));
-      const outcome = FeatureActions.onNxqlActionFailure({ error });
+      const outcome = FeatureActions.onNxqlActionFailure({ error: error?.error ? error?.error : error });
       actions$ = of(action);
 
       loadPerformNxqlAction(actions$, genericMultiFeatureService).subscribe((result: Action) => {
