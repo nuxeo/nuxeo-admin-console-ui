@@ -204,15 +204,7 @@ export class GenericMultiFeatureUtilitiesService {
   }
 
   buildRequestQuery(input: string, templateConfigData: FeatureData): string {
-    return this.getRequestQuery(
-      (templateConfigData?.data["queryParam"]?.[
-        GENERIC_LABELS.QUERY
-      ] as string) ||
-        (templateConfigData?.data["bodyParam"]?.[
-          GENERIC_LABELS.QUERY
-        ] as string) ||
-        "",
-      input
-    );
+    return this.getRequestQuery((templateConfigData?.data["queryParam"]?.[GENERIC_LABELS.QUERY] as string) ||
+        (templateConfigData?.data["bodyParam"]?.[GENERIC_LABELS.QUERY] as string) || "", input);
   }
 }

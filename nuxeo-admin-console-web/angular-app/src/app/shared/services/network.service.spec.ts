@@ -73,6 +73,7 @@ describe("NetworkService", () => {
       "http://localhost:8080/nuxeo/api/v1/management/probes",
       {
         params: jasmine.anything(),
+        headers: {}
       }
     );
   });

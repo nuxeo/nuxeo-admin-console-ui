@@ -1,5 +1,10 @@
 .folder-tab-container {
   padding: 10px 0px 0px 10px;
+  &.vertical-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
   #requiredField {
     font-size: 12px;
     color: #da1500;
@@ -14,10 +19,10 @@
     left: 20px;
     font-size: 16px;
     bottom: 3px;
-  }
-  &__button.video-renditions {
-    left: 0;
-    bottom: 0;
+    &.video-renditions {
+      left: 0;
+      bottom: 0;
+    }
   }
 }
 
@@ -44,21 +49,12 @@ mat-form-field.hy-form-field {
   margin-top: 10px;
   max-width: 350px;
   width: 80%;
-}
-
-mat-form-field.hy-form-field.video-renditions {
-  margin-top: 30px;
-  max-width: 350px;
-  width: 80%;
+  &.video-renditions {
+    margin-top: 30px;
+  }
 }
 
 .conversion-helper-text {
   font-size: 14px;
   margin-top: -15px;
-}
-
-.folder-tab-container.vertical-flex {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
 }
