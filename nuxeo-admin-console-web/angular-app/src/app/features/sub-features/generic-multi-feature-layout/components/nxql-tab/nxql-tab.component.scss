@@ -6,6 +6,11 @@
     font-weight: 400;
     font-family: "Open Sans";
   }
+  &.vertical-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
   &__button {
     border-radius: 4px !important;
     width: 110px;
@@ -13,6 +18,10 @@
     position: relative;
     left: 20px;
     font-size: 16px;
+    &.video-renditions {
+      left: 0;
+      bottom: 0;
+    }
   }
 }
 .spinner-overlay {
@@ -39,6 +48,9 @@ mat-form-field.hy-form-field {
   margin-bottom: 20px;
   max-width: 600px;
   width: 80%;
+  &.video-renditions {
+    margin-top: 30px;
+  }
 }
 
 .resizable-textarea {
@@ -48,4 +60,9 @@ mat-form-field.hy-form-field {
 
 .nxql-es-reindex-hint {
   margin-top: 3px;
+}
+
+.conversion-helper-text {
+  font-size: 14px;
+  margin-top: -15px;
 }
