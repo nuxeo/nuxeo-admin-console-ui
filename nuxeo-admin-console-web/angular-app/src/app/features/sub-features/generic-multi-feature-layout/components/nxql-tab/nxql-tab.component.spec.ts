@@ -36,6 +36,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
+import { VIDEO_RENDITIONS_LABELS } from "../../../../video-renditions-generation/video-renditions-generation.constants";
 
 
 describe("NXQLTabComponent", () => {
@@ -353,5 +354,23 @@ describe("NXQLTabComponent", () => {
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
       expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_QUERY);
     });
+  });
+
+  it('should add form controls for video renditions when isFeatureVideoRenditions() returns true', () => {
+    spyOn(component, 'isFeatureVideoRenditions').and.returnValue(true);
+
+    component.ngOnInit();
+
+    expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY)).toBe(true);
+    expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)).toBe(true);
+  });
+
+  it('should not add form controls for video renditions when isFeatureVideoRenditions() returns false', () => {
+    spyOn(component, 'isFeatureVideoRenditions').and.returnValue(false);
+
+    component.ngOnInit();
+
+    expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY)).toBe(false);
+    expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)).toBe(false);
   });
 });

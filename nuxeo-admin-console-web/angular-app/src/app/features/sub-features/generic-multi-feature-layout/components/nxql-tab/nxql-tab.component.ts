@@ -1,7 +1,8 @@
+import { VIDEO_RENDITIONS_LABELS } from './../../../../video-renditions-generation/video-renditions-generation.constants';
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
@@ -67,6 +68,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     GenericModalClosedInfo
   > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
+  VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
@@ -124,6 +126,17 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           this.spinnerVisible = status;
         }
       );
+
+    if (this.isFeatureVideoRenditions()) {
+      this.inputForm.addControl(
+        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+        new FormControl("")
+      );
+      this.inputForm.addControl(
+        VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
+        new FormControl("true")
+      );
+    }
     this.nxqlActionLaunchedSubscription = this.nxqlActionLaunched$.subscribe(
       (data) => {
         if (data?.commandId) {
@@ -141,6 +154,13 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           });
         }
       }
+    );
+  }
+
+  isFeatureVideoRenditions(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
     );
   }
 
@@ -326,7 +346,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
               requestUrl,
               requestParams,
               featureEndpoint: REST_END_POINTS[featureKey as FeaturesKey],
-              requestHeaders
+              requestHeaders,
             })
           );
         } else {

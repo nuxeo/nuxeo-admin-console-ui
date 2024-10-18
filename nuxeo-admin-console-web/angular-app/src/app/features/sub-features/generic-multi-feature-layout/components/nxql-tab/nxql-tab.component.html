@@ -1,13 +1,30 @@
-<form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="nxql-tab-container">
+<form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="nxql-tab-container"  [ngClass]="{'vertical-flex': isFeatureVideoRenditions()}">
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <mat-form-field hyFormField>
         <mat-label>{{ GENERIC_LABELS.NXQL_QUERY }}</mat-label>
-        <textarea matInput [placeholder]="inputPlaceholder" formControlName="inputIdentifier"
-            id="inputIdentifier" required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10" class="resizable-textarea"></textarea>
+        <textarea matInput [placeholder]="inputPlaceholder" formControlName="inputIdentifier" id="inputIdentifier"
+            required cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="10"
+            class="resizable-textarea"></textarea>
         <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
-
-    <button mat-flat-button color="primary" type="submit" class="nxql-tab-container__button" [disabled]="isSubmitBtnDisabled">
+    <ng-container
+        *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)">
+        <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
+            <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
+            <input matInput placeholder="Conversion Names" type="text" formControlName="conversionNames"
+                id="conversionNames" />
+        </mat-form-field>
+        <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
+        <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
+            <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
+            <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
+                <option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</option>
+                <option value="false">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</option>
+            </select>
+        </mat-form-field>
+    </ng-container>
+    <button mat-flat-button color="primary" type="submit" class="nxql-tab-container__button"
+        [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" [disabled]="isSubmitBtnDisabled">
         {{ templateLabels.submitBtnLabel }}
     </button>
     <div class="nxql-tab-hint" [innerHTML]="nxqlQueryHintSanitized"></div>
