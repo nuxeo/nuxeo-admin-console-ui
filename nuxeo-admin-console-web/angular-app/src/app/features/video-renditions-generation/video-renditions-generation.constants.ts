@@ -14,9 +14,9 @@ export const VIDEO_RENDITIONS_LABELS = {
   DOCUMENT_QUERY:
     "ecm:path='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   FOLDER_QUERY:
-    "ecm:uuid='{query}' OR ecm:ancestorId='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
+    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   NXQL_QUERY:
-    "ecm:uuid='{query}' OR ecm:ancestorId='{query}' AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
+    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   NXQL_QUERY_DEFAULT_VALUE:
     "SELECT * FROM Document WHERE ecm:mixinType = 'Video' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND vid:transcodedVideos/0/name IS NULL AND dc:title = 'A video without renditions'",
   VID_TRANSCODED: "vid:transcodedVideos/0/name",
