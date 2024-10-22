@@ -6,9 +6,9 @@ export const PICTURE_RENDITIONS_LABELS = {
     DOCUMENT_QUERY:
     "ecm:path='{query}' AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   FOLDER_QUERY:
-    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
+    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   NXQL_QUERY:
-    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:isVersion = 0",
+    "(ecm:uuid='{query}' OR ecm:ancestorId='{query}') AND ecm:mixinType = 'Picture' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
   NXQL_QUERY_DEFAULT_VALUE:
     "SELECT * FROM Document WHERE ecm:mixinType = 'Picture' AND picture:views/*/title IS NULL AND ecm:isVersion = 0 AND ecm:isProxy = 0 AND ecm:isTrashed = 0 AND dc:title = 'A picture without renditions'",
   };
