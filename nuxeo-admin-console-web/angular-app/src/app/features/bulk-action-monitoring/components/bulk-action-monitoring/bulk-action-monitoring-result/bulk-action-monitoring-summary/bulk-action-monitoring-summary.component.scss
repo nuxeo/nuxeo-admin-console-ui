@@ -1,0 +1,51 @@
+.bulk-action-summary {
+  margin-top: 30px;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    .action-details {
+      .info-icon {
+        position: relative;
+        top: 3px;
+        cursor: pointer;
+        margin-left: 4px;
+        width: auto;
+      }
+    }
+    
+
+    .action-name {
+      font-weight: 550;
+      font-size: 20px;
+    }
+
+    .action-status {
+      margin-left: 5px;
+    }
+
+    h5,
+    p {
+      margin-top: 4px;
+    }
+
+    button {
+      margin-left: 30px;
+      margin-top: 2px;
+    }
+  }
+}
+
+@media (max-width: 962px) {
+  .bulk-action-summary__header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 10px;
+
+    button {
+      margin-left: 0;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+  }
+}

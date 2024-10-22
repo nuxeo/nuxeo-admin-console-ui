@@ -1,3 +1,13 @@
+import { CommonService } from './../../../../shared/services/common.service';
+import { ErrorModalClosedInfo } from "./../../../../shared/types/common.interface";
+import { ErrorModalComponent } from "./../../../../shared/components/error-modal/error-modal.component";
+import {
+  COMMON_LABELS,
+  ERROR_MESSAGES,
+  ERROR_MODAL_LABELS,
+  ERROR_TYPES,
+  MODAL_DIMENSIONS,
+} from "./../../../../shared/constants/common.constants";
 import { NuxeoJSClientService } from "./../../../../shared/services/nuxeo-js-client.service";
 import { ElasticSearchReindexModalComponent } from "../elastic-search-reindex-modal/elastic-search-reindex-modal.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -11,9 +21,6 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ELASTIC_SEARCH_LABELS,
-  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES,
-  ELASTIC_SEARCH_REINDEX_ERROR_TYPES,
-  ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS,
 } from "../../elastic-search-reindex.constants";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
@@ -52,13 +59,8 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     ElasticSearchReindexModalComponent,
     ReindexModalClosedInfo
   >;
-  errorDialogRef: MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  > = {} as MatDialogRef<
-    ElasticSearchReindexModalComponent,
-    ReindexModalClosedInfo
-  >;
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   ELASTIC_SEARCH_LABELS = ELASTIC_SEARCH_LABELS;
   nuxeo: Nuxeo;
   spinnerVisible = false;
@@ -66,13 +68,15 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
   userInput = "";
   decodedUserInput = "";
   isReindexBtnDisabled = false;
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     private elasticSearchReindexService: ElasticSearchReindexService,
     public dialogService: MatDialog,
     private fb: FormBuilder,
     private store: Store<{ folderReindex: FolderReindexState }>,
-    private nuxeoJSClientService: NuxeoJSClientService
+    private nuxeoJSClientService: NuxeoJSClientService,
+    private commonService: CommonService
   ) {
     this.folderReindexForm = this.fb.group({
       documentID: ["", Validators.required],
@@ -101,7 +105,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       this.folderReindexingError$.subscribe((error) => {
         if (error) {
           this.showReindexErrorModal({
-            type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.SERVER_ERROR,
+            type: ERROR_TYPES.SERVER_ERROR,
             details: { status: error.status, message: error.message },
           });
         }
@@ -115,23 +119,15 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
 
   showReindexErrorModal(error: ErrorDetails): void {
     this.elasticSearchReindexService.spinnerStatus.next(false);
-    this.errorDialogRef = this.dialogService.open(
-      ElasticSearchReindexModalComponent,
-      {
-        disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
-        data: {
-          type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.error,
-          title: `${ELASTIC_SEARCH_LABELS.REINDEX_ERRROR_MODAL_TITLE}`,
-          errorMessageHeader: `${ELASTIC_SEARCH_LABELS.REINDEXING_ERROR}`,
-          error,
-          userInput: this.userInput,
-          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
-          isErrorModal: true,
-        },
-      }
-    );
+    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+      disableClose: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        error,
+        userInput: this.userInput
+      },
+    });
     this.errorDialogClosedSubscription = this.errorDialogRef
       .afterClosed()
       .subscribe(() => {
@@ -150,16 +146,13 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
+        height: MODAL_DIMENSIONS.HEIGHT,
+        width: MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.launched,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED_MODAL_TITLE}`,
           launchedMessage: `${ELASTIC_SEARCH_LABELS.REINDEX_LAUNCHED} ${commandId}. ${ELASTIC_SEARCH_LABELS.COPY_MONITORING_ID}`,
-          closeLabel: `${ELASTIC_SEARCH_LABELS.CLOSE_LABEL}`,
           commandId,
-          isLaunchedModal: true,
-          copyActionId: `${ELASTIC_SEARCH_LABELS.COPY_ACTION_ID_BUTTON_LABEL}`,
         },
       }
     );
@@ -187,7 +180,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
     if (this.folderReindexForm?.valid && !this.isReindexBtnDisabled) {
       this.isReindexBtnDisabled = true;
       this.elasticSearchReindexService.spinnerStatus.next(true);
-      this.userInput = this.elasticSearchReindexService.removeLeadingCharacters(
+      this.userInput = this.commonService.removeLeadingCharacters(
         this.folderReindexForm?.get("documentID")?.value.trim()
       );
       /* The single quote is decoded and replaced with encoded backslash and single quotes, to form the request query correctly
@@ -196,17 +189,16 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
         this.decodedUserInput =
-          this.elasticSearchReindexService.decodeAndReplaceSingleQuotes(
+          this.commonService.decodeAndReplaceSingleQuotes(
             decodeURIComponent(this.userInput)
           );
-        const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
-        this.fetchNoOfDocuments(requestQuery);
+          const requestQuery = `${ELASTIC_SEARCH_LABELS.SELECT_BASE_QUERY} ecm:uuid='${this.decodedUserInput}' OR ecm:ancestorId='${this.decodedUserInput}'`;
+          this.fetchNoOfDocuments(requestQuery);
       } catch (error) {
         this.showReindexErrorModal({
-          type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.INVALID_DOC_ID,
+          type: ERROR_TYPES.INVALID_DOC_ID,
           details: {
-            message:
-              ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+            message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
           },
         });
       }
@@ -229,10 +221,9 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             : 0;
           if (documentCount === 0) {
             this.showReindexErrorModal({
-              type: ELASTIC_SEARCH_REINDEX_ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
+              type: ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
               details: {
-                message:
-                  ELASTIC_SEARCH_REINDEX_ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
+                message: ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
               },
             });
           } else {
@@ -247,7 +238,7 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
             err as { response: { json: () => Promise<unknown> } }
           ).response.json();
         } else {
-          return Promise.reject(ELASTIC_SEARCH_LABELS.UNEXPECTED_ERROR);
+          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
         }
       })
       .then((errorJson: unknown) => {
@@ -266,17 +257,12 @@ export class FolderESReindexComponent implements OnInit, OnDestroy {
       ElasticSearchReindexModalComponent,
       {
         disableClose: true,
-        height: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.HEIGHT,
-        width: ELASTIC_SEARCH_REINDEX_MODAL_DIMENSIONS.WIDTH,
+        height: MODAL_DIMENSIONS.HEIGHT,
+        width: MODAL_DIMENSIONS.WIDTH,
         data: {
           type: ELASTIC_SEARCH_LABELS.MODAL_TYPE.confirm,
           title: `${ELASTIC_SEARCH_LABELS.REINDEX_CONFIRMATION_MODAL_TITLE}`,
           message: `${ELASTIC_SEARCH_LABELS.REINDEX_WARNING}`,
-          isConfirmModal: true,
-          abortLabel: `${ELASTIC_SEARCH_LABELS.ABORT_LABEL}`,
-          continueLabel: `${ELASTIC_SEARCH_LABELS.CONTINUE}`,
-          impactMessage: `${ELASTIC_SEARCH_LABELS.IMPACT_MESSAGE}`,
-          confirmContinue: `${ELASTIC_SEARCH_LABELS.CONTINUE_CONFIRMATION}`,
           documentCount,
           timeTakenToReindex: this.getHumanReadableTime(
             documentCount / ELASTIC_SEARCH_LABELS.REFERENCE_POINT
