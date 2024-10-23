@@ -180,7 +180,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.reset();
+    this.inputForm?.get('inputIdentifier')?.reset();
+    if (this.isFeatureVideoRenditions()) {
+      this.inputForm?.get('conversionNames')?.reset();
+    }
     document.getElementById("inputIdentifier")?.focus();
   }
 
