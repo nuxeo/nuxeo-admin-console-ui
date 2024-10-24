@@ -1,7 +1,5 @@
-import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
-import { MODAL_DIMENSIONS } from './../../../../../shared/constants/common.constants';
-import { ErrorModalComponent } from './../../../../../shared/components/error-modal/error-modal.component';
-import { CommonService } from './../../../../../shared/services/common.service';
+import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
+import { CommonService } from "./../../../../../shared/services/common.service";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
@@ -21,15 +19,24 @@ import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
+import { GenericMultiFeatureUtilitiesService } from "../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service";
+import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { MODAL_DIMENSIONS } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
   let fixture: ComponentFixture<BulkActionMonitoringFormComponent>;
   let mockStore: jasmine.SpyObj<Store>;
   let mockCommonService: jasmine.SpyObj<CommonService>;
+  let genericMultiFeatureUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<ErrorModalComponent>>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
+  class genericMultiFeatureUtilitiesServiceStub {
+    removeLeadingCharacters() {
+      return "";
+    }
+  }
   const initialState = {
     bulkActionMonitoringInfo: {
       "entity-type": null,
@@ -77,16 +84,20 @@ describe("BulkActionMonitoringFormComponent", () => {
       providers: [
         FormBuilder,
         { provide: CommonService, useValue: mockCommonService },
+        {
+          provide: GenericMultiFeatureUtilitiesService,
+          useClass: genericMultiFeatureUtilitiesServiceStub,
+        },
         { provide: MatDialog, useValue: mockDialog },
         provideMockStore({ initialState }),
         {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => (key === "bulkActionId" ? "123" : null)
-            })
-          }
-        }
+              get: (key: string) => (key === "bulkActionId" ? "123" : null),
+            }),
+          },
+        },
       ],
     }).compileComponents();
   });
@@ -98,12 +109,16 @@ describe("BulkActionMonitoringFormComponent", () => {
     mockDialog.open.and.returnValue(mockDialogRef);
     mockDialogRef.afterClosed.and.returnValue(of({}));
     store = TestBed.inject(MockStore);
+    genericMultiFeatureUtilitiesService = TestBed.inject(
+      GenericMultiFeatureUtilitiesService
+    ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+    spyOn(genericMultiFeatureUtilitiesService, 'removeLeadingCharacters');
     fixture.detectChanges();
   });
 
   afterEach(() => {
     mockStore.dispatch.calls.reset();
-    mockCommonService.removeLeadingCharacters.calls.reset();
+    genericMultiFeatureUtilitiesService.removeLeadingCharacters.calls.reset();
   });
 
   it("should create", () => {
@@ -128,7 +143,9 @@ describe("BulkActionMonitoringFormComponent", () => {
 
   describe("getErrorMessage", () => {
     it("should return required error message", () => {
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setErrors({required: true,});
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setErrors({
+        required: true,
+      });
       expect(component.getErrorMessage()).toBe(
         BULK_ACTION_LABELS.REQUIRED_BULK_ACTION_ID_ERROR
       );
@@ -143,14 +160,19 @@ describe("BulkActionMonitoringFormComponent", () => {
   describe("onBulkActionFormSubmit", () => {
     it("should handle valid form submission", () => {
       component.isBulkActionBtnDisabled = false;
-      mockCommonService.removeLeadingCharacters.and.returnValue("123");
-      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("123");
+      genericMultiFeatureUtilitiesService.removeLeadingCharacters.and.returnValue("123");
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(
+        "123"
+      );
       spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
-      expect(mockCommonService.removeLeadingCharacters).toHaveBeenCalledWith("123");
-      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.performBulkActionMonitor({ id: "123" }));
+      expect(genericMultiFeatureUtilitiesService.removeLeadingCharacters).toHaveBeenCalledWith(
+        "123"
+      );
+      expect(store.dispatch).toHaveBeenCalledWith(
+        BulkActionMonitoringActions.performBulkActionMonitor({ id: "123" })
+      );
     });
-
   });
 
   describe("ngOnDestroy", () => {
@@ -160,10 +182,18 @@ describe("BulkActionMonitoringFormComponent", () => {
       spyOn(component.errorDialogClosedSubscription, "unsubscribe");
       spyOn(store, "dispatch");
       component.ngOnDestroy();
-      expect(component.bulkActionLaunchedSubscription.unsubscribe).toHaveBeenCalled();
-      expect(component.bulkActionErrorSubscription.unsubscribe).toHaveBeenCalled();
-      expect(component.errorDialogClosedSubscription.unsubscribe).toHaveBeenCalled();
-      expect(store.dispatch).toHaveBeenCalledWith(BulkActionMonitoringActions.resetBulkActionMonitorState());
+      expect(
+        component.bulkActionLaunchedSubscription.unsubscribe
+      ).toHaveBeenCalled();
+      expect(
+        component.bulkActionErrorSubscription.unsubscribe
+      ).toHaveBeenCalled();
+      expect(
+        component.errorDialogClosedSubscription.unsubscribe
+      ).toHaveBeenCalled();
+      expect(store.dispatch).toHaveBeenCalledWith(
+        BulkActionMonitoringActions.resetBulkActionMonitorState()
+      );
     });
   });
 });

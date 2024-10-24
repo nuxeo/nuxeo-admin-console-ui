@@ -1,6 +1,6 @@
 <div class="bulk-action-form-container">
     <form [formGroup]="bulkActionMonitoringForm" (ngSubmit)="onBulkActionFormSubmit()" class="bulk-action-form">
-        <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+        <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
         <mat-form-field hyFormField>
             <mat-label>{{ BULK_ACTION_LABELS.BULK_ACTION_ID }}</mat-label>
             <input matInput placeholder="{{ BULK_ACTION_LABELS.BULK_ACTION_ID }}" type="text"

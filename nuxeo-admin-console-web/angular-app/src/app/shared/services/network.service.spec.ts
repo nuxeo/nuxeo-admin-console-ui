@@ -50,14 +50,15 @@ describe("NetworkService", () => {
 
   it("should call HttpClient.post with the correct URL and data", () => {
     const endpointName = "ELASTIC_SEARCH_REINDEX";
-    const requestData = { key: "value" };
+    const requestData = {};
     nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
       "http://localhost:8080/nuxeo/api/v1"
     );
     service.makeHttpRequest(endpointName, requestData);
     expect(httpClientSpy.post).toHaveBeenCalledWith(
       "http://localhost:8080/nuxeo/api/v1/management/elasticsearch/reindex",
-      requestData
+      requestData,
+      { headers: {} }
     );
   });
 
@@ -72,6 +73,7 @@ describe("NetworkService", () => {
       "http://localhost:8080/nuxeo/api/v1/management/probes",
       {
         params: jasmine.anything(),
+        headers: {}
       }
     );
   });

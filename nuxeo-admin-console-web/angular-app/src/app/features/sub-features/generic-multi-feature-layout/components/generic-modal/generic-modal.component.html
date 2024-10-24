@@ -1,0 +1,54 @@
+<hy-dialog-box class="hy-dialog-box">
+  <hy-dialog-box-header class="hy-dialog-box__header">
+    <hy-dialog-box-title class="hy-dialog-box__title">
+      {{ data.title }}
+    </hy-dialog-box-title>
+  </hy-dialog-box-header>
+
+  <hy-dialog-box-content class="hy-dialog-box__content">
+    <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm else launchMessage;">
+      <div>
+        <p>
+          {{ GENERIC_LABELS.IMPACT_MESSAGE }}
+        </p>
+        <p>This action will impact {{data.documentCount}} 
+          {{data.documentCount === 1 ? 'document' : 'documents'}}
+          and could take approximately {{data.timeTakenForAction}}. {{ GENERIC_LABELS.CONTINUE_CONFIRMATION }}
+        </p>
+      </div>
+    </div>
+
+    <ng-template #launchMessage>
+      <p>{{ data.launchedMessage }}</p>
+      <div id="action-buttons-container">
+        <div class="action-button-group">
+          <button mat-stroked-button color="primary" (click)="seeStatus()">
+            {{ GENERIC_LABELS.SEE_STATUS_LABEL }}
+          </button>
+        </div>
+        <div class="action-button-group">
+          <button mat-stroked-button color="primary" (click)="copyActionId()">
+            {{ GENERIC_LABELS.COPY_ACTION_ID_BUTTON_LABEL }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </hy-dialog-box-content>
+
+  <hy-dialog-box-footer class="hy-dialog-box__footer">
+    <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn" class="hy-dialog-box__button-group">
+      <button mat-stroked-button color="primary" (click)="close()">
+        {{ GENERIC_LABELS.ABORT_LABEL }}
+      </button>
+      <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">
+        {{ GENERIC_LABELS.CONTINUE }}
+      </button>
+    </div>
+
+    <ng-template #closeBtn>
+      <button mat-flat-button color="primary" (click)="close()">
+        {{ GENERIC_LABELS.CLOSE_LABEL }}
+      </button>
+    </ng-template>
+  </hy-dialog-box-footer>
+</hy-dialog-box>
