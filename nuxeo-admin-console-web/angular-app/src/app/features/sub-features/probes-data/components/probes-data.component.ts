@@ -1,3 +1,4 @@
+import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
@@ -6,8 +7,8 @@ import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
 import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
-import { HyToastService } from "@hyland/ui";
 import { HttpErrorResponse } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "probes-data",
@@ -56,7 +57,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     private store: Store<{ probes: ProbeState }>,
     private probeService: ProbeDataService,
     private commonService: CommonService,
-    private toastService: HyToastService
+    private _snackBar: MatSnackBar // private toastService: HyToastService
   ) {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.probes?.probesInfo)
@@ -93,30 +94,43 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
           data?.length > 0 &&
           Object.entries(this.probeLaunched).length > 0
         ) {
-          this.toastService.success(
-            PROBES_LABELS.PROBE_LAUNCHED_SUCCESS.replaceAll(
-              "{probeName}",
-              this.probeLaunched?.name
-            ),
-            {
-              canBeDismissed: true,
-            }
-          );
+          this._snackBar.openFromComponent(CustomSnackBarComponent, {
+            data: {
+              message: PROBES_LABELS.PROBE_LAUNCHED_SUCCESS.replaceAll(
+                "{probeName}",
+                this.probeLaunched?.name
+              ),
+              panelClass: 'success-snack'
+            },
+            duration: 2000,
+            panelClass: ["error-snack"],
+          });
         }
       });
 
     this.probeLaunchedErrorSubscription = this.probeLaunchedError$.subscribe(
       (error) => {
         if (error) {
-          this.toastService.error(
-            PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
-              "{probeName}",
-              this.probeLaunched?.name
-            ),
-            {
-              canBeDismissed: true,
-            }
-          );
+          // this.toastService.error(
+          //   PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
+          //     "{probeName}",
+          //     this.probeLaunched?.name
+          //   ),
+          //   {
+          //     canBeDismissed: true,
+          //   }
+          // );
+          this._snackBar.openFromComponent(CustomSnackBarComponent, {
+            data: {
+              message: PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
+                "{probeName}",
+                this.probeLaunched?.name
+              ),
+              panelClass: 'error-snack'
+            },
+            duration: 2000,
+            panelClass: ["error-snack"],
+          });
         }
       }
     );

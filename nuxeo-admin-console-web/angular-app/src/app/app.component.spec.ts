@@ -15,7 +15,6 @@ import { authActions } from './auth/store/actions';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
 import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component"
-import { HyMaterialIconModule } from "@hyland/ui";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
 import { MatListModule } from '@angular/material/list';
@@ -68,7 +67,7 @@ describe("AppComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent, BaseLayoutComponent, HeaderBarComponent, MenuBarComponent],
-      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule],
+      imports: [CommonModule, MatDialogModule, BaseLayoutModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule],
       providers: [
         { provide: PersistenceService, useClass: persistenceServiceStub },
         { provide: CommonService, useClass: commonServiceStub },

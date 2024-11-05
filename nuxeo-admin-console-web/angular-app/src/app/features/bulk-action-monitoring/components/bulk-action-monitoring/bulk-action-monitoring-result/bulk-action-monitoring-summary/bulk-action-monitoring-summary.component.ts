@@ -1,10 +1,11 @@
+import { CustomSnackBarComponent } from "./../../../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
 import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
 import { Component, Input, OnChanges } from "@angular/core";
-import { HyToastService } from "@hyland/ui";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
 import { Store } from "@ngrx/store";
 import { BulkActionMonitoringState } from "../../../../store/reducers";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "bulk-action-monitoring-summary",
@@ -18,8 +19,8 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   nonRunningText = "";
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   constructor(
-    private toastService: HyToastService,
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>
+    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
+    private _snackBar: MatSnackBar
   ) {}
   ngOnChanges(): void {
     if (this.bulkActionSummary) {
@@ -92,9 +93,15 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   }
 
   onRefresh(): void {
-    this.toastService.success(BULK_ACTION_LABELS.INFORMATION_UPDATED, {
-      canBeDismissed: true,
+    this._snackBar.openFromComponent(CustomSnackBarComponent, {
+      data: {
+        message: BULK_ACTION_LABELS.INFORMATION_UPDATED,
+        panelClass: "success-snack",
+      },
+      duration: 2000,
+      panelClass: ["success-snack"],
     });
+
     this.store.dispatch(
       BulkActionMonitoringActions.performBulkActionMonitor({
         id: this.bulkActionSummary?.commandId,

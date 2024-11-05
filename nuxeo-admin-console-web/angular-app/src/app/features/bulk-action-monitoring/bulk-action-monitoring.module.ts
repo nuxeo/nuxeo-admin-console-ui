@@ -2,23 +2,18 @@ import { BulkActionMonitoringDetailsComponent } from "./components/bulk-action-m
 import { BulkActionMonitoringSummaryComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring-result/bulk-action-monitoring-summary/bulk-action-monitoring-summary.component";
 import { BulkActionMonitoringResultComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring-result/bulk-action-monitoring-result.component";
 import { BulkActionMonitoringFormComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring-form/bulk-action-monitoring-form.component";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { BulkActionMonitoringRoutingModule } from "./bulk-action-monitoring-routing.module";
 import { MatButtonModule } from "@angular/material/button";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyToastModule,
-} from "@hyland/ui";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { HyContentListModule } from "@hyland/ui/content-list";
 import { BulkActionMonitoringComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import {MatSnackBar, MatSnackBarRef, MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -30,8 +25,6 @@ import { BulkActionMonitoringComponent } from "./components/bulk-action-monitori
   ],
   imports: [
     CommonModule,
-    HyMaterialModule,
-    HyFormContainerModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -39,9 +32,8 @@ import { BulkActionMonitoringComponent } from "./components/bulk-action-monitori
     BulkActionMonitoringRoutingModule,
     MatIconModule,
     MatCardModule,
-    HyContentListModule,
-    HyToastModule,
     MatTooltipModule,
+    MatSnackBarModule
   ],
 })
 export class BulkActionMonitoringModule {}

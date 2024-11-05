@@ -8,7 +8,6 @@ import { ProbeDataService } from "../services/probes-data.service";
 import { PROBES_LABELS } from "../probes-data.constants";
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonService } from "../../../../shared/services/common.service";
-import { HyToastService } from "@hyland/ui";
 
 describe("ProbesDataComponent", () => {
   let component: ProbesDataComponent;
@@ -30,7 +29,7 @@ describe("ProbesDataComponent", () => {
   }
 
   beforeEach(async () => {
-    const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success", "error"]);
+   // const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success", "error"]);
     probeServiceSpy = jasmine.createSpyObj("ProbeDataService", [
       "formatToTitleCase",
     ]);
@@ -41,7 +40,7 @@ describe("ProbesDataComponent", () => {
         provideMockStore({ initialState }),
         { provide: CommonService, useClass: CommonServiceStub }, 
         { provide: ProbeDataService, useValue: probeServiceSpy }, 
-        { provide: HyToastService, useValue: toastServiceSpy },
+       // { provide: HyToastService, useValue: toastServiceSpy },
       ],
       schemas: [NO_ERRORS_SCHEMA], 
     }).compileComponents();

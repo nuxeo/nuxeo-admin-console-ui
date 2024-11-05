@@ -1,16 +1,10 @@
 import { BulkActionMonitoringInfo, BulkActionInfoSummary, BulkActionInfoDetails } from './../../../bulk-action-monitoring.interface';
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCardModule } from "@angular/material/card";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary/bulk-action-monitoring-summary.component";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-details/bulk-action-monitoring-details.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringResultComponent } from "./bulk-action-monitoring-result.component";
-import {
-  HyContentListModule,
-  HyMaterialModule,
-  HyToastService,
-} from "@hyland/ui";
 import { provideMockStore } from "@ngrx/store/testing";
 
 describe("BulkActionMonitoringResultComponent", () => {
@@ -40,7 +34,7 @@ describe("BulkActionMonitoringResultComponent", () => {
   };
 
   beforeEach(async () => {
-    const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success"]);
+   // const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success"]);
     await TestBed.configureTestingModule({
       declarations: [
         BulkActionMonitoringResultComponent,
@@ -48,14 +42,11 @@ describe("BulkActionMonitoringResultComponent", () => {
         BulkActionMonitoringSummaryComponent,
       ],
       imports: [
-        HyMaterialModule,
         MatCardModule,
-        HyContentListModule,
-        MatTooltipModule,
         NoopAnimationsModule,
       ],
       providers: [
-        { provide: HyToastService, useValue: toastServiceSpy },
+      //  { provide: HyToastService, useValue: toastServiceSpy },
         provideMockStore({ initialState }),
       ],
     }).compileComponents();

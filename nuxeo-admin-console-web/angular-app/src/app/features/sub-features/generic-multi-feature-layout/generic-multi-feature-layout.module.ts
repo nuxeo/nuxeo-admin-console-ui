@@ -11,11 +11,6 @@ import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
 import { RouterModule } from "@angular/router";
-import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
 import { ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
@@ -28,13 +23,10 @@ import { ReactiveFormsModule } from "@angular/forms";
   imports: [
     CommonModule,
     MatTabsModule,
-    HyMaterialModule,
-    HyFormContainerModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    HyMaterialTabsModule,
     MatProgressSpinnerModule,
     RouterModule,
     genericMultiFeatureLayoutRoutingModule,

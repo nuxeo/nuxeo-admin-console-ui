@@ -4,7 +4,7 @@
             <div class="probes-title" *ngIf="summary">
                 {{ PROBES_LABELS.PROBE_TITLE }}
             </div>
-            <hy-content-list [dataSource]="probesData">
+            <!-- <hy-content-list [dataSource]="probesData">
 
                 <ng-container *ngIf="isColumnVisible('probe')">
                     <hy-content-list-column propertyName="probe" label="Probe">
@@ -26,7 +26,7 @@
                             <img [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
                                 [alt]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
                                 [matTooltip]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
-                                matTooltipClass="hy-tooltip" matTooltipPosition="above" />
+                               matTooltipPosition="above" />
                         </ng-container>
                     </hy-content-list-column>
                 </ng-container>
@@ -135,7 +135,7 @@
                         </button>
                     </ng-container>
                 </hy-content-list-column>
-            </hy-content-list>
+            </hy-content-list> -->
         </mat-card-content>
         <mat-card-footer *ngIf="summary">
             <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()">

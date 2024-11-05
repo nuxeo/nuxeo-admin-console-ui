@@ -1,7 +1,6 @@
 import { HeaderBarComponent } from "./header-bar.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { HyMaterialIconModule } from "@hyland/ui";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
 import { RouterTestingModule } from '@angular/router/testing';
@@ -43,7 +42,6 @@ describe("HeaderBarComponent", () => {
       declarations: [HeaderBarComponent],
       imports: [
         CommonModule,
-        HyMaterialIconModule,
         MatToolbarModule,
         RouterTestingModule,
       ],

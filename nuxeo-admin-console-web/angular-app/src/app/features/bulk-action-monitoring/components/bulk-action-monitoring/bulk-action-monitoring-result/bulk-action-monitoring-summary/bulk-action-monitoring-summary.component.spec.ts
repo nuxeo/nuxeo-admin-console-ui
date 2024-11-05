@@ -1,10 +1,8 @@
 import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
 import { BulkActionInfoSummary } from './../../../../bulk-action-monitoring.interface';
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary.component";
 import { StoreModule } from "@ngrx/store";
-import { HyMaterialModule, HyToastService } from "@hyland/ui";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
 import * as fromReducer from "../../../../store/reducers";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
@@ -12,7 +10,7 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 describe("BulkActionMonitoringSummaryComponent", () => {
   let component: BulkActionMonitoringSummaryComponent;
   let fixture: ComponentFixture<BulkActionMonitoringSummaryComponent>;
-  let toastService: jasmine.SpyObj<HyToastService>;
+ // let toastService: jasmine.SpyObj<HyToastService>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
   const initialState = {
     bulkActionMonitoringInfo: {
@@ -42,21 +40,20 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     await TestBed.configureTestingModule({
       declarations: [BulkActionMonitoringSummaryComponent],
       providers: [
-        { provide: HyToastService, useValue: toastServiceSpy },
+       // { provide: HyToastService, useValue: toastServiceSpy },
         provideMockStore({ initialState }),
       ],
       imports: [
         HyMaterialModule,
         StoreModule.forRoot(provideMockStore),
-        MatTooltipModule,
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringSummaryComponent);
     component = fixture.componentInstance;
-    toastService = TestBed.inject(
-      HyToastService
-    ) as jasmine.SpyObj<HyToastService>;
+    // toastService = TestBed.inject(
+    //   HyToastService
+    // ) as jasmine.SpyObj<HyToastService>;
     store = TestBed.inject(MockStore);
 
     fixture.detectChanges();

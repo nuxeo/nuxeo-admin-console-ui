@@ -5,22 +5,20 @@ import { ProbeDataReducer } from '../../../sub-features/probes-data/store/reduce
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HyContentListModule } from '@hyland/ui/content-list';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { ProbesDataComponent } from '../../../sub-features/probes-data/components/probes-data.component';
-import { HyToastService } from '@hyland/ui';
 
 describe('ProbesSummaryComponent', () => {
   let component: ProbesSummaryComponent;
   let fixture: ComponentFixture<ProbesSummaryComponent>;
 
   beforeEach(async () => {
-    const toastServiceSpy = jasmine.createSpyObj("HyToastService", [
-      "success",
-      "error",
-    ]);
+    // const toastServiceSpy = jasmine.createSpyObj("HyToastService", [
+    //   "success",
+    //   "error",
+    // ]);
     await TestBed.configureTestingModule({
       declarations: [ProbesSummaryComponent, ProbesDataComponent], 
       imports: [
@@ -29,10 +27,9 @@ describe('ProbesSummaryComponent', () => {
         CommonModule,
         MatCardModule,
         HyContentListModule,
-        MatTooltipModule,
         BrowserAnimationsModule,
       ],
-      providers: [{ provide: HyToastService, useValue: toastServiceSpy }],
+    //  providers: [{ provide: HyToastService, useValue: toastServiceSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProbesSummaryComponent);
