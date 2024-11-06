@@ -4,6 +4,7 @@ import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
 import { FolderTabComponent } from "./components/folder-tab/folder-tab.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTabsModule } from "@angular/material/tabs";
 import { NgModule } from "@angular/core";
@@ -12,6 +13,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
 import { RouterModule } from "@angular/router";
 import { ReactiveFormsModule } from "@angular/forms";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { ReactiveFormsModule } from "@angular/forms";
     MatProgressSpinnerModule,
     RouterModule,
     genericMultiFeatureLayoutRoutingModule,
+    MatDialogModule,
+    MatSelectModule
   ],
   exports: [GenericMultiFeatureLayoutComponent],
 })

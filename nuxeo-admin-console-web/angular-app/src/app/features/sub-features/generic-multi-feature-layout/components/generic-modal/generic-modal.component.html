@@ -54,7 +54,8 @@
 </hy-dialog-box> -->
 
 
-<h2 mat-dialog-title> {{ data.title }}</h2>
+<h2> {{ data.title }}</h2>
+<hr class="separator">
 <mat-dialog-content class="mat-typography">
   <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm else launchMessage;">
     <div>
@@ -85,8 +86,9 @@
 
 
 </mat-dialog-content>
+<hr class="separator">
 <mat-dialog-actions>
-  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn" class="hy-dialog-box__button-group">
+  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn">
     <button mat-stroked-button color="primary" (click)="close()">
       {{ GENERIC_LABELS.ABORT_LABEL }}
     </button>

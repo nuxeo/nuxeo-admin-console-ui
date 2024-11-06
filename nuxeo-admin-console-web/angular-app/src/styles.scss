@@ -306,3 +306,95 @@ footer {
   font-size: 16px;
   font-family: "Open Sans", sans-serif;
 }
+
+.mat-mdc-dialog-content .mat-mdc-outlined-button:not(:disabled) {
+  border-color: #767b88;
+}
+
+.mdc-button .mdc-button__label {
+  font-size: 14px;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 550;
+}
+
+.mat-mdc-dialog-content p {
+  font-family: "source sans pro", sans-serif;
+  color: rgb(55, 58, 60);
+}
+
+.mdc-dialog h2 {
+  font-weight: 300;
+  font-size: 32px;
+  font-family: "source sans pro", sans-serif;
+  margin-left: 22px;
+  margin-top: 20px;
+}
+.mdc-dialog .mdc-dialog__content {
+  padding: 5px 24px 8px 24px !important;
+  max-height: 140px;
+  .separator {
+    width: 100%;
+    background-color: #d1d5db;
+  }
+}
+
+.mat-mdc-dialog-actions.mdc-dialog__actions {
+  justify-content: end;
+  padding-right: 25px;
+  margin-top: -6px;
+  button {
+    border-radius: 10px;
+    min-width: 68px;
+    font-family: "Open Sans", sans-serif;
+  }
+  button.mdc-button--outlined {
+    border-color: #767b88;
+  }
+}
+.mat-mdc-dialog-container .mdc-dialog__container .mdc-dialog__surface {
+  border-radius: 12px;
+}
+
+mat-form-field.input-field {
+  max-width: 350px;
+  width: 80%;
+  border-radius: 5px;
+  line-height: 10px;
+  p {
+    font-size: 14px;
+  }
+  &.video-renditions {
+    margin-top: 15px;
+  }
+  mat-error {
+    margin-left: -18px;
+  }
+  .mat-mdc-text-field-wrapper {
+    height: 45px;
+    .mat-mdc-form-field-flex .mat-mdc-floating-label {
+      top: 20px;
+    }
+  }
+  button {
+    font-family: "Open Sans", sans-serif;
+  }
+}
+
+mat-form-field.input-field.textarea {
+  max-width: 600px;
+  width: 80%;
+  min-height: 60px;
+  height: auto;
+
+  .mat-mdc-text-field-wrapper {
+    min-height: 60px;
+    height: auto;
+    .mat-mdc-form-field-flex {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 23px;
+      font-family: Open Sans, sans-serif;
+      letter-spacing: normal;
+    }
+  }
+}

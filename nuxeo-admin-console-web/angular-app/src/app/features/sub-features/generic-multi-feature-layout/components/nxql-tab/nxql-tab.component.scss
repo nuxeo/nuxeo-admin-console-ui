@@ -2,9 +2,8 @@
   padding: 10px 0px 0px 10px;
   #requiredField {
     font-size: 12px;
-    color: #da1500;
+    color: rgb(218, 21, 0);
     font-weight: 400;
-    font-family: "Open Sans";
   }
   &.vertical-flex {
     display: flex;
@@ -18,9 +17,11 @@
     position: relative;
     left: 20px;
     font-size: 16px;
+    top: -25px;
     &.video-renditions {
       left: 0;
       bottom: 0;
+      top: 0;
     }
   }
 }
@@ -43,16 +44,6 @@
   stroke-width: 5px !important;
 }
 
-mat-form-field.hy-form-field {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  max-width: 600px;
-  width: 80%;
-  &.video-renditions {
-    margin-top: 30px;
-  }
-}
-
 .resizable-textarea {
   resize: vertical;
   overflow: auto;
@@ -66,3 +57,11 @@ mat-form-field.hy-form-field {
   font-size: 14px;
   margin-top: -15px;
 }
+
+// p {
+//   font-size: 14px;
+// }
+
+// #label {
+//   line-height: 1px;
+// }
