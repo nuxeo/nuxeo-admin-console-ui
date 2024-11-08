@@ -283,6 +283,7 @@ footer {
   border-radius: 10px;
   color: #000;
   min-width: 250px;
+  width: auto;
 }
 
 .mdc-snackbar.mat-mdc-snack-bar-container.success-snack .mdc-snackbar__label {
@@ -293,11 +294,12 @@ footer {
 }
 
 .mdc-snackbar.mat-mdc-snack-bar-container.error-snack .mdc-snackbar__surface {
-  background-color: lightpink;
-  border: 2px solid palevioletred;
+  background-color: #fff;
+  border: 2px solid red;
   border-radius: 10px;
   color: #000;
   min-width: 250px;
+  width: auto;
 }
 
 .mdc-snackbar.mat-mdc-snack-bar-container.error-snack .mdc-snackbar__label {
@@ -311,11 +313,11 @@ footer {
   border-color: #767b88;
 }
 
-.mdc-button .mdc-button__label {
-  font-size: 14px;
-  font-family: "Open Sans", sans-serif;
-  font-weight: 550;
-}
+// .mdc-button .mdc-button__label {
+//   font-size: 14px;
+//   font-family: "Open Sans", sans-serif;
+//   font-weight: 550;
+// }
 
 .mat-mdc-dialog-content p {
   font-family: "source sans pro", sans-serif;
@@ -364,7 +366,7 @@ mat-form-field.input-field {
     font-size: 14px;
   }
   &.video-renditions {
-    margin-top: 15px;
+  //  margin-top: 15px;
   }
   mat-error {
     margin-left: -18px;
@@ -377,6 +379,7 @@ mat-form-field.input-field {
   }
   button {
     font-family: "Open Sans", sans-serif;
+    font-size: 16px;
   }
 }
 
@@ -397,4 +400,17 @@ mat-form-field.input-field.textarea {
       letter-spacing: normal;
     }
   }
+
+  button.mdc-button {
+    background-color: #0a60ce !important;
+  }
 }
+
+// table .mat-mdc-row .mat-mdc-cell {
+//   padding: 10px 20px 10px 20px;
+// }
+
+// table .mat-mdc-row, .mat-header-row {
+//   height: 32px; /* Adjust row height as needed */
+// }
+ 

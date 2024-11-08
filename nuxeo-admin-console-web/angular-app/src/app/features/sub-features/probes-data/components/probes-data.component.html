@@ -4,138 +4,141 @@
             <div class="probes-title" *ngIf="summary">
                 {{ PROBES_LABELS.PROBE_TITLE }}
             </div>
-            <!-- <hy-content-list [dataSource]="probesData">
+            <div [ngClass]="{'table-container-summary': summary, 'table-container-detail': !summary}">
+                <table mat-table [dataSource]="probesData" class="mat-elevation-z0">
+                    <ng-container matColumnDef="probe">
+                        <ng-container *ngIf="isColumnVisible('probe')">
+                            <th mat-header-cell *matHeaderCellDef sticky> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.PROBE
+                                    }}</strong>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ deriveProbeDisplayName(row?.name) }}</span>
+                            </td>
+                        </ng-container>
 
-                <ng-container *ngIf="isColumnVisible('probe')">
-                    <hy-content-list-column propertyName="probe" label="Probe">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.PROBE }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ deriveProbeDisplayName(row?.name) }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('success')">
-                    <hy-content-list-column propertyName="success" label="Success">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.SUCCESS }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <img [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
-                                [alt]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
-                                [matTooltip]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
-                               matTooltipPosition="above" />
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('neverExecuted')">
-                    <hy-content-list-column propertyName="neverExecuted" label="Last Executed">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.LAST_EXECUTED }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>
-                                {{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED : (row?.history?.lastRun |
-                                date: 'MMMM d, yyyy') }}
-                            </span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('information')">
-                    <hy-content-list-column propertyName="information" label="Information">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.INFORMATION }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ row?.status?.infos?.info }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-
-                <ng-container *ngIf="isColumnVisible('run')">
-                    <hy-content-list-column propertyName="run" label="Run">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.RUN }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ row?.counts?.run }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('successCount')">
-                    <hy-content-list-column propertyName="successCount" label="Success Count">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.SUCCESS_COUNT }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ row?.counts?.success }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('failureCount')">
-                    <hy-content-list-column propertyName="failureCount" label="Failure Count">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.FAILURE_COUNT }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ row?.counts?.failure }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('time')">
-                    <hy-content-list-column propertyName="time" label="Time">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.TIME }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <span>{{ row?.time }}</span>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-
-                <ng-container *ngIf="isColumnVisible('history')">
-                    <hy-content-list-column propertyName="history" label="History">
-                        <ng-container *hyContentListHeader>
-                            <strong>{{ PROBES_LABELS.COLUMN_HEADERS.HISTORY }}</strong>
-                        </ng-container>
-                        <ng-container *hyContentListCell="let row">
-                            <div>
-                                <strong>Last Run: </strong>
-                                <span>{{ row?.history?.lastRun ? (row?.history?.lastRun | date: 'MMMM d, yyyy') :
-                                    PROBES_LABELS.NOT_RUN }}</span>
-                            </div>
-                            <div>
-                                <strong>Last Success: </strong>
-                                <span>{{ row?.history?.lastSuccess ? (row?.history?.lastSuccess | date: 'MMMM d, yyyy')
-                                    : PROBES_LABELS.NOT_RUN }}</span>
-                            </div>
-                            <div>
-                                <strong>Last Fail: </strong>
-                                <span>{{ row?.history?.lastFail ? (row?.history?.lastFail | date: 'MMMM d, yyyy') :
-                                    PROBES_LABELS.NOT_RUN }}</span>
-                            </div>
-                        </ng-container>
-                    </hy-content-list-column>
-                </ng-container>
-                <hy-content-list-column propertyName="actions" label="Actions" *ngIf="!summary">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{ PROBES_LABELS.COLUMN_HEADERS.ACTIONS }}</strong>
                     </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <button class="launch-probe-btn" mat-stroked-button color="primary" (click)="launchProbe(row)">
-                            {{PROBES_LABELS.CHECK_AGAIN}}
-                        </button>
+                    <ng-container matColumnDef="success">
+                        <ng-container *ngIf="isColumnVisible('success')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.SUCCESS
+                                    }}</strong>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <img [src]="determineImageSource(row?.status?.neverExecuted, row?.status?.success)"
+                                    [alt]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
+                                    [matTooltip]="formatTooltipText(row?.status?.neverExecuted ? 'unknown' : row?.status?.success)"
+                                    matTooltipPosition="above" />
+                            </td>
+                        </ng-container>
+
                     </ng-container>
-                </hy-content-list-column>
-            </hy-content-list> -->
+                    <ng-container matColumnDef="neverExecuted">
+                        <ng-container *ngIf="isColumnVisible('neverExecuted')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.LAST_EXECUTED
+                                    }}</strong> </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>
+                                    {{ row?.status?.neverExecuted ? PROBES_LABELS.NEVER_EXECUTED :
+                                    (row?.history?.lastRun |
+                                    date: 'MMMM d, yyyy') }}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="information">
+                        <ng-container *ngIf="isColumnVisible('information')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.INFORMATION
+                                    }}</strong> </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ row?.status?.infos?.info }}</span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="run">
+                        <ng-container *ngIf="isColumnVisible('run')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.RUN
+                                    }}</strong>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ row?.counts?.run }}</span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="successCount">
+                        <ng-container *ngIf="isColumnVisible('successCount')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.SUCCESS_COUNT
+                                    }}</strong> </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ row?.counts?.success }}</span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="failureCount">
+                        <ng-container *ngIf="isColumnVisible('failureCount')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.FAILURE_COUNT
+                                    }}</strong> </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ row?.counts?.failure }}</span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="time">
+                        <ng-container *ngIf="isColumnVisible('time')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.TIME
+                                    }}</strong>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span>{{ row?.time }}</span>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="history">
+                        <ng-container *ngIf="isColumnVisible('history')">
+                            <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.HISTORY
+                                    }}</strong>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <div>
+                                    <strong>Last Run: </strong>
+                                    <span>{{ row?.history?.lastRun ? (row?.history?.lastRun | date: 'MMMM d, yyyy') :
+                                        PROBES_LABELS.NOT_RUN }}</span>
+                                </div>
+                                <div>
+                                    <strong>Last Success: </strong>
+                                    <span>{{ row?.history?.lastSuccess ? (row?.history?.lastSuccess | date: 'MMMM d,
+                                        yyyy')
+                                        : PROBES_LABELS.NOT_RUN }}</span>
+                                </div>
+                                <div>
+                                    <strong>Last Fail: </strong>
+                                    <span>{{ row?.history?.lastFail ? (row?.history?.lastFail | date: 'MMMM d, yyyy') :
+                                        PROBES_LABELS.NOT_RUN }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.ACTIONS
+                                }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <button class="launch-probe-btn" mat-stroked-button color="primary"
+                                (click)="launchProbe(row)">
+                                {{PROBES_LABELS.CHECK_AGAIN}}
+                            </button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+                </table>
+            </div>
+
         </mat-card-content>
         <mat-card-footer *ngIf="summary">
             <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()">
@@ -143,4 +146,5 @@
             </button>
         </mat-card-footer>
     </mat-card>
+
 </div>

@@ -1,15 +1,28 @@
 .document-tab-container {
   padding: 10px 0px 0px 10px;
+  .required-indicator {
+    color: rgb(218, 21, 0);
+    // font-size: 24px;
+     font-family: "Open Sans", sans-serif;
+    // font-weight: 50;
+     padding-left: 2px;
+  }
   &.vertical-flex {
     display: flex;
     flex-direction: column;
     align-items: stretch;
   }
   #requiredField {
-    font-size: 12px;
+    font-size: 14px;
     color: rgb(218, 21, 0);
+    font-family: "Open Sans";
+    line-height: 1;
+  }
+  .label {
+    line-height: 1;
+    margin: 5px;
+    font-size: 14px;
     font-weight: 400;
-  //  font-family: "Open Sans";
   }
   &__button {
     border-radius: 4px !important;
@@ -18,8 +31,11 @@
     position: relative;
     left: 20px;
     font-size: 16px;
-    bottom: 3px;
+    bottom: 6px;
     font-family: "Open Sans", sans-serif;
+    font-weight: 550;
+    letter-spacing: normal;
+    background-color: #0a60ce !important;
     &.video-renditions {
       left: 0;
       bottom: 0;
@@ -29,11 +45,4 @@
     font-size: 14px;
     margin-top: -15px;
   }
-  // p {
-  //   font-size: 14px;
-  // }
-
-  // #label {
-  //   line-height: 1px;
-  // }
 }

@@ -1,57 +1,85 @@
 mat-card {
-    height: 97%;
-    min-height: 300px ;
-    min-width: 400px;
-  }
-  
-  .mat-mdc-card-content:first-child {
-    padding-top: 0;
-  }
-  
-  .mat-mdc-card-content {
-    height: 100%;
-    width: 100%;
-  }
-  
-  .probes-title {
-    margin-left: 21px;
-    color: black;
-  }
-  
-  ::ng-deep .hy-content-list__custom-cell {
-    max-height: max-content !important; 
-  }
+  height: 97%;
+  min-height: 300px;
+  min-width: 400px;
+  border-radius: 12px;
+}
 
-  .probes-data {
-    height: 100%;
-    h1 {
-        font-size: 20px;
-        font-weight: 500;
-        width: fit-content;
-      }
-  }
+.mat-mdc-card-content:first-child {
+  padding-top: 0;
+}
 
+.mat-mdc-card-content {
+  height: 100%;
+  width: 100%;
+}
+
+.probes-title {
+  margin-left: 35px;
+  margin-top: 25px;
+  color: black;
+}
+
+::ng-deep .hy-content-list__custom-cell {
+  max-height: max-content !important;
+}
+
+.probes-data {
+  height: 100%;
+  h1 {
+    font-size: 20px;
+    font-weight: 500;
+    width: fit-content;
+  }
+}
+
+.redirect-details-btn {
+  border-radius: 4px;
+  width: 100px;
+  height: 36px;
+  position: relative;
+  left: 85%;
+  // top: 40%;
+  margin-bottom: 20px;
+  background-color: #0a60ce !important;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 550;
+  letter-spacing: normal;
+}
+
+.launch-probe-btn.mdc-button.mat-mdc-button-base {
+  line-height: 16px !important;
+  height: 40px !important;
+  border-color: #767b88;
+  color: #0a60ce !important;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 550;
+}
+
+mat-card-footer {
+  margin-top: 30px;
+}
+
+.table-container-summary {
+  max-height: 250px;
+  overflow: auto;
+}
+.table-container-detail {
+  max-height: 550px;
+  overflow: auto;
+}
+@media (width < 800px) {
   .redirect-details-btn {
-    border-radius: 4px;
-    width: 100px;
-    height: 36px;
-    position: relative;
-    left: 85%;
-    top: 40%;
-    margin-bottom: 20px;
+    left: 75%;
   }
+}
 
-  .launch-probe-btn.mdc-button.mat-mdc-button-base {
-    line-height: 16px !important;
-    height: 40px !important
-  }
-
-  mat-card-footer {
-    margin-top: 30px;
-  }
-
-  @media (width < 800px) {
-    .redirect-details-btn {
-      left: 75%; 
-    }
-  }
+table {
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 20px;
+  // .mat-mdc-row,
+  // .mat-mdc-row .mat-mdc-cell {
+  //   padding: 10px 20px 10px 20px;
+  // }
+}

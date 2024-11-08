@@ -98,7 +98,7 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
         message: BULK_ACTION_LABELS.INFORMATION_UPDATED,
         panelClass: "success-snack",
       },
-      duration: 2000,
+      duration: 5000,
       panelClass: ["success-snack"],
     });
 

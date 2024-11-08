@@ -21,7 +21,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
-  columnsToDisplay: { propertyName: string; label: string }[] = [];
+  columnsToDisplay: string[] = [];
 
   defaultColumns = [
     { propertyName: "probe", label: "Probe", summaryOnly: true },
@@ -45,6 +45,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     },
     { propertyName: "time", label: "Time", summaryOnly: false },
     { propertyName: "history", label: "History", summaryOnly: false },
+    { propertyName: "actions", label: "Actions", summaryOnly: false },
   ];
   hideTitle = true;
   probeLaunchedSuccessSubscription = new Subscription();
@@ -57,7 +58,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     private store: Store<{ probes: ProbeState }>,
     private probeService: ProbeDataService,
     private commonService: CommonService,
-    private _snackBar: MatSnackBar // private toastService: HyToastService
+    private _snackBar: MatSnackBar
   ) {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.probes?.probesInfo)
@@ -70,9 +71,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     );
   }
   ngOnInit(): void {
-    this.columnsToDisplay = this.defaultColumns.filter((column) =>
-      this.summary ? column.summaryOnly : true
-    );
+    this.columnsToDisplay = this.defaultColumns
+      .filter((column) => this.summary ? column.summaryOnly: true)
+      .map((column) => column.propertyName);
     this.hideTitle = !this.defaultColumns.some(
       (col) => col.summaryOnly && this.summary
     );
@@ -87,6 +88,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
       }
     );
 
+
     this.probeLaunchedSuccessSubscription =
       this.probeLaunchedSuccess$.subscribe((data) => {
         if (
@@ -100,9 +102,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
                 "{probeName}",
                 this.probeLaunched?.name
               ),
-              panelClass: 'success-snack'
+              panelClass: "success-snack",
             },
-            duration: 2000,
+            duration: 5000,
             panelClass: ["error-snack"],
           });
         }
@@ -111,24 +113,15 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     this.probeLaunchedErrorSubscription = this.probeLaunchedError$.subscribe(
       (error) => {
         if (error) {
-          // this.toastService.error(
-          //   PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
-          //     "{probeName}",
-          //     this.probeLaunched?.name
-          //   ),
-          //   {
-          //     canBeDismissed: true,
-          //   }
-          // );
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
               message: PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
                 "{probeName}",
                 this.probeLaunched?.name
               ),
-              panelClass: 'error-snack'
+              panelClass: "error-snack",
             },
-            duration: 2000,
+            duration: 5000,
             panelClass: ["error-snack"],
           });
         }
@@ -156,7 +149,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
 
   isColumnVisible(propertyName: string): boolean {
     return this.columnsToDisplay.some(
-      (column) => column.propertyName === propertyName
+      (column) => column === propertyName
     );
   }
 

@@ -7,9 +7,9 @@
     .action-details {
       .info-icon {
         position: relative;
-        top: 3px;
+        top: 10px;
         cursor: pointer;
-        margin-left: 4px;
+        margin-left: 5px;
         width: auto;
       }
     }
@@ -37,6 +37,10 @@
   }
 
   
+}
+
+mat-icon {
+  font-size: 16px;
 }
 
 
