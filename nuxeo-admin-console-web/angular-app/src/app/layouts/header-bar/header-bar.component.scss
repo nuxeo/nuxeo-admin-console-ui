@@ -9,24 +9,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 5px;
-    margin-top: 5px;
-    button {
-      width: auto;
-      height: auto;
-      border: none;
-      &.mat-stroked-button {
-        border: none !important;  
-        box-shadow: none;         
-        background-color: transparent;  
-      }
-
-      &:focus,
-      &:hover {
-        background-color: transparent;
-        cursor: pointer;
-        border-radius: 0;
-      }
+    margin: 5px 0 5px 2px;
+    .brand-button {
+      padding: 10px;
     }
 
     img {
@@ -61,6 +46,12 @@
         height: 40px;
       }
     }
+  }
+
+  & .logout-btn {
+    border-radius: 8px;
+    padding: 0 16px;
+    border-color: #6b7280;
   }
 }
 @media (width < 600px) {

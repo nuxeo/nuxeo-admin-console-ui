@@ -1,6 +1,6 @@
 <mat-toolbar class="header-bar">
   <div class="header-bar__branding">
-    <a href="#" aria-label="branding icon" (click)="navigateToHome()" class="brand-button">
+    <a href="" aria-label="branding icon" (click)="navigateToHome()" class="brand-button">
       <img src="assets/images/logo.svg" alt="Nuxeo Logo" />
     </a>
     <span class="header-bar__branding__title">{{ BRAND_TITLE }}</span>
@@ -10,7 +10,7 @@
     <span *ngIf="displayName" class="header-bar__branding__username">
       {{ displayName }}
     </span>
-    <button mat-stroked-button (click)="onSignOut()" aria-label="Logout">
+    <button mat-stroked-button (click)="onSignOut()" aria-label="Logout" class="logout-btn">
       <mat-icon>logout</mat-icon> {{ LOGOUT }}
     </button>
   </div>
