@@ -14,6 +14,7 @@ import { MatInputModule } from "@angular/material/input";
 import { BulkActionMonitoringComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import {MatSnackBar, MatSnackBarRef, MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatTableModule } from "@angular/material/table";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {MatSnackBar, MatSnackBarRef, MatSnackBarModule} from '@angular/material/
     MatIconModule,
     MatCardModule,
     MatTooltipModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTableModule
   ],
 })
 export class BulkActionMonitoringModule {}

@@ -21,6 +21,7 @@ body {
   color: #373a3c;
   background-color: #f4f4f4;
   height: 100%;
+  letter-spacing: normal;
 }
 
 a {
@@ -313,15 +314,10 @@ footer {
   border-color: #767b88;
 }
 
-// .mdc-button .mdc-button__label {
-//   font-size: 14px;
-//   font-family: "Open Sans", sans-serif;
-//   font-weight: 550;
-// }
-
 .mat-mdc-dialog-content p {
   font-family: "source sans pro", sans-serif;
   color: rgb(55, 58, 60);
+  letter-spacing: normal;
 }
 
 .mdc-dialog h2 {
@@ -348,6 +344,9 @@ footer {
     border-radius: 10px;
     min-width: 68px;
     font-family: "Open Sans", sans-serif;
+    font-weight: 550;
+    letter-spacing: normal;
+    background-color: #0a60ce !important;
   }
   button.mdc-button--outlined {
     border-color: #767b88;
@@ -405,12 +404,4 @@ mat-form-field.input-field.textarea {
     background-color: #0a60ce !important;
   }
 }
-
-// table .mat-mdc-row .mat-mdc-cell {
-//   padding: 10px 20px 10px 20px;
-// }
-
-// table .mat-mdc-row, .mat-header-row {
-//   height: 32px; /* Adjust row height as needed */
-// }
  

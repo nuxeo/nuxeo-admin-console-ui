@@ -1,3 +1,9 @@
 :host ::ng-deep hy-dialog-box-title .mat-title {
   font-weight: 300;
 }
+.separator {
+  margin-top: 1.5rem;
+}
+.mat-mdc-dialog-actions.mdc-dialog__actions {
+  margin-top: 0;
+}

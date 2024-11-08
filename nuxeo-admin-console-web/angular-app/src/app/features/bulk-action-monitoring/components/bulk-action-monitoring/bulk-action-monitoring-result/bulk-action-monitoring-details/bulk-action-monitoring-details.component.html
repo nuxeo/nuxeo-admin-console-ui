@@ -15,62 +15,62 @@
             <p class="title">
                 {{BULK_ACTION_LABELS.ADDITIONAL_INFORMATION}}
             </p>
-            <!-- <hy-content-list [dataSource]="additionalInfoDataSrc">
-                <hy-content-list-column propertyName="scrollStart" label="[BULK_ACTION_LABELS.SCROLL_START]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.SCROLL_START}}</strong>
+            <div class="bulk-action-details-container">
+                <table mat-table [dataSource]="additionalInfoDataSrc" class="mat-elevation-z0">
+                    <ng-container matColumnDef="scrollStart">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.SCROLL_START }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.scrollStart ? (row.scrollStart | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                                'NA'}}</span>
+                        </td>
                     </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.scrollStart ? (row.scrollStart | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
-                            'NA'}}</span>
+                    <ng-container matColumnDef="scrollEnd">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.SCROLL_END }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.scrollEnd ? (row.scrollEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                                'NA'}}</span>
+                        </td>
                     </ng-container>
-                </hy-content-list-column>
-                <hy-content-list-column propertyName="scrollEnd" label="[BULK_ACTION_LABELS.SCROLL_END]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.SCROLL_END}}</strong>
+                    <ng-container matColumnDef="processingStart">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.PROCESSING_START
+                                }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.processingStart ? (row.processingStart | date:'MMM d, h:mm:ss a \'UTC\'' :
+                                'UTC') :
+                                'NA' }}</span>
+                        </td>
                     </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.scrollEnd ? (row.scrollEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
-                            'NA'}}</span>
+                    <ng-container matColumnDef="processingEnd">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.PROCESSING_END }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.processingEnd ? (row.processingEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                                'NA'}}</span>
+                        </td>
                     </ng-container>
-                </hy-content-list-column>
-                <hy-content-list-column propertyName="processingStart" label="[BULK_ACTION_LABELS.PROCESSING_START]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.PROCESSING_START}}</strong>
+                    <ng-container matColumnDef="completed">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.COMPLETED_ON }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.completed ? (row.completed | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
+                                'NA'}}</span>
+                        </td>
                     </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.processingStart ? (row.processingStart | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
-                            'NA' }}</span>
+                    <ng-container matColumnDef="processingMillis">
+                        <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.PROCESSING_TIME }}</strong>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            <span>{{row.processingMillis}}</span>
+                        </td>
                     </ng-container>
-                </hy-content-list-column>
-                <hy-content-list-column propertyName="processingEnd" label="[BULK_ACTION_LABELS.PROCESSING_END]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.PROCESSING_END}}</strong>
-                    </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.processingEnd ? (row.processingEnd | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
-                            'NA'}}</span>
-                    </ng-container>
-                </hy-content-list-column>
-                <hy-content-list-column propertyName="completed" label="[BULK_ACTION_LABELS.COMPLETED_ON]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.COMPLETED_ON}}</strong>
-                    </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.completed ? (row.completed | date:'MMM d, h:mm:ss a \'UTC\'' : 'UTC') :
-                            'NA'}}</span>
-                    </ng-container>
-                </hy-content-list-column>
-                <hy-content-list-column propertyName="processingMillis" label="[BULK_ACTION_LABELS.PROCESSING_TIME]">
-                    <ng-container *hyContentListHeader>
-                        <strong>{{BULK_ACTION_LABELS.PROCESSING_TIME}}</strong>
-                    </ng-container>
-                    <ng-container *hyContentListCell="let row">
-                        <span>{{row.processingMillis}}</span>
-                    </ng-container>
-                </hy-content-list-column>
 
-            </hy-content-list> -->
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+                </table>
+            </div>
         </mat-card-content>
     </mat-card>
 </div>

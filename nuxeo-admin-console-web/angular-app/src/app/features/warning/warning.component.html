@@ -22,20 +22,21 @@
         </div>
     </hy-dialog-box-footer>
 </hy-dialog-box> -->
-
-<mat-dialog-content class="mat-typography warning-dialog">
-    <p class="warning-dialog__title">{{ WARNING_LABELS.TITLE }}</p>
-    <p>
-        {{ WARNING_LABELS.CONTENT }}
-        {{ WARNING_LABELS.SUBHEADING_CAPTION }}
-    </p>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <div class="warning-dialog__checkbox-container">
-        <mat-checkbox color="primary" [(ngModel)]="doNotWarn">{{ WARNING_LABELS.CHECKBOX_LABEL }}</mat-checkbox>
-    </div>
-
-    <div class="warning-dialog__button-container">
-        <button mat-flat-button color="primary" (click)="onConfirm()">{{ WARNING_LABELS.BUTTON_LABEL }}</button>
-    </div>
-</mat-dialog-actions>
+<div class="warning-dialog">
+    <mat-dialog-content class="mat-typography warning-dialog__content">
+        <p class="warning-dialog__title">{{ WARNING_LABELS.TITLE }}</p>
+        <p>
+            {{ WARNING_LABELS.CONTENT }}
+            {{ WARNING_LABELS.SUBHEADING_CAPTION }}
+        </p>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <div class="warning-dialog__checkbox-container">
+            <mat-checkbox color="primary" [(ngModel)]="doNotWarn">{{ WARNING_LABELS.CHECKBOX_LABEL }}</mat-checkbox>
+        </div>
+    
+        <div class="warning-dialog__button-container">
+            <button mat-flat-button color="primary" (click)="onConfirm()">{{ WARNING_LABELS.BUTTON_LABEL }}</button>
+        </div>
+    </mat-dialog-actions>
+</div>

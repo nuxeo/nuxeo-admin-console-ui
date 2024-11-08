@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!doNotWarn) {
           this.dialogService.open(WarningComponent, {
             disableClose: true,
+            hasBackdrop: true
           });
           this.loadAppSubscription = this.commonService.loadApp.subscribe(load => {
             this.loadApp = load;

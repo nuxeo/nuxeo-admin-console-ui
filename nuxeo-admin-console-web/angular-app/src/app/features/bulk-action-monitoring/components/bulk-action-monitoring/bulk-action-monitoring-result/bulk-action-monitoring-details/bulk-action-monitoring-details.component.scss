@@ -9,6 +9,7 @@
 
   &__info {
     height: 220px;
+    width: 16%;
     p {
       font-weight: 550;
     }
@@ -29,8 +30,15 @@
 
   &__additional-info {
     margin-left: 10px;
-    width: 74%;
+    width: 75%;
     height: 220px;
+  }
+
+  mat-card.mat-mdc-card {
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+    padding: 25px;
   }
 
   .mat-mdc-card-content {
