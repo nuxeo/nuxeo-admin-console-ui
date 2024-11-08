@@ -2,7 +2,14 @@ mat-card {
   height: 97%;
   min-height: 300px;
   min-width: 400px;
-  border-radius: 12px;
+
+  &.mdc-card {
+    border-radius: 12px;
+    padding: 24px;
+    background: white;
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+  }
 }
 
 .mat-mdc-card-content:first-child {
@@ -15,8 +22,7 @@ mat-card {
 }
 
 .probes-title {
-  margin-left: 35px;
-  margin-top: 25px;
+  margin-left: 15px;
   color: black;
 }
 
@@ -39,7 +45,7 @@ mat-card {
   height: 36px;
   position: relative;
   left: 85%;
-  // top: 40%;
+  top: 30%;
   margin-bottom: 20px;
   background-color: #0a60ce !important;
   font-family: "Open Sans", sans-serif;
@@ -61,8 +67,11 @@ mat-card-footer {
 }
 
 .table-container-summary {
-  max-height: 250px;
+  height: 100%;
   overflow: auto;
+  will-change: scroll-position;
+  contain: strict;
+  -webkit-overflow-scrolling: touch;
 }
 .table-container-detail {
   max-height: 550px;
@@ -76,8 +85,8 @@ mat-card-footer {
 
 table {
   width: 100%;
-  margin-top: 10px;
-  margin-left: 20px;
+  // margin-top: 10px;
+  // margin-left: 20px;
   // .mat-mdc-row,
   // .mat-mdc-row .mat-mdc-cell {
   //   padding: 10px 20px 10px 20px;
