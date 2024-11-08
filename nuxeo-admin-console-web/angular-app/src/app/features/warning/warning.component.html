@@ -23,18 +23,20 @@
     </hy-dialog-box-footer>
 </hy-dialog-box> -->
 <div class="warning-dialog">
+    <h2 class="warning-dialog__title">{{ WARNING_LABELS.TITLE }}</h2>
+    <hr class="separator">
     <mat-dialog-content class="mat-typography warning-dialog__content">
-        <p class="warning-dialog__title">{{ WARNING_LABELS.TITLE }}</p>
-        <p>
-            {{ WARNING_LABELS.CONTENT }}
-            {{ WARNING_LABELS.SUBHEADING_CAPTION }}
-        </p>
+        <h3 class="warning-dialog__subheading-text">
+            {{ WARNING_LABELS.CONTENT }} </h3>
+        <p class="warning-dialog__subheading-caption"> {{ WARNING_LABELS.SUBHEADING_CAPTION }}</p>
+
     </mat-dialog-content>
+    <hr class="separator">
     <mat-dialog-actions>
         <div class="warning-dialog__checkbox-container">
             <mat-checkbox color="primary" [(ngModel)]="doNotWarn">{{ WARNING_LABELS.CHECKBOX_LABEL }}</mat-checkbox>
         </div>
-    
+
         <div class="warning-dialog__button-container">
             <button mat-flat-button color="primary" (click)="onConfirm()">{{ WARNING_LABELS.BUTTON_LABEL }}</button>
         </div>

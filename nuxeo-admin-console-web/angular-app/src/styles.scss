@@ -314,7 +314,8 @@ footer {
   border-color: #767b88;
 }
 
-.mat-mdc-dialog-content p {
+.mat-mdc-dialog-content.generic-modal p,
+.mat-mdc-dialog-content.error-modal p {
   font-family: "source sans pro", sans-serif;
   color: rgb(55, 58, 60);
   letter-spacing: normal;
@@ -327,7 +328,8 @@ footer {
   margin-left: 22px;
   margin-top: 20px;
 }
-.mdc-dialog .mdc-dialog__content {
+.mdc-dialog .mdc-dialog__content.generic-modal,
+.mdc-dialog .mdc-dialog__content.error-modal {
   padding: 5px 24px 8px 24px !important;
   max-height: 140px;
   .separator {
@@ -404,4 +406,3 @@ mat-form-field.input-field.textarea {
     background-color: #0a60ce !important;
   }
 }
- 

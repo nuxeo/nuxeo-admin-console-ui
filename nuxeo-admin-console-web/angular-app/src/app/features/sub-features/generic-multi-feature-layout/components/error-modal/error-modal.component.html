@@ -1,6 +1,6 @@
 <h2> {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }} </h2>
 <hr class="separator">
-<mat-dialog-content class="mat-typography">
+<mat-dialog-content class="mat-typography error-modal">
   <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
     <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
     <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
