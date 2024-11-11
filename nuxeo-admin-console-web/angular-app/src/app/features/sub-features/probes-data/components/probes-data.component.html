@@ -135,13 +135,15 @@
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-                    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+                    <tr mat-row *matRowDef="let row; columns: columnsToDisplay; let i = index"
+                        [ngClass]="{'highlight': selectedRowIndex === i}" (focus)="highlightRow(i)" tabindex="0">
+                    </tr>
                 </table>
             </div>
 
         </mat-card-content>
         <mat-card-footer *ngIf="summary">
-            <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()">
+            <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()" tabindex="0">
                 {{ PROBES_LABELS.DETAILS }}
             </button>
         </mat-card-footer>

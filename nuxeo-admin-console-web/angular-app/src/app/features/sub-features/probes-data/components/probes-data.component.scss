@@ -26,10 +26,6 @@ mat-card {
   color: black;
 }
 
-::ng-deep .hy-content-list__custom-cell {
-  max-height: max-content !important;
-}
-
 .probes-data {
   height: 100%;
   h1 {
@@ -85,4 +81,13 @@ mat-card-footer {
 
 table {
   width: 100%;
+}
+
+.highlight {
+  background: #e5effb;
+  border-left: 4px solid #0560cb;
+}
+
+tr:focus {
+  outline: none;
 }

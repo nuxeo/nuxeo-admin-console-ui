@@ -22,6 +22,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
+  selectedRowIndex = -1;
 
   defaultColumns = [
     { propertyName: "probe", label: "Probe", summaryOnly: true },
@@ -157,6 +158,10 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   launchProbe(probe: ProbesInfo): void {
     this.probeLaunched = probe;
     this.store.dispatch(ProbeActions.launchProbe({ probeName: probe.name }));
+  }
+
+  highlightRow(index: number): void {
+    this.selectedRowIndex = index;
   }
 
   ngOnDestroy(): void {
