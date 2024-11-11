@@ -6,11 +6,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
-import {
   MatDialog,
   MatDialogRef,
   MatDialogModule,
@@ -82,13 +77,10 @@ describe("NXQLTabComponent", () => {
         BrowserAnimationsModule,
         CommonModule,
         MatTabsModule,
-        HyMaterialModule,
-        HyFormContainerModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        HyMaterialTabsModule,
         MatProgressSpinnerModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
@@ -148,6 +140,7 @@ describe("NXQLTabComponent", () => {
 
     expect(dialogService.open).toHaveBeenCalledWith(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -180,6 +173,7 @@ describe("NXQLTabComponent", () => {
     expect(showActionLaunchedModalSpy).toHaveBeenCalledWith(commandId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -293,6 +287,7 @@ describe("NXQLTabComponent", () => {
     expect(showConfirmationModalSpy).toHaveBeenCalledWith(2, documentId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {

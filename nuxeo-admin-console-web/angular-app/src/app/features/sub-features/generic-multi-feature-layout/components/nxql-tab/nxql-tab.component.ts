@@ -168,6 +168,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {

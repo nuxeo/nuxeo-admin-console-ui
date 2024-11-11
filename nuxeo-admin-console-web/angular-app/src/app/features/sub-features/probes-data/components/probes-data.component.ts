@@ -72,7 +72,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.columnsToDisplay = this.defaultColumns
-      .filter((column) => this.summary ? column.summaryOnly: true)
+      .filter((column) => (this.summary ? column.summaryOnly : true))
       .map((column) => column.propertyName);
     this.hideTitle = !this.defaultColumns.some(
       (col) => col.summaryOnly && this.summary
@@ -87,7 +87,6 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
         }
       }
     );
-
 
     this.probeLaunchedSuccessSubscription =
       this.probeLaunchedSuccess$.subscribe((data) => {
@@ -148,9 +147,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   }
 
   isColumnVisible(propertyName: string): boolean {
-    return this.columnsToDisplay.some(
-      (column) => column === propertyName
-    );
+    return this.columnsToDisplay.some((column) => column === propertyName);
   }
 
   viewDetails(): void {

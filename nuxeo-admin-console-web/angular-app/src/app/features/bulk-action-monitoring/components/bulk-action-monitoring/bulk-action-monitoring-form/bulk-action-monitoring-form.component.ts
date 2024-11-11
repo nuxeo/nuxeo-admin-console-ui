@@ -112,6 +112,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     );
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {

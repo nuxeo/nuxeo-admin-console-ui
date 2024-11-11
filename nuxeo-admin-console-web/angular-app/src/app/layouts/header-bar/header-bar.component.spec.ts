@@ -12,6 +12,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { UserInterface } from "../../shared/types/user.interface";
 import { authActions } from "../../auth/store/actions";
+import { MatIconModule } from "@angular/material/icon";
 
 describe("HeaderBarComponent", () => {
   let component: HeaderBarComponent;
@@ -44,6 +45,7 @@ describe("HeaderBarComponent", () => {
         CommonModule,
         MatToolbarModule,
         RouterTestingModule,
+        MatIconModule
       ],
       providers: [
         provideMockStore({ initialState: initialAuthState }),

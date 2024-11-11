@@ -6,7 +6,7 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AuthStateInterface } from '../../auth/types/authState.interface';
 import { UserInterface } from '../../shared/types/user.interface';
-import { WARNING_DIALOG_CONSTANTS } from './warning,constants'; 
+import { WARNING_DIALOG_CONSTANTS } from './warning.constants'; 
 
 @Component({
   selector: "warning",

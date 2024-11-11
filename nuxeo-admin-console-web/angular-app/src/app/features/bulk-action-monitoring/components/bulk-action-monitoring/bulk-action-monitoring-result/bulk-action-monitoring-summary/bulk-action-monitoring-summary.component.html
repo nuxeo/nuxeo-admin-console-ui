@@ -10,8 +10,8 @@
             <ng-template #runningState>
                 <span class="action-status">{{getRunningStatusText()}}</span>
             </ng-template>
-            <mat-icon class="info-icon" aria-hidden="false" [matTooltip]="getTooltipText()"
-                 matTooltipPosition="above" tabindex="0">info</mat-icon>
+            <mat-icon class="info-icon" aria-hidden="false" [matTooltip]="getTooltipText()" matTooltipPosition="above"
+                tabindex="0">info</mat-icon>
         </p>
 
         <button mat-stroked-button (click)="onRefresh()" aria-label="Refresh">
@@ -21,5 +21,4 @@
     <p>{{statusText}}
         {{bulkActionSummary.submitted | date:
         'MMMM d, yyyy'}}</p>
-
 </div>

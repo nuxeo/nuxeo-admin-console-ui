@@ -355,6 +355,16 @@ $primaryBtn: #0a60ce !important;
   }
 }
 
+.mat-mdc-dialog-actions.mdc-dialog__actions.warning-dialog__actions {
+  padding-bottom: 15px;
+}
+.mdc-dialog .mdc-dialog__content.warning-dialog__content {
+  padding: 0px 24px 10px 24px !important;
+}
+.warning-dialog .mdc-label {
+  margin-bottom: 0;
+}
+
 /* Form fields */
 
 mat-form-field.input-field {
@@ -435,6 +445,23 @@ mat-form-field.input-field.textarea {
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
     font-size: 14px;
     font-family: $openSansFont;
+  }
+}
+
+/* mat card */
+
+.bulk-action-details {
+  mat-card.mat-mdc-card {
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+    padding: 25px;
+  }
+
+  .mat-mdc-card-content {
+    width: 100%;
+    height: 100%;
+    padding: 0;
   }
 }
 

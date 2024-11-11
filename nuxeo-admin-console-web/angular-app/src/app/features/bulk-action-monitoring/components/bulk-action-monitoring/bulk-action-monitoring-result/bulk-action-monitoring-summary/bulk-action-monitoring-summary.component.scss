@@ -1,6 +1,5 @@
 .bulk-action-summary {
   margin-top: 30px;
-
   &__header {
     display: flex;
     flex-direction: row;
@@ -13,8 +12,6 @@
         width: auto;
       }
     }
-    
-
     .action-name {
       font-weight: 550;
       font-size: 20px;
@@ -38,22 +35,17 @@
       border-color: #6b7280;
     }
   }
-
-  
 }
 
 mat-icon {
   font-size: 16px;
 }
 
-
-
 @media (max-width: 962px) {
   .bulk-action-summary__header {
     flex-direction: column;
     align-items: flex-start;
     padding-top: 10px;
-
     button {
       margin-left: 0;
       margin-top: 6px;
