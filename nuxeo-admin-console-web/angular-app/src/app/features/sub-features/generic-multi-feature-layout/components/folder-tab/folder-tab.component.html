@@ -1,8 +1,8 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="folder-tab-container"
     [ngClass]="{'vertical-flex': isFeatureVideoRenditions()}">
     <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
-     <p class="label">{{ isIdAndPathRequired(activeFeature) ? GENERIC_LABELS.DOCUMENT_ID_OR_PATH :
-        GENERIC_LABELS.DOCUMENT_ID }}<span class="required-indicator">*</span></p> 
+    <p class="label">{{ isIdAndPathRequired(activeFeature) ? GENERIC_LABELS.DOCUMENT_ID_OR_PATH :
+        GENERIC_LABELS.DOCUMENT_ID }}<span class="required-indicator">*</span></p>
     <mat-form-field appearance="outline" class="input-field">
         <input matInput
             placeholder="{{ isIdAndPathRequired(activeFeature) ? GENERIC_LABELS.DOCUMENT_ID_OR_PATH : GENERIC_LABELS.DOCUMENT_ID}}"
@@ -13,15 +13,17 @@
     </mat-form-field>
     <ng-container
         *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)">
-        <p class="label">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</p> 
-        <mat-form-field appearance="outline" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" class="input-field">
+        <p class="label">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</p>
+        <mat-form-field appearance="outline" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}"
+            class="input-field">
             <!-- <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label> -->
             <input matInput placeholder="Conversion Names" type="text" formControlName="conversionNames"
                 id="conversionNames" />
         </mat-form-field>
         <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
-        <p class="label">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</p> 
-        <mat-form-field appearance="outline" class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" class="input-field">
+        <p class="label">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</p>
+        <mat-form-field appearance="outline" class="recompute input-field"
+            [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <!-- <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label> -->
             <mat-select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
                 <mat-option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</mat-option>

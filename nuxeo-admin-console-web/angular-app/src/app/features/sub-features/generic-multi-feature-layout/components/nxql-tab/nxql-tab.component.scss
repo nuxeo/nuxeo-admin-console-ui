@@ -2,9 +2,9 @@
   padding: 10px 0px 0px 10px;
   .required-indicator {
     color: rgb(218, 21, 0);
-   // font-size: 24px;
+    // font-size: 24px;
     font-family: "Open Sans", sans-serif;
-   // font-weight: 50;
+    // font-weight: 50;
     padding-left: 2px;
   }
   #requiredField {
@@ -18,6 +18,7 @@
     margin: 5px;
     font-size: 14px;
     font-weight: 400;
+    font-family: "Open Sans", sans-serif;
   }
   &.vertical-flex {
     display: flex;
@@ -73,4 +74,12 @@
 .conversion-helper-text {
   font-size: 14px;
   margin-top: -15px;
+}
+
+@media (max-width: 1024px) {
+  .nxql-tab-container {
+    &__button {
+      top: 0;
+    }
+  }
 }

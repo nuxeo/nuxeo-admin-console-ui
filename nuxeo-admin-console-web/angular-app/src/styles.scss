@@ -360,17 +360,15 @@ footer {
 
 mat-form-field.input-field {
   max-width: 350px;
-  width: 80%;
+  width: 100%;
   border-radius: 5px;
   line-height: 10px;
   p {
     font-size: 14px;
   }
-  &.video-renditions {
-  //  margin-top: 15px;
-  }
   mat-error {
     margin-left: -18px;
+    margin-top: -2px;
   }
   .mat-mdc-text-field-wrapper {
     height: 45px;
@@ -382,11 +380,34 @@ mat-form-field.input-field {
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
   }
+  .mdc-text-field--no-label:not(.mdc-text-field--textarea)
+    .mat-mdc-form-field-input-control.mdc-text-field__input,
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control,
+  .mat-mdc-select {
+    font-size: 14px;
+    font-family: "Open Sans", sans-serif;
+    color: rgba(0, 0, 0, 0.57);
+  }
 }
 
+mat-form-field.input-field.recompute {
+  .mdc-text-field--no-label:not(.mdc-text-field--textarea)
+    .mat-mdc-form-field-input-control.mdc-text-field__input,
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control,
+  .mat-mdc-select {
+    font-size: 14px;
+    font-family: "Open Sans", sans-serif;
+    color: rgba(0, 0, 0, 0.57);
+  }
+
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined
+    .mat-mdc-form-field-infix {
+    padding-top: 10px;
+  }
+}
 mat-form-field.input-field.textarea {
   max-width: 600px;
-  width: 80%;
+  width: 100%;
   min-height: 60px;
   height: auto;
 
@@ -402,7 +423,29 @@ mat-form-field.input-field.textarea {
     }
   }
 
+  mat-error {
+    margin-left: -18px;
+    margin-top: -2px;
+  }
+
   button.mdc-button {
     background-color: #0a60ce !important;
   }
+  .mdc-text-field--no-label:not(.mdc-text-field--textarea)
+    .mat-mdc-form-field-input-control.mdc-text-field__input,
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
+    font-size: 14px;
+    font-family: "Open Sans", sans-serif;
+  }
+}
+
+.mat-mdc-tab-link-container
+  .mat-mdc-tab-links
+  .mdc-tab__content
+  .mdc-tab__text-label {
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(23, 62, 101);
+  letter-spacing: normal;
 }
