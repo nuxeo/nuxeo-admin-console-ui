@@ -278,56 +278,73 @@ footer {
   font-feature-settings: "liga";
 }
 
+$openSansFont: "Open Sans", sans-serif;
+$sourceSansFont: "source sans pro", sans-serif;
+$primaryBtn: #0a60ce !important;
+
+/* Snackbar */
+.mdc-snackbar.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  border-radius: 10px;
+  color: #000;
+  min-width: 250px;
+  width: auto;
+}
+.mdc-snackbar.mat-mdc-snack-bar-container .mdc-snackbar__label {
+  color: #000 !important;
+  text-align: center;
+  font-size: 16px;
+  font-family: $openSansFont;
+}
 .mdc-snackbar.mat-mdc-snack-bar-container.success-snack .mdc-snackbar__surface {
   background-color: #e3f9e3;
   border: 2px solid #46a829;
-  border-radius: 10px;
-  color: #000;
-  min-width: 250px;
-  width: auto;
 }
-
-.mdc-snackbar.mat-mdc-snack-bar-container.success-snack .mdc-snackbar__label {
-  color: #000 !important;
-  text-align: center;
-  font-size: 16px;
-  font-family: "Open Sans", sans-serif;
-}
-
 .mdc-snackbar.mat-mdc-snack-bar-container.error-snack .mdc-snackbar__surface {
   background-color: #fff;
   border: 2px solid red;
-  border-radius: 10px;
-  color: #000;
-  min-width: 250px;
-  width: auto;
 }
 
-.mdc-snackbar.mat-mdc-snack-bar-container.error-snack .mdc-snackbar__label {
-  color: #000 !important;
-  text-align: center;
-  font-size: 16px;
-  font-family: "Open Sans", sans-serif;
-}
+/* Dialog */
 
 .mat-mdc-dialog-content .mat-mdc-outlined-button:not(:disabled) {
   border-color: #767b88;
 }
 
-.mat-mdc-dialog-content.generic-modal p,
-.mat-mdc-dialog-content.error-modal p {
-  font-family: "source sans pro", sans-serif;
-  color: rgb(55, 58, 60);
-  letter-spacing: normal;
-}
-
 .mdc-dialog h2 {
   font-weight: 300;
   font-size: 32px;
-  font-family: "source sans pro", sans-serif;
+  font-family: $sourceSansFont;
   margin-left: 22px;
   margin-top: 20px;
 }
+
+.mat-mdc-dialog-actions.mdc-dialog__actions {
+  justify-content: end;
+  padding-right: 25px;
+  margin-top: -6px;
+  button {
+    border-radius: 10px;
+    min-width: 68px;
+    font-family: $openSansFont;
+    font-weight: 550;
+    letter-spacing: normal;
+    background-color: $primaryBtn;
+  }
+  button.mdc-button--outlined {
+    border-color: #767b88;
+  }
+}
+.mat-mdc-dialog-container .mdc-dialog__container .mdc-dialog__surface {
+  border-radius: 12px;
+}
+
+.mat-mdc-dialog-content.generic-modal p,
+.mat-mdc-dialog-content.error-modal p {
+  font-family: $sourceSansFont;
+  color: #373a3c;
+  letter-spacing: normal;
+}
+
 .mdc-dialog .mdc-dialog__content.generic-modal,
 .mdc-dialog .mdc-dialog__content.error-modal {
   padding: 5px 24px 8px 24px !important;
@@ -338,25 +355,7 @@ footer {
   }
 }
 
-.mat-mdc-dialog-actions.mdc-dialog__actions {
-  justify-content: end;
-  padding-right: 25px;
-  margin-top: -6px;
-  button {
-    border-radius: 10px;
-    min-width: 68px;
-    font-family: "Open Sans", sans-serif;
-    font-weight: 550;
-    letter-spacing: normal;
-    background-color: #0a60ce !important;
-  }
-  button.mdc-button--outlined {
-    border-color: #767b88;
-  }
-}
-.mat-mdc-dialog-container .mdc-dialog__container .mdc-dialog__surface {
-  border-radius: 12px;
-}
+/* Form fields */
 
 mat-form-field.input-field {
   max-width: 350px;
@@ -377,7 +376,7 @@ mat-form-field.input-field {
     }
   }
   button {
-    font-family: "Open Sans", sans-serif;
+    font-family: $openSansFont;
     font-size: 16px;
   }
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
@@ -385,7 +384,7 @@ mat-form-field.input-field {
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control,
   .mat-mdc-select {
     font-size: 14px;
-    font-family: "Open Sans", sans-serif;
+    font-family: $openSansFont;
     color: rgba(0, 0, 0, 0.57);
   }
 }
@@ -396,7 +395,7 @@ mat-form-field.input-field.recompute {
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control,
   .mat-mdc-select {
     font-size: 14px;
-    font-family: "Open Sans", sans-serif;
+    font-family: $openSansFont;
     color: rgba(0, 0, 0, 0.57);
   }
 
@@ -429,13 +428,13 @@ mat-form-field.input-field.textarea {
   }
 
   button.mdc-button {
-    background-color: #0a60ce !important;
+    background-color: $primaryBtn;
   }
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
     .mat-mdc-form-field-input-control.mdc-text-field__input,
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
     font-size: 14px;
-    font-family: "Open Sans", sans-serif;
+    font-family: $openSansFont;
   }
 }
 
@@ -443,9 +442,9 @@ mat-form-field.input-field.textarea {
   .mat-mdc-tab-links
   .mdc-tab__content
   .mdc-tab__text-label {
-  font-family: "Open Sans", sans-serif;
+  font-family: $openSansFont;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(23, 62, 101);
+  color: #173e65;
   letter-spacing: normal;
 }

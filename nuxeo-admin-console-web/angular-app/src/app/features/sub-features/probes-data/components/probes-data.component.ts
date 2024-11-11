@@ -105,7 +105,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
               panelClass: "success-snack",
             },
             duration: 5000,
-            panelClass: ["error-snack"],
+            panelClass: ["success-snack"],
           });
         }
       });
