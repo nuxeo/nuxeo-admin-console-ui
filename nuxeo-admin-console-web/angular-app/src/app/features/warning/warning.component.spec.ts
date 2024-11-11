@@ -1,5 +1,4 @@
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { HyDialogBoxModule } from "@hyland/ui";
 import { MatDialogModule } from "@angular/material/dialog";
 import { WarningComponent } from "./warning.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -44,7 +43,6 @@ describe("WarningComponent", () => {
       imports: [
         CommonModule,
         MatDialogModule,
-        HyDialogBoxModule,
         MatCheckboxModule,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],

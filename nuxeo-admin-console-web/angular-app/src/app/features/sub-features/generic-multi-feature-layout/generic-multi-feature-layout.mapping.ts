@@ -9,8 +9,7 @@ export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
   THUMBNAIL_GENERATION: "thumbnail-generation",
   PICTURE_RENDITIONS: "picture-renditions",
-  VIDEO_RENDITIONS_GENERATION: "video-renditions-generation",
-  // Add other features here. Value MUST match route name
+  VIDEO_RENDITIONS_GENERATION: "video-renditions-generation"
 } as const;
 
 export type FeaturesKey = keyof typeof FEATURES;

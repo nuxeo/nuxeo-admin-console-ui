@@ -4,6 +4,7 @@ import {
 } from "@angular/material/snack-bar";
 import { BULK_ACTION_LABELS } from "./../../../features/bulk-action-monitoring/bulk-action-monitoring.constants";
 import { Component, Inject } from "@angular/core";
+import { SnackBarData } from "../../types/common.interface";
 
 @Component({
   selector: "custom-snack-bar",
@@ -14,7 +15,7 @@ export class CustomSnackBarComponent {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   constructor(
     private snackBarRef: MatSnackBarRef<CustomSnackBarComponent>,
-    @Inject(MAT_SNACK_BAR_DATA) public data: any
+    @Inject(MAT_SNACK_BAR_DATA) public data: SnackBarData
   ) {}
 
   close() {

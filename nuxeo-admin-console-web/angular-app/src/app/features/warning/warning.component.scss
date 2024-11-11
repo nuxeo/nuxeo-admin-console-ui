@@ -37,35 +37,11 @@
   }
 }
 
-:host
-  ::ng-deep
-  hy-dialog-box-footer
-  .warning-dialog__checkbox-container
-  .mdc-form-field
-  .mdc-label {
-  padding-top: 6px;
-}
-
- :host
-   ::ng-deep .mdc-dialog .mdc-dialog__content {
-   padding: 0px 24px 10px 24px !important;
- }
-
-
 .separator {
   width: 100%;
   background-color: #d1d5db;
 }
 
-.mat-mdc-dialog-actions.mdc-dialog__actions {
-  padding-bottom: 15px;
-}
-
 .warning-dialog__content {
   padding-bottom: 5px !important;
-}
-
-:host
-::ng-deep .mdc-label {
-  margin-bottom: 0 ;
 }

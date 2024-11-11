@@ -13,7 +13,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { BulkActionMonitoringComponent } from "./components/bulk-action-monitoring/bulk-action-monitoring.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import {MatSnackBar, MatSnackBarRef, MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatTableModule } from "@angular/material/table";
 
 @NgModule({
@@ -35,7 +35,7 @@ import { MatTableModule } from "@angular/material/table";
     MatCardModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatTableModule
+    MatTableModule,
   ],
 })
 export class BulkActionMonitoringModule {}

@@ -16,7 +16,6 @@
         <p class="label">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</p>
         <mat-form-field appearance="outline" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}"
             class="input-field">
-            <!-- <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label> -->
             <input matInput placeholder="Conversion Names" type="text" formControlName="conversionNames"
                 id="conversionNames" />
         </mat-form-field>
@@ -24,7 +23,6 @@
         <p class="label">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</p>
         <mat-form-field appearance="outline" class="recompute input-field"
             [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
-            <!-- <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label> -->
             <mat-select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
                 <mat-option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</mat-option>
                 <mat-option value="false">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</mat-option>
