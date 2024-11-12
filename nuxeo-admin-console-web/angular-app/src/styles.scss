@@ -1,4 +1,4 @@
-@import 'material-symbols/outlined.css';
+@import "material-symbols/outlined.css";
 
 html {
   position: relative;
@@ -325,7 +325,7 @@ $primaryBtn: #0a60ce !important;
   padding-right: 25px;
   margin-top: -6px;
   button {
-    border-radius: 10px;
+    border-radius: 8px;
     min-width: 68px;
     font-family: $openSansFont;
     font-weight: 550;
@@ -347,6 +347,14 @@ $primaryBtn: #0a60ce !important;
   letter-spacing: normal;
 }
 
+.mat-mdc-dialog-content .mat-mdc-outlined-button:not(:disabled) {
+  font-family: $openSansFont;
+  font-weight: 510;
+  letter-spacing: normal;
+  border-radius: 8px;
+  color: $primaryBtn;
+}
+
 .mdc-dialog .mdc-dialog__content.generic-modal,
 .mdc-dialog .mdc-dialog__content.error-modal {
   padding: 5px 24px 8px 24px !important;
@@ -357,6 +365,9 @@ $primaryBtn: #0a60ce !important;
   }
 }
 
+.mdc-dialog .mdc-dialog__content.error-modal {
+  max-height: 125px;
+}
 .mat-mdc-dialog-actions.mdc-dialog__actions.warning-dialog__actions {
   padding-bottom: 15px;
 }
