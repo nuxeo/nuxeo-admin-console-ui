@@ -133,16 +133,6 @@ jobs:
           path: |
             nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
 
-      - name: Delete & Update .npmrc 
-        working-directory: nuxeo-admin-console-web/angular-app
-        run: |
-          rm .npmrc
-          echo "
-          @hylandsoftware:registry=https://npm.pkg.github.com
-          @nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
-          registry=https://registry.npmjs.org/
-          " >> .npmrc
-
       - name: Tag
         run: |
           git add nuxeo-admin-console-web/angular-app/package-lock.json

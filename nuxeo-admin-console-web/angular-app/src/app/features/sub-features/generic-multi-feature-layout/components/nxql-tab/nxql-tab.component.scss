@@ -1,10 +1,22 @@
 .nxql-tab-container {
   padding: 10px 0px 0px 10px;
+  .required-indicator {
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans", sans-serif;
+    padding-left: 2px;
+  }
   #requiredField {
-    font-size: 12px;
-    color: #da1500;
-    font-weight: 400;
+    font-size: 14px;
+    color: rgb(218, 21, 0);
     font-family: "Open Sans";
+    line-height: 1;
+  }
+  .label {
+    line-height: 1;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: "Open Sans", sans-serif;
   }
   &.vertical-flex {
     display: flex;
@@ -18,9 +30,15 @@
     position: relative;
     left: 20px;
     font-size: 16px;
+    top: -25px;
+    background-color: #0a60ce !important;
+    font-weight: 550;
+    letter-spacing: normal;
+    color: #fff;
     &.video-renditions {
       left: 0;
       bottom: 0;
+      top: 0;
     }
   }
 }
@@ -43,16 +61,6 @@
   stroke-width: 5px !important;
 }
 
-mat-form-field.hy-form-field {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  max-width: 600px;
-  width: 80%;
-  &.video-renditions {
-    margin-top: 30px;
-  }
-}
-
 .resizable-textarea {
   resize: vertical;
   overflow: auto;
@@ -65,4 +73,12 @@ mat-form-field.hy-form-field {
 .conversion-helper-text {
   font-size: 14px;
   margin-top: -15px;
+}
+
+@media (max-width: 1024px) {
+  .nxql-tab-container {
+    &__button {
+      top: 0;
+    }
+  }
 }

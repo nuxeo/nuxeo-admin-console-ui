@@ -1,0 +1,10 @@
+<div class="icon-text-container">
+  <mat-icon class="success-icon" *ngIf="data.panelClass === 'success-snack'; else errorIcon" fontSet="material-symbols-outlined">check</mat-icon>
+  <ng-template #errorIcon>
+    <mat-icon class="error-icon" fontSet="material-symbols-outlined">error</mat-icon>
+  </ng-template>
+  <span>{{data.message}}</span>
+  <button (click)="close()">
+    <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+  </button>
+</div>

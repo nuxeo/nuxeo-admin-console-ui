@@ -54,10 +54,6 @@ export const appRoutes: Route[] = [
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
-  {
-    path: "auth",
-    loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
-  },
   { path: "**", redirectTo: "" },
 ];
 

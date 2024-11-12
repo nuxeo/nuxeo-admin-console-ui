@@ -1,5 +1,5 @@
-import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
-import { BulkActionInfoDetails } from './../../../../bulk-action-monitoring.interface';
+import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
+import { BulkActionInfoDetails } from "./../../../../bulk-action-monitoring.interface";
 import { Component, Input, OnChanges } from "@angular/core";
 
 @Component({
@@ -15,9 +15,18 @@ export class BulkActionMonitoringDetailsComponent implements OnChanges {
   docsProcessedText = "";
   errorsFoundText = "";
   docsSkippedText = "";
+  columnsToDisplay: string[] = [];
 
   ngOnChanges(): void {
     this.additionalInfoDataSrc = [this.bulkActionDetails];
+    this.columnsToDisplay = [
+      "scrollStart",
+      "scrollEnd",
+      "processingStart",
+      "processingEnd",
+      "completed",
+      "processingMillis",
+    ];
     if (this.bulkActionDetails) {
       this.replacePlaceholderValues();
     }

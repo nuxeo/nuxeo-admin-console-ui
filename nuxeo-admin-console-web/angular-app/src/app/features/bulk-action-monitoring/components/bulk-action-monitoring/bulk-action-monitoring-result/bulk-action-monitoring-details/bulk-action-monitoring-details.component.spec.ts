@@ -3,7 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from "@angular/material/card";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-details.component";
-import { HyContentListModule } from "@hyland/ui";
+import { MatTableModule } from '@angular/material/table';
 
 describe("BulkActionMonitoringDetailsComponent", () => {
   let component: BulkActionMonitoringDetailsComponent;
@@ -12,7 +12,7 @@ describe("BulkActionMonitoringDetailsComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BulkActionMonitoringDetailsComponent],
-      imports: [MatCardModule, HyContentListModule, NoopAnimationsModule],
+      imports: [MatCardModule, NoopAnimationsModule, MatTableModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringDetailsComponent);

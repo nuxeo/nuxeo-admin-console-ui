@@ -10,12 +10,12 @@
             <ng-template #runningState>
                 <span class="action-status">{{getRunningStatusText()}}</span>
             </ng-template>
-            <mat-icon hyIcon [small]="true" class="info-icon" aria-hidden="false" [matTooltip]="getTooltipText()"
-                matTooltipClass="hy-tooltip" matTooltipPosition="above" tabindex="0">info</mat-icon>
+            <mat-icon class="info-icon" aria-hidden="false" [matTooltip]="getTooltipText()" matTooltipPosition="above"
+                tabindex="0" fontSet="material-symbols-outlined">info</mat-icon>
         </p>
 
         <button mat-stroked-button (click)="onRefresh()" aria-label="Refresh">
-            <mat-icon hyIcon>refresh</mat-icon> {{BULK_ACTION_LABELS.REFRESH}}
+            <mat-icon fontSet="material-symbols-outlined">refresh</mat-icon> {{BULK_ACTION_LABELS.REFRESH}}
         </button>
     </div>
     <p>{{statusText}}

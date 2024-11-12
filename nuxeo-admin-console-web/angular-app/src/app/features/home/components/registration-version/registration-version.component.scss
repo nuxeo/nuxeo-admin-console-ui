@@ -1,5 +1,12 @@
 .registration-version {
   height: 100%;
+  &.mdc-card {
+    border-radius: 12px;
+    padding: 24px;
+    background: white;
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+  }
 }
 
 .registration-version__button {

@@ -168,6 +168,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -190,6 +191,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   showActionLaunchedModal(commandId: string | null): void {
     this.launchedDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -302,6 +304,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   showConfirmationModal(documentCount: number, query: string): void {
     this.confirmDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
