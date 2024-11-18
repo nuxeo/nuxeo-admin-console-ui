@@ -33,7 +33,7 @@
 <hr class="separator">
 <mat-dialog-actions>
   <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn">
-    <button mat-stroked-button color="primary" (click)="close()">
+    <button mat-stroked-button color="primary" (click)="close()" class="abort-btn">
       {{ GENERIC_LABELS.ABORT_LABEL }}
     </button>
     <button mat-flat-button color="primary" (click)="continue()" [disabled]="data.documentCount === 0">
