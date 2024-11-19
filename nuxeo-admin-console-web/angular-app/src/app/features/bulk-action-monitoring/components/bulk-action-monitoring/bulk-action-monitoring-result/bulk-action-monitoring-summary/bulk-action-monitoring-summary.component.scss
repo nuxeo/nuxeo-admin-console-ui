@@ -42,6 +42,10 @@ mat-icon {
   font-size: 16px;
 }
 
+#refreshResultsBtn:focus-visible {
+  background-color: #E0E1E0;
+}
+
 @media (max-width: 962px) {
   .bulk-action-summary__header {
     flex-direction: column;

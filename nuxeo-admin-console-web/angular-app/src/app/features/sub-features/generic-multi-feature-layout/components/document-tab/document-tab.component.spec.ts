@@ -78,8 +78,9 @@ describe("DocumentTabComponent", () => {
       },
       error: null,
     };
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
+    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed", "afterOpened"]);
     mockDialogRef.afterClosed.and.returnValue(of({}));
+    mockDialogRef.afterOpened.and.returnValue(of());
 
     dialogService = jasmine.createSpyObj("MatDialog", ["open"]);
     dialogService.open.and.returnValue(mockDialogRef);

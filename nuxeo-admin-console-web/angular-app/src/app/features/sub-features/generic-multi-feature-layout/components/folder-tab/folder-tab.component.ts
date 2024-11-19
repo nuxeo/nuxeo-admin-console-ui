@@ -3,7 +3,12 @@ import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-pont
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -56,6 +61,9 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
+  confirmDialogOpenedSubscription = new Subscription();
+  launchedDialogOpenedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -163,6 +171,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       ?.subscribe(() => {
         this.onActionErrorModalClose();
       });
+
+    this.errorDialogOpenedSubscription = this.errorDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionErrorModalClose(): void {
@@ -190,13 +209,24 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
+
+    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
     document.getElementById("inputIdentifier")?.focus();
   }
@@ -370,6 +400,17 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         this.onConfirmationModalClose(data);
       });
+
+    this.confirmDialogOpenedSubscription = this.confirmDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onConfirmationModalClose(modalData: unknown): void {
@@ -423,5 +464,8 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
     this.spinnerStatusSubscription?.unsubscribe();
+    this.confirmDialogOpenedSubscription?.unsubscribe();
+    this.launchedDialogOpenedSubscription?.unsubscribe();
+    this.errorDialogOpenedSubscription?.unsubscribe();
   }
 }

@@ -1,8 +1,13 @@
-import { VIDEO_RENDITIONS_LABELS } from './../../../../video-renditions-generation/video-renditions-generation.constants';
+import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
@@ -57,6 +62,9 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
+  confirmDialogOpenedSubscription = new Subscription();
+  launchedDialogOpenedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -180,6 +188,17 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       ?.subscribe(() => {
         this.onActionErrorModalClose();
       });
+
+    this.errorDialogOpenedSubscription = this.errorDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionErrorModalClose(): void {
@@ -207,13 +226,24 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
+
+    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
     document.getElementById("inputIdentifier")?.focus();
   }
@@ -323,6 +353,17 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         this.onConfirmationModalClose(data as GenericModalClosedInfo, query);
       });
+
+    this.confirmDialogOpenedSubscription = this.confirmDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onConfirmationModalClose(data: GenericModalClosedInfo, query: string): void {
@@ -398,5 +439,8 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     this.confirmDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
+    this.confirmDialogOpenedSubscription?.unsubscribe();
+    this.launchedDialogOpenedSubscription?.unsubscribe();
+    this.errorDialogOpenedSubscription?.unsubscribe();
   }
 }

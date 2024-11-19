@@ -18,13 +18,22 @@ export class BulkActionMonitoringSummaryComponent implements OnChanges {
   statusText = "";
   nonRunningText = "";
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
+
   constructor(
     private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
     private _snackBar: MatSnackBar
   ) {}
+
   ngOnChanges(): void {
     if (this.bulkActionSummary) {
       this.replacePlaceholderValues();
+    }
+
+    const refreshBtn = document.querySelector(
+      "#refreshResultsBtn"
+    ) as HTMLElement;
+    if (refreshBtn) {
+      refreshBtn.focus();
     }
   }
   replacePlaceholderValues(): void {
