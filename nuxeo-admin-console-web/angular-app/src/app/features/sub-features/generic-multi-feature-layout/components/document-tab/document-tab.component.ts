@@ -54,9 +54,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   documentActionLaunchedSubscription = new Subscription();
   documentActionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
+  launchedDialogOpenedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -152,6 +153,17 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       ?.subscribe(() => {
         this.onActionErrorModalClose();
       });
+
+    this.errorDialogOpenedSubscription = this.errorDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionErrorModalClose(): void {
@@ -178,13 +190,24 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
+
+    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
     document.getElementById("inputIdentifier")?.focus();
   }
@@ -303,5 +326,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     this.actionDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
+    this.launchedDialogOpenedSubscription?.unsubscribe();
+    this.errorDialogOpenedSubscription?.unsubscribe();
   }
 }
