@@ -40,9 +40,29 @@
       left: 0;
       bottom: 0;
     }
+    &.fulltext-reindex {
+      left: 0;
+      bottom: 0;
+    }
   }
   .conversion-helper-text {
     font-size: 14px;
     margin-top: -15px;
   }
+  .force-checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 0 0 10px;
+  }
+
+  .force-conversion-helper-text {
+    max-width: 600px; /* Adjust as needed */
+    white-space: normal;
+    word-wrap: break-word;
+    font-size: 13px;
+    margin-top: -15px;
+    color: #888888;
+  }
+
+  
 }

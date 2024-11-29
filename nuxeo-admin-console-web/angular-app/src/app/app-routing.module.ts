@@ -54,6 +54,13 @@ export const appRoutes: Route[] = [
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
+  {
+  path: "fulltext-reindex",
+    loadChildren: () =>
+      import(
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
+  },
   { path: "**", redirectTo: "" },
 ];
 

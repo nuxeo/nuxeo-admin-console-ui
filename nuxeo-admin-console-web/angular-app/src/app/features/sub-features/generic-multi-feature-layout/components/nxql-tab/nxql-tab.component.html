@@ -26,9 +26,24 @@
             </mat-select>
         </mat-form-field>
     </ng-container>
+    <ng-container *ngIf="isFeatureFullTextReindex() && inputForm.get(FULLTEXT_REINDEX_LABELS.FORCE)">
+        <div class="force-checkbox-container">
+          <mat-checkbox 
+            color="primary"
+            formControlName="force" 
+            id="force" 
+            [checked]="inputForm.get('force')?.value" 
+            [ngClass]="{'fulltext-reindex': isFeatureFullTextReindex()}"
+          >
+          </mat-checkbox>
+          <span>{{ FULLTEXT_REINDEX_LABELS.FORCE }}</span>
+        </div>
+        <p class="force-conversion-helper-text">{{ FULLTEXT_REINDEX_LABELS.FORCE_HELPER_TEXT }}</p>
+      </ng-container>
     <button mat-flat-button color="primary" type="submit" class="nxql-tab-container__button"
-        [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" [disabled]="isSubmitBtnDisabled">
-        {{ templateLabels.submitBtnLabel }}
+    [ngClass]="{'video-renditions': isFeatureVideoRenditions() || isFeatureFullTextReindex()}"
+    [disabled]="isSubmitBtnDisabled">
+    {{ templateLabels.submitBtnLabel }}
     </button>
     <div class="nxql-tab-hint" [innerHTML]="nxqlQueryHintSanitized"></div>
     <div class="spinner-overlay" *ngIf="spinnerVisible">

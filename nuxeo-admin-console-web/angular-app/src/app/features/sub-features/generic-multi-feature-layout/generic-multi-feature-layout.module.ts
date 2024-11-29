@@ -14,6 +14,7 @@ import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layo
 import { RouterModule } from "@angular/router";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatDialogModule } from "@angular/material/dialog";
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { MatDialogModule } from "@angular/material/dialog";
     RouterModule,
     genericMultiFeatureLayoutRoutingModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule
   ],
   exports: [GenericMultiFeatureLayoutComponent],
 })

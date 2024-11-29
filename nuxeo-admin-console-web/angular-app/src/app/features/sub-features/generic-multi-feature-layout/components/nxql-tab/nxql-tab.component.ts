@@ -1,4 +1,5 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
@@ -77,6 +78,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
+  FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
@@ -97,6 +99,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
+      force: [false],
     });
 
     this.nxqlActionLaunched$ = this.store.pipe(
@@ -135,6 +138,8 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         }
       );
 
+    
+
     if (this.isFeatureVideoRenditions()) {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
@@ -143,6 +148,12 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
         new FormControl("true")
+      );
+    }
+    if(this.isFeatureFullTextReindex()) {
+      this.inputForm.addControl(
+        FULLTEXT_REINDEX_LABELS.FORCE,
+        new FormControl("false")
       );
     }
     this.nxqlActionLaunchedSubscription = this.nxqlActionLaunched$.subscribe(
@@ -169,6 +180,13 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
     return (
       this.activeFeature ===
       (FEATURES.VIDEO_RENDITIONS_GENERATION as FeaturesKey)
+    );
+  }
+
+  isFeatureFullTextReindex(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.FULLTEXT_REINDEX as FeaturesKey)
     );
   }
 

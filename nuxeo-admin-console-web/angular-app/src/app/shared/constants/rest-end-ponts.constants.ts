@@ -1,3 +1,5 @@
+
+
 export const REST_END_POINTS = {
   ELASTIC_SEARCH_REINDEX: "ELASTIC_SEARCH_REINDEX",
   PROBES: "PROBES",
@@ -9,6 +11,7 @@ export const REST_END_POINTS = {
   THUMBNAIL_GENERATION: "THUMBNAIL_GENERATION",
   PICTURE_RENDITIONS: "PICTURE_RENDITIONS",
   VIDEO_RENDITIONS_GENERATION: "VIDEO_RENDITIONS_GENERATION",
+  FULLTEXT_REINDEX: "FULLTEXT_REINDEX",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -62,4 +65,8 @@ export const REST_END_POINT_CONFIG: Record<
     endpoint: "/management/videos/recompute",
     method: "POST",
   },
+  FULLTEXT_REINDEX: {
+    endpoint: "/management/fulltext/extract",
+    method: "POST"
+  }
 };
