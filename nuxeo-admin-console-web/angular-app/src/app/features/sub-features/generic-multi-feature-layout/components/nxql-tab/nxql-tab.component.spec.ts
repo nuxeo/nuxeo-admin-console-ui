@@ -32,6 +32,7 @@ import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
 import { VIDEO_RENDITIONS_LABELS } from "../../../../video-renditions-generation/video-renditions-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 
 
 describe("NXQLTabComponent", () => {
@@ -367,5 +368,13 @@ describe("NXQLTabComponent", () => {
 
     expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY)).toBe(false);
     expect(component.inputForm.contains(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)).toBe(false);
+  });
+
+  describe('FEATURES.FULLTEXT_REINDEX', () => {
+    it('should return correct labels and data for NXQL tabType', () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.NXQL);
+      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.NXQL_QUERY_REINDEX_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
+    });
   });
 });
