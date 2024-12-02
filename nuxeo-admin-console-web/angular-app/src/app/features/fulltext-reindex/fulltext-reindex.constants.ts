@@ -12,6 +12,7 @@ export const FULLTEXT_REINDEX_LABELS = {
     NXQL_QUERY_DEFAULT_VALUE:
     "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:isTrashed = 0 AND ecm:mixinType = 'Downloadable' AND dc:title = 'A document to reindex'",
     FORCE: "force",
+    FORCE_TITLE: "Empty fulltext index of binaries for excluded documents",
     TRUE: "True",
     FALSE: "False",
     FORCE_HELPER_TEXT: "Use this option if you changed your fulltext configuration to exclude additional documents. This will remove the content of the files they hold from the fulltext index."

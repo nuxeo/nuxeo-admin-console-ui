@@ -28,18 +28,6 @@
       </mat-select>
     </mat-form-field>
   </ng-container>
-
-  <!-- <ng-container
-    *ngIf="isFeatureFullTextReindex() && inputForm.get(FULLTEXT_REINDEX_LABELS.FORCE)">
-    <p class="label">{{ FULLTEXT_REINDEX_LABELS.FORCE }}</p>
-    <mat-form-field appearance="outline" class="recompute input-field"
-      [ngClass]="{'fulltext-reindex': isFeatureFullTextReindex()}">
-      <mat-select matNativeControl formControlName="force" id="force">
-        <mat-option value="true">{{ FULLTEXT_REINDEX_LABELS.TRUE }}</mat-option>
-        <mat-option value="false" selected>{{ FULLTEXT_REINDEX_LABELS.FALSE }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </ng-container> -->
   <ng-container *ngIf="isFeatureFullTextReindex() && inputForm.get(FULLTEXT_REINDEX_LABELS.FORCE)">
     <div class="force-checkbox-container">
       <mat-checkbox 
@@ -50,7 +38,7 @@
         [ngClass]="{'fulltext-reindex': isFeatureFullTextReindex()}"
       >
       </mat-checkbox>
-      <span>{{ FULLTEXT_REINDEX_LABELS.FORCE }}</span>
+      <span>{{ FULLTEXT_REINDEX_LABELS.FORCE_TITLE }}</span>
     </div>
     <p class="force-conversion-helper-text">{{ FULLTEXT_REINDEX_LABELS.FORCE_HELPER_TEXT }}</p>
   </ng-container>
