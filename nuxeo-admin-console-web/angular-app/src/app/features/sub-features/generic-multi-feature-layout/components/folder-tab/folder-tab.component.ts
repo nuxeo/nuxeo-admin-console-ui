@@ -126,16 +126,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
     }
-
-
     if(this.isFeatureFullTextReindex()) {
       this.inputForm.addControl(
         FULLTEXT_REINDEX_LABELS.FORCE,
         new FormControl("false")
       );
     }
-
-
     if (this.isFeatureVideoRenditions()) {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,

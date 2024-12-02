@@ -339,8 +339,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  
-
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
     this.documentActionLaunchedSubscription?.unsubscribe();

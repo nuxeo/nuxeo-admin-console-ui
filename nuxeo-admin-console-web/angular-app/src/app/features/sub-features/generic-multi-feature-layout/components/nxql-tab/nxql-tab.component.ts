@@ -137,9 +137,6 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           this.spinnerVisible = status;
         }
       );
-
-    
-
     if (this.isFeatureVideoRenditions()) {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
