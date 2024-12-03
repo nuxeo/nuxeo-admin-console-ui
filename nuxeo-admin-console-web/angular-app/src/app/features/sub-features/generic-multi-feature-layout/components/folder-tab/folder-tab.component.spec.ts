@@ -32,6 +32,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
@@ -295,7 +296,14 @@ describe("FolderTabComponent", () => {
       const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_THUMBNAIL_GENERATION_TITLE);
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
-      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY);
+    });
+  });
+
+  describe('FEATURES.FULLTEXT_REINDEX', () => {
+    it('should return correct labels and data for FOLDER tabType', () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.FOLDER);
+      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.FOLDER_REINDEX_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
     });
   });
 });

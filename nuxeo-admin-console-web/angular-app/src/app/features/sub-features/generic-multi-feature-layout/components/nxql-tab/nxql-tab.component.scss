@@ -82,3 +82,24 @@
     }
   }
 }
+
+.conversion-helper-text {
+  font-size: 14px;
+  margin-top: -15px;
+  color: #666666;
+}
+
+.force-checkbox-container {
+  display: flex;
+  align-items: center;
+  margin: 0 0 10px;
+}
+
+.force-conversion-helper-text {
+  max-width: 600px; /* Adjust as needed */
+  white-space: normal;
+  word-wrap: break-word;
+  font-size: 13px;
+  margin-top: -15px;
+  color: #666666;
+}
