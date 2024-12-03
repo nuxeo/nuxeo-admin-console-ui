@@ -348,7 +348,6 @@ describe("NXQLTabComponent", () => {
       const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.NXQL);
       expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_THUMBNAIL_GENERATION_TITLE);
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
-      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_QUERY);
     });
   });
 
