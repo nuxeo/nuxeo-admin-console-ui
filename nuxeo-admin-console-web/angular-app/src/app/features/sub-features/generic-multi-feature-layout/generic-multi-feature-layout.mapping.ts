@@ -78,11 +78,7 @@ export const featureMap = () => ({
   },
   [FEATURES.THUMBNAIL_GENERATION]: (tabType: string) => {
     let labels: labelsList;
-    let data = {
-      bodyParam: {
-        query: ""
-      }
-    };
+    let data = {};
     switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
         labels = {
@@ -93,6 +89,9 @@ export const featureMap = () => ({
         };
         data = {
           bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY}` },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -104,6 +103,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
@@ -119,6 +121,9 @@ export const featureMap = () => ({
         };
         data = {
           bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.NXQL_QUERY}` },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -144,6 +149,9 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.DOCUMENT_QUERY}`,
           },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -155,6 +163,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.FOLDER_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
@@ -169,6 +180,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.NXQL_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
