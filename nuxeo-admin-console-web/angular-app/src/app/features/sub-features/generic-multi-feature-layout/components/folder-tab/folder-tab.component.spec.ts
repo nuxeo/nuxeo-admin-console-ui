@@ -32,7 +32,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
-import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
