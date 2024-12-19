@@ -226,7 +226,7 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.FOLDER_QUERY}`,
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
-            recomputeVideoInfo: `{recomputeVideoInfo}`,
+            [VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]: `{recomputeAllVideoInfo}`,
           },
           requestHeaders: {
             "Content-Type": "application/x-www-form-urlencoded",
