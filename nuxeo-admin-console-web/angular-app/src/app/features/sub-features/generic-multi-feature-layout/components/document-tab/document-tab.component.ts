@@ -117,7 +117,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         );
         this.inputForm.addControl(
           VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
-          new FormControl("true")
+          new FormControl("false")
         );
       }
       if (this.isFeatureFullTextReindex()) {

@@ -21,8 +21,8 @@
         <mat-form-field appearance="outline" class="recompute input-field nxql"
             [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
             <mat-select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
-                <mat-option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</mat-option>
-                <mat-option value="false">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</mat-option>
+                <mat-option value="false" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</mat-option>
+                <mat-option value="true">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</mat-option>
             </mat-select>
         </mat-form-field>
     </ng-container>
