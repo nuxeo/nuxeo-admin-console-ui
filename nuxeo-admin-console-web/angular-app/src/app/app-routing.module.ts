@@ -55,8 +55,11 @@ export const appRoutes: Route[] = [
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
-    path: "auth",
-    loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
+  path: "fulltext-reindex",
+    loadChildren: () =>
+      import(
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   { path: "**", redirectTo: "" },
 ];

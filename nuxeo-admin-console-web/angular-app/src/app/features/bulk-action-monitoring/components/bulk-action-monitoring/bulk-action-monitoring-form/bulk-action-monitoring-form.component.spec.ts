@@ -134,6 +134,7 @@ describe("BulkActionMonitoringFormComponent", () => {
       component.showBulkActionErrorModal(error);
       expect(mockDialog.open).toHaveBeenCalledWith(ErrorModalComponent, {
         disableClose: true,
+        hasBackdrop: true,
         height: MODAL_DIMENSIONS.HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         data: { error },

@@ -1,10 +1,14 @@
-import { ERROR_MODAL_LABELS, GENERIC_LABELS, MODAL_DIMENSIONS } from './../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
-import { GenericMultiFeatureUtilitiesService } from './../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service';
-import { CommonService } from './../../../../../shared/services/common.service';
-import { BULK_ACTION_LABELS } from './../../../bulk-action-monitoring.constants';
-import { ErrorModalComponent } from '../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component';
-import { ErrorModalClosedInfo } from './../../../../../shared/types/common.interface';
-import { BulkActionMonitoringInfo } from './../../../bulk-action-monitoring.interface';
+import {
+  ERROR_MODAL_LABELS,
+  GENERIC_LABELS,
+  MODAL_DIMENSIONS,
+} from "./../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { GenericMultiFeatureUtilitiesService } from "./../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service";
+import { CommonService } from "./../../../../../shared/services/common.service";
+import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
+import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
+import { BulkActionMonitoringInfo } from "./../../../bulk-action-monitoring.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {
   Component,
@@ -19,8 +23,8 @@ import { Observable, Subscription } from "rxjs";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
-import { ActivatedRoute } from '@angular/router';
-import { ErrorDetails } from '../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface';
+import { ActivatedRoute } from "@angular/router";
+import { ErrorDetails } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
 
 @Component({
   selector: "bulk-action-monitoring-form",
@@ -28,13 +32,15 @@ import { ErrorDetails } from '../../../../sub-features/generic-multi-feature-lay
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
-  @Output() setBulkActionResponse = new EventEmitter<BulkActionMonitoringInfo | null>();
+  @Output() setBulkActionResponse =
+    new EventEmitter<BulkActionMonitoringInfo | null>();
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
   bulkActionErrorSubscription = new Subscription();
   bulkActionLaunchedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
-  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> = {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   bulkActionMonitoringLaunched$: Observable<BulkActionMonitoringInfo>;
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
   isBulkActionBtnDisabled = false;
@@ -64,24 +70,25 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const bulkActionId = params.get("bulkActionId");
       if (bulkActionId) {
         this.bulkActionMonitoringForm.patchValue({ bulkActionId });
-        this.onBulkActionFormSubmit();  
+        this.onBulkActionFormSubmit();
       }
     });
 
-    this.bulkActionLaunchedSubscription = this.bulkActionMonitoringLaunched$.subscribe((data) => {
-      if (data?.commandId) {
-        this.bulkActionResponse = data;
-        this.setBulkActionResponse.emit(this.bulkActionResponse);
-        this.isBulkActionBtnDisabled = false;
-        this.bulkActionMonitoringForm.reset();
-      } else {
-        this.bulkActionResponse = {} as BulkActionMonitoringInfo;
-      }
-    });
+    this.bulkActionLaunchedSubscription =
+      this.bulkActionMonitoringLaunched$.subscribe((data) => {
+        if (data?.commandId) {
+          this.bulkActionResponse = data;
+          this.setBulkActionResponse.emit(this.bulkActionResponse);
+          this.isBulkActionBtnDisabled = false;
+          this.bulkActionMonitoringForm.reset();
+        } else {
+          this.bulkActionResponse = {} as BulkActionMonitoringInfo;
+        }
+      });
 
     this.bulkActionErrorSubscription = this.bulkActionError$.subscribe(
       (error) => {
@@ -105,6 +112,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     );
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -135,9 +143,10 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   onBulkActionFormSubmit(): void {
     if (this.bulkActionMonitoringForm?.valid && !this.isBulkActionBtnDisabled) {
       this.isBulkActionBtnDisabled = true;
-      this.userInput = this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
-        this.bulkActionMonitoringForm?.get("bulkActionId")?.value.trim()
-      );
+      this.userInput =
+        this.genericMultiFeatureUtilitiesService.removeLeadingCharacters(
+          this.bulkActionMonitoringForm?.get("bulkActionId")?.value.trim()
+        );
       this.store.dispatch(
         BulkActionMonitoringActions.performBulkActionMonitor({
           id: this.userInput,

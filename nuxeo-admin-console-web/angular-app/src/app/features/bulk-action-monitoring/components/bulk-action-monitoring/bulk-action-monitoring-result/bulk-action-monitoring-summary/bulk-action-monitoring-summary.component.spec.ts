@@ -1,19 +1,25 @@
-import { BULK_ACTION_LABELS } from './../../../../bulk-action-monitoring.constants';
-import { BulkActionInfoSummary } from './../../../../bulk-action-monitoring.interface';
+import { CustomSnackBarComponent } from "./../../../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatIconModule } from "@angular/material/icon";
+import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
+import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary.component";
 import { StoreModule } from "@ngrx/store";
-import { HyMaterialModule, HyToastService } from "@hyland/ui";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
 import * as fromReducer from "../../../../store/reducers";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("BulkActionMonitoringSummaryComponent", () => {
   let component: BulkActionMonitoringSummaryComponent;
   let fixture: ComponentFixture<BulkActionMonitoringSummaryComponent>;
-  let toastService: jasmine.SpyObj<HyToastService>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  const snackBarSpy = jasmine.createSpyObj("MatSnackBar", [
+    "openFromComponent",
+  ]);
   const initialState = {
     bulkActionMonitoringInfo: {
       "entity-type": null,
@@ -38,27 +44,25 @@ describe("BulkActionMonitoringSummaryComponent", () => {
   };
 
   beforeEach(async () => {
-    const toastServiceSpy = jasmine.createSpyObj("HyToastService", ["success"]);
     await TestBed.configureTestingModule({
       declarations: [BulkActionMonitoringSummaryComponent],
       providers: [
-        { provide: HyToastService, useValue: toastServiceSpy },
         provideMockStore({ initialState }),
+        { provide: MatSnackBar, useValue: snackBarSpy },
       ],
       imports: [
-        HyMaterialModule,
-        StoreModule.forRoot(provideMockStore),
+        MatSnackBarModule,
+        MatIconModule,
         MatTooltipModule,
+        NoopAnimationsModule,
+        StoreModule.forRoot(provideMockStore),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringSummaryComponent);
     component = fixture.componentInstance;
-    toastService = TestBed.inject(
-      HyToastService
-    ) as jasmine.SpyObj<HyToastService>;
     store = TestBed.inject(MockStore);
-
+    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     fixture.detectChanges();
   });
 
@@ -133,10 +137,15 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     } as BulkActionInfoSummary;
     spyOn(store, "dispatch");
     component.onRefresh();
-    expect(toastService.success).toHaveBeenCalledWith(
-      BULK_ACTION_LABELS.INFORMATION_UPDATED,
+    expect(snackBar.openFromComponent).toHaveBeenCalledWith(
+      CustomSnackBarComponent,
       {
-        canBeDismissed: true,
+        data: {
+          message: BULK_ACTION_LABELS.INFORMATION_UPDATED,
+          panelClass: "success-snack",
+        },
+        duration: 5000,
+        panelClass: ["success-snack"],
       }
     );
     expect(store.dispatch).toHaveBeenCalledWith(

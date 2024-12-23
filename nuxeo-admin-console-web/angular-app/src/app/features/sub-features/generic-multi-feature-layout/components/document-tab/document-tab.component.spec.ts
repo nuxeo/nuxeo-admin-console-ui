@@ -5,11 +5,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
-import {
   MatDialog,
   MatDialogRef,
   MatDialogModule,
@@ -35,6 +30,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
@@ -83,8 +79,9 @@ describe("DocumentTabComponent", () => {
       },
       error: null,
     };
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
+    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed", "afterOpened"]);
     mockDialogRef.afterClosed.and.returnValue(of({}));
+    mockDialogRef.afterOpened.and.returnValue(of());
 
     dialogService = jasmine.createSpyObj("MatDialog", ["open"]);
     dialogService.open.and.returnValue(mockDialogRef);
@@ -94,13 +91,10 @@ describe("DocumentTabComponent", () => {
         BrowserAnimationsModule,
         CommonModule,
         MatTabsModule,
-        HyMaterialModule,
-        HyFormContainerModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        HyMaterialTabsModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
       ],
@@ -156,6 +150,7 @@ describe("DocumentTabComponent", () => {
     expect(showActionLaunchedModalSpy).toHaveBeenCalledWith(commandId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -284,6 +279,7 @@ describe("DocumentTabComponent", () => {
 
     expect(dialogService.open).toHaveBeenCalledWith(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -308,8 +304,14 @@ describe("DocumentTabComponent", () => {
       const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.DOCUMENT);
       expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_THUMBNAIL_GENERATION_TITLE);
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
-      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY);
     });
   });
 
+  describe('FEATURES.FULLTEXT_REINDEX', () => {
+    it('should return correct labels and data for DOCUMENT tabType', () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.DOCUMENT);
+      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.DOCUMENT_REINDEX_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
+    });
+  });
 });

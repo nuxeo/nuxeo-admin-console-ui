@@ -1,3 +1,4 @@
+import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
@@ -6,8 +7,8 @@ import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
 import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
-import { HyToastService } from "@hyland/ui";
 import { HttpErrorResponse } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "probes-data",
@@ -20,7 +21,8 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
-  columnsToDisplay: { propertyName: string; label: string }[] = [];
+  columnsToDisplay: string[] = [];
+  selectedRowIndex = -1;
 
   defaultColumns = [
     { propertyName: "probe", label: "Probe", summaryOnly: true },
@@ -44,6 +46,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     },
     { propertyName: "time", label: "Time", summaryOnly: false },
     { propertyName: "history", label: "History", summaryOnly: false },
+    { propertyName: "actions", label: "Actions", summaryOnly: false },
   ];
   hideTitle = true;
   probeLaunchedSuccessSubscription = new Subscription();
@@ -56,7 +59,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     private store: Store<{ probes: ProbeState }>,
     private probeService: ProbeDataService,
     private commonService: CommonService,
-    private toastService: HyToastService
+    private _snackBar: MatSnackBar
   ) {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.probes?.probesInfo)
@@ -69,9 +72,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     );
   }
   ngOnInit(): void {
-    this.columnsToDisplay = this.defaultColumns.filter((column) =>
-      this.summary ? column.summaryOnly : true
-    );
+    this.columnsToDisplay = this.defaultColumns
+      .filter((column) => (this.summary ? column.summaryOnly : true))
+      .map((column) => column.propertyName);
     this.hideTitle = !this.defaultColumns.some(
       (col) => col.summaryOnly && this.summary
     );
@@ -93,30 +96,34 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
           data?.length > 0 &&
           Object.entries(this.probeLaunched).length > 0
         ) {
-          this.toastService.success(
-            PROBES_LABELS.PROBE_LAUNCHED_SUCCESS.replaceAll(
-              "{probeName}",
-              this.probeLaunched?.name
-            ),
-            {
-              canBeDismissed: true,
-            }
-          );
+          this._snackBar.openFromComponent(CustomSnackBarComponent, {
+            data: {
+              message: PROBES_LABELS.PROBE_LAUNCHED_SUCCESS.replaceAll(
+                "{probeName}",
+                this.probeLaunched?.name
+              ),
+              panelClass: "success-snack",
+            },
+            duration: 5000,
+            panelClass: ["success-snack"],
+          });
         }
       });
 
     this.probeLaunchedErrorSubscription = this.probeLaunchedError$.subscribe(
       (error) => {
         if (error) {
-          this.toastService.error(
-            PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
-              "{probeName}",
-              this.probeLaunched?.name
-            ),
-            {
-              canBeDismissed: true,
-            }
-          );
+          this._snackBar.openFromComponent(CustomSnackBarComponent, {
+            data: {
+              message: PROBES_LABELS.PROBE_LAUNCHED_ERROR.replaceAll(
+                "{probeName}",
+                this.probeLaunched?.name
+              ),
+              panelClass: "error-snack",
+            },
+            duration: 5000,
+            panelClass: ["error-snack"],
+          });
         }
       }
     );
@@ -141,9 +148,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   }
 
   isColumnVisible(propertyName: string): boolean {
-    return this.columnsToDisplay.some(
-      (column) => column.propertyName === propertyName
-    );
+    return this.columnsToDisplay.some((column) => column === propertyName);
   }
 
   viewDetails(): void {
@@ -153,6 +158,10 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   launchProbe(probe: ProbesInfo): void {
     this.probeLaunched = probe;
     this.store.dispatch(ProbeActions.launchProbe({ probeName: probe.name }));
+  }
+
+  highlightRow(index: number): void {
+    this.selectedRowIndex = index;
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,5 @@
 import { ErrorModalComponent } from '../error-modal/error-modal.component';
-import { HyDialogBoxModule } from "@hyland/ui";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { CommonModule } from "@angular/common";
@@ -44,7 +43,7 @@ describe("ErrorModalComponent", () => {
     const dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
     TestBed.configureTestingModule({
       declarations: [ErrorModalComponent],
-      imports: [CommonModule, HyDialogBoxModule],
+      imports: [CommonModule, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },

@@ -1,4 +1,5 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
@@ -54,9 +55,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   documentActionLaunchedSubscription = new Subscription();
   documentActionErrorSubscription = new Subscription();
   actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
   launchedDialogClosedSubscription = new Subscription();
   errorDialogClosedSubscription = new Subscription();
+  launchedDialogOpenedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -72,6 +74,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   activeFeature: FeaturesKey = {} as FeaturesKey;
   requestQuery = "";
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
+  FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   FEATURES = FEATURES;
   constructor(
     public dialogService: MatDialog,
@@ -82,6 +85,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
+      force: [false],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.documentActionLaunched$ = this.store.pipe(
@@ -113,7 +117,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         );
         this.inputForm.addControl(
           VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
-          new FormControl("true")
+          new FormControl("false")
+        );
+      }
+      if (this.isFeatureFullTextReindex()) {
+        this.inputForm.addControl(
+          FULLTEXT_REINDEX_LABELS.FORCE,
+          new FormControl("false")
         );
       }
     }
@@ -140,6 +150,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   showActionErrorModal(error: ErrorDetails): void {
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -151,6 +162,17 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       ?.subscribe(() => {
         this.onActionErrorModalClose();
       });
+
+    this.errorDialogOpenedSubscription = this.errorDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionErrorModalClose(): void {
@@ -161,6 +183,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   showActionLaunchedModal(commandId: string | null): void {
     this.launchedDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -176,14 +199,29 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
+
+    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
+    if (this.isFeatureFullTextReindex()) {
+      this.inputForm?.get("force")?.reset();
+    }
+
     document.getElementById("inputIdentifier")?.focus();
   }
 
@@ -294,6 +332,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     );
   }
 
+  isFeatureFullTextReindex(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.FULLTEXT_REINDEX as FeaturesKey)
+    );
+  }
+
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
     this.documentActionLaunchedSubscription?.unsubscribe();
@@ -301,5 +346,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     this.actionDialogClosedSubscription?.unsubscribe();
     this.launchedDialogClosedSubscription?.unsubscribe();
     this.errorDialogClosedSubscription?.unsubscribe();
+    this.launchedDialogOpenedSubscription?.unsubscribe();
+    this.errorDialogOpenedSubscription?.unsubscribe();
   }
 }

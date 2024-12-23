@@ -4,13 +4,14 @@ import { GENERIC_LABELS } from "./generic-multi-feature-layout.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../thumbnail-generation/thumbnail-generation.constants";
 import { labelsList } from "./generic-multi-feature-layout.interface";
 import { PICTURE_RENDITIONS_LABELS } from "../../pictures/pictures-renditions.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../fulltext-reindex/fulltext-reindex.constants";
 
 export const FEATURES = {
   ELASTIC_SEARCH_REINDEX: "elasticsearch-reindex",
   THUMBNAIL_GENERATION: "thumbnail-generation",
   PICTURE_RENDITIONS: "picture-renditions",
   VIDEO_RENDITIONS_GENERATION: "video-renditions-generation",
-  // Add other features here. Value MUST match route name
+  FULLTEXT_REINDEX: "fulltext-reindex"
 } as const;
 
 export type FeaturesKey = keyof typeof FEATURES;
@@ -77,11 +78,7 @@ export const featureMap = () => ({
   },
   [FEATURES.THUMBNAIL_GENERATION]: (tabType: string) => {
     let labels: labelsList;
-    let data = {
-      bodyParam: {
-        query: ""
-      }
-    };
+    let data = {};
     switch (tabType) {
       case GENERIC_LABELS.DOCUMENT:
         labels = {
@@ -92,6 +89,9 @@ export const featureMap = () => ({
         };
         data = {
           bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY}` },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -103,6 +103,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
@@ -118,6 +121,9 @@ export const featureMap = () => ({
         };
         data = {
           bodyParam: { query: `${THUMBNAIL_GENERATION_LABELS.NXQL_QUERY}` },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -143,6 +149,9 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.DOCUMENT_QUERY}`,
           },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         };
         break;
 
@@ -154,6 +163,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.FOLDER_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
@@ -168,6 +180,9 @@ export const featureMap = () => ({
         data = {
           bodyParam: {
             query: `${PICTURE_RENDITIONS_LABELS.NXQL_QUERY}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         };
         break;
@@ -211,7 +226,7 @@ export const featureMap = () => ({
           bodyParam: {
             query: `${VIDEO_RENDITIONS_LABELS.FOLDER_QUERY}`,
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
-            recomputeVideoInfo: `{recomputeVideoInfo}`,
+            [VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]: `{recomputeAllVideoInfo}`,
           },
           requestHeaders: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -231,6 +246,68 @@ export const featureMap = () => ({
             query: `${VIDEO_RENDITIONS_LABELS.NXQL_QUERY}`,
             [VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]: `{conversionNames}`,
             [VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]: `{recomputeAllVideoInfo}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        break;
+
+      default:
+        throw new Error(`Unsupported type: ${tabType}`);
+    }
+    return {
+      labels,
+      data,
+    };
+  },
+  [FEATURES.FULLTEXT_REINDEX]: (tabType: string) => {
+    let labels: labelsList;
+    let data = {};
+    switch (tabType) {
+      case GENERIC_LABELS.DOCUMENT:
+        labels = {
+          pageTitle: FULLTEXT_REINDEX_LABELS.DOCUMENT_REINDEX_TITLE,
+          submitBtnLabel: FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: {
+            query: `${FULLTEXT_REINDEX_LABELS.DOCUMENT_QUERY}`,
+            [FULLTEXT_REINDEX_LABELS.FORCE]: `{force}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        break;
+
+      case GENERIC_LABELS.FOLDER:
+        labels = {
+          pageTitle: FULLTEXT_REINDEX_LABELS.FOLDER_REINDEX_TITLE,
+          submitBtnLabel: FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL,
+        };
+        data = {
+          bodyParam: {
+            query: `${FULLTEXT_REINDEX_LABELS.FOLDER_QUERY}`,
+            [FULLTEXT_REINDEX_LABELS.FORCE]: `{force}`,
+          },
+          requestHeaders: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        break;
+
+      case GENERIC_LABELS.NXQL:
+        labels = {
+          pageTitle: FULLTEXT_REINDEX_LABELS.NXQL_QUERY_REINDEX_TITLE,
+          submitBtnLabel: FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL,
+          nxqlQueryPlaceholder:
+            FULLTEXT_REINDEX_LABELS.NXQL_QUERY_DEFAULT_VALUE,
+        };
+        data = {
+          bodyParam: {
+            query: `${FULLTEXT_REINDEX_LABELS.NXQL_QUERY}`,
+            [FULLTEXT_REINDEX_LABELS.FORCE]: `{force}`,
           },
           requestHeaders: {
             "Content-Type": "application/x-www-form-urlencoded",

@@ -2,8 +2,7 @@ import { GenericModalComponent } from './generic-modal.component';
 import { GENERIC_LABELS } from './../../generic-multi-feature-layout.constants';
 import { GenericModalData } from './../../generic-multi-feature-layout.interface';
 import { CommonService } from './../../../../../shared/services/common.service';
-import { HyDialogBoxModule } from "@hyland/ui";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
@@ -53,7 +52,7 @@ describe("GenericModalComponent", () => {
       declarations: [GenericModalComponent],
       imports: [
         CommonModule,
-        HyDialogBoxModule,
+        MatDialogModule,
         StoreModule.forRoot(provideMockStore),
       ],
       providers: [

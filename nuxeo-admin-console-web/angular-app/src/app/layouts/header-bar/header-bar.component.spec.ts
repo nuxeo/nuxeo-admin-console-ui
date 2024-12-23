@@ -1,7 +1,6 @@
 import { HeaderBarComponent } from "./header-bar.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { HyMaterialIconModule } from "@hyland/ui";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,6 +12,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { UserInterface } from "../../shared/types/user.interface";
 import { authActions } from "../../auth/store/actions";
+import { MatIconModule } from "@angular/material/icon";
 
 describe("HeaderBarComponent", () => {
   let component: HeaderBarComponent;
@@ -43,9 +43,9 @@ describe("HeaderBarComponent", () => {
       declarations: [HeaderBarComponent],
       imports: [
         CommonModule,
-        HyMaterialIconModule,
         MatToolbarModule,
         RouterTestingModule,
+        MatIconModule
       ],
       providers: [
         provideMockStore({ initialState: initialAuthState }),

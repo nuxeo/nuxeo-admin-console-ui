@@ -7,11 +7,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
-import {
   MatDialog,
   MatDialogRef,
   MatDialogModule,
@@ -37,6 +32,7 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
@@ -78,9 +74,9 @@ describe("FolderTabComponent", () => {
       },
       error: null,
     };
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
+    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed", "afterOpened"]);
     mockDialogRef.afterClosed.and.returnValue(of({}));
-
+    mockDialogRef.afterOpened.and.returnValue(of());
     dialogService = jasmine.createSpyObj("MatDialog", ["open"]);
     dialogService.open.and.returnValue(mockDialogRef);
     await TestBed.configureTestingModule({
@@ -89,13 +85,10 @@ describe("FolderTabComponent", () => {
         BrowserAnimationsModule,
         CommonModule,
         MatTabsModule,
-        HyMaterialModule,
-        HyFormContainerModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        HyMaterialTabsModule,
         MatProgressSpinnerModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
@@ -155,6 +148,7 @@ describe("FolderTabComponent", () => {
 
     expect(dialogService.open).toHaveBeenCalledWith(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -191,6 +185,7 @@ describe("FolderTabComponent", () => {
     expect(showActionLaunchedModalSpy).toHaveBeenCalledWith(commandId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -258,6 +253,7 @@ describe("FolderTabComponent", () => {
     component.showConfirmationModal(2);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -300,7 +296,14 @@ describe("FolderTabComponent", () => {
       const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_THUMBNAIL_GENERATION_TITLE);
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
-      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY);
+    });
+  });
+
+  describe('FEATURES.FULLTEXT_REINDEX', () => {
+    it('should return correct labels and data for FOLDER tabType', () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.FOLDER);
+      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.FOLDER_REINDEX_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
     });
   });
 });

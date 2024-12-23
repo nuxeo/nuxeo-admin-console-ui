@@ -1,17 +1,35 @@
 .warning-dialog {
   width: 564px;
+  max-height: 300px;
   &__title {
     font-style: normal;
-    font-weight: 300;
-    font-size: 1.7rem !important;
+    font-weight: 500;
     line-height: 20px;
     letter-spacing: 0.011em;
+    color: rgb(55, 58, 60);
+    font-size: 26px;
+    margin-top: 30px;
+    margin-left: 20px;
+    padding-bottom: 10px;
   }
-  &__content {
-    padding-bottom: 5px;
+  &__subheading-text {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 32px;
+    font-family: "Open Sans", sans-serif;
+    color: rgb(55, 58, 60);
+    letter-spacing: normal;
+    margin-top: -10px;
+  }
+  &__subheading-caption {
+    padding-top: 5px;
+    font-weight: bold;
+    color: #4b5563;
+    font-size: 14px;
   }
   &__checkbox-container {
     margin-right: auto;
+    padding-left: 5px;
   }
 
   &__button-container {
@@ -19,28 +37,11 @@
   }
 }
 
-.hy-dialog-box-subheading-caption {
-  padding-top: 15px;
-  font-weight: bold;
+.separator {
+  width: 100%;
+  background-color: #d1d5db;
 }
 
-:host ::ng-deep hy-dialog-box-subheading .hy-text-subhead {
-  font-weight: 200;
-  font-size: 14px;
-}
-:host ::ng-deep hy-dialog-box-title .mat-title {
-  font-size: 26px;
-}
-
-:host ::ng-deep hy-dialog-box-subheading-caption {
-  font-size: 14px !important;
-}
-
-:host
-  ::ng-deep
-  hy-dialog-box-footer
-  .warning-dialog__checkbox-container
-  .mdc-form-field
-  .mdc-label {
-  padding-top: 6px;
+.warning-dialog__content {
+  padding-bottom: 5px !important;
 }

@@ -1,31 +1,50 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="document-tab-container"
-  [ngClass]="{'vertical-flex': isFeatureVideoRenditions()}">
-  <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
-  <mat-form-field hyFormField>
-    <mat-label>{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}</mat-label>
+  [ngClass]="{'vertical-flex': isFeatureVideoRenditions() || isFeatureFullTextReindex()}">
+  <p id="requiredField">{{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+  <p class="label">{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}<span class="required-indicator">*</span></p>
+  <mat-form-field appearance="outline" class="input-field">
     <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}" type="text" formControlName="inputIdentifier"
       id="inputIdentifier" required />
     <mat-error *ngIf="inputForm?.get('inputIdentifier')?.invalid">
-      {{getErrorMessage()}}</mat-error>
+      {{ getErrorMessage() }}
+    </mat-error>
   </mat-form-field>
+
   <ng-container
     *ngIf="isFeatureVideoRenditions() && inputForm.get(VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY) && inputForm.get(VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY)">
-    <mat-form-field hyFormField [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
-      <mat-label>{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES}}</mat-label>
+    <p class="label">{{ VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES }}</p>
+    <mat-form-field [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" appearance="outline"
+      class="input-field">
       <input matInput placeholder="Conversion Names" type="text" formControlName="conversionNames"
         id="conversionNames" />
     </mat-form-field>
-    <p class="conversion-helper-text">{{VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT}}</p>
-    <mat-form-field hyFormField class="recompute" [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
-      <mat-label>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO}}</mat-label>
-      <select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
-        <option value="true" selected>{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY}}</option>
-        <option value="false">{{VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL}}</option>
-      </select>
+    <p class="conversion-helper-text">{{ VIDEO_RENDITIONS_LABELS.CONVERSION_NAMES_HELPER_TEXT }}</p>
+    <p class="label">{{ VIDEO_RENDITIONS_LABELS.RECOMPUTE_VIDEO_INFO }}</p>
+    <mat-form-field appearance="outline" class="recompute input-field"
+      [ngClass]="{'video-renditions': isFeatureVideoRenditions()}">
+      <mat-select matNativeControl formControlName="recomputeAllVideoInfo" id="recomputeAllVideoInfo">
+        <mat-option value="false" selected>{{ VIDEO_RENDITIONS_LABELS.RECOMPUTE_MISSING_ONLY }}</mat-option>
+        <mat-option value="true">{{ VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL }}</mat-option>
+      </mat-select>
     </mat-form-field>
   </ng-container>
+  <ng-container *ngIf="isFeatureFullTextReindex() && inputForm.get(FULLTEXT_REINDEX_LABELS.FORCE)">
+    <div class="force-checkbox-container">
+      <mat-checkbox 
+        color="primary"
+        formControlName="force" 
+        id="force" 
+        [checked]="inputForm.get('force')?.value" 
+        [ngClass]="{'fulltext-reindex': isFeatureFullTextReindex()}"
+      >
+      </mat-checkbox>
+      <span>{{ FULLTEXT_REINDEX_LABELS.FORCE_TITLE }}</span>
+    </div>
+    <p class="force-conversion-helper-text">{{ FULLTEXT_REINDEX_LABELS.FORCE_HELPER_TEXT }}</p>
+  </ng-container>
   <button mat-flat-button color="primary" type="submit" class="document-tab-container__button"
-    [ngClass]="{'video-renditions': isFeatureVideoRenditions()}" [disabled]="isSubmitBtnDisabled">
+    [ngClass]="{'video-renditions': isFeatureVideoRenditions() || isFeatureFullTextReindex()}"
+    [disabled]="isSubmitBtnDisabled">
     {{ templateLabels.submitBtnLabel }}
   </button>
 </form>
