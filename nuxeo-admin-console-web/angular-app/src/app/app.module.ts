@@ -50,6 +50,7 @@ import {
 } from "@angular/material/dialog";
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
+import { StreamModule } from "./features/stream/stream.module";
 
 @NgModule({
   declarations: [
@@ -94,6 +95,7 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
     MatButtonModule,
     MatSidenavModule,
     HomeModule,
+    StreamModule,
     MatListModule,
     BaseLayoutModule,
     MatSidenavModule,
