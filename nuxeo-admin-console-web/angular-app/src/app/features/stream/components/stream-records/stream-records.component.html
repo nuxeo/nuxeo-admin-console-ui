@@ -1,1 +1,25 @@
-<p>I am the records </p>
+<div class="stream-records">
+    <div class="stream-records__summary">
+        <!-- <p>{{docsProcessedText}}</p> -->
+        <p>Fetched 10 records</p>
+    </div>
+    <!-- <div class="title">
+         {{STREAM_LABELS.RECORDS_TITLE}} 
+        Records
+    </div> -->
+    <mat-card class="stream-records__data" role="region" tabindex="0" aria-label="records data">
+        <mat-card-content>
+            <div class="probes-title">
+               Records
+            </div>
+            <!-- <div *ngIf="recordsData">
+                {{recordsData}}
+            </div> -->
+            <ul>
+                <li *ngFor="let record of records">
+                  {{ record }}
+                </li>
+              </ul>
+        </mat-card-content>
+    </mat-card>
+</div>

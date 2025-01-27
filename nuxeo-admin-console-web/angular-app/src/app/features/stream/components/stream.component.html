@@ -1,2 +1,11 @@
-<stream-form></stream-form>
-<stream-records></stream-records>
+<div class="stream-container">
+    <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
+        {{ pageTitle }}
+    </h1>
+    <div class="stream-container__placeholder">
+        <stream-form></stream-form>
+        <div class="result" *ngIf="records!.length > 0">
+            <stream-records [records]="records"></stream-records>
+        </div>
+    </div>
+</div>

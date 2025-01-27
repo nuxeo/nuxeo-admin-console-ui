@@ -1,0 +1,67 @@
+.stream-form-container {
+  padding: 10px 0px 0px 10px;
+  .required-indicator {
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans", sans-serif;
+    padding-left: 2px;
+  }
+  #requiredField {
+    font-size: 14px;
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans";
+    line-height: 1;
+  }
+
+  .label {
+    line-height: 1;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: "Open Sans", sans-serif;
+  }
+
+  &--stream-container {
+    margin-top: 20px;
+  }
+
+  &--position-container {
+    display: flex;
+    flex-direction: column;
+
+    #position {
+      margin-top: 15px;
+      margin-left: -5px;
+    }
+
+    mat-radio-button .mdc-radio {
+      bottom: 35px;
+    }
+
+    .radio-group-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      width: 48%;
+    }
+  }
+
+  &__button {
+    border-radius: 4px !important;
+    width: 140px;
+    height: 45px;
+    position: relative;
+    left: 20px;
+    font-size: 16px;
+    bottom: 30px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 550;
+    letter-spacing: normal;
+    background-color: #0a60ce !important;
+    color: #fff;
+  }
+}

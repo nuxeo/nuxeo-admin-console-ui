@@ -36,6 +36,7 @@ import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/sub-features/generic-multi-feature-layout/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
+import * as StreamEffects from "./features/stream/store/effects";
 import {
   folderActionReducer,
   documentActionReducer,
@@ -51,6 +52,7 @@ import {
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
+import { streamsReducer } from "./features/stream/store/reducers";
 
 @NgModule({
   declarations: [
@@ -80,6 +82,7 @@ import { StreamModule } from "./features/stream/stream.module";
       nxqlAction: nxqlActionReducer,
       bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
+      streams: streamsReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(
@@ -87,7 +90,8 @@ import { StreamModule } from "./features/stream/stream.module";
       HomeEffects,
       ReindexEffects,
       BulkActionMonitoringEffects,
-      ProbesEffects
+      ProbesEffects,
+      StreamEffects
     ),
     MatIconModule,
     MatTooltipModule,

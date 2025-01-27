@@ -10,6 +10,9 @@ export const REST_END_POINTS = {
   PICTURE_RENDITIONS: "PICTURE_RENDITIONS",
   VIDEO_RENDITIONS_GENERATION: "VIDEO_RENDITIONS_GENERATION",
   FULLTEXT_REINDEX: "FULLTEXT_REINDEX",
+  STREAM: "STREAM",
+  STREAM_CONSUMERS: "STREAM_CONSUMERS",
+  STREAM_RECORDS: "STREAM_RECORDS",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -65,6 +68,18 @@ export const REST_END_POINT_CONFIG: Record<
   },
   FULLTEXT_REINDEX: {
     endpoint: "/management/fulltext/extract",
-    method: "POST"
-  }
+    method: "POST",
+  },
+  STREAM: {
+    endpoint: "/management/stream/streams",
+    method: "GET",
+  },
+  STREAM_CONSUMERS: {
+    endpoint: "/management/stream/consumers",
+    method: "GET",
+  },
+  STREAM_RECORDS: {
+    endpoint: "/management/stream/cat",
+    method: "GET",
+  },
 };
