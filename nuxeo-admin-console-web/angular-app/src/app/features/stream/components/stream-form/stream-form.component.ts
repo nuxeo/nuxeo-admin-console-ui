@@ -128,25 +128,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         }
       }
     );
-    
-  /*  this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
-      (data: unknown[]) => {
-        if (data?.length > 0) {
-          this.records = data;
-          this.setRecordsData.emit(this.records);
-          console.log(this.records);
-        }
-      }
-    );
 
-    this.fetchRecordsErrorSubscription = this.fetchRecordsError$.subscribe(
-      (error) => {
-        if (error) {
-          this.setRecordsData.emit(null);
-          console.log(error);
-        }
-      }
-    );  */
   }
 
   onConsumerOptionChange(selectedValue: string) {
@@ -158,7 +140,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.streamForm.patchValue({
       stream: value,
     });
-    // this.store.dispatch(StreamActions.fetchConsumers({ stream: value }));
     const params = {
       stream: this.streamForm.controls["stream"].value,
     };
@@ -167,12 +148,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   }
 
   onStreamFormSubmit() {
-    /* if (!this.streamForm?.valid && !this.isSubmitBtnDisabled) {
-      this.isSubmitBtnDisabled = true;
-    } else {
-      console.log(this.streamForm);
-    } */
-    console.log(this.streamForm);
     const params = {
       stream: this.streamForm?.get("stream")?.value,
       fromGroup: this.streamForm?.get("position")?.value,

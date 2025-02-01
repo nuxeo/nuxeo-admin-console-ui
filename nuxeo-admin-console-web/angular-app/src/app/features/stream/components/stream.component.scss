@@ -3,6 +3,7 @@
     margin: 0px;
     padding: 20px;
     height: 100%;
+    
     h1 {
       font-size: 20px;
       font-weight: 500;
@@ -11,6 +12,8 @@
     &__placeholder {
       background-color: #fff;
       min-height: 95%;
-      height: auto;
+      max-height: 550px;
+      overflow: auto;
+      padding-bottom: 30px;
     }
   }

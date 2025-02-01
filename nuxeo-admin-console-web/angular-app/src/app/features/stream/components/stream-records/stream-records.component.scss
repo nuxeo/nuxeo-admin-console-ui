@@ -1,0 +1,20 @@
+.stream-records {
+    padding: 0 30px 0 30px;
+    &__data {
+        width: 90%;
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        height: 200px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .stream-records {
+        &__data {
+            width: 70%;
+            height: auto;
+        } 
+    }
+}

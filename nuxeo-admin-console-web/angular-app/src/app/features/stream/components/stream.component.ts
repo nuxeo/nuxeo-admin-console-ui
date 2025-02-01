@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { STREAM_LABELS } from "../stream.constants";
 import { Observable, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../store/reducers";
-import { Stream } from "../stream.interface";
 
 @Component({
   selector: "stream",
@@ -12,35 +11,32 @@ import { Stream } from "../stream.interface";
 })
 export class StreamComponent implements OnInit, OnDestroy {
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;
-  records: unknown[] = [];
+  records: { type?: string }[] = [];
   recordsAvailable$!: Observable<boolean>;
   fetchRecordsErrorSubscription = new Subscription();
   fetchRecordsSuccessSubscription = new Subscription();
-  fetchRecordsSuccess$!: Observable<unknown[]>;
+  fetchRecordsSuccess$!: Observable<{ type?: string }[]>;
   fetchRecordsError$!: Observable<unknown>;
-  // fetchStreamsSuccess$: Observable<Stream[]>;
-  // fetchStreamsError$: Observable<unknown>;
-  constructor(private store: Store<{ stream: StreamsState }>) {
-
-   /* this.fetchStreamsSuccess$ = this.store.pipe(
-      select((state) => state.streams?.streams)
+  recordCount = 0;
+  
+  constructor(private store: Store<{ streams: StreamsState }>, private cdRef: ChangeDetectorRef) {
+    this.fetchRecordsSuccess$ = this.store.pipe(
+      select((state) => state?.streams?.records)
     );
 
-    this.fetchStreamsError$ = this.store.pipe(
+    this.fetchRecordsError$ = this.store.pipe(
       select((state) => state.streams?.error)
-    ); */
+    );
 
   }
 
   ngOnInit(): void {
-    // this.recordsAvailable$ = this.store.select(
-    //   (state) => state?.stream?.records?.length > 0
-    // );
-
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
       (data: unknown[]) => {
         if (data?.length > 0) {
-          this.records = data;
+          this.records = data as { type?: string }[];
+          this.recordCount = this.getRecordCount();
+          this.cdRef.detectChanges();
         }
       }
     );
@@ -51,7 +47,14 @@ export class StreamComponent implements OnInit, OnDestroy {
           console.log(error);
         }
       }
-    ); 
+    );
+  }
+
+  getRecordCount(): number {
+    return this.records
+      .filter((r: { type?: string }) => r?.type === "record")
+      .length;
+
   }
 
   ngOnDestroy(): void {

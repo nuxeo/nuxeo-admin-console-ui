@@ -39,7 +39,7 @@ export const triggerRecordsSSEStream = createAction(
 
 export const onFetchRecordsLaunch = createAction(
   "[Admin] On Fetch Records Launch",
-  props<{ recordsData: unknown[] }>()
+  props<{ recordsData: { type?: string }[] }>()
 );
 export const onFetchRecordsFailure = createAction(
   "[Admin] On Fetch Records Failure",

@@ -2,11 +2,9 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { of } from "rxjs";
 import {
   catchError,
-  concatMap,
   map,
   mergeMap,
-  switchMap,
-  tap,
+  switchMap
 } from "rxjs/operators";
 import { createEffect } from "@ngrx/effects";
 import { Actions, ofType } from "@ngrx/effects";
@@ -72,25 +70,20 @@ export const triggerRecordsSSEStream$ = createEffect(
     streamService = inject(StreamService)
   ) => {
     return actions$.pipe(
-      ofType(StreamActions.triggerRecordsSSEStream), // Listen for the 'triggerRecordsSSEStream' action
+      ofType(StreamActions.triggerRecordsSSEStream),
       mergeMap((action) => {
-        // Call the startSSEStream method with the params from the action
         return streamService.startSSEStream(action.params).pipe(
           map((response: any) => {
-            // Process the SSE data here (or handle it as needed)
-            // Dispatch an action with the processed data if necessary
-            console.log(typeof response);
             return StreamActions.onFetchRecordsLaunch({ recordsData: response });
           }),
           catchError((error) => {
-            // Handle any errors from the SSE stream
             return of(StreamActions.onFetchRecordsFailure({ error }));
           })
         );
       })
     );
   },
-  { functional: true } // Ensure 'dispatch' is set to true
+  { functional: true }
 );
 
 

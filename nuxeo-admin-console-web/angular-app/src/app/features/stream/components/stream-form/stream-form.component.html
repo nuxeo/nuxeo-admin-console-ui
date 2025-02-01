@@ -3,7 +3,7 @@
         <div class="stream-form-container--stream-container">
             <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
             <p class="label">{{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span></p>
-            <mat-form-field appearance="outline" class="input-field">
+            <mat-form-field appearance="outline" class="input-field stream">
                 <mat-select matNativeControl formControlName="stream" id="stream"
                     (selectionChange)="onStreamChange($event.value)">
                     <mat-option *ngFor="let stream of streams" [value]="stream.name">
@@ -22,7 +22,7 @@
             <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
                 <mat-radio-button [value]="selectedConsumer" class="radio-item">
                     <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER }}</p>
-                    <mat-form-field appearance="outline" class="input-field">
+                    <mat-form-field appearance="outline" class="input-field consumer">
                         <mat-select matNativeControl id="consumer"
                             (selectionChange)="onConsumerOptionChange($event.value)" [value]="selectedConsumer">
                             <mat-option *ngFor="let consumer of consumers" [value]="consumer.consumer">
@@ -33,7 +33,7 @@
                 </mat-radio-button>
             </mat-radio-group>
         </div>
-        <br><br>
+        <br>
         <button mat-flat-button color="primary" type="submit" class="stream-form-container__button"
             [disabled]="isSubmitBtnDisabled">
             {{ STREAM_LABELS.VIEW_RECORDS }}

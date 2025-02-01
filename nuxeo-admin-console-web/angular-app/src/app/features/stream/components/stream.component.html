@@ -4,8 +4,9 @@
     </h1>
     <div class="stream-container__placeholder">
         <stream-form></stream-form>
-        <div class="result" *ngIf="records!.length > 0">
-            <stream-records [records]="records"></stream-records>
+        <div class="result" *ngIf="records.length > 0">
+            <hr>
+            <stream-records [records]="records" [recordCount]="recordCount"></stream-records>
         </div>
     </div>
 </div>
