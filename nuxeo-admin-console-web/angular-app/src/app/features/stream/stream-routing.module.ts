@@ -13,4 +13,4 @@ export const StreamRoutes: Route[] = [
   imports: [RouterModule.forChild(StreamRoutes)],
   exports: [RouterModule],
 })
-export class StreamRoutingModule {}
+export class StreamRoutingModule { }

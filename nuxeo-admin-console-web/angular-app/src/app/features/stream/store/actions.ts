@@ -39,11 +39,11 @@ export const triggerRecordsSSEStream = createAction(
 
 export const onFetchRecordsLaunch = createAction(
   "[Admin] On Fetch Records Launch",
-  props<{ recordsData: { type?: string }[] }>()
+  props<{ recordsData: unknown }>()
 );
 export const onFetchRecordsFailure = createAction(
   "[Admin] On Fetch Records Failure",
-  props<{ error: unknown }>()
+  props<{ error: HttpErrorResponse | null }>()
 );
 export const resetFetchRecordsState = createAction(
   "[Admin] Reset Fetch Records State"

@@ -4,6 +4,7 @@ import {
   catchError,
   map,
   mergeMap,
+  scan,
   switchMap
 } from "rxjs/operators";
 import { createEffect } from "@ngrx/effects";
@@ -73,8 +74,18 @@ export const triggerRecordsSSEStream$ = createEffect(
       ofType(StreamActions.triggerRecordsSSEStream),
       mergeMap((action) => {
         return streamService.startSSEStream(action.params).pipe(
-          map((response: any) => {
-            return StreamActions.onFetchRecordsLaunch({ recordsData: response });
+          scan((acc: unknown[], response: unknown) => {
+            let parsedResponse;
+            try {
+              parsedResponse = typeof response === "string" ? JSON.parse(response) : response;
+            } catch (error) {
+              console.error("Error parsing response:", error);
+              return acc;
+            }
+            return [...acc, parsedResponse];
+          }, []),
+          map((recordsArray) => {
+            return StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray });
           }),
           catchError((error) => {
             return of(StreamActions.onFetchRecordsFailure({ error }));
@@ -85,5 +96,7 @@ export const triggerRecordsSSEStream$ = createEffect(
   },
   { functional: true }
 );
+
+
 
 

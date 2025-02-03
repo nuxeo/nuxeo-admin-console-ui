@@ -8,5 +8,7 @@ export const STREAM_LABELS = {
     TAIL: "From Tail",
     OFFSET: "From Offset"
   },
-  VIEW_RECORDS: "View Records"
+  VIEW_RECORDS: "View Records",
+  FETCHING_RECORDS: "Fetching Records .....",
+  FETCHED_RECORDS_COUNT: "Fetched {{ recordCount }} records"
 };

@@ -1,12 +1,13 @@
 import { createReducer, on } from "@ngrx/store";
 import * as StreamActions from "./actions";
 import { Stream } from "../stream.interface";
+import { HttpErrorResponse } from "@angular/common/http";
 
 export interface StreamsState {
   streams: Stream[];
   consumers: { stream: string; consumer: string }[];
   records: { type?: string }[];
-  error: unknown;
+  error: HttpErrorResponse | null;
 }
 
 export const initialStreamsState: StreamsState = {
@@ -60,7 +61,7 @@ export const streamsReducer = createReducer(
     ...state,
     records: [...state.records, ...(Array.isArray(recordsData) ? recordsData : [recordsData])],
   })),
-  
+
   on(StreamActions.onFetchRecordsFailure, (state, { error }) => ({
     ...state,
     error,

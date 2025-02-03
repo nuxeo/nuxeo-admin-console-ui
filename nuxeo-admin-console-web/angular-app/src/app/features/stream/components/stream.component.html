@@ -4,7 +4,7 @@
     </h1>
     <div class="stream-container__placeholder">
         <stream-form></stream-form>
-        <div class="result" *ngIf="records.length > 0">
+        <div class="result" *ngIf="isFetchingRecords || records!.length > 0">
             <hr>
             <stream-records [records]="records" [recordCount]="recordCount"></stream-records>
         </div>

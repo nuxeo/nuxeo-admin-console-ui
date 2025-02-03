@@ -9,7 +9,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
-import {MatRadioModule} from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from "@angular/material/card";
 
 @NgModule({
@@ -26,4 +26,4 @@ import { MatCardModule } from "@angular/material/card";
     MatCardModule
   ],
 })
-export class StreamModule {}
+export class StreamModule { }

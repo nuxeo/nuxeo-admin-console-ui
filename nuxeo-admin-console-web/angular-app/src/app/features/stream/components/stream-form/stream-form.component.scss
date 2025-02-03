@@ -1,10 +1,12 @@
 .stream-form-container {
   padding: 10px 0px 0px 10px;
+
   .required-indicator {
     color: rgb(218, 21, 0);
     font-family: "Open Sans", sans-serif;
     padding-left: 2px;
   }
+
   #requiredField {
     font-size: 14px;
     color: rgb(218, 21, 0);
@@ -63,5 +65,11 @@
     letter-spacing: normal;
     background-color: #0a60ce !important;
     color: #fff;
+
   }
+}
+
+.mat-mdc-unelevated-button:disabled {
+  color: #fff;
+  cursor: pointer;
 }
