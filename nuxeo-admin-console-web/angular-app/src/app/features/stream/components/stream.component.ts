@@ -73,5 +73,6 @@ export class StreamComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.fetchRecordsSuccessSubscription?.unsubscribe();
     this.fetchRecordsErrorSubscription?.unsubscribe();
+    this.isFetchingRecordsSubscription?.unsubscribe();
   }
 }

@@ -46,7 +46,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
           expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
             restEndpoint,
             {
-              queryParam: { requestUrl },
+              queryParam: { query: requestUrl },
               bodyParam: requestParams,
               requestHeaders: {},
             }
@@ -74,7 +74,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
           expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
             restEndpoint,
             {
-              queryParam: { requestUrl },
+              queryParam: { query: requestUrl },
               bodyParam: requestParams,
               requestHeaders: {},
             }
@@ -101,7 +101,7 @@ describe("GenericMultiFeatureEndpointsService", () => {
           expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
             restEndpoint,
             {
-              queryParam: { requestUrl },
+              queryParam: { query: requestUrl},
               bodyParam: requestParams,
               requestHeaders: {},
             }

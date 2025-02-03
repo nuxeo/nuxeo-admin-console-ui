@@ -59,8 +59,9 @@ export const streamsReducer = createReducer(
   })),
   on(StreamActions.onFetchRecordsLaunch, (state, { recordsData }) => ({
     ...state,
-    records: [...state.records, ...(Array.isArray(recordsData) ? recordsData : [recordsData])],
+    records: Array.isArray(recordsData) ? recordsData : [recordsData], // Replaces instead of appending
   })),
+  
 
   on(StreamActions.onFetchRecordsFailure, (state, { error }) => ({
     ...state,
