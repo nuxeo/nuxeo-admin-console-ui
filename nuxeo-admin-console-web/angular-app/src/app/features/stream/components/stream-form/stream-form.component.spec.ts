@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StreamFormComponent } from './stream-form.component';
 import { StoreModule, Store } from '@ngrx/store';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { StreamService } from '../../services/stream.service';
 import { of } from 'rxjs';
 import * as StreamActions from '../../store/actions';
@@ -19,7 +19,6 @@ describe('StreamFormComponent', () => {
     let fixture: ComponentFixture<StreamFormComponent>;
     let store: Store<{ streams: StreamsState }>;
     let streamService: StreamService;
-    let formBuilder: FormBuilder;
 
     beforeEach(async () => {
         const streamServiceMock = {
@@ -42,7 +41,6 @@ describe('StreamFormComponent', () => {
                 StoreModule.forRoot({})
             ],
             providers: [
-                FormBuilder,
                 { provide: StreamService, useValue: streamServiceMock }
             ]
         }).compileComponents();
@@ -51,7 +49,6 @@ describe('StreamFormComponent', () => {
         component = fixture.componentInstance;
         store = TestBed.inject(Store);
         streamService = TestBed.inject(StreamService);
-        formBuilder = TestBed.inject(FormBuilder);
         component.STREAM_LABELS = STREAM_LABELS;
         component.GENERIC_LABELS = GENERIC_LABELS;
     });

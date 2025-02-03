@@ -6,8 +6,7 @@ import { Stream } from '../stream.interface';
 describe('streamsReducer', () => {
   describe('fetchStreams', () => {
     it('should return the initial state', () => {
-      const action = {} as any;
-      const result = streamsReducer(initialStreamsState, action);
+      const result = streamsReducer(undefined, { type: "" });
       expect(result).toEqual(initialStreamsState);
     });
 

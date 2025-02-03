@@ -469,11 +469,17 @@ mat-form-field.input-field.recompute
   padding-top: 10px;
 }
 
+mat-form-field.input-field.stream-field {
+  margin-top: 5px;
+}
+
 mat-form-field.input-field.stream-field
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined
   .mat-mdc-form-field-infix {
   padding-top: 12px;
 }
+
+
 /* mat card */
 
 .bulk-action-details {
@@ -500,4 +506,9 @@ mat-form-field.input-field.stream-field
   font-weight: 500;
   color: #173e65;
   letter-spacing: normal;
+}
+
+
+mat-radio-group#position .mat-mdc-radio-button .mdc-radio {
+  bottom: 37px !important;
 }

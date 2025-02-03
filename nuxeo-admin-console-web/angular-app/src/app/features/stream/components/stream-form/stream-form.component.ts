@@ -132,6 +132,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   }
 
   onStreamChange(value: string): void {
+    this.isSubmitBtnDisabled = false;
     this.streamForm.patchValue({
       stream: value,
     });

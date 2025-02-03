@@ -40,7 +40,6 @@ describe('StreamService', () => {
             networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
 
             service.getStreams().subscribe({
-                next: () => { },
                 error: (err) => {
                     expect(err).toEqual(error);
                     done();
@@ -67,7 +66,6 @@ describe('StreamService', () => {
             networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
 
             service.getConsumers(params).subscribe({
-                next: () => { },
                 error: (err) => {
                     expect(err).toEqual(error);
                     done();
@@ -94,7 +92,6 @@ describe('StreamService', () => {
             networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
 
             service.getRecords(params).subscribe({
-                next: () => { },
                 error: (err) => {
                     expect(err).toEqual(error);
                     done();
@@ -113,12 +110,12 @@ describe('StreamService', () => {
                     setTimeout(() => handler({ data: JSON.stringify({ message: 'data' }) }), 0);
                 }),
             });
-            spyOn(window, 'EventSource').and.returnValue(mockEventSource as any);
+            spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
 
             const params = { streamId: '12345' };
             const mockData = { message: 'data' };
 
-            let receivedData: any;
+            let receivedData: unknown;
             service.startSSEStream(params).subscribe({
                 next: (data) => {
                     receivedData = JSON.parse(data as string);
@@ -140,7 +137,7 @@ describe('StreamService', () => {
                 addEventListener: jasmine.createSpy('addEventListener')
             };
 
-            spyOn(window, 'EventSource').and.returnValue(mockEventSource as any);
+            spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
 
             const params = { streamId: '12345' };
             const mockError = new Error('Stream error');
