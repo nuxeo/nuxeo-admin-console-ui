@@ -28,8 +28,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   fetchStreamsError$: Observable<unknown>;
   fetchConsumersSuccess$: Observable<{ stream: string; consumer: string }[]>;
   fetchConsumersError$: Observable<unknown>;
-  fetchRecordsSuccess$: Observable<unknown[]>;
-  fetchRecordsError$: Observable<unknown>;
   streams: Stream[] = [];
   records: unknown[] = [];
   consumers: { stream: string; consumer: string }[] = [];
@@ -37,8 +35,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   fetchStreamsSuccessSubscription = new Subscription();
   fetchConsumersErrorSubscription = new Subscription();
   fetchConsumersSuccessSubscription = new Subscription();
-  fetchRecordsErrorSubscription = new Subscription();
-  fetchRecordsSuccessSubscription = new Subscription();
   selectedConsumer = "";
 
   constructor(
@@ -56,7 +52,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     );
 
     this.fetchStreamsError$ = this.store.pipe(
-      select((state) => state.streams?.error)
+      select((state) => state.streams?.streamsError)
     );
 
     this.fetchConsumersSuccess$ = this.store.pipe(
@@ -64,15 +60,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     );
 
     this.fetchConsumersError$ = this.store.pipe(
-      select((state) => state.streams?.error)
-    );
-
-    this.fetchRecordsSuccess$ = this.store.pipe(
-      select((state) => state.streams?.records)
-    );
-
-    this.fetchRecordsError$ = this.store.pipe(
-      select((state) => state.streams?.error)
+      select((state) => state.streams?.consumersError)
     );
   }
 
@@ -116,7 +104,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.fetchStreamsErrorSubscription = this.fetchStreamsError$.subscribe(
+    this.fetchConsumersErrorSubscription = this.fetchConsumersError$.subscribe(
       (error) => {
         if (error) {
           console.log(error);
@@ -167,7 +155,5 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchStreamsErrorSubscription?.unsubscribe();
     this.fetchConsumersSuccessSubscription?.unsubscribe();
     this.fetchConsumersErrorSubscription?.unsubscribe();
-    this.fetchRecordsSuccessSubscription?.unsubscribe();
-    this.fetchRecordsErrorSubscription?.unsubscribe();
   }
 }

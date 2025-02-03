@@ -13,7 +13,7 @@ describe('streamsReducer', () => {
     it('should handle fetchStreams', () => {
       const action = StreamActions.fetchStreams();
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toBeNull();
+      expect(result.streamsError).toBeNull();
     });
 
     it('should handle onFetchStreamsLaunch', () => {
@@ -27,7 +27,7 @@ describe('streamsReducer', () => {
       const error = new HttpErrorResponse({ error: 'Failed to fetch streams' });
       const action = StreamActions.onFetchStreamsFailure({ error });
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toEqual(error);
+      expect(result.streamsError).toEqual(error);
     });
 
     it('should handle resetFetchStreamsState', () => {
@@ -35,12 +35,14 @@ describe('streamsReducer', () => {
         streams: [{ name: 'Stream 1' }],
         consumers: [],
         records: [],
-        error: new HttpErrorResponse({ error: 'Some error' }),
+        recordsError: null,
+        consumersError: null,
+        streamsError: new HttpErrorResponse({ error: 'Some error' })
       };
       const action = StreamActions.resetFetchStreamsState();
       const result = streamsReducer(state, action);
       expect(result.streams).toEqual(initialStreamsState.streams);
-      expect(result.error).toBeNull();
+      expect(result.streamsError).toBeNull();
     });
   });
 
@@ -49,7 +51,7 @@ describe('streamsReducer', () => {
       const params = { key1: 'value1', key2: 'value2' };
       const action = StreamActions.fetchConsumers({ params });
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toBeNull();
+      expect(result.consumersError).toBeNull();
     });
 
     it('should handle onFetchConsumersLaunch', () => {
@@ -63,7 +65,7 @@ describe('streamsReducer', () => {
       const error = new HttpErrorResponse({ error: 'Failed to fetch consumers' });
       const action = StreamActions.onFetchConsumersFailure({ error });
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toEqual(error);
+      expect(result.consumersError).toEqual(error);
     });
 
     it('should handle resetFetchConsumersState', () => {
@@ -71,12 +73,14 @@ describe('streamsReducer', () => {
         streams: [],
         consumers: [{ stream: 'Stream 1', consumer: 'Consumer 1' }],
         records: [],
-        error: new HttpErrorResponse({ error: 'Some error' }),
+        recordsError: null,
+        streamsError: null,
+        consumersError: new HttpErrorResponse({ error: 'Some error' })
       };
       const action = StreamActions.resetFetchConsumersState();
       const result = streamsReducer(state, action);
       expect(result.consumers).toEqual(initialStreamsState.consumers);
-      expect(result.error).toBeNull();
+      expect(result.consumersError).toBeNull();
     });
   });
 
@@ -85,7 +89,7 @@ describe('streamsReducer', () => {
       const params = { key1: 'value1', key2: 'value2' };
       const action = StreamActions.triggerRecordsSSEStream({ params });
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toBeNull();
+      expect(result.recordsError).toBeNull();
     });
 
     it('should handle onFetchRecordsLaunch', () => {
@@ -99,7 +103,7 @@ describe('streamsReducer', () => {
       const error = new HttpErrorResponse({ error: 'Failed to fetch records' });
       const action = StreamActions.onFetchRecordsFailure({ error });
       const result = streamsReducer(initialStreamsState, action);
-      expect(result.error).toEqual(error);
+      expect(result.recordsError).toEqual(error);
     });
 
     it('should handle resetFetchRecordsState', () => {
@@ -107,12 +111,14 @@ describe('streamsReducer', () => {
         streams: [],
         consumers: [],
         records: [{ type: 'type1' }],
-        error: new HttpErrorResponse({ error: 'Some error' }),
+        recordsError: new HttpErrorResponse({ error: 'Some error' }),
+        streamsError: null,
+        consumersError: null
       };
       const action = StreamActions.resetFetchRecordsState();
       const result = streamsReducer(state, action);
       expect(result.records).toEqual(initialStreamsState.records);
-      expect(result.error).toBeNull();
+      expect(result.recordsError).toBeNull();
     });
   });
 });

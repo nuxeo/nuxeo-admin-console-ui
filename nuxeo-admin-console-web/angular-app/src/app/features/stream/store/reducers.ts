@@ -7,21 +7,27 @@ export interface StreamsState {
   streams: Stream[];
   consumers: { stream: string; consumer: string }[];
   records: { type?: string }[];
-  error: HttpErrorResponse | null;
+  streamsError: HttpErrorResponse | null;
+  consumersError: HttpErrorResponse | null;
+  recordsError: HttpErrorResponse | null;
 }
 
 export const initialStreamsState: StreamsState = {
   streams: [],
   consumers: [],
   records: [],
-  error: null,
+  streamsError: null,
+  consumersError: null,
+  recordsError: null,
 };
 
 export const streamsReducer = createReducer(
   initialStreamsState,
+
+  // Fetch Streams
   on(StreamActions.fetchStreams, (state) => ({
     ...state,
-    error: null,
+    streamsError: null,
   })),
   on(StreamActions.onFetchStreamsLaunch, (state, { streamsData }) => ({
     ...state,
@@ -29,16 +35,18 @@ export const streamsReducer = createReducer(
   })),
   on(StreamActions.onFetchStreamsFailure, (state, { error }) => ({
     ...state,
-    error,
+    streamsError: error,
   })),
   on(StreamActions.resetFetchStreamsState, (state) => ({
     ...state,
     streams: initialStreamsState.streams,
-    error: null,
+    streamsError: null,
   })),
+
+  // Fetch Consumers
   on(StreamActions.fetchConsumers, (state) => ({
     ...state,
-    error: null,
+    consumersError: null,
   })),
   on(StreamActions.onFetchConsumersLaunch, (state, { consumersData }) => ({
     ...state,
@@ -46,16 +54,18 @@ export const streamsReducer = createReducer(
   })),
   on(StreamActions.onFetchConsumersFailure, (state, { error }) => ({
     ...state,
-    error,
+    consumersError: error,
   })),
   on(StreamActions.resetFetchConsumersState, (state) => ({
     ...state,
     consumers: initialStreamsState.consumers,
-    error: null,
+    consumersError: null,
   })),
+
+  // Fetch Records via SSE
   on(StreamActions.triggerRecordsSSEStream, (state) => ({
     ...state,
-    error: null,
+    recordsError: null,
   })),
   on(StreamActions.onFetchRecordsLaunch, (state, { recordsData }) => ({
     ...state,
@@ -63,11 +73,11 @@ export const streamsReducer = createReducer(
   })),
   on(StreamActions.onFetchRecordsFailure, (state, { error }) => ({
     ...state,
-    error,
+    recordsError: error,
   })),
   on(StreamActions.resetFetchRecordsState, (state) => ({
     ...state,
     records: initialStreamsState.records,
-    error: null,
+    recordsError: null,
   }))
 );

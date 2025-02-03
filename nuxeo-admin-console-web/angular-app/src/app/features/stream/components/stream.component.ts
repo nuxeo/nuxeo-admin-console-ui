@@ -29,7 +29,7 @@ export class StreamComponent implements OnInit, OnDestroy {
     );
 
     this.fetchRecordsError$ = this.store.pipe(
-      select((state) => state.streams?.error)
+      select((state) => state.streams?.recordsError)
     );
 
   }

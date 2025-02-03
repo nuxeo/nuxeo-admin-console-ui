@@ -128,11 +128,7 @@ describe('StreamFormComponent', () => {
         component.fetchStreamsErrorSubscription.unsubscribe = unsubscribeSpy;
         component.fetchConsumersSuccessSubscription.unsubscribe = unsubscribeSpy;
         component.fetchConsumersErrorSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchRecordsSuccessSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchRecordsErrorSubscription.unsubscribe = unsubscribeSpy;
-
         component.ngOnDestroy();
-
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(6);
+        expect(unsubscribeSpy).toHaveBeenCalledTimes(4);
     });
 });
