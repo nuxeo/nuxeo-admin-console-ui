@@ -16,7 +16,7 @@ export class NetworkService {
   constructor(
     private http: HttpClient,
     private nuxeoJsClientService: NuxeoJSClientService
-  ) {}
+  ) { }
 
   getAPIEndpoint = (name: EndpointName): string => {
     const config = REST_END_POINT_CONFIG[name];
@@ -35,7 +35,6 @@ export class NetworkService {
     const method = config.method || "PUT";
     let params = new HttpParams();
 
-    // Process URL parameters
     if (data?.["urlParam"] && Object.keys(data?.["urlParam"]).length > 0) {
       Object.entries(data?.["urlParam"]).forEach(([key, value]) => {
         if (url.indexOf(key) > -1) {
@@ -44,12 +43,10 @@ export class NetworkService {
       });
       delete data["urlParam"];
     }
-
-    // Process query parameters
     if (data?.["queryParam"]) {
       const queryParams = data["queryParam"] as Record<
         string,
-        string | number | boolean
+        unknown
       >;
       const queryString = Object.entries(queryParams)
         .map(([key, value]) => `${key}=${String(value)}`)
@@ -60,7 +57,7 @@ export class NetworkService {
       delete data["queryParam"];
     }
 
-    // Switch-case for HTTP methods
+
     switch (method) {
       case "POST":
         return this.http.post<T>(url, data?.["bodyParam"] || {}, {

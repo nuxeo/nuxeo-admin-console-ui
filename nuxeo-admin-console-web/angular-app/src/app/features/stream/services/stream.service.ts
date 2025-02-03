@@ -3,14 +3,13 @@ import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Stream } from "../stream.interface";
-import { Store } from "@ngrx/store";
 
 @Injectable({
   providedIn: "root",
 })
 export class StreamService {
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  constructor(private networkService: NetworkService, private store: Store) { }
+  constructor(private networkService: NetworkService) { }
   getStreams(): Observable<Stream[]> {
     return this.networkService.makeHttpRequest<Stream[]>(
       REST_END_POINTS.STREAM
@@ -37,18 +36,14 @@ export class StreamService {
       REST_END_POINTS.STREAM_RECORDS
     );
     const fullUrl = this.appendParamsToUrl(url, params);
-
     return new Observable((observer) => {
       const eventSource = new EventSource(fullUrl, { withCredentials: true });
-
       eventSource.onmessage = (event) => {
         observer.next(event.data);
       };
-
       eventSource.onerror = (error) => {
         observer.error(error);
       };
-
       return () => {
         eventSource.close();
       };

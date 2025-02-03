@@ -51,10 +51,10 @@ describe('StreamRecordsComponent', () => {
     });
 
     it('should replace {{ recordCount }} with the correct record count in insertCount', () => {
-        const label = 'Found {{ recordCount }} records';
+        const label = 'Fetched {{ recordCount }} records';
         const recordCount = 10;
         component.recordCount = recordCount;
         const result = component.insertCount(label);
-        expect(result).toBe('Found 10 records');
+        expect(result).toBe('Fetched 10 records');
     });
 });

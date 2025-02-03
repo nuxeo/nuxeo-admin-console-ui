@@ -14,12 +14,10 @@ export const onFetchStreamsFailure = createAction(
 export const resetFetchStreamsState = createAction(
   "[Admin] Reset Fetch Streams State"
 );
-
 export const fetchConsumers = createAction(
   "[Admin] Fetch Consumers",
   props<{ params: { [key: string]: string }, }>()
 );
-
 export const onFetchConsumersLaunch = createAction(
   "[Admin] On Fetch Consumers Launch",
   props<{ consumersData: { stream: string; consumer: string }[] }>()
@@ -31,12 +29,10 @@ export const onFetchConsumersFailure = createAction(
 export const resetFetchConsumersState = createAction(
   "[Admin] Reset Fetch Consumers State"
 );
-
 export const triggerRecordsSSEStream = createAction(
   '[Admin] Trigger Records SSE Stream',
   props<{ params: Record<string, unknown> }>()
 );
-
 export const onFetchRecordsLaunch = createAction(
   "[Admin] On Fetch Records Launch",
   props<{ recordsData: unknown }>()

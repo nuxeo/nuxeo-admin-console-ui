@@ -31,9 +31,7 @@ describe("StreamEffects", () => {
         { provide: StreamService, useValue: streamServiceSpy },
       ],
     });
-
     streamService = TestBed.inject(StreamService) as jasmine.SpyObj<StreamService>;
-
     loadFetchStreams = TestBed.runInInjectionContext(() => loadFetchStreamsEffect);
     loadFetchConsumers = TestBed.runInInjectionContext(() => loadFetchConsumersEffect);
     triggerRecordsSSEStream = TestBed.runInInjectionContext(() => triggerRecordsSSEStream$);
@@ -43,11 +41,9 @@ describe("StreamEffects", () => {
     it("should return onFetchStreamsLaunch on success", (done) => {
       const streamsData = [{ name: "stream1" }, { name: "stream2" }];
       const action = StreamActions.fetchStreams();
-      
       streamService.getStreams.and.returnValue(of(streamsData));
       const outcome = StreamActions.onFetchStreamsLaunch({ streamsData });
       actions$ = of(action);
-
       loadFetchStreams(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();
@@ -61,11 +57,9 @@ describe("StreamEffects", () => {
         statusText: "Server Error",
       });
       const action = StreamActions.fetchStreams();
-
       streamService.getStreams.and.returnValue(throwError(() => error));
       const outcome = StreamActions.onFetchStreamsFailure({ error });
       actions$ = of(action);
-
       loadFetchStreams(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();
@@ -77,11 +71,9 @@ describe("StreamEffects", () => {
     it("should return onFetchConsumersLaunch on success", (done) => {
       const consumersData = [{ stream: "stream1", consumer: "consumer1" }];
       const action = StreamActions.fetchConsumers({ params: { stream: "stream1" } });
-
       streamService.getConsumers.and.returnValue(of(consumersData));
       const outcome = StreamActions.onFetchConsumersLaunch({ consumersData });
       actions$ = of(action);
-
       loadFetchConsumers(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();
@@ -95,11 +87,9 @@ describe("StreamEffects", () => {
         statusText: "Not Found",
       });
       const action = StreamActions.fetchConsumers({ params: { stream: "stream1" } });
-
       streamService.getConsumers.and.returnValue(throwError(() => error));
       const outcome = StreamActions.onFetchConsumersFailure({ error });
       actions$ = of(action);
-
       loadFetchConsumers(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();
@@ -111,11 +101,9 @@ describe("StreamEffects", () => {
     it("should return onFetchRecordsLaunch on success", (done) => {
       const recordsData = [{ record: "record1" }];
       const action = StreamActions.triggerRecordsSSEStream({ params: { streamId: "1" } });
-
       streamService.startSSEStream.and.returnValue(of(JSON.stringify({ record: "record1" })));
       const outcome = StreamActions.onFetchRecordsLaunch({ recordsData });
       actions$ = of(action);
-
       triggerRecordsSSEStream(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();
@@ -129,11 +117,9 @@ describe("StreamEffects", () => {
         statusText: "Server Error",
       });
       const action = StreamActions.triggerRecordsSSEStream({ params: { streamId: "1" } });
-
       streamService.startSSEStream.and.returnValue(throwError(() => error));
       const outcome = StreamActions.onFetchRecordsFailure({ error });
       actions$ = of(action);
-
       triggerRecordsSSEStream(actions$, streamService).subscribe((result: Action) => {
         expect(result).toEqual(outcome);
         done();

@@ -53,7 +53,6 @@ describe('StreamService', () => {
             const mockConsumers = [{ stream: 'stream1', consumer: 'consumer1' }];
             const params = { streamId: '123' };
             networkServiceMock.makeHttpRequest.and.returnValue(of(mockConsumers));
-
             service.getConsumers(params).subscribe((consumers) => {
                 expect(consumers).toEqual(mockConsumers);
                 done();
@@ -64,7 +63,6 @@ describe('StreamService', () => {
             const error = new Error('Network error');
             const params = { streamId: '123' };
             networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
-
             service.getConsumers(params).subscribe({
                 error: (err) => {
                     expect(err).toEqual(error);
@@ -79,7 +77,6 @@ describe('StreamService', () => {
             const mockRecords = [{ recordId: 1, data: 'record1' }];
             const params = { filter: 'active' };
             networkServiceMock.makeHttpRequest.and.returnValue(of(mockRecords));
-
             service.getRecords(params).subscribe((records) => {
                 expect(records).toEqual(mockRecords);
                 done();
@@ -90,7 +87,6 @@ describe('StreamService', () => {
             const error = new Error('Network error');
             const params = { filter: 'active' };
             networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
-
             service.getRecords(params).subscribe({
                 error: (err) => {
                     expect(err).toEqual(error);
@@ -111,10 +107,8 @@ describe('StreamService', () => {
                 }),
             });
             spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
-
             const params = { streamId: '12345' };
             const mockData = { message: 'data' };
-
             let receivedData: unknown;
             service.startSSEStream(params).subscribe({
                 next: (data) => {
@@ -136,12 +130,9 @@ describe('StreamService', () => {
                 close: jasmine.createSpy('close'),
                 addEventListener: jasmine.createSpy('addEventListener')
             };
-
             spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
-
             const params = { streamId: '12345' };
             const mockError = new Error('Stream error');
-
             service.startSSEStream(params).subscribe({
                 next: () => {
                     fail('Expected error, but received data');
@@ -150,13 +141,10 @@ describe('StreamService', () => {
                     expect(err).toEqual(mockError);
                 }
             });
-
             mockEventSource.onerror(mockError);
-
             tick();
         }));
     });
-
 
     describe('appendParamsToUrl', () => {
         it('should append parameters to the URL correctly', () => {
