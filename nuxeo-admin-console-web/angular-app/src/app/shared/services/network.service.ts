@@ -16,7 +16,7 @@ export class NetworkService {
   constructor(
     private http: HttpClient,
     private nuxeoJsClientService: NuxeoJSClientService
-  ) {}
+  ) { }
 
   getAPIEndpoint = (name: EndpointName): string => {
     const config = REST_END_POINT_CONFIG[name];
@@ -43,14 +43,20 @@ export class NetworkService {
       });
       delete data["urlParam"];
     }
-
     if (data?.["queryParam"]) {
-      const queryParam = data["queryParam"] as { requestUrl: string };
-      if (queryParam["requestUrl"] !== "") {
-        url += `?query=${queryParam["requestUrl"]}`;
-        delete data["queryParam"];
+      const queryParams = data["queryParam"] as Record<
+        string,
+        unknown
+      >;
+      const queryString = Object.entries(queryParams)
+        .map(([key, value]) => `${key}=${String(value)}`)
+        .join("&");
+      if (queryString) {
+        url += url.includes("?") ? `&${queryString}` : `?${queryString}`;
       }
+      delete data["queryParam"];
     }
+
 
     switch (method) {
       case "POST":
@@ -59,14 +65,12 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "PUT":
         return this.http.put<T>(url, data || {}, {
           headers: data?.["requestHeaders"]
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "DELETE":
         return this.http.delete<T>(url, {
           body: data,
@@ -74,7 +78,6 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "GET":
         if (data) {
           Object.keys(data).forEach((key) => {
@@ -87,7 +90,7 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
+
       default:
         throw new Error(`Unsupported HTTP method: ${method}`);
     }

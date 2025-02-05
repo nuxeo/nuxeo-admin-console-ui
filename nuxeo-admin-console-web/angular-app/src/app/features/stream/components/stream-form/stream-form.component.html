@@ -1,0 +1,40 @@
+<div class="stream-form-container">
+    <form [formGroup]="streamForm" (ngSubmit)="onStreamFormSubmit()">
+        <div class="stream-form-container--stream-container">
+            <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+            <p class="label form-param">{{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span></p>
+            <mat-form-field appearance="outline" class="input-field stream-field">
+                <mat-select matNativeControl formControlName="stream" id="stream"
+                    (selectionChange)="onStreamChange($event.value)">
+                    <mat-option *ngFor="let stream of streams" [value]="stream?.name">
+                        {{ stream?.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <hr>
+        <div class="stream-form-container--position-container">
+            <p class="label form-param">
+                {{ STREAM_LABELS.POSIITON }}<span class="required-indicator">*</span>
+            </p>
+            <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
+                <mat-radio-button [value]="selectedConsumer" class="radio-item">
+                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER }}</p>
+                    <mat-form-field appearance="outline" class="input-field stream-field">
+                        <mat-select matNativeControl id="consumer"
+                            (selectionChange)="onConsumerOptionChange($event.value)" [value]="selectedConsumer">
+                            <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
+                                {{ consumer?.consumer }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+        <br>
+        <button mat-flat-button color="primary" type="submit" class="stream-form-container__button"
+            [disabled]="isSubmitBtnDisabled">
+            {{ STREAM_LABELS.VIEW_RECORDS }}
+        </button>
+    </form>
+</div>

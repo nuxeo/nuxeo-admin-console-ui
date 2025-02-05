@@ -49,6 +49,7 @@ export const ADMIN_MENU: Menu[] = [
     path: "bulk-action-monitoring",
     isSelected: false,
   },
+  { id: 8, name: "Stream Management", path: "stream-management", isSelected: false },
 ];
 
 export const ROUTES_TITLE = {

@@ -1,0 +1,12 @@
+<div class="stream-container">
+    <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
+        {{ pageTitle }}
+    </h1>
+    <div class="stream-container__placeholder">
+        <stream-form></stream-form>
+        <div class="result" *ngIf="isFetchingRecords || records!.length > 0">
+            <hr>
+            <stream-records [records]="records" [recordCount]="recordCount"></stream-records>
+        </div>
+    </div>
+</div>
