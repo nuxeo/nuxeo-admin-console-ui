@@ -62,7 +62,7 @@ export const appRoutes: Route[] = [
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
-    path: "stream",
+    path: "stream-management",
       loadChildren: () =>
         import(
           "./features/stream/stream.module"
