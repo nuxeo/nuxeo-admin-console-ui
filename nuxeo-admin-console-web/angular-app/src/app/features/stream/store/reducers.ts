@@ -7,6 +7,8 @@ export interface StreamsState {
   streams: Stream[];
   consumers: { stream: string; consumer: string }[];
   records: { type?: string }[];
+  isFetchPaused: boolean;
+  isFetchPausedError: unknown | null;
   streamsError: HttpErrorResponse | null;
   consumersError: HttpErrorResponse | null;
   recordsError: HttpErrorResponse | null;
@@ -16,6 +18,8 @@ export const initialStreamsState: StreamsState = {
   streams: [],
   consumers: [],
   records: [],
+  isFetchPaused: false,
+  isFetchPausedError: null,
   streamsError: null,
   consumersError: null,
   recordsError: null,
@@ -24,60 +28,70 @@ export const initialStreamsState: StreamsState = {
 export const streamsReducer = createReducer(
   initialStreamsState,
 
-  // Fetch Streams
+  // 🔹 Fetch Streams
   on(StreamActions.fetchStreams, (state) => ({
     ...state,
-    streamsError: null,
+    streamsError: null, // Reset error only
   })),
   on(StreamActions.onFetchStreamsLaunch, (state, { streamsData }) => ({
     ...state,
-    streams: streamsData,
+    streams: streamsData, // Update streams without affecting other states
   })),
   on(StreamActions.onFetchStreamsFailure, (state, { error }) => ({
     ...state,
-    streamsError: error,
+    streamsError: error, // Update error independently
   })),
   on(StreamActions.resetFetchStreamsState, (state) => ({
     ...state,
-    streams: initialStreamsState.streams,
+    streams: initialStreamsState.streams, // Reset only streams
     streamsError: null,
   })),
 
-  // Fetch Consumers
+  // 🔹 Fetch Consumers
   on(StreamActions.fetchConsumers, (state) => ({
     ...state,
-    consumersError: null,
+    consumersError: null, // Reset error only
   })),
   on(StreamActions.onFetchConsumersLaunch, (state, { consumersData }) => ({
     ...state,
-    consumers: consumersData,
+    consumers: consumersData, // Update consumers without affecting others
   })),
   on(StreamActions.onFetchConsumersFailure, (state, { error }) => ({
     ...state,
-    consumersError: error,
+    consumersError: error, // Update error independently
   })),
   on(StreamActions.resetFetchConsumersState, (state) => ({
     ...state,
-    consumers: initialStreamsState.consumers,
+    consumers: initialStreamsState.consumers, // Reset only consumers
     consumersError: null,
   })),
 
-  // Fetch Records via SSE
+  // 🔹 Fetch Records via SSE
   on(StreamActions.triggerRecordsSSEStream, (state) => ({
     ...state,
-    recordsError: null,
+    recordsError: null, // Reset error only
   })),
   on(StreamActions.onFetchRecordsLaunch, (state, { recordsData }) => ({
     ...state,
-    records: Array.isArray(recordsData) ? recordsData : [recordsData], // Replaces instead of appending
+    records: Array.isArray(recordsData) ? recordsData : [recordsData], // Replace records
   })),
   on(StreamActions.onFetchRecordsFailure, (state, { error }) => ({
     ...state,
-    recordsError: error,
+    recordsError: error, // Update error independently
   })),
   on(StreamActions.resetFetchRecordsState, (state) => ({
     ...state,
-    records: initialStreamsState.records,
+    records: initialStreamsState.records, // Reset only records
     recordsError: null,
+  })),
+
+  // 🔹 Pause SSE Fetching
+  on(StreamActions.onPauseFetchLaunch, (state) => ({
+    ...state,
+    isFetchPaused: true, // Update only pause state
+  })),
+  on(StreamActions.onPauseFetchFailure, (state, { error }) => ({
+    ...state,
+    isFetchPausedError: false, // Store the error correctly
   }))
 );

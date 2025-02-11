@@ -5,7 +5,9 @@ import {
   map,
   mergeMap,
   scan,
-  switchMap
+  switchMap,
+  takeUntil,
+  tap
 } from "rxjs/operators";
 import { createEffect } from "@ngrx/effects";
 import { Actions, ofType } from "@ngrx/effects";
@@ -64,7 +66,6 @@ export const loadFetchConsumersEffect = createEffect(
   { functional: true }
 );
 
-
 export const triggerRecordsSSEStream$ = createEffect(
   (
     actions$ = inject(Actions),
@@ -84,19 +85,32 @@ export const triggerRecordsSSEStream$ = createEffect(
             }
             return [...acc, parsedResponse];
           }, []),
-          map((recordsArray) => {
-            return StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray });
-          }),
-          catchError((error) => {
-            return of(StreamActions.onFetchRecordsFailure({ error }));
-          })
+          map((recordsArray) =>
+            StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray })
+          ),
+          takeUntil(
+            actions$.pipe(
+              ofType(StreamActions.onPauseFetch),
+              mergeMap(() => {
+                try {
+                  console.log("Pausing SSE stream...");
+                  streamService.stopSSEStream();
+                 // return of();
+                  return of(StreamActions.onPauseFetchLaunch());
+                } catch (error) {
+                  console.error("Error stopping SSE stream:", error);
+                  return of(StreamActions.onPauseFetchFailure({ error }));
+                }
+              })
+            )
+          ),
+          catchError((error) =>
+            of(StreamActions.onFetchRecordsFailure({ error }))
+          )
         );
       })
     );
   },
   { functional: true }
 );
-
-
-
 

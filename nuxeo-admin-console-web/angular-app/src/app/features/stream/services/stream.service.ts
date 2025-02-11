@@ -9,6 +9,10 @@ import { Stream } from "../stream.interface";
 })
 export class StreamService {
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  isClearRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  isPauseFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private eventSource?: EventSource;
+
   constructor(private networkService: NetworkService) { }
   getStreams(): Observable<Stream[]> {
     return this.networkService.makeHttpRequest<Stream[]>(
@@ -32,22 +36,30 @@ export class StreamService {
   }
 
   startSSEStream(params: Record<string, unknown>) {
-    const url = this.networkService.getAPIEndpoint(
-      REST_END_POINTS.STREAM_RECORDS
-    );
+    const url = this.networkService.getAPIEndpoint(REST_END_POINTS.STREAM_RECORDS);
     const fullUrl = this.appendParamsToUrl(url, params);
+
     return new Observable((observer) => {
-      const eventSource = new EventSource(fullUrl, { withCredentials: true });
-      eventSource.onmessage = (event) => {
+      this.eventSource = new EventSource(fullUrl, { withCredentials: true });
+
+      this.eventSource.onmessage = (event) => {
         observer.next(event.data);
       };
-      eventSource.onerror = (error) => {
+
+      this.eventSource.onerror = (error) => {
         observer.error(error);
       };
+
       return () => {
-        eventSource.close();
+        this.eventSource?.close(); // Close when unsubscribed
+        this.eventSource = undefined;
       };
     });
+  }
+
+  stopSSEStream(): void {
+    this.eventSource?.close(); // Close the SSE connection
+    this.eventSource = undefined;
   }
 
   private appendParamsToUrl(url: string, params: Record<string, unknown>) {
@@ -61,6 +73,7 @@ export class StreamService {
         acc[key] = String(value);
       }
       return acc;
-    }, {} as Record<string, string>)
+    }, {} as Record<string, string>);
   }
+
 }

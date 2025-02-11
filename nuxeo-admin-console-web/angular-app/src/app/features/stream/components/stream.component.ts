@@ -36,12 +36,18 @@ export class StreamComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
-      (data: unknown[]) => {
-        if (data?.length > 0) {
+      (data: { type?: string }[]) => {
+        this.records = data;
+        if (this.records?.length > 0) {
+          this.streamService.isClearRecordsDisabled.next(false);
+          this.streamService.isPauseFetchDisabled.next(false);
           this.streamService.isFetchingRecords.next(false);
           this.records = data as { type?: string }[];
           this.recordCount = this.getRecordCount();
           this.cdRef.detectChanges();
+        } else  {
+          this.streamService.isClearRecordsDisabled.next(true);
+          this.streamService.isPauseFetchDisabled.next(true);
         }
       }
     );

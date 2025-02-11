@@ -35,7 +35,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   fetchStreamsSuccessSubscription = new Subscription();
   fetchConsumersErrorSubscription = new Subscription();
   fetchConsumersSuccessSubscription = new Subscription();
+  isClearBtnDisabledSubscription = new Subscription();
+  isPauseFetchBtnDisabledSubscription = new Subscription();
   selectedConsumer = "";
+  isClearBtnDisabled = true;
+  isPauseFetchBtnDisabled = true;
 
   constructor(
     private fb: FormBuilder,
@@ -65,6 +69,14 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isClearBtnDisabledSubscription = this.streamService.isClearRecordsDisabled.subscribe((isDisabled: boolean) => {
+      this.isClearBtnDisabled = isDisabled;
+    });
+    this.isPauseFetchBtnDisabledSubscription = this.streamService.isPauseFetchDisabled.subscribe((isDisabled: boolean) => {
+      this.isPauseFetchBtnDisabled = isDisabled;
+      this.isSubmitBtnDisabled = false;
+    //  this.isClearBtnDisabled = true;
+    });
     this.fetchStreamsSuccessSubscription = this.fetchStreamsSuccess$.subscribe(
       (data: Stream[]) => {
         if (data?.length > 0) {
@@ -143,7 +155,17 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       };
       this.streamService.isFetchingRecords.next(true);
       this.store.dispatch(StreamActions.triggerRecordsSSEStream({ params }));
+      this.streamService.isPauseFetchDisabled.next(false);
     }
+  }
+
+  onPauseFetch(): void {
+   this.store.dispatch(StreamActions.onPauseFetch());
+  }
+
+  onClearRecords(): void {
+    this.store.dispatch(StreamActions.resetFetchRecordsState());
+    this.isSubmitBtnDisabled = false;
   }
 
 
@@ -155,5 +177,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchStreamsErrorSubscription?.unsubscribe();
     this.fetchConsumersSuccessSubscription?.unsubscribe();
     this.fetchConsumersErrorSubscription?.unsubscribe();
+    this.isClearBtnDisabledSubscription?.unsubscribe();
+    this.isPauseFetchBtnDisabledSubscription?.unsubscribe();
   }
 }

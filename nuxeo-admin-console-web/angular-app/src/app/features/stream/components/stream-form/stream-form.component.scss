@@ -54,6 +54,16 @@
 
   }
 
+  &--actions {
+
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+
+
+  }
+
   &__button {
     border-radius: 4px !important;
     width: 140px;
@@ -67,7 +77,6 @@
     letter-spacing: normal;
     background-color: #0a60ce !important;
     color: #fff;
-
   }
 }
 
