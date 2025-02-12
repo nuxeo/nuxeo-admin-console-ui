@@ -11,6 +11,7 @@ export class StreamService {
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
   isClearRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
   isPauseFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  isViewRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(false);
   clearRecordsDisplay: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private eventSource?: EventSource;
 

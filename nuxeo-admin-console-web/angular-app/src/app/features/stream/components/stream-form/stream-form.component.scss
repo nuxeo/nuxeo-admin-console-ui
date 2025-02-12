@@ -55,13 +55,15 @@
   }
 
   &--actions {
-
     display: flex;
     gap: 20px;
     align-items: center;
     flex-wrap: wrap;
 
-
+    @media (max-width: 600px) { // Adjust width as needed
+      flex-direction: column; // Stack buttons vertically
+      align-items: stretch; // Make buttons full-width
+    }
   }
 
   &__button {

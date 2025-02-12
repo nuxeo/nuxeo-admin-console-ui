@@ -12,6 +12,7 @@ import { Observable, Subscription } from "rxjs";
 import { Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "stream-form",
@@ -37,9 +38,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   fetchConsumersSuccessSubscription = new Subscription();
   isClearBtnDisabledSubscription = new Subscription();
   isPauseFetchBtnDisabledSubscription = new Subscription();
+  isViewRecordsDisabledSubscription = new Subscription();
   selectedConsumer = "";
   isClearBtnDisabled = true;
   isPauseFetchBtnDisabled = true;
+
   constructor(
     private fb: FormBuilder,
     private store: Store<{ streams: StreamsState }>,
@@ -73,8 +76,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     });
     this.isPauseFetchBtnDisabledSubscription = this.streamService.isPauseFetchDisabled.subscribe((isDisabled: boolean) => {
       this.isPauseFetchBtnDisabled = isDisabled;
-      this.isSubmitBtnDisabled = false;
-    //  this.isClearBtnDisabled = true;
+    });
+    this.isViewRecordsDisabledSubscription = this.streamService.isViewRecordsDisabled.subscribe((isDisabled: boolean) => {
+      this.isSubmitBtnDisabled = isDisabled;
     });
     this.fetchStreamsSuccessSubscription = this.fetchStreamsSuccess$.subscribe(
       (data: Stream[]) => {
@@ -122,7 +126,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         }
       }
     );
-
   }
 
   onConsumerOptionChange(selectedValue: string): void {
@@ -152,14 +155,15 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         timeout: "1ms",
         limit: 1,
       };
-      this.streamService.isFetchingRecords.next(true);
+
       this.store.dispatch(StreamActions.triggerRecordsSSEStream({ params }));
+      this.streamService.isFetchingRecords.next(true);
       this.streamService.isPauseFetchDisabled.next(false);
     }
   }
 
   onPauseFetch(): void {
-   this.store.dispatch(StreamActions.onPauseFetch());
+    this.store.dispatch(StreamActions.onPauseFetch());
   }
 
   onClearRecords(): void {
@@ -167,6 +171,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isSubmitBtnDisabled = false;
     this.isClearBtnDisabled = true;
     this.streamService.clearRecordsDisplay.next(true);
+    document.getElementById("stream")?.focus();
   }
 
 
@@ -174,11 +179,13 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.store.dispatch(StreamActions.resetFetchStreamsState());
     this.store.dispatch(StreamActions.resetFetchConsumersState());
     this.store.dispatch(StreamActions.resetFetchRecordsState());
+    this.store.dispatch(StreamActions.resetPauseFetchState());
     this.fetchStreamsSuccessSubscription?.unsubscribe();
     this.fetchStreamsErrorSubscription?.unsubscribe();
     this.fetchConsumersSuccessSubscription?.unsubscribe();
     this.fetchConsumersErrorSubscription?.unsubscribe();
     this.isClearBtnDisabledSubscription?.unsubscribe();
     this.isPauseFetchBtnDisabledSubscription?.unsubscribe();
+    this.isViewRecordsDisabledSubscription?.unsubscribe();
   }
 }

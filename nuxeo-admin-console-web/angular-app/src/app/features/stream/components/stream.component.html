@@ -9,7 +9,6 @@
             <stream-records-status [recordsFetchedStatus]="recordsFetchedStatus"
                 [recordCount]="recordCount"></stream-records-status>
         </div>
-
         <div class="result" *ngIf="records!.length > 0 || !clearRecordsDisplay">
             <stream-records [records]="records"></stream-records>
         </div>

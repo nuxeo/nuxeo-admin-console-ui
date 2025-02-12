@@ -1,10 +1,13 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { STREAM_LABELS } from "../stream.constants";
-import { Observable, Subscription } from "rxjs";
+import { Observable, skip, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../store/reducers";
 import { StreamService } from "../services/stream.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import * as StreamActions from "../store/actions";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { CustomSnackBarComponent } from "../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 
 @Component({
   selector: "stream",
@@ -24,8 +27,17 @@ export class StreamComponent implements OnInit, OnDestroy {
   isFetchingRecords = false;
   isFetchingRecordsSubscription: Subscription = new Subscription();
   recordsFetchedStatus = "";
+  pauseFetchSuccess$: Observable<any>;
+  pauseFetchError$: Observable<unknown>;
+  isPauseFetchSuccess: boolean | null = null;
+  isPauseFetchSuccessSubscription: Subscription = new Subscription();
+  isPauseFetchErrorSubscription: Subscription = new Subscription();
 
-  constructor(private store: Store<{ streams: StreamsState }>, private cdRef: ChangeDetectorRef, private streamService: StreamService) {
+  constructor(private store: Store<{ streams: StreamsState }>,
+    private cdRef: ChangeDetectorRef,
+    private streamService: StreamService,
+    private _snackBar: MatSnackBar,) {
+
     this.fetchRecordsSuccess$ = this.store.pipe(
       select((state) => state?.streams?.records)
     );
@@ -34,21 +46,32 @@ export class StreamComponent implements OnInit, OnDestroy {
       select((state) => state.streams?.recordsError)
     );
 
+    this.pauseFetchSuccess$ = this.store.pipe(
+      select((state) => state.streams?.isFetchPaused),
+      skip(1)
+    );
+
+    this.pauseFetchError$ = this.store.pipe(
+      select((state) => state.streams?.isFetchPausedError),
+      skip(1)
+    );
+
   }
 
   ngOnInit(): void {
-
     this.isFetchingRecordsSubscription =
-    this.streamService.isFetchingRecords.subscribe(
-      (status) => {
-        this.isFetchingRecords = status;
-        if (this.isFetchingRecords) {
-          this.recordsFetchedStatus = STREAM_LABELS.FETCHING_RECORDS;
-        } else {
-          this.recordsFetchedStatus = "";
+      this.streamService.isFetchingRecords.subscribe(
+        (status) => {
+          this.isFetchingRecords = status;
+          if (this.isFetchingRecords) {
+            this.recordsFetchedStatus = STREAM_LABELS.FETCHING_RECORDS;
+          } else {
+            if (this.records?.length === 0) {
+              this.recordsFetchedStatus = "";
+            }
+          }
         }
-      }
-    );
+      );
 
     this.clearRecordsDisplaySubscription =
       this.streamService.clearRecordsDisplay.subscribe(
@@ -58,7 +81,6 @@ export class StreamComponent implements OnInit, OnDestroy {
           } else {
             this.clearRecordsDisplay = true;
           }
-
         }
       );
 
@@ -66,6 +88,7 @@ export class StreamComponent implements OnInit, OnDestroy {
       (data: { type?: string }[]) => {
         this.records = data;
         if (this.records?.length > 0) {
+          this.recordsFetchedStatus = STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
           this.streamService.isClearRecordsDisabled.next(false);
           this.streamService.isPauseFetchDisabled.next(false);
           this.streamService.isFetchingRecords.next(false);
@@ -86,6 +109,33 @@ export class StreamComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.isPauseFetchSuccessSubscription =
+      this.pauseFetchSuccess$.subscribe(
+        (status: boolean | null) => {
+          this.isPauseFetchSuccess = status;
+          this._snackBar.openFromComponent(CustomSnackBarComponent, {
+            data: {
+              message: STREAM_LABELS.STOPPED_FETCHING_RECORDS,
+              panelClass: "success-snack",
+            },
+            duration: 5000,
+            panelClass: ["success-snack"],
+          });
+          this.streamService.isPauseFetchDisabled.next(true);
+          this.streamService.isViewRecordsDisabled.next(false);
+          this.streamService.isFetchingRecords.next(false);
+          this.store.dispatch(StreamActions.resetPauseFetchState());
+        }
+      );
+
+    this.isPauseFetchErrorSubscription =
+      this.pauseFetchError$.subscribe(
+        (error: unknown) => {
+          this.isPauseFetchSuccess = false;
+          console.log(error);
+        }
+      );
+
   }
 
   getRecordCount(): number {
@@ -96,7 +146,12 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.isFetchingRecordsSubscription?.unsubscribe();
+    this.clearRecordsDisplaySubscription?.unsubscribe();
     this.fetchRecordsSuccessSubscription?.unsubscribe();
     this.fetchRecordsErrorSubscription?.unsubscribe();
+    this.isPauseFetchSuccessSubscription?.unsubscribe();
+    this.isPauseFetchErrorSubscription?.unsubscribe();
+    this.store.dispatch(StreamActions.resetPauseFetchState());
   }
 }
