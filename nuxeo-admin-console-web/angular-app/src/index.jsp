@@ -22,6 +22,48 @@ limitations under the License.
   String context = request.getContextPath();
 %> 
 -->
+<%@ page import="javax.servlet.http.HttpServletResponse" %>
+<%@ page import="java.util.UUID"%>
+<%
+  HttpServletResponse resp = (HttpServletResponse) pageContext.getResponse();
+  String NX_NONCE_VALUE = UUID.randomUUID().toString();
+  String updatedScriptSrcStr = "'self' 'nonce-" + NX_NONCE_VALUE + "'";
+  String cspHeader = resp.getHeader("Content-Security-Policy");
+  String newCspHeader = "";
+  boolean isExistingCspHeaderEmpty = false;
+  if(cspHeader == null || cspHeader.trim().isEmpty()) { 
+    isExistingCspHeaderEmpty = true;
+    cspHeader = "";
+   }
+  String scriptSrc = "";
+  String directive = null;
+  // Replace non-breaking spaces with regular spaces
+  cspHeader = cspHeader.replaceAll("\u00A0", " ");  // Normalizing non-breaking spaces
+  String[] directives = cspHeader.trim().replaceAll("\\s+", " ").split(";");
+  boolean foundScriptSrcMatch = false;
+  boolean foundObjectSrcMatch = false;
+  for (int i = 0; i < directives.length; i++) {
+    directive = directives[i].trim();
+    if (directive.startsWith("script-src ")) {
+        foundScriptSrcMatch = true;
+        directive = directive.trim() + " " + updatedScriptSrcStr;
+        directives[i] = directive;
+    }
+    if (directive.startsWith("object-src ")) {
+      foundObjectSrcMatch = true;
+    }
+  }
+  if(foundScriptSrcMatch) {
+    newCspHeader =  String.join(";", directives);
+  }
+  else {
+    newCspHeader = cspHeader.trim() + (isExistingCspHeaderEmpty ? " script-src " : "; script-src ") + updatedScriptSrcStr;
+  }
+  if(!foundObjectSrcMatch){
+    newCspHeader = newCspHeader.trim() + "; object-src 'none'";
+  }
+  resp.setHeader("Content-Security-Policy", newCspHeader);
+%>
 
 <!DOCTYPE html>
 <html lang="">
@@ -35,7 +77,7 @@ limitations under the License.
 </head>
 
 <body>
-  <app baseUrl="<%= context %>"></app>
+  <app baseUrl="<%= context %>" ngCspNonce="<%= NX_NONCE_VALUE %>"></app>
 </body>
 
 </html>
