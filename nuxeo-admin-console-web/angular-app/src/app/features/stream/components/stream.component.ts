@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output } from "@angular/core";
 import { STREAM_LABELS } from "../stream.constants";
 import { Observable, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";
@@ -19,9 +19,11 @@ export class StreamComponent implements OnInit, OnDestroy {
   fetchRecordsSuccess$!: Observable<{ type?: string }[]>;
   fetchRecordsError$!: Observable<HttpErrorResponse | null>;
   recordCount = 0;
+  clearRecordsDisplaySubscription: Subscription = new Subscription();
+  clearRecordsDisplay = false;
   isFetchingRecords = false;
   isFetchingRecordsSubscription: Subscription = new Subscription();
-
+  recordsFetchedStatus = "";
 
   constructor(private store: Store<{ streams: StreamsState }>, private cdRef: ChangeDetectorRef, private streamService: StreamService) {
     this.fetchRecordsSuccess$ = this.store.pipe(
@@ -35,6 +37,31 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    this.isFetchingRecordsSubscription =
+    this.streamService.isFetchingRecords.subscribe(
+      (status) => {
+        this.isFetchingRecords = status;
+        if (this.isFetchingRecords) {
+          this.recordsFetchedStatus = STREAM_LABELS.FETCHING_RECORDS;
+        } else {
+          this.recordsFetchedStatus = "";
+        }
+      }
+    );
+
+    this.clearRecordsDisplaySubscription =
+      this.streamService.clearRecordsDisplay.subscribe(
+        (clearStatus) => {
+          if (this.records?.length > 0) {
+            this.clearRecordsDisplay = clearStatus;
+          } else {
+            this.clearRecordsDisplay = true;
+          }
+
+        }
+      );
+
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
       (data: { type?: string }[]) => {
         this.records = data;
@@ -45,8 +72,7 @@ export class StreamComponent implements OnInit, OnDestroy {
           this.records = data as { type?: string }[];
           this.recordCount = this.getRecordCount();
           this.cdRef.detectChanges();
-        } else  {
-          this.streamService.isClearRecordsDisabled.next(true);
+        } else {
           this.streamService.isPauseFetchDisabled.next(true);
         }
       }
@@ -60,13 +86,6 @@ export class StreamComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.isFetchingRecordsSubscription =
-      this.streamService.isFetchingRecords.subscribe(
-        (status) => {
-          this.isFetchingRecords = status;
-        }
-      );
-
   }
 
   getRecordCount(): number {
@@ -79,6 +98,5 @@ export class StreamComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.fetchRecordsSuccessSubscription?.unsubscribe();
     this.fetchRecordsErrorSubscription?.unsubscribe();
-    this.isFetchingRecordsSubscription?.unsubscribe();
   }
 }

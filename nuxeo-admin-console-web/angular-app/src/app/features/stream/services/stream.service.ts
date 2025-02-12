@@ -1,7 +1,7 @@
 import { REST_END_POINTS } from "./../../../shared/constants/rest-end-ponts.constants";
 import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { Stream } from "../stream.interface";
 
 @Injectable({
@@ -11,6 +11,7 @@ export class StreamService {
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
   isClearRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
   isPauseFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  clearRecordsDisplay: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private eventSource?: EventSource;
 
   constructor(private networkService: NetworkService) { }
@@ -57,9 +58,10 @@ export class StreamService {
     });
   }
 
-  stopSSEStream(): void {
+  stopSSEStream(): Observable<void> {
     this.eventSource?.close(); // Close the SSE connection
     this.eventSource = undefined;
+    return of(void 0);
   }
 
   private appendParamsToUrl(url: string, params: Record<string, unknown>) {

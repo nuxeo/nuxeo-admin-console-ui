@@ -54,3 +54,6 @@ export const onPauseFetchFailure = createAction(
   "[Admin] On Pause Fetch Failure",
   props<{ error: unknown }>()
 );
+export const resetPauseFetchState = createAction(
+  "[Admin] Reset Pause Fetch State"
+);

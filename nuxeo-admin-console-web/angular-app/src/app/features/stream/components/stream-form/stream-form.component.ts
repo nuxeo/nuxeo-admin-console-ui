@@ -1,7 +1,7 @@
 import {
   Component,
   OnDestroy,
-  OnInit
+  OnInit,
 } from "@angular/core";
 import { STREAM_LABELS } from "../../stream.constants";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -40,7 +40,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   selectedConsumer = "";
   isClearBtnDisabled = true;
   isPauseFetchBtnDisabled = true;
-
   constructor(
     private fb: FormBuilder,
     private store: Store<{ streams: StreamsState }>,
@@ -166,6 +165,8 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   onClearRecords(): void {
     this.store.dispatch(StreamActions.resetFetchRecordsState());
     this.isSubmitBtnDisabled = false;
+    this.isClearBtnDisabled = true;
+    this.streamService.clearRecordsDisplay.next(true);
   }
 
 

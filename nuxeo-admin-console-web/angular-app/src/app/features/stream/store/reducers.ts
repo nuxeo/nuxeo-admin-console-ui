@@ -93,5 +93,10 @@ export const streamsReducer = createReducer(
   on(StreamActions.onPauseFetchFailure, (state, { error }) => ({
     ...state,
     isFetchPausedError: false, // Store the error correctly
-  }))
+  })),
+  on(StreamActions.resetPauseFetchState, (state) => ({
+    ...state,
+    isFetchPaused: false,
+    isFetchPausedError: null
+  })),
 );

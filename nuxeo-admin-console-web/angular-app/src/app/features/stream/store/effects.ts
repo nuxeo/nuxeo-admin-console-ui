@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { of } from "rxjs";
+import { BehaviorSubject, EMPTY, from, iif, Observable, of, Subscription } from "rxjs";
 import {
   catchError,
+  filter,
   map,
   mergeMap,
   scan,
@@ -15,6 +16,7 @@ import * as StreamActions from "../store/actions";
 import { inject } from "@angular/core";
 import { StreamService } from "../services/stream.service";
 import { Stream } from "../stream.interface";
+import { Action } from "@ngrx/store";
 
 export const loadFetchStreamsEffect = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
@@ -66,6 +68,8 @@ export const loadFetchConsumersEffect = createEffect(
   { functional: true }
 );
 
+const streamState$ = new BehaviorSubject<boolean>(true);
+
 export const triggerRecordsSSEStream$ = createEffect(
   (
     actions$ = inject(Actions),
@@ -73,12 +77,17 @@ export const triggerRecordsSSEStream$ = createEffect(
   ) => {
     return actions$.pipe(
       ofType(StreamActions.triggerRecordsSSEStream),
-      mergeMap((action) => {
-        return streamService.startSSEStream(action.params).pipe(
+      tap(() => {
+        console.log("🔄 Resetting stream state to active...");
+        streamState$.next(true); // Reset state when starting the stream
+      }),
+      mergeMap((action) =>
+        streamService.startSSEStream(action.params).pipe(
           scan((acc: unknown[], response: unknown) => {
             let parsedResponse;
             try {
-              parsedResponse = typeof response === "string" ? JSON.parse(response) : response;
+              parsedResponse =
+                typeof response === "string" ? JSON.parse(response) : response;
             } catch (error) {
               console.error("Error parsing response:", error);
               return acc;
@@ -92,25 +101,66 @@ export const triggerRecordsSSEStream$ = createEffect(
             actions$.pipe(
               ofType(StreamActions.onPauseFetch),
               mergeMap(() => {
-                try {
-                  console.log("Pausing SSE stream...");
-                  streamService.stopSSEStream();
-                 // return of();
-                  return of(StreamActions.onPauseFetchLaunch());
-                } catch (error) {
-                  console.error("Error stopping SSE stream:", error);
-                  return of(StreamActions.onPauseFetchFailure({ error }));
-                }
+                console.log("Attempting to pause SSE stream...");
+
+                return from(streamService.stopSSEStream()).pipe(
+                  tap(() => {
+                    console.log("✅ SSE stream successfully stopped.");
+                    streamState$.next(false); // Set state to paused *after* successful stop
+                  }),
+                  map(() => StreamActions.onPauseFetchLaunch()),
+                  catchError((error) => {
+                    console.error("❌ Error stopping SSE stream:", error);
+                    return of(StreamActions.onPauseFetchFailure({ error }));
+                  })
+                );
               })
             )
           ),
-          catchError((error) =>
-            of(StreamActions.onFetchRecordsFailure({ error }))
-          )
+          catchError((error) => {
+            console.error("❌ SSE Stream Error:", error);
+            streamState$.next(false); // 🚀 Set state to paused when stream fails
+            return of(StreamActions.onFetchRecordsFailure({ error }));
+          })
+        )
+      )
+    );
+  },
+  { functional: true, dispatch: true }
+);
+
+
+export const pauseRecordsSSEStream$ = createEffect(
+  (actions$ = inject(Actions), streamService = inject(StreamService)) => {
+    return actions$.pipe(
+      ofType(StreamActions.onPauseFetch),
+      mergeMap(() => {
+        if (!streamState$.getValue()) {
+          console.warn("⚠️ SSE stream already stopped, skipping stopSSEStream() and onPauseFetchLaunch().");
+          return EMPTY; // Stop execution, nothing happens
+        }
+
+        console.log("🔄 Attempting to pause SSE stream...");
+
+        return from(streamService.stopSSEStream()).pipe( // Ensure it's converted to an Observable
+          tap(() => {
+            console.log("✅ SSE stream successfully paused.");
+            streamState$.next(false); // Set state to paused after stopping
+          }),
+          map(() => StreamActions.onPauseFetchLaunch()), // Dispatch action only if stop succeeded
+          catchError((error) => {
+            console.error("❌ Error pausing SSE stream:", error);
+            return of(StreamActions.onPauseFetchFailure({ error }));
+          })
         );
       })
     );
   },
-  { functional: true }
+  { functional: true, dispatch: true }
 );
+
+
+
+
+
 
