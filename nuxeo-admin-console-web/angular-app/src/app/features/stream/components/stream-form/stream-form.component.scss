@@ -60,9 +60,9 @@
     align-items: center;
     flex-wrap: wrap;
 
-    @media (max-width: 600px) { // Adjust width as needed
-      flex-direction: column; // Stack buttons vertically
-      align-items: stretch; // Make buttons full-width
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: stretch;
     }
   }
 
@@ -77,14 +77,20 @@
     font-family: "Open Sans", sans-serif;
     font-weight: 550;
     letter-spacing: normal;
-    background-color: #0a60ce !important;
+    background-color: #0a60ce;
     color: #fff;
   }
 }
 
-.mat-mdc-unelevated-button:disabled {
-  color: #fff;
-  cursor: pointer;
+.mat-mdc-unelevated-button[disabled],
+.mat-mdc-unelevated-button.mat-mdc-button-disabled {
+  cursor: default;
+  pointer-events: none;
+  color: var(--mdc-filled-button-disabled-label-text-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent));
+  background-color: var(--mdc-filled-button-disabled-container-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent));
+
 }
 
 .mat-mdc-radio-button.mat-accent {

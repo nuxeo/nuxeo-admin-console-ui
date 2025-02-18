@@ -10,7 +10,7 @@ import { Stream } from "../stream.interface";
 export class StreamService {
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
   isClearRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
-  isPauseFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  isStopFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
   isViewRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(false);
   clearRecordsDisplay: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private eventSource?: EventSource;
@@ -53,14 +53,14 @@ export class StreamService {
       };
 
       return () => {
-        this.eventSource?.close(); // Close when unsubscribed
+        this.eventSource?.close(); 
         this.eventSource = undefined;
       };
     });
   }
 
   stopSSEStream(): Observable<void> {
-    this.eventSource?.close(); // Close the SSE connection
+    this.eventSource?.close(); 
     this.eventSource = undefined;
     return of(void 0);
   }
@@ -78,5 +78,4 @@ export class StreamService {
       return acc;
     }, {} as Record<string, string>);
   }
-
 }

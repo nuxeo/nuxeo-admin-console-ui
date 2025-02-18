@@ -96,16 +96,16 @@ export const triggerRecordsSSEStream$ = createEffect(
           ),
           takeUntil(
             actions$.pipe(
-              ofType(StreamActions.onPauseFetch),
+              ofType(StreamActions.onStopFetch),
               mergeMap(() => {
                 return from(streamService.stopSSEStream()).pipe(
                   tap(() => {
                     streamState$.next(false);
                   }),
-                  map(() => StreamActions.onPauseFetchLaunch()),
+                  map(() => StreamActions.onStopFetchLaunch()),
                   catchError((error) => {
                     console.error("Error stopping SSE stream:", error);
-                    return of(StreamActions.onPauseFetchFailure({ error }));
+                    return of(StreamActions.onStopFetchFailure({ error }));
                   })
                 );
               })
@@ -124,10 +124,10 @@ export const triggerRecordsSSEStream$ = createEffect(
 );
 
 
-export const pauseRecordsSSEStream$ = createEffect(
+export const stopRecordsSSEStream$ = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
     return actions$.pipe(
-      ofType(StreamActions.onPauseFetch),
+      ofType(StreamActions.onStopFetch),
       mergeMap(() => {
         if (!streamState$.getValue()) {
           console.warn("SSE stream already stopped.");
@@ -139,11 +139,11 @@ export const pauseRecordsSSEStream$ = createEffect(
             streamState$.next(false);
           }),
           map(() => {
-            return StreamActions.onPauseFetchLaunch()
+            return StreamActions.onStopFetchLaunch()
           }),
           catchError((error) => {
             console.error("Error pausing SSE stream:", error);
-            return of(StreamActions.onPauseFetchFailure({ error }));
+            return of(StreamActions.onStopFetchFailure({ error }));
           })
         );
       })
