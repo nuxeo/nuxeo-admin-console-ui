@@ -90,7 +90,7 @@ export const streamsReducer = createReducer(
     ...state,
     isFetchStopped: true,
   })),
-  on(StreamActions.onStopFetchFailure, (state, { error }) => ({
+  on(StreamActions.onStopFetchFailure, (state) => ({
     ...state,
     isFetchStoppedError: false,
   })),

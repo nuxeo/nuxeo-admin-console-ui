@@ -27,7 +27,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   isFetchingRecords = false;
   isFetchingRecordsSubscription: Subscription = new Subscription();
   recordsFetchedStatus = "";
-  stopFetchSuccess$: Observable<any>;
+  stopFetchSuccess$: Observable<boolean | null>;
   stopFetchError$: Observable<unknown>;
   isStopFetchSuccess: boolean | null = null;
   isStopFetchSuccessSubscription: Subscription = new Subscription();
