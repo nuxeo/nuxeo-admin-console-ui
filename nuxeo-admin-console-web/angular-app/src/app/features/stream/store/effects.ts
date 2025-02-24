@@ -135,7 +135,6 @@ export const stopRecordsSSEStream$ = createEffect(
         }
         return from(streamService.stopSSEStream()).pipe(
           tap(() => {
-            console.log("SSE stream successfully stopped.");
             streamState$.next(false);
           }),
           map(() => {
