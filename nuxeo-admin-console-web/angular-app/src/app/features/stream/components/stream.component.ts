@@ -96,7 +96,6 @@ export class StreamComponent implements OnInit, OnDestroy {
         this.cdRef.detectChanges();
         if (this.records?.length > 0) {
           this.streamService.isClearRecordsDisabled.next(false);
-          this.streamService.isStopFetchDisabled.next(true);
         } else {
           this.streamService.isClearRecordsDisabled.next(true);
         }
@@ -107,6 +106,9 @@ export class StreamComponent implements OnInit, OnDestroy {
       (error) => {
         if (error) {
           console.log(error);
+          this.streamService.isViewRecordsDisabled.next(false);
+          this.streamService.isFetchingRecords.next(false);
+          this.streamService.isClearRecordsDisabled.next(false);
         }
       }
     );

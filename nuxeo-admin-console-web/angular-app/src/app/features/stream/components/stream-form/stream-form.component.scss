@@ -25,7 +25,6 @@
   .label.form-param {
     font-size: 16px;
     font-weight: 500;
-    ;
   }
 
   &--stream-container {
@@ -37,24 +36,129 @@
     flex-direction: column;
 
     #position {
-      margin-top: 15px;
+      margin-top: 20px;
       margin-left: -5px;
 
       mat-form-field.input-field.stream-field {
-        width: 350px;
-        max-width: 350px;
+        width: 300px;
+        max-width: 300px;
       }
     }
 
     .radio-group-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 35px;
+      justify-content: flex-start;
+
+      mat-radio-button {
+        display: flex;
+        align-items: center;
+        min-width: 130px;
+        height: 40px;
+      }
+
+      mat-radio-button:not(.complex-radio) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 40px;
+      }
+
+      mat-radio-button.complex-radio {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 40px;
+        gap: 6px;
+      }
+
+      .input-field.stream-field {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        max-height: 40px;
+        min-width: 120px;
+      }
+
+      .offset-partition-field {
+        width: 80px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        display: flex;
+        align-items: center;
+
+        .mat-mdc-text-field-wrapper {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+          display: flex;
+          align-items: center;
+        }
+
+        .mat-mdc-form-field-infix {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+        }
+
+        input {
+          width: 80px !important;
+          height: 40px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 600px) {
+        flex-direction: column;
+      }
     }
 
+    .complex-radio {
+      display: flex;
+      align-items: center;
+
+      .radio-content {
+        display: flex;
+        gap: 16px;
+      }
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .offset-partition-field {
+        width: 80px !important;
+        height: 40px !important;
+
+        .mat-mdc-text-field-wrapper,
+        .mat-mdc-form-field-infix {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+          display: flex;
+          align-items: center;
+        }
+
+        input {
+          width: 80px !important;
+          height: 40px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          text-align: center;
+        }
+      }
+    }
   }
 
   &--actions {
+    margin-top: 120px;
+    margin-left: -20px;
     display: flex;
     gap: 20px;
     align-items: center;
@@ -80,6 +184,38 @@
     background-color: #0a60ce;
     color: #fff;
   }
+
+  .stream-form-container--config-container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 45px;
+
+    .config-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 140px;
+    }
+
+    .label {
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .config-group {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  }
 }
 
 .mat-mdc-unelevated-button[disabled],
@@ -90,7 +226,6 @@
       color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent));
   background-color: var(--mdc-filled-button-disabled-container-color,
       color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent));
-
 }
 
 .mat-mdc-radio-button.mat-accent {
