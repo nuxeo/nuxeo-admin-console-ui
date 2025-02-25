@@ -9,7 +9,7 @@ import * as StreamActions from "../../store/actions";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../../store/reducers";
 import { Observable, Subscription } from "rxjs";
-import { Stream } from "../../stream.interface";
+import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 
@@ -137,10 +137,10 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         (data: { stream: string; consumer: string }[]) => {
           if (data?.length > 0) {
             this.consumers = data;
-             this.selectedConsumer = this.consumers
-               ? this.consumers[0]?.consumer
-               : "";
-          //  this.streamForm.get("position")?.setValue(this.selectedConsumer);
+            this.selectedConsumer = this.consumers
+              ? this.consumers[0]?.consumer
+              : "";
+            //  this.streamForm.get("position")?.setValue(this.selectedConsumer);
           }
         }
       );
@@ -156,7 +156,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
   onConsumerOptionChange(selectedValue: string): void {
     this.selectedConsumer = selectedValue;
-   // this.streamForm.get("position")?.setValue(selectedValue);
+    // this.streamForm.get("position")?.setValue(selectedValue);
   }
 
   onStreamChange(value: string): void {
@@ -206,23 +206,42 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   onStreamFormSubmit(): void {
     if (this.streamForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
-      const params = {
+      let params: RecordsPayload = {
         stream: this.streamForm?.get("stream")?.value,
-        fromGroup: this.streamForm?.get("position")?.value,
         rewind: this.streamForm?.get("rewind")?.value,
         limit: this.streamForm?.get("limit")?.value,
-        timeout: this.streamForm?.get("timeout")?.value,
-        offset: this.streamForm?.get("offset")?.value,
-        partition: this.streamForm?.get("partition")?.value,
-
+        timeout: this.convertTimeout(this.streamForm?.get("timeout")?.value),
       };
-
-      console.log("Form values :::: ", params);
+      this.getPositionValue(params);
       this.store.dispatch(StreamActions.triggerRecordsSSEStream({ params }));
       this.streamService.isFetchingRecords.next(true);
       this.streamService.isStopFetchDisabled.next(false);
     }
   }
+
+  convertTimeout(timeoutVal: string): string {
+    if (timeoutVal === "0s") {
+      return "1ms";
+    }
+    if (timeoutVal.indexOf("min") > -1) {
+      return `${(Number(timeoutVal.split("min")[0]) * 60)}s`;
+    }
+    return timeoutVal;
+  }
+
+  getPositionValue(params: RecordsPayload): void {
+    const positionValue = this.streamForm?.get("position")?.value;
+
+    if (positionValue === "tail") {
+      params.fromTail = true;
+    } else if (positionValue === this.selectedConsumer) {
+      params.fromGroup = this.selectedConsumer;
+    } else if (positionValue === "offset") {
+      params.fromOffset = this.streamForm?.get("offset")?.value.toString();
+      params.partition = this.streamForm?.get("partition")?.value.toString();
+    }
+  }
+
 
   onStopFetch(): void {
     this.store.dispatch(StreamActions.onStopFetch());

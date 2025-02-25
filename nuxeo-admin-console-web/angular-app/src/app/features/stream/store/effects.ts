@@ -86,7 +86,7 @@ export const triggerRecordsSSEStream$ = createEffect(
               parsedResponse =
                 typeof response === "string" ? JSON.parse(response) : response;
             } catch (error) {
-              console.error("Error parsing response:", error);
+             // console.error("Error parsing response:", error);
               return acc;
             }
             return [...acc, parsedResponse];
@@ -104,7 +104,7 @@ export const triggerRecordsSSEStream$ = createEffect(
                   }),
                   map(() => StreamActions.onStopFetchLaunch()),
                   catchError((error) => {
-                    console.error("Error stopping SSE stream:", error);
+                  //  console.error("Error stopping SSE stream:", error);
                     return of(StreamActions.onStopFetchFailure({ error }));
                   })
                 );
@@ -112,7 +112,7 @@ export const triggerRecordsSSEStream$ = createEffect(
             )
           ),
           catchError((error) => {
-            console.error("SSE Stream Error:", error);
+           // console.error("SSE Stream Error:", error);
             streamState$.next(false);
             return of(StreamActions.onFetchRecordsFailure({ error }));
           })
@@ -130,7 +130,7 @@ export const stopRecordsSSEStream$ = createEffect(
       ofType(StreamActions.onStopFetch),
       mergeMap(() => {
         if (!streamState$.getValue()) {
-          console.warn("SSE stream already stopped.");
+         // console.warn("SSE stream already stopped.");
           return EMPTY;
         }
         return from(streamService.stopSSEStream()).pipe(
@@ -141,7 +141,7 @@ export const stopRecordsSSEStream$ = createEffect(
             return StreamActions.onStopFetchLaunch()
           }),
           catchError((error) => {
-            console.error("Error pausing SSE stream:", error);
+          //  console.error("Error pausing SSE stream:", error);
             return of(StreamActions.onStopFetchFailure({ error }));
           })
         );

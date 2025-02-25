@@ -2,7 +2,7 @@ import { REST_END_POINTS } from "./../../../shared/constants/rest-end-ponts.cons
 import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { Stream } from "../stream.interface";
+import { RecordsPayload, Stream } from "../stream.interface";
 
 @Injectable({
   providedIn: "root",
@@ -37,7 +37,7 @@ export class StreamService {
     );
   }
 
-  startSSEStream(params: Record<string, unknown>) {
+  startSSEStream(params: RecordsPayload) {
     const url = this.networkService.getAPIEndpoint(REST_END_POINTS.STREAM_RECORDS);
     const fullUrl = this.appendParamsToUrl(url, params);
 
@@ -65,12 +65,12 @@ export class StreamService {
     return of(void 0);
   }
 
-  private appendParamsToUrl(url: string, params: Record<string, unknown>) {
+  private appendParamsToUrl(url: string, params: RecordsPayload) {
     const queryString = new URLSearchParams(this.convertObjToString(params))?.toString();
     return `${url}?${queryString}`;
   }
 
-  private convertObjToString(params: Record<string, unknown>): Record<string, string> {
+  private convertObjToString(params: RecordsPayload): Record<string, string> {
     return Object.entries(params).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== null) {
         acc[key] = String(value);
