@@ -68,6 +68,8 @@ export class StreamComponent implements OnInit, OnDestroy {
           } else {
             if (this.records?.length === 0) {
               this.recordsFetchedStatus = "";
+            } else {
+              this.streamService.isStopFetchDisabled.next(true);
             }
           }
         }
@@ -87,16 +89,16 @@ export class StreamComponent implements OnInit, OnDestroy {
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
       (data: { type?: string }[]) => {
         this.records = data;
+        this.recordsFetchedStatus = STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
+        this.streamService.isFetchingRecords.next(false);
+        this.records = data as { type?: string }[];
+        this.recordCount = this.getRecordCount();
+        this.cdRef.detectChanges();
         if (this.records?.length > 0) {
-          this.recordsFetchedStatus = STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
           this.streamService.isClearRecordsDisabled.next(false);
-          this.streamService.isStopFetchDisabled.next(false);
-          this.streamService.isFetchingRecords.next(false);
-          this.records = data as { type?: string }[];
-          this.recordCount = this.getRecordCount();
-          this.cdRef.detectChanges();
-        } else {
           this.streamService.isStopFetchDisabled.next(true);
+        } else {
+          this.streamService.isClearRecordsDisabled.next(true);
         }
       }
     );
