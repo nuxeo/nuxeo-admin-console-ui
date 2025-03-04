@@ -88,13 +88,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.selectedLimitValue = this.limitValues[0];
     this.timeoutValues = STREAM_LABELS.TIMEOUT_VALUES;
     this.selectedTimeoutValue = this.timeoutValues[0];
-
     this.streamForm.get('rewind')?.setValue(this.selectedRewindValue);
     this.streamForm.get('limit')?.setValue(this.selectedLimitValue);
     this.streamForm.get('timeout')?.setValue(this.selectedTimeoutValue);
-    // this.streamForm.get('offset')?.setValue("1");
-    // this.streamForm.get('partition')?.setValue("1");
-
 
 
     this.isClearBtnDisabledSubscription = this.streamService.isClearRecordsDisabled.subscribe((isDisabled: boolean) => {
@@ -116,7 +112,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
           const params = {
             stream: this.streamForm?.controls["stream"]?.value,
           };
-
           this.store.dispatch(StreamActions.fetchConsumers({ params }));
         } else {
           this.store.dispatch(StreamActions.fetchStreams());
@@ -127,7 +122,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchStreamsErrorSubscription = this.fetchStreamsError$.subscribe(
       (error) => {
         if (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     );
@@ -140,7 +135,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
             this.selectedConsumer = this.consumers
               ? this.consumers[0]?.consumer
               : "";
-            //  this.streamForm.get("position")?.setValue(this.selectedConsumer);
           }
         }
       );
@@ -148,7 +142,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchConsumersErrorSubscription = this.fetchConsumersError$.subscribe(
       (error) => {
         if (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     );
@@ -156,7 +150,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
   onConsumerOptionChange(selectedValue: string): void {
     this.selectedConsumer = selectedValue;
-    // this.streamForm.get("position")?.setValue(selectedValue);
   }
 
   onStreamChange(value: string): void {
@@ -175,10 +168,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.streamForm.patchValue({
       rewind: value
     });
-    const params = {
-      stream: this.streamForm.controls["rewind"]?.value,
-    };
-    //  this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
   onLimitValSelect(value: string): void {
@@ -186,10 +175,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.streamForm.patchValue({
       limit: value
     });
-    const params = {
-      stream: this.streamForm.controls["limit"]?.value,
-    };
-    //  this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
   onTimeoutValSelect(value: string): void {
@@ -197,15 +182,12 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.streamForm.patchValue({
       timeout: value
     });
-    const params = {
-      stream: this.streamForm.controls["timeout"]?.value,
-    };
-    //  this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
   onStreamFormSubmit(): void {
     if (this.streamForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
+
       let params: RecordsPayload = {
         stream: this.streamForm?.get("stream")?.value,
         rewind: this.streamForm?.get("rewind")?.value,
@@ -214,10 +196,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       };
       this.getPositionValue(params);
       this.store.dispatch(StreamActions.triggerRecordsSSEStream({ params }));
-      this.streamService.isFetchingRecords.next(true);
-      this.streamService.isStopFetchDisabled.next(false);
     }
   }
+
 
   convertTimeout(timeoutVal: string): string {
     if (timeoutVal === "0s") {
@@ -257,10 +238,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    this.store.dispatch(StreamActions.resetFetchStreamsState());
-    this.store.dispatch(StreamActions.resetFetchConsumersState());
-    this.store.dispatch(StreamActions.resetFetchRecordsState());
-    this.store.dispatch(StreamActions.resetStopFetchState());
+   // this.onStopFetch();
+   // this.store.dispatch(StreamActions.resetFetchStreamsState());
+    //this.store.dispatch(StreamActions.resetFetchConsumersState());
+    //this.store.dispatch(StreamActions.resetFetchRecordsState());
+    //this.store.dispatch(StreamActions.resetStopFetchState());
     this.fetchStreamsSuccessSubscription?.unsubscribe();
     this.fetchStreamsErrorSubscription?.unsubscribe();
     this.fetchConsumersSuccessSubscription?.unsubscribe();
@@ -268,5 +250,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isClearBtnDisabledSubscription?.unsubscribe();
     this.isStopFetchBtnDisabledSubscription?.unsubscribe();
     this.isViewRecordsDisabledSubscription?.unsubscribe();
+    
+
   }
 }

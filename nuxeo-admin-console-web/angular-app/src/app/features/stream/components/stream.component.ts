@@ -24,14 +24,14 @@ export class StreamComponent implements OnInit, OnDestroy {
   recordCount = 0;
   clearRecordsDisplaySubscription: Subscription = new Subscription();
   clearRecordsDisplay = false;
-  isFetchingRecords = false;
-  isFetchingRecordsSubscription: Subscription = new Subscription();
   recordsFetchedStatus = "";
   stopFetchSuccess$: Observable<boolean | null>;
   stopFetchError$: Observable<unknown>;
   isStopFetchSuccess: boolean | null = null;
   isStopFetchSuccessSubscription: Subscription = new Subscription();
   isStopFetchErrorSubscription: Subscription = new Subscription();
+  isFetchingRecords = false;
+  isFetchingRecordsSubscription: Subscription = new Subscription();
 
   constructor(private store: Store<{ streams: StreamsState }>,
     private cdRef: ChangeDetectorRef,
@@ -55,25 +55,30 @@ export class StreamComponent implements OnInit, OnDestroy {
       select((state) => state.streams?.isFetchStoppedError),
       skip(1)
     );
-
   }
 
   ngOnInit(): void {
+
     this.isFetchingRecordsSubscription =
       this.streamService.isFetchingRecords.subscribe(
         (status) => {
           this.isFetchingRecords = status;
+          this.streamService.isViewRecordsDisabled.next(this.isFetchingRecords);
+          this.streamService.isStopFetchDisabled.next(!this.isFetchingRecords);
           if (this.isFetchingRecords) {
             this.recordsFetchedStatus = STREAM_LABELS.FETCHING_RECORDS;
           } else {
             if (this.records?.length === 0) {
               this.recordsFetchedStatus = "";
             } else {
-              this.streamService.isStopFetchDisabled.next(true);
+              this.streamService.isClearRecordsDisabled.next(false);
+              this.recordsFetchedStatus = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
             }
           }
+          this.cdRef.detectChanges();
         }
       );
+
 
     this.clearRecordsDisplaySubscription =
       this.streamService.clearRecordsDisplay.subscribe(
@@ -89,26 +94,20 @@ export class StreamComponent implements OnInit, OnDestroy {
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
       (data: { type?: string }[]) => {
         this.records = data;
-        this.recordsFetchedStatus = STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
-        this.streamService.isFetchingRecords.next(false);
+        this.recordsFetchedStatus = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
         this.records = data as { type?: string }[];
         this.recordCount = this.getRecordCount();
         this.cdRef.detectChanges();
-        if (this.records?.length > 0) {
-          this.streamService.isClearRecordsDisabled.next(false);
-        } else {
-          this.streamService.isClearRecordsDisabled.next(true);
-        }
       }
     );
 
     this.fetchRecordsErrorSubscription = this.fetchRecordsError$.subscribe(
       (error) => {
         if (error) {
-          console.log(error);
+          console.error(error);
           this.streamService.isViewRecordsDisabled.next(false);
-          this.streamService.isFetchingRecords.next(false);
           this.streamService.isClearRecordsDisabled.next(false);
+          this.streamService.isStopFetchDisabled.next(true);
         }
       }
     );
@@ -127,7 +126,6 @@ export class StreamComponent implements OnInit, OnDestroy {
           });
           this.streamService.isStopFetchDisabled.next(true);
           this.streamService.isViewRecordsDisabled.next(false);
-          this.streamService.isFetchingRecords.next(false);
           this.store.dispatch(StreamActions.resetStopFetchState());
         }
       );
@@ -150,12 +148,19 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.isFetchingRecordsSubscription?.unsubscribe();
+    this.store.dispatch(StreamActions.onStopFetch());
+    this.store.dispatch(StreamActions.resetStopFetchState());
+    this.store.dispatch(StreamActions.resetFetchStreamsState());
+    this.store.dispatch(StreamActions.resetFetchConsumersState());
+    this.store.dispatch(StreamActions.resetFetchRecordsState());
+    this.streamService.isStopFetchDisabled.next(true);
+    this.streamService.isViewRecordsDisabled.next(false);
+    this.streamService.isClearRecordsDisabled.next(true);
     this.clearRecordsDisplaySubscription?.unsubscribe();
     this.fetchRecordsSuccessSubscription?.unsubscribe();
     this.fetchRecordsErrorSubscription?.unsubscribe();
     this.isStopFetchSuccessSubscription?.unsubscribe();
     this.isStopFetchErrorSubscription?.unsubscribe();
-    this.store.dispatch(StreamActions.resetStopFetchState());
+    this.isFetchingRecordsSubscription?.unsubscribe();
   }
 }

@@ -14,8 +14,9 @@ import {
 export class StreamRecordsStatusComponent implements OnChanges {
   @Input() recordsFetchedStatus = '';
   @Input() recordCount = 0;
+  @Input() isFetchingRecords = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.recordsFetchedStatus = changes["recordsFetchedStatus"].currentValue;
+    this.recordsFetchedStatus = changes["recordsFetchedStatus"]?.currentValue;
   }
 }
