@@ -1,9 +1,7 @@
 <div class="stream-records-status" [ngClass]="{'live-indicator': isFetchingRecords}">
   <span class="dot red-dot" *ngIf="isFetchingRecords; else recordFetched"></span>
-
   <ng-template #recordFetched>
     <span class="dot green-dot"></span>
   </ng-template>
-
-  <span>{{ recordsFetchedStatus }}</span>
+  <span>{{ recordsFetchedStatusText }}</span>
 </div>

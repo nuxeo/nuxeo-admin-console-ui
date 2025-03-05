@@ -24,7 +24,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   recordCount = 0;
   clearRecordsDisplaySubscription: Subscription = new Subscription();
   clearRecordsDisplay = false;
-  recordsFetchedStatus = "";
+  recordsFetchedStatusText = "";
   stopFetchSuccess$: Observable<boolean | null>;
   stopFetchError$: Observable<unknown>;
   isStopFetchSuccess: boolean | null = null;
@@ -58,7 +58,6 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.isFetchingRecordsSubscription =
       this.streamService.isFetchingRecords.subscribe(
         (status) => {
@@ -66,13 +65,13 @@ export class StreamComponent implements OnInit, OnDestroy {
           this.streamService.isViewRecordsDisabled.next(this.isFetchingRecords);
           this.streamService.isStopFetchDisabled.next(!this.isFetchingRecords);
           if (this.isFetchingRecords) {
-            this.recordsFetchedStatus = STREAM_LABELS.FETCHING_RECORDS;
+            this.recordsFetchedStatusText = STREAM_LABELS.FETCHING_RECORDS;
           } else {
             if (this.records?.length === 0) {
-              this.recordsFetchedStatus = "";
+              this.recordsFetchedStatusText = "";
             } else {
               this.streamService.isClearRecordsDisabled.next(false);
-              this.recordsFetchedStatus = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
+              this.recordsFetchedStatusText = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
             }
           }
           this.cdRef.detectChanges();
@@ -94,7 +93,7 @@ export class StreamComponent implements OnInit, OnDestroy {
     this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
       (data: { type?: string }[]) => {
         this.records = data;
-        this.recordsFetchedStatus = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
+        this.recordsFetchedStatusText = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
         this.records = data as { type?: string }[];
         this.recordCount = this.getRecordCount();
         this.cdRef.detectChanges();

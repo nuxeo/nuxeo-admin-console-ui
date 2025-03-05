@@ -56,7 +56,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   ) {
     this.streamForm = this.fb.group({
       stream: ["", Validators.required],
-      position: ["beginning", Validators.required],
+      position: [STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE, Validators.required],
       rewind: [""],
       limit: [""],
       timeout: [""],
@@ -88,9 +88,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.selectedLimitValue = this.limitValues[0];
     this.timeoutValues = STREAM_LABELS.TIMEOUT_VALUES;
     this.selectedTimeoutValue = this.timeoutValues[0];
-    this.streamForm.get('rewind')?.setValue(this.selectedRewindValue);
-    this.streamForm.get('limit')?.setValue(this.selectedLimitValue);
-    this.streamForm.get('timeout')?.setValue(this.selectedTimeoutValue);
+    this.streamForm?.get(STREAM_LABELS.REWIND_ID)?.setValue(this.selectedRewindValue);
+    this.streamForm?.get(STREAM_LABELS.LIMIT_ID)?.setValue(this.selectedLimitValue);
+    this.streamForm?.get(STREAM_LABELS.TIMEOUT_ID)?.setValue(this.selectedTimeoutValue);
 
 
     this.isClearBtnDisabledSubscription = this.streamService.isClearRecordsDisabled.subscribe((isDisabled: boolean) => {
@@ -110,7 +110,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
             stream: data[0]?.name,
           });
           const params = {
-            stream: this.streamForm?.controls["stream"]?.value,
+            stream: this.streamForm?.controls[STREAM_LABELS.STREAM_ID]?.value,
           };
           this.store.dispatch(StreamActions.fetchConsumers({ params }));
         } else {
@@ -158,7 +158,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       stream: value,
     });
     const params = {
-      stream: this.streamForm.controls["stream"]?.value,
+      stream: this.streamForm.controls[STREAM_LABELS.STREAM_ID]?.value,
     };
     this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
@@ -187,12 +187,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   onStreamFormSubmit(): void {
     if (this.streamForm?.valid && !this.isSubmitBtnDisabled) {
       this.isSubmitBtnDisabled = true;
-
-      let params: RecordsPayload = {
-        stream: this.streamForm?.get("stream")?.value,
-        rewind: this.streamForm?.get("rewind")?.value,
-        limit: this.streamForm?.get("limit")?.value,
-        timeout: this.convertTimeout(this.streamForm?.get("timeout")?.value),
+      const params: RecordsPayload = {
+        stream: this.streamForm?.get(STREAM_LABELS.STREAM_ID)?.value,
+        rewind: this.streamForm?.get(STREAM_LABELS.REWIND_ID)?.value,
+        limit: this.streamForm?.get(STREAM_LABELS.LIMIT_ID)?.value,
+        timeout: this.convertTimeout(this.streamForm?.get(STREAM_LABELS.TIMEOUT_ID)?.value),
       };
       this.getPositionValue(params);
       this.store.dispatch(StreamActions.triggerRecordsSSEStream({ params }));
@@ -201,25 +200,24 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
 
   convertTimeout(timeoutVal: string): string {
-    if (timeoutVal === "0s") {
-      return "1ms";
+    if (timeoutVal === STREAM_LABELS.TIMEOUT_VALUES[0]) {
+      return STREAM_LABELS.DEFAULT_TIMEOUT_VALUE;
     }
-    if (timeoutVal.indexOf("min") > -1) {
-      return `${(Number(timeoutVal.split("min")[0]) * 60)}s`;
+    if (timeoutVal.indexOf(STREAM_LABELS.MINUTE) > -1) {
+      return `${(Number(timeoutVal.split(STREAM_LABELS.MINUTE)[0]) * 60)}${STREAM_LABELS.SECOND}`;
     }
     return timeoutVal;
   }
 
   getPositionValue(params: RecordsPayload): void {
-    const positionValue = this.streamForm?.get("position")?.value;
-
-    if (positionValue === "tail") {
+    const positionValue = this.streamForm?.get(STREAM_LABELS.POSITION_ID)?.value;
+    if (positionValue === STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE) {
       params.fromTail = true;
     } else if (positionValue === this.selectedConsumer) {
       params.fromGroup = this.selectedConsumer;
-    } else if (positionValue === "offset") {
-      params.fromOffset = this.streamForm?.get("offset")?.value.toString();
-      params.partition = this.streamForm?.get("partition")?.value.toString();
+    } else if (positionValue === STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE) {
+      params.fromOffset = this.streamForm?.get(STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE)?.value?.toString();
+      params.partition = this.streamForm?.get(STREAM_LABELS.POSITION_OPTIONS.PARTITITON.VALUE)?.value?.toString();
     }
   }
 
@@ -233,16 +231,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isSubmitBtnDisabled = false;
     this.isClearBtnDisabled = true;
     this.streamService.clearRecordsDisplay.next(true);
-    document.getElementById("stream")?.focus();
+    document.getElementById(STREAM_LABELS.STREAM_ID)?.focus();
   }
 
 
   ngOnDestroy(): void {
-   // this.onStopFetch();
-   // this.store.dispatch(StreamActions.resetFetchStreamsState());
-    //this.store.dispatch(StreamActions.resetFetchConsumersState());
-    //this.store.dispatch(StreamActions.resetFetchRecordsState());
-    //this.store.dispatch(StreamActions.resetStopFetchState());
     this.fetchStreamsSuccessSubscription?.unsubscribe();
     this.fetchStreamsErrorSubscription?.unsubscribe();
     this.fetchConsumersSuccessSubscription?.unsubscribe();
@@ -250,7 +243,5 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isClearBtnDisabledSubscription?.unsubscribe();
     this.isStopFetchBtnDisabledSubscription?.unsubscribe();
     this.isViewRecordsDisabledSubscription?.unsubscribe();
-    
-
   }
 }

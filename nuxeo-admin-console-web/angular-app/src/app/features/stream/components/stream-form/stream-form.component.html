@@ -15,17 +15,17 @@
         <hr>
         <div class="stream-form-container--position-container">
             <p class="label form-param">
-                {{ STREAM_LABELS.POSIITON }}<span class="required-indicator">*</span>
+                {{ STREAM_LABELS.POSITION }}<span class="required-indicator">*</span>
             </p>
             <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
-                <mat-radio-button [value]="'beginning'">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.BEGINNING }}</p>
+                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE">
+                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.BEGINNING.LABEL }}</p>
                 </mat-radio-button>
-                <mat-radio-button [value]="'tail'">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.TAIL }}</p>
+                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE">
+                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.TAIL.LABEL }}</p>
                 </mat-radio-button>
                 <mat-radio-button [value]="selectedConsumer" class="complex-radio">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER }}</p>
+                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER.LABEL }}</p>
                     <mat-form-field appearance="outline" class="input-field stream-field">
                         <mat-select matNativeControl id="consumer"
                             (selectionChange)="onConsumerOptionChange($event.value)" [value]="selectedConsumer">
@@ -36,19 +36,21 @@
                     </mat-form-field>
                 </mat-radio-button>
 
-                <mat-radio-button class="complex-radio" [value]="'offset'">
+                <mat-radio-button class="complex-radio" [value]="STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE">
                     <div class="radio-content">
                         <div class="field-group">
-                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.OFFSET }}</p>
+                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.OFFSET.LABEL }}</p>
                             <mat-form-field appearance="outline" class="offset-partition-field">
-                                <input type="number" id="offset" name="offset" matNativeControl formControlName="offset"/>
+                                <input type="number" id="offset" name="offset" matNativeControl
+                                    formControlName="offset" />
                             </mat-form-field>
                         </div>
 
                         <div class="field-group">
-                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.PARTITITON }}</p>
+                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.PARTITITON.LABEL }}</p>
                             <mat-form-field appearance="outline" class="offset-partition-field">
-                                <input type="number" id="partition" name="partition" matNativeControl formControlName="partition"/>
+                                <input type="number" id="partition" name="partition" matNativeControl
+                                    formControlName="partition" />
                             </mat-form-field>
                         </div>
                     </div>
