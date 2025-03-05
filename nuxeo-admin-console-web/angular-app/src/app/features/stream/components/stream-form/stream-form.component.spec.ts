@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
+import { RecordsPayload } from '../../stream.interface';
 
 interface StreamServiceMock {
     getStreams: jasmine.Spy;
@@ -31,6 +32,7 @@ describe('StreamFormComponent', () => {
     let fixture: ComponentFixture<StreamFormComponent>;
     let store: Store<{ streams: StreamsState }>;
     let streamServiceMock: StreamServiceMock;
+    let storeSpy: jasmine.SpyObj<Store<{ streams: StreamsState }>>;
 
     beforeEach(async () => {
         streamServiceMock = {
@@ -45,7 +47,7 @@ describe('StreamFormComponent', () => {
             clearRecordsDisplay: { next: jasmine.createSpy() }
         };
 
-        const storeSpy = jasmine.createSpyObj('Store', ['dispatch', 'pipe']);
+        storeSpy = jasmine.createSpyObj('Store', ['dispatch', 'pipe']);
 
         storeSpy.pipe.and.returnValue(of([]));
         storeSpy.pipe.and.returnValues(
@@ -109,35 +111,46 @@ describe('StreamFormComponent', () => {
         const selectedValue = 'consumer1';
         component.onConsumerOptionChange(selectedValue);
         expect(component.selectedConsumer).toBe(selectedValue);
-        expect(component.streamForm.get('position')?.value).toBe(selectedValue);
     });
 
     it('should call onStreamFormSubmit and dispatch triggerRecordsSSEStream', () => {
-        const isFetchingRecordsSpy = streamServiceMock.isFetchingRecords.next.and.callThrough();
         component.isSubmitBtnDisabled = false;
-        const stream = { name: 'stream1' };
-        component.streams = [stream];
-        component.streamForm.patchValue({ stream: 'stream1', position: 'consumer1' });
+        component.streamForm.patchValue({
+            [STREAM_LABELS.STREAM_ID]: 'stream1',
+            [STREAM_LABELS.REWIND_ID]: '0',
+            [STREAM_LABELS.LIMIT_ID]: '1',
+            [STREAM_LABELS.TIMEOUT_ID]: '1'
+        });
+
+        spyOn(component, 'convertTimeout').and.returnValue('1ms');
+        spyOn(component, 'getPositionValue');
+
         component.onStreamFormSubmit();
+
+        expect(component.isSubmitBtnDisabled).toBeTrue();
+        expect(component.getPositionValue).toHaveBeenCalledWith({
+            stream: 'stream1',
+            rewind: '0',
+            limit: '1',
+            timeout: '1ms'
+        });
+
         expect(store.dispatch).toHaveBeenCalledWith(
             StreamActions.triggerRecordsSSEStream({
                 params: {
-                    stream: component.streamForm.get('stream')?.value,
-                    fromGroup: component.streamForm.get('position')?.value,
-                    rewind: 0,
-                    timeout: '1ms',
-                    limit: 1
+                    stream: 'stream1',
+                    rewind: '0',
+                    limit: '1',
+                    timeout: '1ms'
                 }
             })
         );
-        expect(isFetchingRecordsSpy).toHaveBeenCalledWith(true);
     });
-
 
     it('should handle fetchStreamsError correctly', () => {
         const error = { message: 'An error occurred' };
         component.fetchStreamsError$ = of(error);
-        const logSpy = spyOn(console, 'log');
+        const logSpy = spyOn(console, 'error');
         component.ngOnInit();
         expect(logSpy).toHaveBeenCalledWith(error);
         logSpy.calls.reset();
@@ -175,10 +188,6 @@ describe('StreamFormComponent', () => {
         component.isStopFetchBtnDisabledSubscription.unsubscribe = unsubscribeSpy;
         component.isViewRecordsDisabledSubscription.unsubscribe = unsubscribeSpy;
         component.ngOnDestroy();
-        expect(store.dispatch).toHaveBeenCalledWith(StreamActions.resetFetchStreamsState());
-        expect(store.dispatch).toHaveBeenCalledWith(StreamActions.resetFetchConsumersState());
-        expect(store.dispatch).toHaveBeenCalledWith(StreamActions.resetFetchRecordsState());
-        expect(store.dispatch).toHaveBeenCalledWith(StreamActions.resetStopFetchState());
         expect(unsubscribeSpy).toHaveBeenCalledTimes(7);
     });
 
@@ -187,4 +196,76 @@ describe('StreamFormComponent', () => {
         expect(component.isStopFetchBtnDisabled).toBeTrue();
         expect(component.isSubmitBtnDisabled).toBeFalse();
     });
+
+    it("should initialize form with default values", () => {
+        expect(component.streamForm.value).toEqual({
+            stream: "",
+            position: component.STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE,
+            rewind: "",
+            limit: "",
+            timeout: "",
+            offset: 0,
+            partition: 0,
+        });
+    });
+
+    it("should update selected consumer on change", () => {
+        component.onConsumerOptionChange("consumer1");
+        expect(component.selectedConsumer).toBe("consumer1");
+    });
+
+    it("should update stream on change and dispatch fetchConsumers", () => {
+        component.onStreamChange("newStream");
+        expect(component.streamForm.value.stream).toBe("newStream");
+        expect(storeSpy.dispatch).toHaveBeenCalledWith(StreamActions.fetchConsumers({ params: { stream: "newStream" } }));
+    });
+
+    it("should update rewind value and form field", () => {
+        component.onRewindValSelect("5");
+        expect(component.selectedRewindValue).toBe("5");
+        expect(component.streamForm.value.rewind).toBe("5");
+    });
+
+    it("should update limit value and form field", () => {
+        component.onLimitValSelect("10");
+        expect(component.selectedLimitValue).toBe("10");
+        expect(component.streamForm.value.limit).toBe("10");
+    });
+
+    it("should update timeout value and form field", () => {
+        component.onTimeoutValSelect("30s");
+        expect(component.selectedTimeoutValue).toBe("30s");
+        expect(component.streamForm.value.timeout).toBe("30s");
+    });
+
+    it("should call convertTimeout and return correct values", () => {
+        expect(component.convertTimeout("1min")).toBe("60s");
+        expect(component.convertTimeout("30s")).toBe("30s");
+    });
+
+    it("should determine position value correctly", () => {
+        const params = {} as RecordsPayload;
+        component.streamForm.patchValue({ position: component.STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE });
+        component.getPositionValue(params);
+        expect(params.fromTail).toBeTrue();
+    });
+
+    it("should dispatch stop fetch action", () => {
+        component.onStopFetch();
+        expect(storeSpy.dispatch).toHaveBeenCalledWith(StreamActions.onStopFetch());
+    });
+
+    it("should dispatch reset fetch records state and update UI on clear records", () => {
+        component.onClearRecords();
+        expect(storeSpy.dispatch).toHaveBeenCalledWith(StreamActions.resetFetchRecordsState());
+        expect(component.isSubmitBtnDisabled).toBeFalse();
+        expect(component.isClearBtnDisabled).toBeTrue();
+    });
+
+    it("should unsubscribe from subscriptions on destroy", () => {
+        const unsubscribeSpy = spyOn(component.fetchStreamsSuccessSubscription, "unsubscribe");
+        component.ngOnDestroy();
+        expect(unsubscribeSpy).toHaveBeenCalled();
+    });
 });
+

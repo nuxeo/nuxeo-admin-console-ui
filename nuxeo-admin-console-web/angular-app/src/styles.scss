@@ -523,25 +523,24 @@ mat-radio-group#position .complex-radio .mat-mdc-radio-button .mdc-radio {
 }
 
 mat-radio-group#position mat-radio-button:not(.complex-radio) .mdc-radio {
-
   margin-top: 25px;
 }
 
 mat-radio-group#position mat-radio-button:not(.complex-radio) .mdc-label {
   padding-left: 0px;
   margin-top: 32px;
-
 }
 
-mat-radio-button.complex-radio{
+mat-radio-button.complex-radio {
   .mdc-radio {
     margin-top: 23px;
   }
+
   .mdc-label {
     padding-left: 0;
   }
 }
- 
+
 
 .offset-partition-field {
   width: 80px !important;
@@ -549,41 +548,40 @@ mat-radio-button.complex-radio{
   height: 40px !important;
   max-height: 40px !important;
 
-  // Target the wrapper inside mat-form-field
   .mat-mdc-text-field-wrapper {
     height: 40px !important;
     min-height: 40px !important;
-    padding: 0 !important; // Remove padding
+    padding: 0 !important;
     display: flex;
     align-items: center;
   }
 
-  // Reduce the label floating space
+
   .mat-mdc-form-field-flex {
     height: 40px !important;
     min-height: 40px !important;
-    padding: 0 !important; // Remove padding
+    padding: 0 !important;
   }
 
-  // Reduce all internal padding/margin inside the input field
+
   .mat-mdc-form-field-infix {
     height: 40px !important;
     min-height: 40px !important;
-    padding: 0 !important; // Remove padding
-    margin: 0 !important; // Remove margin
+    padding: 0 !important;
+    margin: 0 !important;
     display: flex;
     align-items: center;
   }
 
-  // Style the actual input field
+
   input {
     width: 80px !important;
     height: 40px !important;
     max-width: 80px !important;
     max-height: 40px !important;
-    padding: 0 !important; // Remove input padding
-    margin: 0 !important; // Remove input margin
-    border: none; // Optional: removes border space
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none;
     outline: none;
     text-align: center;
   }
@@ -591,9 +589,9 @@ mat-radio-button.complex-radio{
 
 
 .stream-form-container--config-container mat-form-field {
-  width: 120 !important; // Set width to 80px
+  width: 120 !important;
   min-width: 120 !important;
-  height: 20px !important; // Set height to 20px
+  height: 20px !important;
   max-height: 20px !important;
 
   .mat-mdc-text-field-wrapper {
@@ -616,9 +614,9 @@ mat-radio-button.complex-radio{
   .mat-mdc-select-trigger {
     display: flex;
     align-items: center;
-    justify-content: space-between; // Brings value and arrow closer
-    gap: 2px; // Reduce spacing between value and arrow
-    padding: 0 10px; // Prevents elements from sticking to corners
+    justify-content: space-between;
+    gap: 2px;
+    padding: 0 10px;
   }
 
   .mat-mdc-select-value {

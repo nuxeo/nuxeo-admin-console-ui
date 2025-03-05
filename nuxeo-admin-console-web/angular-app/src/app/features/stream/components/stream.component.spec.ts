@@ -20,6 +20,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { StreamRecordsStatusComponent } from "./stream-records-status/stream-records-status.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 describe("StreamComponent", () => {
   let component: StreamComponent;
@@ -27,6 +28,7 @@ describe("StreamComponent", () => {
   let store: Store<{ streams: StreamsState }>;
   let streamService: jasmine.SpyObj<StreamService>;
   let cdRef: jasmine.SpyObj<ChangeDetectorRef>;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
 
   class streamServiceStub {
     isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -37,10 +39,13 @@ describe("StreamComponent", () => {
   }
 
   beforeEach(async () => {
+    snackBar = jasmine.createSpyObj("MatSnackBar", ["openFromComponent"]);
 
     await TestBed.configureTestingModule({
       declarations: [StreamComponent, StreamFormComponent, StreamRecordsComponent, StreamRecordsStatusComponent],
-      imports: [StoreModule.forRoot({ streams: streamsReducer }), MatFormFieldModule,
+      imports: [
+        StoreModule.forRoot({ streams: streamsReducer }),
+        MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
         MatSelectModule,
@@ -48,21 +53,20 @@ describe("StreamComponent", () => {
         MatCardModule,
         BrowserAnimationsModule,
         ReactiveFormsModule,
-        MatSnackBarModule],
+        MatSnackBarModule,
+      ],
       providers: [
         { provide: StreamService, useClass: streamServiceStub },
         { provide: ChangeDetectorRef, useValue: cdRef },
+        { provide: MatSnackBar, useValue: snackBar },
       ],
     }).compileComponents();
 
     store = TestBed.inject(Store);
     streamService = TestBed.inject(StreamService) as jasmine.SpyObj<StreamService>;
     cdRef = TestBed.inject(ChangeDetectorRef) as jasmine.SpyObj<ChangeDetectorRef>;
-
     fixture = TestBed.createComponent(StreamComponent);
     component = fixture.componentInstance;
-    store.dispatch(StreamActions.onFetchRecordsLaunch({ recordsData: [{ type: "record" }, { type: "record" }] }));
-    fixture.detectChanges();
   });
 
   it("should create the component", () => {
@@ -73,18 +77,15 @@ describe("StreamComponent", () => {
     const mockRecords = [{ type: "record" }, { type: "record" }];
     store.dispatch(StreamActions.onFetchRecordsLaunch({ recordsData: mockRecords }));
     fixture.detectChanges();
-
     expect(component.records).toEqual(mockRecords);
     expect(component.recordCount).toBe(2);
   });
 
   it("should log error if fetch records fails", () => {
-    const consoleSpy = spyOn(console, "log");
+    const consoleSpy = spyOn(console, "error");
     const error = { message: "Error" } as HttpErrorResponse;
-
     store.dispatch(StreamActions.onFetchRecordsFailure({ error }));
     fixture.detectChanges();
-
     expect(consoleSpy).toHaveBeenCalledWith(error);
   });
 
@@ -93,9 +94,7 @@ describe("StreamComponent", () => {
     component.fetchRecordsSuccessSubscription.unsubscribe = unsubscribeSpy;
     component.fetchRecordsErrorSubscription.unsubscribe = unsubscribeSpy;
     component.isFetchingRecordsSubscription.unsubscribe = unsubscribeSpy;
-
     component.ngOnDestroy();
-
     expect(unsubscribeSpy).toHaveBeenCalledTimes(3);
   });
 
@@ -108,14 +107,12 @@ describe("StreamComponent", () => {
   it("should not display records if fetching is in progress", () => {
     streamService.isFetchingRecords.next(true);
     fixture.detectChanges();
-
     expect(component.isFetchingRecords).toBeTrue();
   });
 
   it("should update the isFetchingRecords status from the service", () => {
     streamService.isFetchingRecords = new BehaviorSubject<boolean>(false);
     fixture.detectChanges();
-
     expect(component.isFetchingRecords).toBeFalse();
   });
 
@@ -123,9 +120,32 @@ describe("StreamComponent", () => {
     const mockRecords = [{ type: "record" }, { type: "record" }];
     store.dispatch(StreamActions.onFetchRecordsLaunch({ recordsData: mockRecords }));
     fixture.detectChanges();
-
     expect(component.records).toEqual(mockRecords);
     expect(component.recordCount).toBe(2);
   });
 
+  it("should update isFetchingRecords from service", () => {
+    streamService.isFetchingRecords.next(true);
+    fixture.detectChanges();
+    expect(component.isFetchingRecords).toBeTrue();
+  });
+
+  it("should update clearRecordsDisplay based on service", () => {
+    streamService.clearRecordsDisplay.next(true);
+    fixture.detectChanges();
+    expect(component.clearRecordsDisplay).toBeTrue();
+  });
+
+  it("should correctly count only 'record' types", () => {
+    component.records = [{ type: "record" }, { type: "record" }, { type: "other" }];
+    expect(component.getRecordCount()).toBe(2);
+  });
+
+  it("should dispatch all actions and unsubscribe in ngOnDestroy", () => {
+    const dispatchSpy = spyOn(store, "dispatch");
+    const unsubscribeSpy = spyOn(component.isFetchingRecordsSubscription, "unsubscribe").and.callThrough();
+    component.ngOnDestroy();
+    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    expect(unsubscribeSpy).toHaveBeenCalled();
+  });
 });

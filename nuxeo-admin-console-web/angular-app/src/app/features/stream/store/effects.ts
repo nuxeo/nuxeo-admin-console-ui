@@ -110,7 +110,11 @@ export const stopRecordsSSEStream$ = createEffect(
         streamService.stopSSEStream();
         streamService.isFetchingRecords.next(false);
       }),
-      map(() => StreamActions.onStopFetchLaunch())
+      map(() => StreamActions.onStopFetchLaunch()),
+      catchError((error) => {
+        streamService.isFetchingRecords.next(false);
+        return of(StreamActions.onStopFetchFailure({ error }));
+      })
     );
   },
   { functional: true, dispatch: true }

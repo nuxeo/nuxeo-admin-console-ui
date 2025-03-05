@@ -133,7 +133,7 @@ export class StreamComponent implements OnInit, OnDestroy {
       this.stopFetchError$.subscribe(
         (error: unknown) => {
           this.isStopFetchSuccess = false;
-          console.log(error);
+          console.error(error);
         }
       );
 
