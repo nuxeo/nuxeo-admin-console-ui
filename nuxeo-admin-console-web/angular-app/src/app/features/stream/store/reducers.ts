@@ -28,48 +28,48 @@ export const initialStreamsState: StreamsState = {
 export const streamsReducer = createReducer(
   initialStreamsState,
 
-  // 🔹 Fetch Streams
+  // Fetch Streams
   on(StreamActions.fetchStreams, (state) => ({
     ...state,
-    streamsError: null, // Reset error only
+    streamsError: null,
   })),
   on(StreamActions.onFetchStreamsLaunch, (state, { streamsData }) => ({
     ...state,
-    streams: streamsData, // Update streams without affecting other states
+    streams: streamsData,
   })),
   on(StreamActions.onFetchStreamsFailure, (state, { error }) => ({
     ...state,
-    streamsError: error, // Update error independently
+    streamsError: error,
   })),
   on(StreamActions.resetFetchStreamsState, (state) => ({
     ...state,
-    streams: initialStreamsState.streams, // Reset only streams
+    streams: initialStreamsState.streams,
     streamsError: null,
   })),
 
-  // 🔹 Fetch Consumers
+  // Fetch Consumers
   on(StreamActions.fetchConsumers, (state) => ({
     ...state,
-    consumersError: null, // Reset error only
+    consumersError: null,
   })),
   on(StreamActions.onFetchConsumersLaunch, (state, { consumersData }) => ({
     ...state,
-    consumers: consumersData, // Update consumers without affecting others
+    consumers: consumersData,
   })),
   on(StreamActions.onFetchConsumersFailure, (state, { error }) => ({
     ...state,
-    consumersError: error, // Update error independently
+    consumersError: error,
   })),
   on(StreamActions.resetFetchConsumersState, (state) => ({
     ...state,
-    consumers: initialStreamsState.consumers, // Reset only consumers
+    consumers: initialStreamsState.consumers,
     consumersError: null,
   })),
 
-  // 🔹 Fetch Records via SSE
+  // Fetch Records via SSE
   on(StreamActions.triggerRecordsSSEStream, (state) => ({
     ...state,
-    recordsError: null, // Reset error only
+    recordsError: null,
   })),
   on(StreamActions.onFetchRecordsLaunch, (state, { recordsData }) => ({
     ...state,
@@ -77,11 +77,11 @@ export const streamsReducer = createReducer(
   })),
   on(StreamActions.onFetchRecordsFailure, (state, { error }) => ({
     ...state,
-    recordsError: error, // Update error independently
+    recordsError: error,
   })),
   on(StreamActions.resetFetchRecordsState, (state) => ({
     ...state,
-    records: initialStreamsState.records, // Reset only records
+    records: initialStreamsState.records,
     recordsError: null,
   })),
 

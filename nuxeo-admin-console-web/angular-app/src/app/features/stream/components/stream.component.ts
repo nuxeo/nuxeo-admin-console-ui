@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { STREAM_LABELS } from "../stream.constants";
 import { Observable, skip, Subscription } from "rxjs";
 import { Store, select } from "@ngrx/store";
@@ -95,6 +95,7 @@ export class StreamComponent implements OnInit, OnDestroy {
         this.recordCount = this.getRecordCount();
         this.cdRef.detectChanges();
         if (this.records?.length > 0) {
+          this.recordsFetchedStatus = STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
           this.streamService.isClearRecordsDisabled.next(false);
           this.streamService.isStopFetchDisabled.next(true);
         } else {

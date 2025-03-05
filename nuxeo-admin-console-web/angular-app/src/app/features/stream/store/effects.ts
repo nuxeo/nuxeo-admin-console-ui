@@ -2,7 +2,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { BehaviorSubject, EMPTY, from, of } from "rxjs";
 import {
   catchError,
-  filter,
   map,
   mergeMap,
   scan,
@@ -16,7 +15,6 @@ import * as StreamActions from "../store/actions";
 import { inject } from "@angular/core";
 import { StreamService } from "../services/stream.service";
 import { Stream } from "../stream.interface";
-import { Action } from "@ngrx/store";
 
 export const loadFetchStreamsEffect = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
