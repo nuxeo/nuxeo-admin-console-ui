@@ -78,5 +78,4 @@ export class StreamService {
       return acc;
     }, {} as Record<string, string>);
   }
-
 }

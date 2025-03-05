@@ -12,7 +12,6 @@ import { Observable, Subscription } from "rxjs";
 import { Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "stream-form",
