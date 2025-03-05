@@ -1,18 +1,12 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { BehaviorSubject, EMPTY, from, of, timer } from "rxjs";
+import { of } from "rxjs";
 import {
   catchError,
-  debounce,
-  distinctUntilChanged,
-  filter,
   finalize,
   map,
-  mergeMap,
   scan,
   switchMap,
-  takeUntil,
   tap,
-  withLatestFrom
 } from "rxjs/operators";
 import { createEffect } from "@ngrx/effects";
 import { Actions, ofType } from "@ngrx/effects";
@@ -93,7 +87,6 @@ export const triggerRecordsSSEStream$ = createEffect(
           map((recordsArray) =>
             StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray })
           ),
-          takeUntil(streamService.getStopStream$()), 
           finalize(() => {
             streamService.isFetchingRecords.next(false);
           }),
@@ -109,17 +102,16 @@ export const triggerRecordsSSEStream$ = createEffect(
 );
 
 
-
 export const stopRecordsSSEStream$ = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
     return actions$.pipe(
       ofType(StreamActions.onStopFetch),
       tap(() => {
-        streamService.stopSSEStream(); 
+        streamService.stopSSEStream();
+        streamService.isFetchingRecords.next(false);
       }),
       map(() => StreamActions.onStopFetchLaunch())
     );
   },
   { functional: true, dispatch: true }
 );
-
