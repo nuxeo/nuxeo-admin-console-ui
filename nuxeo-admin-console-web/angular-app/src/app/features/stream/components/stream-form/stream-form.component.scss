@@ -71,7 +71,6 @@
         align-items: center;
         justify-content: flex-start;
         min-height: 40px;
-        gap: 6px;
       }
 
       .input-field.stream-field {
@@ -112,7 +111,7 @@
         }
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 700px) {
         flex-direction: column;
       }
     }
@@ -123,7 +122,6 @@
 
       .radio-content {
         display: flex;
-        gap: 16px;
       }
 
       .field-group {
@@ -213,6 +211,11 @@
       .config-group {
         flex-direction: column;
         gap: 12px;
+
+        .field-group {
+          margin-bottom: 35px;
+          margin-left: 12px;
+        }
       }
     }
   }
