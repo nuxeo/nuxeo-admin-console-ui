@@ -9,7 +9,8 @@ export const STREAM_LABELS = {
   POSITION: "Position",
   POSITION_OPTIONS: {
     CONSUMER: {
-      LABEL: "From a consumer position"
+      LABEL: "From a consumer position",
+      VALUE: "consumer"
     },
     BEGINNING: {
       LABEL: "From Beginning",

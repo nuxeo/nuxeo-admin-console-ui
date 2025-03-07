@@ -24,17 +24,18 @@
                 <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE">
                     <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.TAIL.LABEL }}</p>
                 </mat-radio-button>
-                <mat-radio-button [value]="selectedConsumer" class="complex-radio">
+                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.CONSUMER.VALUE" class="complex-radio">
                     <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER.LABEL }}</p>
                     <mat-form-field appearance="outline" class="input-field stream-field">
-                        <mat-select matNativeControl id="consumer"
-                            (selectionChange)="onConsumerOptionChange($event.value)" [value]="selectedConsumer">
-                            <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
-                                {{ consumer?.consumer }}
-                            </mat-option>
-                        </mat-select>
+                      <mat-select id="consumer" formControlName="selectedConsumer" 
+                        (selectionChange)="onConsumerOptionChange($event.value)">
+                        <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
+                          {{ consumer?.consumer }}
+                        </mat-option>
+                      </mat-select>
                     </mat-form-field>
-                </mat-radio-button>
+                  </mat-radio-button>
+                  
 
                 <mat-radio-button class="complex-radio" [value]="STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE">
                     <div class="radio-content">

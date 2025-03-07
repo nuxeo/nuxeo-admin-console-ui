@@ -198,16 +198,22 @@ describe('StreamFormComponent', () => {
     });
 
     it("should initialize form with default values", () => {
-        expect(component.streamForm.value).toEqual({
-            stream: "",
-            position: component.STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE,
-            rewind: "",
-            limit: "",
-            timeout: "",
-            offset: 0,
-            partition: 0,
+        expect(component.streamForm.getRawValue()).toEqual({
+          stream: "",
+          position: component.STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE,
+          rewind: "",
+          limit: "",
+          timeout: "",
+          offset: 0, 
+          partition: 0,
+          selectedConsumer: "" 
         });
-    });
+        expect(component.streamForm.get("offset")?.disabled).toBeTrue();
+        expect(component.streamForm.get("partition")?.disabled).toBeTrue();
+        expect(component.streamForm.get("selectedConsumer")?.disabled).toBeTrue();
+      });
+      
+      
 
     it("should update selected consumer on change", () => {
         component.onConsumerOptionChange("consumer1");

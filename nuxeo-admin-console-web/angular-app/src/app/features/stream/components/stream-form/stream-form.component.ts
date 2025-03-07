@@ -38,6 +38,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   isClearBtnDisabledSubscription = new Subscription();
   isStopFetchBtnDisabledSubscription = new Subscription();
   isViewRecordsDisabledSubscription = new Subscription();
+  positionChangeSubscription = new Subscription();
   selectedConsumer = "";
   isClearBtnDisabled = true;
   isStopFetchBtnDisabled = true;
@@ -60,9 +61,11 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       rewind: [""],
       limit: [""],
       timeout: [""],
-      offset: [0],
-      partition: [0]
+      offset: [{ value: 0, disabled: true }],
+      partition: [{ value: 0, disabled: true }],
+      selectedConsumer: [{ value: "", disabled: true }]
     });
+
 
     this.fetchStreamsSuccess$ = this.store.pipe(
       select((state) => state.streams?.streams)
@@ -92,6 +95,25 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.streamForm?.get(STREAM_LABELS.LIMIT_ID)?.setValue(this.selectedLimitValue);
     this.streamForm?.get(STREAM_LABELS.TIMEOUT_ID)?.setValue(this.selectedTimeoutValue);
 
+
+    const positionControl = this.streamForm && this.streamForm.get("position");
+    if (positionControl) {
+      this.positionChangeSubscription = this.streamForm.get("position")!.valueChanges.subscribe((value) => {
+        if (value === STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE) {
+          this.streamForm.get("offset")?.enable();
+          this.streamForm.get("partition")?.enable();
+        } else {
+          this.streamForm.get("offset")?.disable();
+          this.streamForm.get("partition")?.disable();
+        }
+
+        if (value === "consumer") {
+          this.streamForm.get("selectedConsumer")?.enable();
+        } else {
+          this.streamForm.get("selectedConsumer")?.disable();
+        }
+      });
+    }
 
     this.isClearBtnDisabledSubscription = this.streamService.isClearRecordsDisabled.subscribe((isDisabled: boolean) => {
       this.isClearBtnDisabled = isDisabled;
@@ -135,6 +157,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
             this.selectedConsumer = this.consumers
               ? this.consumers[0]?.consumer
               : "";
+            this.streamForm.patchValue({
+              selectedConsumer: this.selectedConsumer
+            })
           }
         }
       );
@@ -213,7 +238,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     const positionValue = this.streamForm?.get(STREAM_LABELS.POSITION_ID)?.value;
     if (positionValue === STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE) {
       params.fromTail = true;
-    } else if (positionValue === this.selectedConsumer) {
+    } else if (positionValue === STREAM_LABELS.POSITION_OPTIONS.CONSUMER.VALUE) {
       params.fromGroup = this.selectedConsumer;
     } else if (positionValue === STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE) {
       params.fromOffset = this.streamForm?.get(STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE)?.value?.toString();
@@ -243,5 +268,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isClearBtnDisabledSubscription?.unsubscribe();
     this.isStopFetchBtnDisabledSubscription?.unsubscribe();
     this.isViewRecordsDisabledSubscription?.unsubscribe();
+    this.positionChangeSubscription?.unsubscribe();
   }
 }
