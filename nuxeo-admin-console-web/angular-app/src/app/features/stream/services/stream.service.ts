@@ -2,7 +2,7 @@ import { REST_END_POINTS } from "./../../../shared/constants/rest-end-ponts.cons
 import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { Stream } from "../stream.interface";
+import { RecordsPayload, Stream } from "../stream.interface";
 
 @Injectable({
   providedIn: "root",
@@ -13,9 +13,11 @@ export class StreamService {
   isStopFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
   isViewRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(false);
   clearRecordsDisplay: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  recordsFetchedSuccess: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private eventSource?: EventSource;
 
   constructor(private networkService: NetworkService) { }
+
   getStreams(): Observable<Stream[]> {
     return this.networkService.makeHttpRequest<Stream[]>(
       REST_END_POINTS.STREAM
@@ -28,16 +30,7 @@ export class StreamService {
     >(REST_END_POINTS.STREAM_CONSUMERS, { queryParam: params });
   }
 
-  getRecords(params: { [key: string]: string | number | boolean }): Observable<unknown[]> {
-    return this.networkService.makeHttpRequest<unknown[]>(
-      REST_END_POINTS.STREAM_RECORDS,
-      {
-        queryParam: params
-      }
-    );
-  }
-
-  startSSEStream(params: Record<string, unknown>) {
+  startSSEStream(params: RecordsPayload) {
     const url = this.networkService.getAPIEndpoint(REST_END_POINTS.STREAM_RECORDS);
     const fullUrl = this.appendParamsToUrl(url, params);
 
@@ -53,24 +46,25 @@ export class StreamService {
       };
 
       return () => {
-        this.eventSource?.close(); 
+        this.eventSource?.close();
         this.eventSource = undefined;
       };
     });
   }
 
   stopSSEStream(): Observable<void> {
-    this.eventSource?.close(); 
+    this.eventSource?.close();
     this.eventSource = undefined;
     return of(void 0);
   }
 
-  private appendParamsToUrl(url: string, params: Record<string, unknown>) {
+
+  private appendParamsToUrl(url: string, params: RecordsPayload) {
     const queryString = new URLSearchParams(this.convertObjToString(params))?.toString();
     return `${url}?${queryString}`;
   }
 
-  private convertObjToString(params: Record<string, unknown>): Record<string, string> {
+  private convertObjToString(params: RecordsPayload): Record<string, string> {
     return Object.entries(params).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== null) {
         acc[key] = String(value);

@@ -1,6 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Stream } from "../stream.interface";
+import { RecordsPayload, Stream } from "../stream.interface";
 
 export const fetchStreams = createAction("[Admin] Fetch Streams");
 export const onFetchStreamsLaunch = createAction(
@@ -31,7 +31,7 @@ export const resetFetchConsumersState = createAction(
 );
 export const triggerRecordsSSEStream = createAction(
   '[Admin] Trigger Records SSE Stream',
-  props<{ params: Record<string, unknown> }>()
+  props<{ params: RecordsPayload }>()
 );
 export const onFetchRecordsLaunch = createAction(
   "[Admin] On Fetch Records Launch",

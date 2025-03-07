@@ -78,7 +78,7 @@ describe('Stream Actions', () => {
 
   describe('triggerRecordsSSEStream', () => {
     it('should create a triggerRecordsSSEStream action with params', () => {
-      const params = { key1: 'value1', key2: 'value2' };
+      const params = { stream: 'bulk/none', rewind: '0', limit: '2', timeout: '1ms' };
       const action = StreamActions.triggerRecordsSSEStream({ params });
       expect(action.type).toEqual('[Admin] Trigger Records SSE Stream');
       expect(action.params).toEqual(params);

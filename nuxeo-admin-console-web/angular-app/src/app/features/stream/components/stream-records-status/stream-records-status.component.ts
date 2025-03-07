@@ -1,8 +1,6 @@
 import {
   Component,
-  Input,
-  OnChanges,
-  SimpleChanges
+  Input
 } from "@angular/core";
 
 @Component({
@@ -11,11 +9,8 @@ import {
   styleUrls: ["./stream-records-status.component.scss"]
 })
 
-export class StreamRecordsStatusComponent implements OnChanges {
-  @Input() recordsFetchedStatus = '';
+export class StreamRecordsStatusComponent {
+  @Input() recordsFetchedStatusText = '';
   @Input() recordCount = 0;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.recordsFetchedStatus = changes["recordsFetchedStatus"].currentValue;
-  }
+  @Input() isFetchingRecords = false;
 }

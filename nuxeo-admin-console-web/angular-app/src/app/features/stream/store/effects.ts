@@ -1,13 +1,12 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { BehaviorSubject, EMPTY, from, of } from "rxjs";
+import { of } from "rxjs";
 import {
   catchError,
+  finalize,
   map,
-  mergeMap,
   scan,
   switchMap,
-  takeUntil,
-  tap
+  tap,
 } from "rxjs/operators";
 import { createEffect } from "@ngrx/effects";
 import { Actions, ofType } from "@ngrx/effects";
@@ -66,27 +65,21 @@ export const loadFetchConsumersEffect = createEffect(
   { functional: true }
 );
 
-const streamState$ = new BehaviorSubject<boolean>(true);
-
 export const triggerRecordsSSEStream$ = createEffect(
-  (
-    actions$ = inject(Actions),
-    streamService = inject(StreamService)
-  ) => {
+  (actions$ = inject(Actions), streamService = inject(StreamService)) => {
     return actions$.pipe(
       ofType(StreamActions.triggerRecordsSSEStream),
-      tap(() => {
-        streamState$.next(true);
-      }),
-      mergeMap((action) =>
+      switchMap((action) =>
         streamService.startSSEStream(action.params).pipe(
+          tap(() => {
+            streamService.isFetchingRecords.next(true);
+          }),
           scan((acc: unknown[], response: unknown) => {
             let parsedResponse;
             try {
               parsedResponse =
                 typeof response === "string" ? JSON.parse(response) : response;
             } catch (error) {
-              console.error("Error parsing response:", error);
               return acc;
             }
             return [...acc, parsedResponse];
@@ -94,26 +87,11 @@ export const triggerRecordsSSEStream$ = createEffect(
           map((recordsArray) =>
             StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray })
           ),
-          takeUntil(
-            actions$.pipe(
-              ofType(StreamActions.onStopFetch),
-              mergeMap(() => {
-                return from(streamService.stopSSEStream()).pipe(
-                  tap(() => {
-                    streamState$.next(false);
-                  }),
-                  map(() => StreamActions.onStopFetchLaunch()),
-                  catchError((error) => {
-                    console.error("Error stopping SSE stream:", error);
-                    return of(StreamActions.onStopFetchFailure({ error }));
-                  })
-                );
-              })
-            )
-          ),
+          finalize(() => {
+            streamService.isFetchingRecords.next(false);
+          }),
           catchError((error) => {
-            console.error("SSE Stream Error:", error);
-            streamState$.next(false);
+            streamService.isFetchingRecords.next(false);
             return of(StreamActions.onFetchRecordsFailure({ error }));
           })
         )
@@ -128,31 +106,16 @@ export const stopRecordsSSEStream$ = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
     return actions$.pipe(
       ofType(StreamActions.onStopFetch),
-      mergeMap(() => {
-        if (!streamState$.getValue()) {
-          console.warn("SSE stream already stopped.");
-          return EMPTY;
-        }
-        return from(streamService.stopSSEStream()).pipe(
-          tap(() => {
-            streamState$.next(false);
-          }),
-          map(() => {
-            return StreamActions.onStopFetchLaunch()
-          }),
-          catchError((error) => {
-            console.error("Error pausing SSE stream:", error);
-            return of(StreamActions.onStopFetchFailure({ error }));
-          })
-        );
+      tap(() => {
+        streamService.stopSSEStream();
+        streamService.isFetchingRecords.next(false);
+      }),
+      map(() => StreamActions.onStopFetchLaunch()),
+      catchError((error) => {
+        streamService.isFetchingRecords.next(false);
+        return of(StreamActions.onStopFetchFailure({ error }));
       })
     );
   },
   { functional: true, dispatch: true }
 );
-
-
-
-
-
-

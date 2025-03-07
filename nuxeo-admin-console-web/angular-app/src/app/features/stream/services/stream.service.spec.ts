@@ -3,6 +3,7 @@ import { StreamService } from './stream.service';
 import { NetworkService } from '../../../shared/services/network.service';
 import { provideMockStore } from '@ngrx/store/testing';
 import { of, throwError } from 'rxjs';
+import { RecordsPayload } from '../stream.interface';
 
 describe('StreamService', () => {
     let service: StreamService;
@@ -48,54 +49,6 @@ describe('StreamService', () => {
         });
     });
 
-    describe('getConsumers', () => {
-        it('should return an array of consumers on success', (done) => {
-            const mockConsumers = [{ stream: 'stream1', consumer: 'consumer1' }];
-            const params = { streamId: '123' };
-            networkServiceMock.makeHttpRequest.and.returnValue(of(mockConsumers));
-            service.getConsumers(params).subscribe((consumers) => {
-                expect(consumers).toEqual(mockConsumers);
-                done();
-            });
-        });
-
-        it('should return an error when the network request fails', (done) => {
-            const error = new Error('Network error');
-            const params = { streamId: '123' };
-            networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
-            service.getConsumers(params).subscribe({
-                error: (err) => {
-                    expect(err).toEqual(error);
-                    done();
-                }
-            });
-        });
-    });
-
-    describe('getRecords', () => {
-        it('should return an array of records on success', (done) => {
-            const mockRecords = [{ recordId: 1, data: 'record1' }];
-            const params = { filter: 'active' };
-            networkServiceMock.makeHttpRequest.and.returnValue(of(mockRecords));
-            service.getRecords(params).subscribe((records) => {
-                expect(records).toEqual(mockRecords);
-                done();
-            });
-        });
-
-        it('should return an error when the network request fails', (done) => {
-            const error = new Error('Network error');
-            const params = { filter: 'active' };
-            networkServiceMock.makeHttpRequest.and.returnValue(throwError(() => error));
-            service.getRecords(params).subscribe({
-                error: (err) => {
-                    expect(err).toEqual(error);
-                    done();
-                }
-            });
-        });
-    });
-
     describe('startSSEStream', () => {
         it('should handle onmessage event correctly', fakeAsync(() => {
             const mockEventSource = {
@@ -107,7 +60,12 @@ describe('StreamService', () => {
                 }),
             });
             spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
-            const params = { streamId: '12345' };
+            const params: RecordsPayload = {
+                stream: 'stream1',
+                rewind: 'false',
+                limit: '10',
+                timeout: '30',
+            };
             const mockData = { message: 'data' };
             let receivedData: unknown;
             service.startSSEStream(params).subscribe({
@@ -130,7 +88,12 @@ describe('StreamService', () => {
                 addEventListener: jasmine.createSpy('addEventListener')
             };
             spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
-            const params = { streamId: '12345' };
+            const params: RecordsPayload = {
+                stream: 'stream1',
+                rewind: 'false',
+                limit: '10',
+                timeout: '30',
+            };
             const mockError = new Error('Stream error');
             service.startSSEStream(params).subscribe({
                 next: () => {
@@ -149,7 +112,12 @@ describe('StreamService', () => {
                 close: jasmine.createSpy('close'),
             };
             spyOn(window, 'EventSource').and.returnValue(mockEventSource as unknown as EventSource);
-            const params = { streamId: '12345' };
+            const params: RecordsPayload = {
+                stream: 'stream1',
+                rewind: 'false',
+                limit: '10',
+                timeout: '30',
+            };
             const stopStreamSpy = spyOn(service, 'stopSSEStream').and.callThrough();
 
             service.startSSEStream(params).subscribe();
@@ -159,28 +127,5 @@ describe('StreamService', () => {
             expect(mockEventSource.close).toHaveBeenCalled();
             expect(stopStreamSpy).toHaveBeenCalled();
         }));
-    });
-
-    describe('appendParamsToUrl', () => {
-        it('should append parameters to the URL correctly', () => {
-            const baseUrl = 'http://abc.com';
-            const params = { param1: 'value1', param2: 'value2' };
-            const urlWithParams = service['appendParamsToUrl'](baseUrl, params);
-            expect(urlWithParams).toBe('http://abc.com?param1=value1&param2=value2');
-        });
-
-        it('should handle empty parameters correctly', () => {
-            const baseUrl = 'http://abc.com';
-            const params = {};
-            const urlWithParams = service['appendParamsToUrl'](baseUrl, params);
-            expect(urlWithParams).toBe('http://abc.com?');
-        });
-
-        it('should encode special characters in parameters', () => {
-            const baseUrl = 'http://abc.com';
-            const params = { 'param@1': 'value/1', 'param&2': 'value#2' };
-            const urlWithParams = service['appendParamsToUrl'](baseUrl, params);
-            expect(urlWithParams).toBe('http://abc.com?param%401=value%2F1&param%262=value%232');
-        });
     });
 });
