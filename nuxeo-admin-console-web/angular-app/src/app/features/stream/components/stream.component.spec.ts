@@ -145,7 +145,7 @@ describe("StreamComponent", () => {
     const dispatchSpy = spyOn(store, "dispatch");
     const unsubscribeSpy = spyOn(component.isFetchingRecordsSubscription, "unsubscribe").and.callThrough();
     component.ngOnDestroy();
-    expect(dispatchSpy).toHaveBeenCalledTimes(5);
+    expect(dispatchSpy).toHaveBeenCalledTimes(4);
     expect(unsubscribeSpy).toHaveBeenCalled();
   });
 });

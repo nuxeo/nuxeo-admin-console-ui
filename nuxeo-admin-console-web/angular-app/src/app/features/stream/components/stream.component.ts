@@ -147,7 +147,6 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.store.dispatch(StreamActions.onStopFetch());
     this.store.dispatch(StreamActions.resetStopFetchState());
     this.store.dispatch(StreamActions.resetFetchStreamsState());
     this.store.dispatch(StreamActions.resetFetchConsumersState());
