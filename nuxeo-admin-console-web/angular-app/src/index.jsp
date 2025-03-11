@@ -22,7 +22,13 @@ limitations under the License.
   String context = request.getContextPath();
 %> 
 -->
-<%@ page import="javax.servlet.http.HttpServletResponse" %>
+<%
+    try {
+        Class.forName("jakarta.servlet.http.HttpServletResponse");
+    } catch (ClassNotFoundException e) {
+        Class.forName("javax.servlet.http.HttpServletResponse");
+    }
+%>
 <%@ page import="java.util.UUID"%>
 <%
   HttpServletResponse resp = (HttpServletResponse) pageContext.getResponse();
