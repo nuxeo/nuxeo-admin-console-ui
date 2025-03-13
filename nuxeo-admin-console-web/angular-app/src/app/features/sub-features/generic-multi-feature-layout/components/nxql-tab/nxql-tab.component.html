@@ -1,6 +1,6 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="nxql-tab-container"
     [ngClass]="{'vertical-flex': isFeatureVideoRenditions()}">
-    <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+    <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
     <p class="label">{{ GENERIC_LABELS.NXQL_QUERY }}<span class="required-indicator">*</span></p>
     <mat-form-field appearance="outline" class="input-field nxql">
         <textarea matInput [placeholder]="inputPlaceholder" formControlName="inputIdentifier" id="inputIdentifier"

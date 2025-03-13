@@ -1,13 +1,9 @@
 import {
-  ERROR_MODAL_LABELS,
   GENERIC_LABELS,
-  MODAL_DIMENSIONS,
 } from "./../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service";
 import { CommonService } from "./../../../../../shared/services/common.service";
 import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
-import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
-import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
 import { BulkActionMonitoringInfo } from "./../../../bulk-action-monitoring.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import {
@@ -24,7 +20,10 @@ import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
 import { ActivatedRoute } from "@angular/router";
-import { ErrorDetails } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
+import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { ERROR_MODAL_LABELS } from "../../../../../shared/constants/error-modal.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../../../shared/types/errors.interface";
+import { COMMON_LABELS, MODAL_DIMENSIONS } from "../../../../../shared/constants/common.constants";
 
 @Component({
   selector: "bulk-action-monitoring-form",
@@ -47,6 +46,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   userInput = "";
   GENERIC_LABELS = GENERIC_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     private commonService: CommonService,
@@ -96,10 +96,13 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
           this.setBulkActionResponse.emit(null);
           this.showBulkActionErrorModal({
             type: ERROR_MODAL_LABELS.SERVER_ERROR,
-            details: {
-              status: error.error.status,
-              message: error.error.message,
-            },
+            // details: {
+            //   status: error.error.status,
+            //   message: error.error.message,
+            // },
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
           });
         }
       }

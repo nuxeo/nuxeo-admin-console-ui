@@ -2,7 +2,6 @@ import { VIDEO_RENDITIONS_LABELS } from "./../../../video-renditions-generation/
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import {
-  ERROR_MODAL_LABELS,
   GENERIC_LABELS,
 } from "../generic-multi-feature-layout.constants";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
@@ -16,6 +15,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Nuxeo from "nuxeo";
+import { ERROR_MODAL_LABELS } from "../../../../shared/constants/error-modal.constants";
 
 @Injectable({
   providedIn: "root",

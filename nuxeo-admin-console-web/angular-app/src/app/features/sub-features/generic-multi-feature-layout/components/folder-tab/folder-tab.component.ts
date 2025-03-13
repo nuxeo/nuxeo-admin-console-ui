@@ -1,5 +1,5 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
-import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
@@ -17,23 +17,18 @@ import { HttpErrorResponse } from "@angular/common/http";
 // @ts-ignore
 import Nuxeo from "nuxeo";
 import {
-  ERROR_MESSAGES,
-  ERROR_TYPES,
   GENERIC_LABELS,
-  MODAL_DIMENSIONS,
   featuresRequiringOnlyId,
 } from "../../generic-multi-feature-layout.constants";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
 import {
   ActionInfo,
-  ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
-import { ErrorModalComponent } from "../error-modal/error-modal.component";
-import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
+
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import { FolderActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store/actions";
@@ -43,6 +38,12 @@ import {
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
+import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES } from "../../../../../shared/constants/error-modal.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../../../shared/types/errors.interface";
+import { COMMON_LABELS, MODAL_DIMENSIONS } from "../../../../../shared/constants/common.constants";
+
+
 @Component({
   selector: "folder-tab",
   templateUrl: "./folder-tab.component.html",
@@ -84,6 +85,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     public dialogService: MatDialog,
@@ -126,7 +128,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
     }
-    if(this.isFeatureFullTextReindex()) {
+    if (this.isFeatureFullTextReindex()) {
       this.inputForm.addControl(
         FULLTEXT_REINDEX_LABELS.FORCE,
         new FormControl("false")
@@ -143,7 +145,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       );
     }
 
-    
+
 
     this.folderActionLaunchedSubscription =
       this.folderActionLaunched$.subscribe((data) => {
@@ -157,7 +159,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
-            details: { status: error.status, message: error.message },
+            // details: { status: error.status, message: error.message },
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
+
           });
         }
       }
@@ -287,11 +293,14 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           type: areIdAndPathRequired
             ? ERROR_TYPES.INVALID_DOC_ID_OR_PATH
             : ERROR_TYPES.INVALID_DOC_ID,
-          details: {
-            message: areIdAndPathRequired
-              ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
-              : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
-          },
+          // details: {
+          //   message: areIdAndPathRequired
+          //     ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
+          //     : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE,
+          // },
+          customText: (areIdAndPathRequired
+            ? ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
+            : ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE)
         });
       }
     }
@@ -342,9 +351,10 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.showActionErrorModal({
         type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
-        details: {
-          message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
-        },
+        // details: {
+        //   message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+        // },
+        customText: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
       });
     }
   }
@@ -366,9 +376,10 @@ export class FolderTabComponent implements OnInit, OnDestroy {
           if (documentCount === 0) {
             this.showActionErrorModal({
               type: ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
-              details: {
-                message: ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
-              },
+              // details: {
+              //   message: ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE,
+              // },
+              customText: ERROR_MESSAGES.NO_DOCUMENT_ID_FOUND_MESSAGE
             });
           } else {
             this.showConfirmationModal(documentCount);

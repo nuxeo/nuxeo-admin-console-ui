@@ -8,7 +8,7 @@ export interface StreamsState {
   consumers: { stream: string; consumer: string }[];
   records: { type?: string }[];
   isFetchStopped: boolean;
-  isFetchStoppedError: unknown | null;
+  isFetchStoppedError: boolean | null;
   streamsError: HttpErrorResponse | null;
   consumersError: HttpErrorResponse | null;
   recordsError: HttpErrorResponse | null;
