@@ -1,6 +1,6 @@
 <form [formGroup]="inputForm" (ngSubmit)="onFormSubmit()" class="document-tab-container"
   [ngClass]="{'vertical-flex': isFeatureVideoRenditions() || isFeatureFullTextReindex()}">
-  <p id="requiredField">{{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+  <p id="requiredField">{{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
   <p class="label">{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}<span class="required-indicator">*</span></p>
   <mat-form-field appearance="outline" class="input-field">
     <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}" type="text" formControlName="inputIdentifier"

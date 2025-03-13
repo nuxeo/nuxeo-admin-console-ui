@@ -1,6 +1,6 @@
 <h2> {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }} </h2>
 <hr class="separator">
-<mat-dialog-content class="mat-typography error-modal">
+<!-- <mat-dialog-content class="mat-typography error-modal">
   <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
     <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
     <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
@@ -9,10 +9,19 @@
   <ng-template #customErrorMessage>
     <p>{{getCustomErrorMessage()}}</p>
   </ng-template>
+</mat-dialog-content> -->
+
+<mat-dialog-content class="mat-typography error-modal">
+  <div>
+    <p *ngIf="data.error.subheading">{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
+    <p *ngIf="data.error.status">{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.status}}</p>
+    <p *ngIf="data.error.message">{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.message}}</p>
+    <p *ngIf="data.error.customText">{{data.error.customText}}</p>
+  </div>
 </mat-dialog-content>
 <hr class="separator">
 <mat-dialog-actions>
   <button mat-flat-button color="primary" (click)="close()">
-    {{ GENERIC_LABELS.CLOSE_LABEL }}
+    {{ COMMON_LABELS.CLOSE_LABEL }}
   </button>
 </mat-dialog-actions>

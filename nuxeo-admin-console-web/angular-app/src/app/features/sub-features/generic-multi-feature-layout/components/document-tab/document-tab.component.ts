@@ -1,12 +1,9 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
-import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
-import { ErrorModalComponent } from "../error-modal/error-modal.component";
-import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
 import {
-  ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
   labelsList,
@@ -27,12 +24,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 // @ts-ignore
 import Nuxeo from "nuxeo";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
-import {
-  ERROR_MESSAGES,
-  ERROR_TYPES,
-  GENERIC_LABELS,
-  MODAL_DIMENSIONS,
-} from "../../generic-multi-feature-layout.constants";
+
 import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store/actions";
 import {
@@ -41,6 +33,11 @@ import {
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
+import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
+import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES } from "../../../../../shared/constants/error-modal.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../../../shared/types/errors.interface";
+import { COMMON_LABELS, MODAL_DIMENSIONS } from "../../../../../shared/constants/common.constants";
 type ActionsImportFunction = () => Promise<unknown>;
 
 @Component({
@@ -76,6 +73,8 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   FEATURES = FEATURES;
+  COMMON_LABELS = COMMON_LABELS;
+  
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -140,7 +139,11 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
-            details: { status: error.status, message: error.message },
+            // details: { status: error.status, message: error.message },
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
+
           });
         }
       }
@@ -247,9 +250,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
-          details: {
-            message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
-          },
+          // details: {
+          //   message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+          // },
+          customText: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
         });
       }
     }
@@ -306,9 +310,10 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
           } catch (error) {
             this.showActionErrorModal({
               type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
-              details: {
-                message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
-              },
+              // details: {
+              //   message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+              // },
+              customText: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE
             });
           }
         }

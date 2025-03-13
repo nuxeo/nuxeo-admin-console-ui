@@ -43,7 +43,6 @@ import {
   nxqlActionReducer,
 } from "./features/sub-features/generic-multi-feature-layout/store/reducers";
 import { BulkActionMonitoringModule } from "./features/bulk-action-monitoring/bulk-action-monitoring.module";
-import { ErrorModalComponent } from "./features/sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
 import { ProbesDataModule } from "./features/sub-features/probes-data/probes-data.module";
 import {
   MAT_DIALOG_DEFAULT_OPTIONS,
@@ -53,6 +52,7 @@ import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/cu
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
 import { streamsReducer } from "./features/stream/store/reducers";
+import { ErrorModalComponent } from "./shared/components/error-modal/error-modal.component";
 
 @NgModule({
   declarations: [

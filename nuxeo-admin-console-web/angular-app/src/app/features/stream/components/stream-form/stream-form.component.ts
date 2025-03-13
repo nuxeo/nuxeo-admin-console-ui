@@ -11,7 +11,12 @@ import { StreamsState } from "../../store/reducers";
 import { Observable, Subscription } from "rxjs";
 import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
-import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../../shared/types/errors.interface";
+import { COMMON_LABELS, MODAL_DIMENSIONS } from "../../../../shared/constants/common.constants";
+import { ErrorModalComponent } from "../../../../shared/components/error-modal/error-modal.component";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { ERROR_MODAL_LABELS, ERROR_TYPES } from "src/app/shared/constants/error-modal.constants";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "stream-form",
@@ -21,13 +26,13 @@ import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-la
 
 export class StreamFormComponent implements OnInit, OnDestroy {
   STREAM_LABELS = STREAM_LABELS;
-  GENERIC_LABELS = GENERIC_LABELS;
+  COMMON_LABELS = COMMON_LABELS;
   streamForm: FormGroup;
-  isSubmitBtnDisabled = false;
+  isSubmitBtnDisabled = true;
   fetchStreamsSuccess$: Observable<Stream[]>;
-  fetchStreamsError$: Observable<unknown>;
+  fetchStreamsError$: Observable<HttpErrorResponse | null>;
   fetchConsumersSuccess$: Observable<{ stream: string; consumer: string }[]>;
-  fetchConsumersError$: Observable<unknown>;
+  fetchConsumersError$: Observable<HttpErrorResponse | null>;
   streams: Stream[] = [];
   records: unknown[] = [];
   consumers: { stream: string; consumer: string }[] = [];
@@ -49,11 +54,16 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   selectedRewindValue = "";
   selectedLimitValue = "";
   selectedTimeoutValue = "";
+  errorDialogClosedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
 
   constructor(
     private fb: FormBuilder,
     private store: Store<{ streams: StreamsState }>,
-    private streamService: StreamService
+    private streamService: StreamService,
+    public dialogService: MatDialog
   ) {
     this.streamForm = this.fb.group({
       stream: ["", Validators.required],
@@ -144,7 +154,12 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchStreamsErrorSubscription = this.fetchStreamsError$.subscribe(
       (error) => {
         if (error) {
-          console.error(error);
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
+          });
         }
       }
     );
@@ -167,7 +182,12 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchConsumersErrorSubscription = this.fetchConsumersError$.subscribe(
       (error) => {
         if (error) {
-          console.error(error);
+         this.showActionErrorModal({
+          type: ERROR_TYPES.SERVER_ERROR,
+          subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+          status: error.status,
+          message: error.message
+        });
         }
       }
     );
@@ -186,6 +206,16 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       stream: this.streamForm.controls[STREAM_LABELS.STREAM_ID]?.value,
     };
     this.store.dispatch(StreamActions.fetchConsumers({ params }));
+  }
+
+  onPositionChange(value: string): void {
+   // this.isSubmitBtnDisabled = false;
+    if(this.selectedConsumer) {
+      this.streamForm.patchValue({
+        position: value,
+      });
+    } 
+    
   }
 
   onRewindValSelect(value: string): void {
@@ -259,6 +289,38 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     document.getElementById(STREAM_LABELS.STREAM_ID)?.focus();
   }
 
+  showActionErrorModal(error: ErrorDetails): void {
+    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+      disableClose: true,
+      hasBackdrop: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        error,
+      },
+    });
+    this.errorDialogClosedSubscription = this.errorDialogRef
+      ?.afterClosed()
+      ?.subscribe(() => {
+        this.onActionErrorModalClose();
+      });
+
+    this.errorDialogOpenedSubscription = this.errorDialogRef
+      .afterOpened()
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
+      });
+  }
+
+  onActionErrorModalClose(): void {
+    this.isSubmitBtnDisabled = this.streamForm.status === "INVALID";
+    document.getElementById(STREAM_LABELS.STREAM_ID)?.focus();
+  }
 
   ngOnDestroy(): void {
     this.fetchStreamsSuccessSubscription?.unsubscribe();

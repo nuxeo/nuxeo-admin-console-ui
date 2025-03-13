@@ -1,3 +1,5 @@
+import { ErrorDetails } from "../../../shared/types/errors.interface";
+
 export interface TabInfo {
   label: string;
   path: string;
@@ -14,15 +16,6 @@ export interface GenericModalClosedInfo {
   event: unknown;
 }
 
-export interface ErrorStatus {
-  status?: number;
-  message: string;
-}
-
-export interface ErrorDetails {
-  type: string;
-  details: ErrorStatus;
-}
 
 export interface GenericModalData {
   title: string;

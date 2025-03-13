@@ -1,7 +1,7 @@
 <div class="stream-form-container">
     <form [formGroup]="streamForm" (ngSubmit)="onStreamFormSubmit()">
         <div class="stream-form-container--stream-container">
-            <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+            <p id="requiredField"> {{ COMMON_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
             <p class="label form-param">{{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span></p>
             <mat-form-field appearance="outline" class="input-field stream-field">
                 <mat-select matNativeControl formControlName="stream" id="stream"
@@ -17,7 +17,7 @@
             <p class="label form-param">
                 {{ STREAM_LABELS.POSITION }}<span class="required-indicator">*</span>
             </p>
-            <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
+            <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position" (change)="onPositionChange($event.value)">
                 <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE">
                     <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.BEGINNING.LABEL }}</p>
                 </mat-radio-button>

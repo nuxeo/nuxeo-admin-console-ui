@@ -52,7 +52,7 @@ export const onStopFetchLaunch = createAction(
 );
 export const onStopFetchFailure = createAction(
   "[Admin] On Stop Fetch Failure",
-  props<{ error: unknown }>()
+  props<{ error: boolean | null }>()
 );
 export const resetStopFetchState = createAction(
   "[Admin] Reset Stop Fetch State"

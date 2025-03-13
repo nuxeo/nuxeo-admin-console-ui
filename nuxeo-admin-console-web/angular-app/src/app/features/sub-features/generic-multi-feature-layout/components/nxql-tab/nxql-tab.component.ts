@@ -1,5 +1,5 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
-import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
@@ -18,22 +18,15 @@ import { HttpErrorResponse } from "@angular/common/http";
 import Nuxeo from "nuxeo";
 import {
   ActionInfo,
-  ErrorDetails,
   FeatureData,
   GenericModalClosedInfo,
   labelsList,
 } from "../../generic-multi-feature-layout.interface";
 import {
-  ERROR_MESSAGES,
-  ERROR_MODAL_LABELS,
-  ERROR_TYPES,
   GENERIC_LABELS,
-  MODAL_DIMENSIONS,
 } from "../../generic-multi-feature-layout.constants";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { GenericModalComponent } from "../generic-modal/generic-modal.component";
-import { ErrorModalComponent } from "../error-modal/error-modal.component";
-import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import * as FeatureActions from "../../store/actions";
 import { NXQLActionState } from "../../store/reducers";
@@ -43,6 +36,10 @@ import {
   featureMap,
   getFeatureKeyByValue,
 } from "../../generic-multi-feature-layout.mapping";
+import { ErrorModalComponent } from "../../../../../shared/components/error-modal/error-modal.component";
+import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES } from "../../../../../shared/constants/error-modal.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../../../shared/types/errors.interface";
+import { COMMON_LABELS, MODAL_DIMENSIONS } from "../../../../../shared/constants/common.constants";
 
 @Component({
   selector: "nxql-tab",
@@ -88,6 +85,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   activeFeature: FeaturesKey = {} as FeaturesKey;
   inputPlaceholder = "";
   requestQuery = "";
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     public dialogService: MatDialog,
@@ -147,7 +145,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         new FormControl("false")
       );
     }
-    if(this.isFeatureFullTextReindex()) {
+    if (this.isFeatureFullTextReindex()) {
       this.inputForm.addControl(
         FULLTEXT_REINDEX_LABELS.FORCE,
         new FormControl("false")
@@ -166,7 +164,11 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
-            details: { status: error.status, message: error.message },
+            // details: { status: error.status, message: error.message },
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
+
           });
         }
       }
@@ -289,9 +291,10 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
-          details: {
-            message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
-          },
+          // details: {
+          //   message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+          // },
+          customText: ERROR_MESSAGES.INVALID_QUERY_MESSAGE
         });
       }
     }
@@ -315,9 +318,10 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
             this.showActionErrorModal({
               type: ERROR_TYPES.NO_MATCHING_QUERY,
-              details: {
-                message: ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
-              },
+              // details: {
+              //   message: ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE,
+              // },
+              customText: ERROR_MESSAGES.NO_MATCHING_QUERY_MESSAGE
             });
           } else {
             this.showConfirmationModal(this.documentCount as number, query);
@@ -417,9 +421,10 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       } catch (error) {
         this.showActionErrorModal({
           type: ERROR_TYPES.INVALID_QUERY,
-          details: {
-            message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
-          },
+          // details: {
+          //   message: ERROR_MESSAGES.INVALID_QUERY_MESSAGE,
+          // },
+          customText: ERROR_MESSAGES.INVALID_QUERY_MESSAGE
         });
       }
     } else {

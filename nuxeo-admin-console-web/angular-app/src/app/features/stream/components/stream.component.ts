@@ -8,6 +8,11 @@ import { HttpErrorResponse } from "@angular/common/http";
 import * as StreamActions from "../store/actions";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CustomSnackBarComponent } from "../../../shared/components/custom-snack-bar/custom-snack-bar.component";
+import { ERROR_MODAL_LABELS, ERROR_TYPES } from "../../../shared/constants/error-modal.constants";
+import { MODAL_DIMENSIONS } from "../../../shared/constants/common.constants";
+import { ErrorDetails, ErrorModalClosedInfo } from "../../../shared/types/errors.interface";
+import { ErrorModalComponent } from "../../../shared/components/error-modal/error-modal.component";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 
 @Component({
   selector: "stream",
@@ -26,24 +31,31 @@ export class StreamComponent implements OnInit, OnDestroy {
   clearRecordsDisplay = false;
   recordsFetchedStatusText = "";
   stopFetchSuccess$: Observable<boolean | null>;
-  stopFetchError$: Observable<unknown>;
+  stopFetchError$: Observable<boolean | null>;
   isStopFetchSuccess: boolean | null = null;
   isStopFetchSuccessSubscription: Subscription = new Subscription();
   isStopFetchErrorSubscription: Subscription = new Subscription();
   isFetchingRecords = false;
   isFetchingRecordsSubscription: Subscription = new Subscription();
+  errorDialogClosedSubscription = new Subscription();
+  errorDialogOpenedSubscription = new Subscription();
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
 
   constructor(private store: Store<{ streams: StreamsState }>,
     private cdRef: ChangeDetectorRef,
     private streamService: StreamService,
-    private _snackBar: MatSnackBar,) {
+    private _snackBar: MatSnackBar,
+    public dialogService: MatDialog) {
 
     this.fetchRecordsSuccess$ = this.store.pipe(
-      select((state) => state?.streams?.records)
+      select((state) => state?.streams?.records),
+      skip(1)
     );
 
     this.fetchRecordsError$ = this.store.pipe(
-      select((state) => state.streams?.recordsError)
+      select((state) => state.streams?.recordsError),
+      skip(1)
     );
 
     this.stopFetchSuccess$ = this.store.pipe(
@@ -103,10 +115,17 @@ export class StreamComponent implements OnInit, OnDestroy {
     this.fetchRecordsErrorSubscription = this.fetchRecordsError$.subscribe(
       (error) => {
         if (error) {
-          console.error(error);
+          //  console.error(error);
           this.streamService.isViewRecordsDisabled.next(false);
           this.streamService.isClearRecordsDisabled.next(false);
           this.streamService.isStopFetchDisabled.next(true);
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            status: error.status,
+            message: error.message
+          });
+
         }
       }
     );
@@ -133,7 +152,11 @@ export class StreamComponent implements OnInit, OnDestroy {
       this.stopFetchError$.subscribe(
         (error: unknown) => {
           this.isStopFetchSuccess = false;
-          console.error(error);
+          //  console.error(error);
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            customText: ERROR_MODAL_LABELS.FAILED_TO_STOP_FETCH
+          });
         }
       );
 
@@ -146,13 +169,26 @@ export class StreamComponent implements OnInit, OnDestroy {
 
   }
 
+  showActionErrorModal(error: ErrorDetails): void {
+    this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+      disableClose: true,
+      hasBackdrop: true,
+      height: MODAL_DIMENSIONS.HEIGHT,
+      width: MODAL_DIMENSIONS.WIDTH,
+      data: {
+        error,
+      },
+    });
+  }
+
   ngOnDestroy(): void {
     this.store.dispatch(StreamActions.resetStopFetchState());
     this.store.dispatch(StreamActions.resetFetchStreamsState());
     this.store.dispatch(StreamActions.resetFetchConsumersState());
     this.store.dispatch(StreamActions.resetFetchRecordsState());
     this.streamService.isStopFetchDisabled.next(true);
-    this.streamService.isViewRecordsDisabled.next(false);
+   // this.streamService.isFetchingRecords.next(false);
+    this.streamService.isViewRecordsDisabled.next(true);
     this.streamService.isClearRecordsDisabled.next(true);
     this.clearRecordsDisplaySubscription?.unsubscribe();
     this.fetchRecordsSuccessSubscription?.unsubscribe();

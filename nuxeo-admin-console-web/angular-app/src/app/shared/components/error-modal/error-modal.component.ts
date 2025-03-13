@@ -1,8 +1,8 @@
-import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS } from '../../generic-multi-feature-layout.constants';
-
-import { ErrorModalData } from "../../../../../shared/types/common.interface";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ERROR_MODAL_LABELS, ERROR_TYPES } from "../../constants/error-modal.constants";
+import { COMMON_LABELS } from "../../constants/common.constants";
+import { ErrorModalData } from "../../types/errors.interface";
 
 @Component({
   selector: "error-modal",
@@ -12,7 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 export class ErrorModalComponent {
   ERROR_TYPES = ERROR_TYPES;
   ERROR_MODAL_LABELS = ERROR_MODAL_LABELS;
-  GENERIC_LABELS = GENERIC_LABELS;
+  COMMON_LABELS = COMMON_LABELS;
 
   constructor(
     private dialogRef: MatDialogRef<ErrorModalComponent>,
@@ -31,7 +31,7 @@ export class ErrorModalComponent {
     });
   }
 
-  getCustomErrorMessage(): string | null {
+  /*getCustomErrorMessage(): string | null {
     if (this.data?.error) {
       return this.data.error.type === ERROR_TYPES.NO_DOCUMENT_ID_FOUND
         ? this.data.error.details?.message.replace(
@@ -41,5 +41,5 @@ export class ErrorModalComponent {
         : this.data.error.details?.message;
     }
     return ERROR_MESSAGES.UNKNOWN_ERROR_MESSAGE;
-  }
+  } */
 }
