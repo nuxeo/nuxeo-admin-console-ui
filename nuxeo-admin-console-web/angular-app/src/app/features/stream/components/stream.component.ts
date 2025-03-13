@@ -119,12 +119,12 @@ export class StreamComponent implements OnInit, OnDestroy {
           this.streamService.isViewRecordsDisabled.next(false);
           this.streamService.isClearRecordsDisabled.next(false);
           this.streamService.isStopFetchDisabled.next(true);
-          this.showActionErrorModal({
+         /* this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             subheading: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
             status: error.status,
             message: error.message
-          });
+          }); */
 
         }
       }

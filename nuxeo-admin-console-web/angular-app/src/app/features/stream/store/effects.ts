@@ -90,7 +90,7 @@ export const triggerRecordsSSEStream$ = createEffect(
           finalize(() => {
             streamService.isFetchingRecords.next(false);
           }),
-          catchError((error: HttpErrorResponse) => {
+          catchError((error) => {
             streamService.isFetchingRecords.next(false);
             return of(StreamActions.onFetchRecordsFailure({ error }));
           })
