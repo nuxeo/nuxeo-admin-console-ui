@@ -9,6 +9,9 @@ describe("NuxeoJSClientService", () => {
       providers: [NuxeoJSClientService],
     });
     service = TestBed.inject(NuxeoJSClientService);
+
+    spyOn(service, "connect").and.stub();
+
     service.initiateJSClient("/nuxeo");
   });
 
