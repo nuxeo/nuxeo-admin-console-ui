@@ -18,6 +18,7 @@ describe("NetworkService", () => {
     ]);
     const nuxeoSpy = jasmine.createSpyObj("NuxeoJSClientService", [
       "getApiUrl",
+      "getPlatformMajorVersion",
     ]);
 
     TestBed.configureTestingModule({
@@ -36,11 +37,12 @@ describe("NetworkService", () => {
     ) as jasmine.SpyObj<NuxeoJSClientService>;
   });
 
-  it("should return the correct API endpoint", () => {
+  it("should return the correct API endpoint for LTS2023", () => {
     const endpointName = "ELASTIC_SEARCH_REINDEX";
     nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
       "http://localhost:8080/nuxeo/api/v1"
     );
+    nuxeoJsClientServiceSpy.getPlatformMajorVersion.and.returnValue(2023);
     const expectedEndpoint =
       "http://localhost:8080/nuxeo/api/v1/management/elasticsearch/reindex";
     const result = service.getAPIEndpoint(endpointName);
@@ -48,15 +50,46 @@ describe("NetworkService", () => {
     expect(nuxeoJsClientServiceSpy.getApiUrl).toHaveBeenCalled();
   });
 
-  it("should call HttpClient.post with the correct URL and data", () => {
+  it("should return the correct API endpoint for LTS2025", () => {
+    const endpointName = "ELASTIC_SEARCH_REINDEX";
+    nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
+      "http://localhost:8080/nuxeo/api/v1"
+    );
+    nuxeoJsClientServiceSpy.getPlatformMajorVersion.and.returnValue(2025);
+    const expectedEndpoint =
+      "http://localhost:8080/nuxeo/api/v1/management/search/reindex";
+    const result = service.getAPIEndpoint(endpointName);
+    expect(result).toBe(expectedEndpoint);
+    expect(nuxeoJsClientServiceSpy.getApiUrl).toHaveBeenCalled();
+  });
+
+  it("should call HttpClient.post with the correct URL and data for LTS2023", () => {
     const endpointName = "ELASTIC_SEARCH_REINDEX";
     const requestData = {};
     nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
       "http://localhost:8080/nuxeo/api/v1"
     );
+
+    nuxeoJsClientServiceSpy.getPlatformMajorVersion.and.returnValue(2023);
     service.makeHttpRequest(endpointName, requestData);
     expect(httpClientSpy.post).toHaveBeenCalledWith(
       "http://localhost:8080/nuxeo/api/v1/management/elasticsearch/reindex",
+      requestData,
+      { headers: {} }
+    );
+  });
+
+  it("should call HttpClient.post with the correct URL and data for LTS2025", () => {
+    const endpointName = "ELASTIC_SEARCH_REINDEX";
+    const requestData = {};
+    nuxeoJsClientServiceSpy.getApiUrl.and.returnValue(
+      "http://localhost:8080/nuxeo/api/v1"
+    );
+
+    nuxeoJsClientServiceSpy.getPlatformMajorVersion.and.returnValue(2025);
+    service.makeHttpRequest(endpointName, requestData);
+    expect(httpClientSpy.post).toHaveBeenCalledWith(
+      "http://localhost:8080/nuxeo/api/v1/management/search/reindex",
       requestData,
       { headers: {} }
     );
@@ -73,7 +106,7 @@ describe("NetworkService", () => {
       "http://localhost:8080/nuxeo/api/v1/management/probes",
       {
         params: jasmine.anything(),
-        headers: {}
+        headers: {},
       }
     );
   });
