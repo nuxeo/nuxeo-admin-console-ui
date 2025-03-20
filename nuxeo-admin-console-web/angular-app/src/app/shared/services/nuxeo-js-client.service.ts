@@ -19,6 +19,7 @@ export class NuxeoJSClientService {
       configObj = { baseURL: url };
     }
     this.nuxeoInstance = new Nuxeo(configObj);
+    this.nuxeoInstance.connect();
   }
 
   getBaseUrl(): URL {
@@ -33,5 +34,9 @@ export class NuxeoJSClientService {
 
   getNuxeoInstance(): Nuxeo {
     return this.nuxeoInstance;
+  }
+
+  getPlatformMajorVersion(): number {
+    return this.nuxeoInstance.serverVersion?.major;
   }
 }
