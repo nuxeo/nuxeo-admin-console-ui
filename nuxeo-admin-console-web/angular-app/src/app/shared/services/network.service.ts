@@ -22,8 +22,11 @@ export class NetworkService {
   getAPIEndpoint = (name: EndpointName): string => {
     let endPointName = name;
     if (endPointName === REST_END_POINTS.ELASTIC_SEARCH_REINDEX) {
-      if (this.nuxeoJsClientService.getPlatformMajorVersion() && 
-            this.nuxeoJsClientService.getPlatformMajorVersion() < APP_CONSTANTS.PLATFORM_VERSIONS.LTS_2025) {
+      if (
+        this.nuxeoJsClientService.getPlatformMajorVersion() &&
+        this.nuxeoJsClientService.getPlatformMajorVersion() <
+          APP_CONSTANTS.PLATFORM_VERSIONS.LTS_2025
+      ) {
         endPointName = REST_END_POINTS.ELASTIC_SEARCH_REINDEX_OLD;
       }
     }
