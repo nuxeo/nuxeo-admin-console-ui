@@ -204,12 +204,19 @@ jobs:
           echo "PADDED_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           npm version $NEW_VERSION --no-git-tag-version
           popd
-          # Update all files with 23 to 25
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(json\|xml\)" -exec sed -i 's/23/25/g' {} \;
-          # Update XML files with specific version
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"$CURRENT_VERSION"'/'"$NEW_VERSION"'/g' {} \;
-          # Update pom.xml project version
+          
+          # First backup the parent version in pom.xml
+          PARENT_VERSION=$(grep -oP '(?<=<version>)[^<]+' pom.xml | head -1)
+          
+          # Update all files with 23 to 25 except pom.xml
+          find . -type f -not -path "./node_modules/*" -not -name "pom.xml" -regex ".*\.\(json\|xml\)" -exec sed -i 's/23/25/g' {} \;
+          
+          # Update pom.xml separately to preserve parent version
+          sed -i "s/<version>$CURRENT_VERSION<\/version>/<version>$NEW_VERSION<\/version>/g" pom.xml
           sed -i -e 's/\${project.version}/'"$NEW_VERSION"'/g' nuxeo-admin-console-package/pom.xml
+          
+          # Restore parent version in pom.xml
+          sed -i "0,/<version>.*<\/version>/s//<version>$PARENT_VERSION<\/version>/" pom.xml
 
       - name: 'Update settings.xml with server configuration'
         run: |
