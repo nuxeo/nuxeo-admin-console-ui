@@ -21,7 +21,7 @@ jobs:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
-  build:
+  build-v23:
     needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
@@ -129,9 +129,25 @@ jobs:
       - name: Archive Package
         uses: actions/upload-artifact@v4
         with:
-          name: packages
+          name: packages-v23
           path: |
             nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Verify Package Version
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+          echo "Verifying package version for v23..."
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          if [[ ! -f "$PACKAGE" ]]; then
+            echo "Error: Package $PACKAGE not found"
+            exit 1
+          fi
+          echo "Found package: $PACKAGE"
+          if [[ ! "$PACKAGE" =~ "23" ]]; then
+            echo "Error: Package version does not contain '23'"
+            exit 1
+          fi
+          echo "Package version verified successfully"
 
       - name: Tag
         run: |
@@ -139,18 +155,151 @@ jobs:
           git commit -a -m "Release ${{env.VERSION}}"
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
-        
+
       - name: Publish on Pre-Prod Marketplace
         working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
           PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          echo "Publishing package: $PACKAGE"
           STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
           cat publish-req.output
           if [[ "$STATUS_CODE" != "200" ]]
           then
+            echo "Failed to publish package: $PACKAGE"
             exit 1
           else
+            echo "Successfully published package: $PACKAGE"
+            exit 0
+          fi
+
+  build-v25:
+    needs: [build-v23]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Update to Version 25
+        run: |
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(json\|xml\)" -exec sed -i 's/23/25/g' {} \;
+          pushd nuxeo-admin-console-web/angular-app
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION=${CURRENT_VERSION/23/25}
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "PADDED_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          npm version $NEW_VERSION --no-git-tag-version
+          popd
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
+
+      - name: Configure .npmrc
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Cache node modules
+        id: cache-npm-v25
+        uses: actions/cache@v4
+        env:
+            cache-name: cache-node-modules-v25
+        with:
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: restore
+
+      - name: Build Angular Project
+        run: mvn package
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: save
+
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-v25
+          path: |
+            nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Verify Package Version
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+          echo "Verifying package version for v25..."
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          if [[ ! -f "$PACKAGE" ]]; then
+            echo "Error: Package $PACKAGE not found"
+            exit 1
+          fi
+          echo "Found package: $PACKAGE"
+          if [[ ! "$PACKAGE" =~ "25" ]]; then
+            echo "Error: Package version does not contain '25'"
+            exit 1
+          fi
+          echo "Package version verified successfully"
+
+      - name: Tag
+        run: |
+          git add nuxeo-admin-console-web/angular-app/package-lock.json
+          git commit -a -m "Release ${{env.VERSION}}"
+          git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
+          git push origin v${{env.VERSION}}
+
+      - name: Publish on Pre-Prod Marketplace
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: |
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          echo "Publishing package: $PACKAGE"
+          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
+          cat publish-req.output
+          if [[ "$STATUS_CODE" != "200" ]]
+          then
+            echo "Failed to publish package: $PACKAGE"
+            exit 1
+          else
+            echo "Successfully published package: $PACKAGE"
             exit 0
           fi
