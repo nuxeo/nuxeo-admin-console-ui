@@ -93,6 +93,7 @@ describe("AppComponent", () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    spyOn(component["nuxeoJsClientService"], "connect").and.stub();
   });
 
   it("should test if component is created", () => {
