@@ -204,9 +204,12 @@ jobs:
           LATEST_V23_TAG=$(git tag --sort=taggerdate --list "v23*" | tail -1)
           echo "Latest v23 tag: $LATEST_V23_TAG"
           
+          # Get v23 version without 'v' prefix
+          V23_VERSION=${LATEST_V23_TAG#v}
+          echo "V23 version: $V23_VERSION"
+          
           # Replace 23 with 25 to create v25 version
-          V25_VERSION=${LATEST_V23_TAG/23/25}
-          V25_VERSION=${V25_VERSION#v} # Remove 'v' prefix
+          V25_VERSION=${V23_VERSION/23/25}
           echo "V25 version: $V25_VERSION"
           echo "VERSION=$V25_VERSION" >> $GITHUB_ENV
           
@@ -214,24 +217,30 @@ jobs:
           RC_NUMBER=$(echo "$V25_VERSION" | grep -oP 'rc\.\K\d+')
           PADDED=$(printf '%03d' $RC_NUMBER)
           PADDED_VERSION=$(echo "$V25_VERSION" | sed -E "s/(rc\.)[0-9]+/\\1$PADDED/g")
+          echo "V25 PADDED VERSION: $PADDED_VERSION"
           echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
           
-          # Update package.json version
+          # Extract the base version without the rc part
+          BASE_V23_VERSION=$(echo "$V23_VERSION" | sed 's/-rc\..*//')
+          BASE_V25_VERSION=$(echo "$V25_VERSION" | sed 's/-rc\..*//')
+          
+          # Generate the SNAPSHOT versions
+          V23_SNAPSHOT="${BASE_V23_VERSION}-SNAPSHOT"
+          V25_SNAPSHOT="${BASE_V25_VERSION}-SNAPSHOT"
+          echo "V23 SNAPSHOT: $V23_SNAPSHOT"
+          
+          # Update package.json version (using non-padded version)
           pushd nuxeo-admin-console-web/angular-app
           npm version $V25_VERSION --no-git-tag-version
           popd
           
-          # Update all files with 23 to 25 except for parent version
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(json\|xml\)" -exec sed -i 's/23/25/g' {} \;
+          
+          # For XML files:
+          # Replace SNAPSHOT versions with padded RC version
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i "s/$V23_SNAPSHOT/$PADDED_VERSION/g" {} \;
           
           # Fix parent version back to 2023.0
           sed -i -e '/<parent>/,/<\/parent>/ s/<version>.*<\/version>/<version>2023.0<\/version>/g' pom.xml
-          
-          # Update artifact version
-          sed -i -e '/<groupId>org.nuxeo.admin.console<\/groupId>/,/<packaging>/ s/<version>.*<\/version>/<version>'"$V25_VERSION"'<\/version>/g' pom.xml
-          
-          # Update pom.xml project version
-          sed -i -e 's/\${project.version}/'"$V25_VERSION"'/g' nuxeo-admin-console-package/pom.xml
 
       - name: 'Update settings.xml with server configuration'
         run: |
