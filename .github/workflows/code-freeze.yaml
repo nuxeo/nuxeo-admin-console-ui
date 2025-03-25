@@ -132,4 +132,9 @@ jobs:
           **v23 Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})
           
           **v25 Release Candidate:** [v${rc_version_v25}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${rc_version_v25}).
-          **v25 Beta Release:** [v${{ env.NEW_BETA_TAG_V25 }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG_V25 }})"
+
+          **v25 Beta Release:** [v${{ env.NEW_BETA_TAG_V25 }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG_V25 }})
+          
+          **Note:** follow below format for the commit message
+          **Message:** Merge pull request #211 from nuxeo/dev
+          **Desc:** Code Freeze: Merge dev into main with Release Candidate v23.0.5-rc.15"
