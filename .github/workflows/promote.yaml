@@ -187,22 +187,47 @@ jobs:
       - name: Install semver
         run: npm install -g semver
 
-      - name: Convert v23 version to v25
+      - name: Convert to v25 version and set versions
+        id: convert-v25
         run: |
-          # Convert input version from v23 to v25
-          V25_VERSION=$(echo '${{ github.event.inputs.version }}' | sed 's/^23/25/')
+          # Get input and convert to v25
+          INPUT_VERSION='${{ github.event.inputs.version }}'
+          echo "Input version received: $INPUT_VERSION"
+          
+          # Convert to v25
+          V25_VERSION=$(echo "$INPUT_VERSION" | sed 's/^23/25/')
+          echo "Converting $INPUT_VERSION to $V25_VERSION"
           echo "V25_VERSION=$V25_VERSION" >> $GITHUB_ENV
           
+          # Verify conversion
+          if [[ ! "$V25_VERSION" =~ ^25\. ]]; then
+            echo "❌ Version conversion failed"
+            exit 1
+          fi
+          echo "✅ Version successfully converted to: $V25_VERSION"
+          
           # Set final version without beta
-          echo "VERSION=$(echo '$V25_VERSION' | sed -e 's/-beta.[0-9]*//')" >> $GITHUB_ENV
+          VERSION=$(echo "$V25_VERSION" | sed -e 's/-beta.[0-9]*//')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # Debug all version variables
+          echo "Input version: $INPUT_VERSION"
+          echo "V25_VERSION: $V25_VERSION"
+          echo "Final VERSION: $VERSION"
 
       - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          # Debug version environment variables
+          echo "env.VERSION: ${{ env.VERSION }}"
+          echo "env.V25_VERSION: ${{ env.V25_VERSION }}"
+          
+          # Rest of update steps
           pushd nuxeo-admin-console-web/angular-app
           OLD_VERSION=$(npx -c 'echo "$npm_package_version"')
-          npm version $VERSION --no-git-tag-version
+          echo "OLD_VERSION: $OLD_VERSION"
+          npm version ${{ env.VERSION }} --no-git-tag-version
           popd
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\|xml\)" -exec sed -i 's/'"$OLD_VERSION"'/'"$VERSION"'/g' {} \;
           # Update to 2023.0  instead of 2025.0 parent version
