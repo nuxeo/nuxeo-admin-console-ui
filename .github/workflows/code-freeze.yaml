@@ -137,4 +137,6 @@ jobs:
           
           **Note:** follow below format for the commit message
           **Message:** Merge pull request #211 from nuxeo/dev
-          **Desc:** Code Freeze: Merge dev into main with Release Candidate v23.0.5-rc.15"
+          **Desc:** Code Freeze: Merge dev into main with Release Candidate v23.0.5-rc.15
+
+          **Also always select Create a merge commit option while merging this PR.**" 
