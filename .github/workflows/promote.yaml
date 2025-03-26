@@ -346,11 +346,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pushd nuxeo-admin-console-web/angular-app
-          echo "OLD_SNAPSHOT=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
-          popd
-          
+          OLD_VERSION=${{ needs.promote-v23.outputs.version }}
+          OLD_SNAPSHOT="${OLD_VERSION}-SNAPSHOT"
           NEW_SNAPSHOT="${NEW_VERSION}-SNAPSHOT"
+          
           pushd nuxeo-admin-console-web/angular-app
           npm version $NEW_SNAPSHOT --no-git-tag-version
           popd
