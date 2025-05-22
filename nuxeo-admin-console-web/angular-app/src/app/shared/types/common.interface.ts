@@ -6,6 +6,8 @@ export interface ErrorModalData {
 export interface ErrorDetails {
   type: string;
   details: ErrorStatus;
+  value?: boolean;
+  msg?: string;
 }
 
 export interface ErrorStatus {

@@ -4,7 +4,7 @@
             <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
             <p class="label form-param">{{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span></p>
             <mat-form-field appearance="outline" class="input-field stream-field">
-                <mat-select matNativeControl formControlName="stream" id="stream"
+                <mat-select #focusMatSelect matNativeControl formControlName="stream" id="stream"
                     (selectionChange)="onStreamChange($event.value)">
                     <mat-option *ngFor="let stream of streams" [value]="stream?.name">
                         {{ stream?.name }}
