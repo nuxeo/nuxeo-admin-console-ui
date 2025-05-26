@@ -208,7 +208,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.streamService.streamDisconnected$.pipe(takeUntil(this.destroy$)).subscribe((value: boolean) => {
+    this.streamService.streamDisconnected$?.pipe(takeUntil(this.destroy$)).subscribe((value: boolean) => {
       this.isEventStreamDisconnected = value;
     });
 
