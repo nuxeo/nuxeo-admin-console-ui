@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS } from '../../generic-multi-feature-layout.constants';
 import { ErrorModalData } from "../../../../../shared/types/common.interface";
-import { Component, Inject, ViewChild } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({

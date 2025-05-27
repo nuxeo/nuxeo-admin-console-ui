@@ -45,4 +45,3 @@ export const STREAM_LABELS = {
   MINUTE: "min",
   SECOND: "s"
 };
-
