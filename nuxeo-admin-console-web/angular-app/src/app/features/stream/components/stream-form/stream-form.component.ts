@@ -47,7 +47,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   isStopFetchBtnDisabledSubscription = new Subscription();
   isViewRecordsDisabledSubscription = new Subscription();
   positionChangeSubscription = new Subscription();
-  stramDisconectedSubscription = new Subscription();
   selectedConsumer = "";
   isClearBtnDisabled = true;
   isStopFetchBtnDisabled = true;
