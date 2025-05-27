@@ -46,8 +46,3 @@ export const STREAM_LABELS = {
   SECOND: "s"
 };
 
-export const STREAM_ERROR_MESSAGES = {
-  STREAMS_ERROR_MODAL_TITLE: "An error occurred while fetching stream records",
-  CONSUMER_ERROR_MODAL_TITLE: "An error occurred while fetching consumer records",
-  RECORDS_ERROR_MODAL_TITLE: "An error occurred while fetching records",
-}

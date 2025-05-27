@@ -5,12 +5,12 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { STREAM_ERROR_MESSAGES, STREAM_LABELS } from "../../stream.constants";
+import { STREAM_LABELS } from "../../stream.constants";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as StreamActions from "../../store/actions";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../../store/reducers";
-import { Observable, startWith, Subject, Subscription, takeUntil } from "rxjs";
+import { Observable, Subject, Subscription, takeUntil } from "rxjs";
 import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
@@ -165,8 +165,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
-            msg: STREAM_ERROR_MESSAGES.STREAMS_ERROR_MODAL_TITLE,
-            value: true,
             details: {
               status: (error as HttpErrorResponse)?.status,
               message: (error as HttpErrorResponse)?.message,
@@ -196,8 +194,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
-            value: true,
-            msg: STREAM_ERROR_MESSAGES.CONSUMER_ERROR_MODAL_TITLE,
             details: {
               status: (error as HttpErrorResponse)?.status,
               message: (error as HttpErrorResponse)?.message,

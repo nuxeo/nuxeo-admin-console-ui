@@ -6,7 +6,7 @@ import { StreamService } from '../../services/stream.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import * as StreamActions from '../../store/actions';
 import { StreamsState } from '../../store/reducers';
-import { STREAM_ERROR_MESSAGES, STREAM_LABELS } from '../../stream.constants';
+import { STREAM_LABELS } from '../../stream.constants';
 import { ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -358,8 +358,6 @@ describe('StreamFormComponent', () => {
       component.ngOnInit();
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
-        msg: STREAM_ERROR_MESSAGES.STREAMS_ERROR_MODAL_TITLE,
-        value: true,
         details: {
           status: mockError.status,
           message: mockError.message,
@@ -370,9 +368,6 @@ describe('StreamFormComponent', () => {
     it("should open error modal dialog with correct configuration", () => {
       const mockError: ErrorDetails = {
         type: ERROR_TYPES.SERVER_ERROR,
-        msg: "Test Error Message",
-        value: true,
-
         details: {
           status: 500,
           message: "Internal Server Error",
@@ -494,8 +489,6 @@ describe('StreamFormComponent', () => {
       expect(component.showActionErrorModal).toHaveBeenCalledWith(
         jasmine.objectContaining({
           type: ERROR_TYPES.SERVER_ERROR,
-          value: true,
-          msg: STREAM_ERROR_MESSAGES.CONSUMER_ERROR_MODAL_TITLE,
           details: {
             status: error.status,
             message: error.message,
