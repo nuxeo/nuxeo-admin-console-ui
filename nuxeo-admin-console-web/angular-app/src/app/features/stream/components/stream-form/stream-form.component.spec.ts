@@ -509,6 +509,13 @@ describe('StreamFormComponent', () => {
       component.fetchConsumersError$ = of(null);
       expect(component.showActionErrorModal).not.toHaveBeenCalled();
     });
-
+    
+    it('should convert timeout values correctly', () => {
+      fixture.detectChanges()
+      component.STREAM_LABELS.TIMEOUT_VALUES = ['1ms'];
+      component.STREAM_LABELS.DEFAULT_TIMEOUT_VALUE = '0ms';
+      const value = component.convertTimeout('1ms');
+      expect(value).toBe('0ms');
+    });
 });
 
