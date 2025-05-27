@@ -481,5 +481,34 @@ describe('StreamFormComponent', () => {
       fixture.detectChanges();
       expect(component.showActionErrorModal).not.toHaveBeenCalled();
     });
+
+    it("should call showActionErrorModal with correct details when fetchConsumersError$ emits an error", () => {
+      spyOn(component, "showActionErrorModal");
+      const error = new HttpErrorResponse({
+        status: 500,
+        statusText: "Server Error",
+        error: { message: "Test error" },
+      });
+      component.fetchConsumersError$ = of(error);
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          type: ERROR_TYPES.SERVER_ERROR,
+          value: true,
+          msg: STREAM_ERROR_MESSAGES.CONSUMER_ERROR_MODAL_TITLE,
+          details: {
+            status: error.status,
+            message: error.message,
+          },
+        })
+      );
+    });
+
+    it("should NOT call showActionErrorModal if fetchConsumersError$ emits null/undefined", () => {
+      spyOn(component, "showActionErrorModal");
+      component.fetchConsumersError$ = of(null);
+      expect(component.showActionErrorModal).not.toHaveBeenCalled();
+    });
+
 });
 
