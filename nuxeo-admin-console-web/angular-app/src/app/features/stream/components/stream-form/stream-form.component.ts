@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   NgZone,
   OnDestroy,
@@ -321,10 +322,8 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         },
       });
 
-      this.dialogService.afterAllClosed.subscribe(() => {
-        setTimeout(() => {
-          this.focusMatSelect.focus(); 
-        });
+      this.dialogService.afterAllClosed.subscribe(() => {  
+        this.focusMatSelect.focus(); 
       });
     });
   }
