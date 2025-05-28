@@ -504,11 +504,11 @@ describe('StreamFormComponent', () => {
     });
     
     it('should convert timeout values correctly', () => {
-      fixture.detectChanges()
-      component.STREAM_LABELS.TIMEOUT_VALUES = ['1ms'];
-      component.STREAM_LABELS.DEFAULT_TIMEOUT_VALUE = '0ms';
-      const value = component.convertTimeout('1ms');
-      expect(value).toBe('0ms');
+      fixture.detectChanges();
+      component.STREAM_LABELS.TIMEOUT_VALUES = ['0s'];
+      component.STREAM_LABELS.DEFAULT_TIMEOUT_VALUE = '1ms';
+      const value = component.convertTimeout('0s');
+      expect(value).toBe('1ms');
     });
 });
 
