@@ -15,8 +15,8 @@ import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { ErrorModalComponent } from "src/app/features/sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
-import { ErrorModalClosedInfo, ErrorDetails } from "src/app/shared/types/common.interface";
+import { ErrorModalComponent } from "../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { ErrorModalClosedInfo, ErrorDetails } from "../../../../shared/types/common.interface";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSelect } from "@angular/material/select";
 
