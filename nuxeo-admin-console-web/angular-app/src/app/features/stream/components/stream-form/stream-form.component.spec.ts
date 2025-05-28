@@ -18,8 +18,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorModalComponent } from 'src/app/features/sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component';
-import { ErrorDetails } from 'src/app/shared/types/common.interface';
+import { ErrorModalComponent } from '../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component';
+import { ErrorDetails } from '../../../../shared/types/common.interface';
 
 interface StreamServiceMock {
     getStreams: jasmine.Spy;
