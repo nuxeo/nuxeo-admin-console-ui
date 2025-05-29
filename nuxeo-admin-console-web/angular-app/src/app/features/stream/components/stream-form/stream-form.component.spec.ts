@@ -6,7 +6,7 @@ import { StreamService } from '../../services/stream.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import * as StreamActions from '../../store/actions';
 import { StreamsState } from '../../store/reducers';
-import { STREAM_LABELS } from '../../stream.constants';
+import { STREAM_LABELS, STREAM_MOCK_API_FAILURE } from '../../stream.constants';
 import { ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -41,8 +41,8 @@ describe('StreamFormComponent', () => {
     let streamServiceMock: StreamServiceMock;
     let storeSpy: jasmine.SpyObj<Store<{ streams: StreamsState }>>;
     const mockError = new HttpErrorResponse({
-        status: 404,
-        statusText: 'Not Found',
+        status: STREAM_MOCK_API_FAILURE.STATUS_CODE,
+        statusText: STREAM_MOCK_API_FAILURE.MESSAGE,
     });
     let streamDisconnectedSubject: BehaviorSubject<boolean>; 
 
@@ -369,8 +369,8 @@ describe('StreamFormComponent', () => {
       const mockError: ErrorDetails = {
         type: ERROR_TYPES.SERVER_ERROR,
         details: {
-          status: 500,
-          message: "Internal Server Error",
+          status: STREAM_MOCK_API_FAILURE.STATUS_CODE,
+          message: STREAM_MOCK_API_FAILURE.MESSAGE,
         },
       };
 

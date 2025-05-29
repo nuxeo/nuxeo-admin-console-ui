@@ -45,3 +45,12 @@ export const STREAM_LABELS = {
   MINUTE: "min",
   SECOND: "s"
 };
+
+export const STREAM_MOCK_API_FAILURE = {
+  STATUS_CODE: 404,
+  MESSAGE: "Not Found"
+};
+
+export const EVENT_STREAM_ERROR_TYPE = {
+  DISCONNECTED: "disconnect",
+};

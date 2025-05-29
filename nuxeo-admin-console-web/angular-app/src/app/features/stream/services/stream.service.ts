@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
+import { EVENT_STREAM_ERROR_TYPE } from "../stream.constants";
 
 @Injectable({
   providedIn: "root",
@@ -40,7 +41,7 @@ export class StreamService {
       this.eventSource = new EventSource(fullUrl, { withCredentials: true });
 
       this.eventSource.onmessage = (event) => {
-        if (JSON.parse(event.data).type === 'disconnect') {
+        if (JSON.parse(event.data).type === EVENT_STREAM_ERROR_TYPE.DISCONNECTED) {
           this.streamDisconnectedSubject.next(true);
         }
         observer.next(event.data);
