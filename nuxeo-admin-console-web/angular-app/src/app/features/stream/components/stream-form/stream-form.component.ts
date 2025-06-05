@@ -1,17 +1,25 @@
 import {
+  ChangeDetectorRef,
   Component,
+  NgZone,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from "@angular/core";
 import { STREAM_LABELS } from "../../stream.constants";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as StreamActions from "../../store/actions";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../../store/reducers";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, Subscription, takeUntil } from "rxjs";
 import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
-import { GENERIC_LABELS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { ErrorModalComponent } from "../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { ErrorModalClosedInfo, ErrorDetails } from "../../../../shared/types/common.interface";
+import { HttpErrorResponse } from "@angular/common/http";
+import { MatSelect } from "@angular/material/select";
 
 @Component({
   selector: "stream-form",
@@ -28,6 +36,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   fetchStreamsError$: Observable<unknown>;
   fetchConsumersSuccess$: Observable<{ stream: string; consumer: string }[]>;
   fetchConsumersError$: Observable<unknown>;
+  fetchRecordsError$: Observable<unknown>;
   streams: Stream[] = [];
   records: unknown[] = [];
   consumers: { stream: string; consumer: string }[] = [];
@@ -49,11 +58,18 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   selectedRewindValue = "";
   selectedLimitValue = "";
   selectedTimeoutValue = "";
+  errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
+    {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
+  private destroy$ = new Subject<void>();
+  isEventStreamDisconnected: boolean = false;
+  @ViewChild('focusMatSelect') focusMatSelect!: MatSelect;
 
   constructor(
     private fb: FormBuilder,
     private store: Store<{ streams: StreamsState }>,
-    private streamService: StreamService
+    private streamService: StreamService,
+    public dialogService: MatDialog,
+    private ngZone: NgZone
   ) {
     this.streamForm = this.fb.group({
       stream: ["", Validators.required],
@@ -81,6 +97,10 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
     this.fetchConsumersError$ = this.store.pipe(
       select((state) => state.streams?.consumersError)
+    );
+
+    this.fetchRecordsError$ = this.store.pipe(
+      select((state) => state.streams?.recordsError)
     );
   }
 
@@ -144,7 +164,13 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchStreamsErrorSubscription = this.fetchStreamsError$.subscribe(
       (error) => {
         if (error) {
-          console.error(error);
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status: (error as HttpErrorResponse)?.status,
+              message: (error as HttpErrorResponse)?.message,
+            },
+          });
         }
       }
     );
@@ -167,7 +193,31 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.fetchConsumersErrorSubscription = this.fetchConsumersError$.subscribe(
       (error) => {
         if (error) {
-          console.error(error);
+          this.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status: (error as HttpErrorResponse)?.status,
+              message: (error as HttpErrorResponse)?.message,
+            },
+          });
+        }
+      }
+    );
+
+    this.streamService.streamDisconnected$?.pipe(takeUntil(this.destroy$)).subscribe((value: boolean) => {
+      this.isEventStreamDisconnected = value;
+    });
+
+    this.fetchRecordsError$.pipe(takeUntil(this.destroy$)).subscribe(
+      (error) => {
+        if (error && !this.isEventStreamDisconnected) {
+          this.showActionErrorModal({
+            type: '',
+            details: {
+              status: (error as HttpErrorResponse)?.status,
+              message: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
+            },
+          });
         }
       }
     );
@@ -259,6 +309,24 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     document.getElementById(STREAM_LABELS.STREAM_ID)?.focus();
   }
 
+  showActionErrorModal(error: ErrorDetails): void {
+    this.ngZone.run(() => {
+      this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
+        disableClose: true,
+        hasBackdrop: true,
+        height: MODAL_DIMENSIONS.HEIGHT,
+        width: MODAL_DIMENSIONS.WIDTH,
+        autoFocus: false,
+        data: {
+          error: error,
+        },
+      });
+
+      this.dialogService.afterAllClosed.subscribe(() => {  
+        this.focusMatSelect.focus(); 
+      });
+    });
+  }
 
   ngOnDestroy(): void {
     this.fetchStreamsSuccessSubscription?.unsubscribe();
@@ -269,5 +337,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
     this.isStopFetchBtnDisabledSubscription?.unsubscribe();
     this.isViewRecordsDisabledSubscription?.unsubscribe();
     this.positionChangeSubscription?.unsubscribe();
+    this.destroy$.next();    
+    this.destroy$.complete(); 
   }
 }

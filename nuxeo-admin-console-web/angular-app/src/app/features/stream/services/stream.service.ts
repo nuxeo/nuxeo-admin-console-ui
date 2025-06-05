@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
+import { EVENT_STREAM_ERROR_TYPE } from "../stream.constants";
 
 @Injectable({
   providedIn: "root",
@@ -14,6 +15,8 @@ export class StreamService {
   isViewRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(false);
   clearRecordsDisplay: BehaviorSubject<boolean> = new BehaviorSubject(false);
   recordsFetchedSuccess: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private streamDisconnectedSubject = new BehaviorSubject<boolean>(false);
+  streamDisconnected$ = this.streamDisconnectedSubject.asObservable();
   private eventSource?: EventSource;
 
   constructor(private networkService: NetworkService) { }
@@ -33,11 +36,14 @@ export class StreamService {
   startSSEStream(params: RecordsPayload) {
     const url = this.networkService.getAPIEndpoint(REST_END_POINTS.STREAM_RECORDS);
     const fullUrl = this.appendParamsToUrl(url, params);
-
+    this.streamDisconnectedSubject.next(false);
     return new Observable((observer) => {
       this.eventSource = new EventSource(fullUrl, { withCredentials: true });
 
       this.eventSource.onmessage = (event) => {
+        if (JSON.parse(event.data).type === EVENT_STREAM_ERROR_TYPE.DISCONNECTED) {
+          this.streamDisconnectedSubject.next(true);
+        }
         observer.next(event.data);
       };
 

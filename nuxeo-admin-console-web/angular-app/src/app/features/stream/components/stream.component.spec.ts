@@ -21,6 +21,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { StreamRecordsStatusComponent } from "./stream-records-status/stream-records-status.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialogModule } from "@angular/material/dialog";
 
 describe("StreamComponent", () => {
   let component: StreamComponent;
@@ -54,6 +55,7 @@ describe("StreamComponent", () => {
         BrowserAnimationsModule,
         ReactiveFormsModule,
         MatSnackBarModule,
+        MatDialogModule
       ],
       providers: [
         { provide: StreamService, useClass: streamServiceStub },
