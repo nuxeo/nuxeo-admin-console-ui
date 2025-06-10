@@ -17,7 +17,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { AppRoutingModule } from "./app-routing.module";
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
-import { BackendErrorMessagesComponent } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
 import { AppComponent } from "./app.component";
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
@@ -60,7 +59,6 @@ import { streamsReducer } from "./features/stream/store/reducers";
     HeaderBarComponent,
     MenuBarComponent,
     WarningComponent,
-    BackendErrorMessagesComponent,
     BaseLayoutComponent,
     GenericModalComponent,
     ErrorModalComponent,

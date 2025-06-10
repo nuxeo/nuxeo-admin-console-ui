@@ -4,10 +4,6 @@ export interface Stream {
   codec?: string | null;
 }
 
-export interface Consumer {
-  stream: string;
-  consumer: string;
-}
 
 export interface RecordsPayload {
   stream: string;
