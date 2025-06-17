@@ -1,11 +1,12 @@
 import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
 import { BulkActionInfoDetails } from "./../../../../bulk-action-monitoring.interface";
-import { Component, Input, OnChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 
 @Component({
   selector: "bulk-action-monitoring-details",
   templateUrl: "./bulk-action-monitoring-details.component.html",
   styleUrls: ["./bulk-action-monitoring-details.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BulkActionMonitoringDetailsComponent implements OnChanges {
   @Input() bulkActionDetails: BulkActionInfoDetails =

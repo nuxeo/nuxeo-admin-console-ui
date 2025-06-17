@@ -4,7 +4,6 @@ import { authActions } from "../../auth/store/actions";
 import { Observable, Subscription } from "rxjs";
 import { AuthStateInterface } from "../../auth/types/authState.interface";
 import { UserInterface } from "../../shared/types/user.interface";
-import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
 import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
 @Component({
@@ -22,7 +21,6 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<{ auth: AuthStateInterface }>,
-    private nuxeoJsClientService: NuxeoJSClientService,
     private router: Router
   ) {
     this.currentUser$ = this.store.pipe(

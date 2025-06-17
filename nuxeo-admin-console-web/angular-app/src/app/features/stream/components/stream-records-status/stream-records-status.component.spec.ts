@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ChangeDetectorRef } from '@angular/core';
 import { StreamRecordsStatusComponent } from './stream-records-status.component';
 import { By } from '@angular/platform-browser';
 
 describe('StreamRecordsStatusComponent', () => {
   let component: StreamRecordsStatusComponent;
   let fixture: ComponentFixture<StreamRecordsStatusComponent>;
+  let changeDetectorRef: ChangeDetectorRef;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [StreamRecordsStatusComponent]
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(StreamRecordsStatusComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    changeDetectorRef = fixture.debugElement.injector.get(ChangeDetectorRef);
   });
 
   it('should create', () => {
@@ -25,7 +25,7 @@ describe('StreamRecordsStatusComponent', () => {
   it('should update recordsFetchedStatusText when input changes', () => {
     const newStatus = 'Records Fetched';
     component.recordsFetchedStatusText = newStatus;
-    fixture.detectChanges();
+    changeDetectorRef.detectChanges();
 
     expect(component.recordsFetchedStatusText).toBe(newStatus);
 
@@ -35,7 +35,7 @@ describe('StreamRecordsStatusComponent', () => {
 
   it('should display the correct initial recordsFetchedStatusText value', () => {
     component.recordsFetchedStatusText = 'Initial Status';
-    fixture.detectChanges();
+    changeDetectorRef.detectChanges();
 
     const statusElement: HTMLElement = fixture.nativeElement.querySelector('.stream-records-status span:last-child');
     expect(statusElement.textContent).toContain('Initial Status');
@@ -43,7 +43,7 @@ describe('StreamRecordsStatusComponent', () => {
 
   it('should display red dot when fetching records and green dot when records are fetched', () => {
     component.isFetchingRecords = true;
-    fixture.detectChanges();
+    changeDetectorRef.detectChanges();
 
     let redDot = fixture.debugElement.query(By.css('.dot.red-dot'));
     let greenDot = fixture.debugElement.query(By.css('.dot.green-dot'));
@@ -52,12 +52,12 @@ describe('StreamRecordsStatusComponent', () => {
     expect(greenDot).toBeFalsy();
 
     component.isFetchingRecords = false;
-    fixture.detectChanges();
+    changeDetectorRef.detectChanges();
 
     redDot = fixture.debugElement.query(By.css('.dot.red-dot'));
     greenDot = fixture.debugElement.query(By.css('.dot.green-dot'));
 
     expect(redDot).toBeFalsy();
     expect(greenDot).toBeTruthy();
-  });
+  }); 
 });

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectorRef,
   Component,
   NgZone,
   OnDestroy,
@@ -61,7 +60,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   private destroy$ = new Subject<void>();
-  isEventStreamDisconnected: boolean = false;
+  isEventStreamDisconnected = false;
   @ViewChild('focusMatSelect') focusMatSelect!: MatSelect;
 
   constructor(

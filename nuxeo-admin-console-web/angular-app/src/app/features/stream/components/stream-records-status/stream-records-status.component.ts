@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input
 } from "@angular/core";
@@ -6,7 +7,8 @@ import {
 @Component({
   selector: "stream-records-status",
   templateUrl: "./stream-records-status.component.html",
-  styleUrls: ["./stream-records-status.component.scss"]
+  styleUrls: ["./stream-records-status.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class StreamRecordsStatusComponent {
