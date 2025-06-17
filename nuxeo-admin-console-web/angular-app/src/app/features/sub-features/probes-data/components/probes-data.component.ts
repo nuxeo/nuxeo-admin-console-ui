@@ -2,7 +2,7 @@ import { CustomSnackBarComponent } from "./../../../../shared/components/custom-
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
 import * as ProbeActions from "../store/actions";
@@ -18,12 +18,11 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 export class ProbesDataComponent implements OnInit, OnDestroy {
   @Input() summary = false;
   probesData: ProbesInfo[] = [];
-  fetchProbesSubscription = new Subscription();
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
   selectedRowIndex = -1;
-
+  private destroy$: Subject<void> = new Subject<void>();
   defaultColumns = [
     { propertyName: "probe", label: "Probe", summaryOnly: true },
     { propertyName: "success", label: "Success", summaryOnly: true },
@@ -49,8 +48,6 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     { propertyName: "actions", label: "Actions", summaryOnly: false },
   ];
   hideTitle = true;
-  probeLaunchedSuccessSubscription = new Subscription();
-  probeLaunchedErrorSubscription = new Subscription();
   probeLaunchedSuccess$: Observable<ProbesInfo[]>;
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
@@ -79,7 +76,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
       (col) => col.summaryOnly && this.summary
     );
 
-    this.fetchProbesSubscription = this.fetchProbes$.subscribe(
+    this.fetchProbes$.pipe(takeUntil(this.destroy$)).subscribe(
       (data: ProbesInfo[]) => {
         if (data?.length !== 0) {
           this.probesData = data;
@@ -89,8 +86,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.probeLaunchedSuccessSubscription =
-      this.probeLaunchedSuccess$.subscribe((data) => {
+      this.probeLaunchedSuccess$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
         if (
           data &&
           data?.length > 0 &&
@@ -110,7 +106,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.probeLaunchedErrorSubscription = this.probeLaunchedError$.subscribe(
+    this.probeLaunchedError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
@@ -165,8 +161,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.fetchProbesSubscription?.unsubscribe();
-    this.probeLaunchedSuccessSubscription?.unsubscribe();
-    this.probeLaunchedErrorSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
