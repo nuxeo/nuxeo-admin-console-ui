@@ -5,12 +5,12 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
-import { BehaviorSubject, ReplaySubject, of } from "rxjs";
+import { BehaviorSubject, Subject, of } from "rxjs";
 import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 import {
   ActivatedRoute,
+  NavigationEnd,
   Router,
-  RouterEvent,
   RouterModule,
 } from "@angular/router";
 import { ChangeDetectorRef } from "@angular/core";
@@ -25,8 +25,12 @@ describe("GenericMultiFeatureLayoutComponent", () => {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
     getActiveFeature() {
-        return "ELASTIC_SEARCH_REINDEX";
-      }
+      return "ELASTIC_SEARCH_REINDEX";
+    }
+
+    setActiveFeature() {
+      return "";
+    }
   }
 
   class nuxeoJsClientServiceStub {
@@ -49,13 +53,27 @@ describe("GenericMultiFeatureLayoutComponent", () => {
     params = of({ id: "123" });
   }
 
-  const eventSubject = new ReplaySubject<RouterEvent>(1);
-  const mockRouter = {
-    navigate: jasmine.createSpy("navigate"),
-    events: eventSubject.asObservable(),
-    url: "test/url",
-  };
-
+ const mockRoute = {
+   snapshot: {
+     firstChild: {
+       routeConfig: { path: "tab1" },
+     },
+   },
+ };
+ const mockRouter = {
+   routerState: {
+     snapshot: {
+       url: "/feature/tab1",
+     },
+   },
+   events: new Subject(),
+   createUrlTree: jasmine.createSpy("mockCreateUrlTree").and.returnValue({}),
+   Serializer: jasmine.createSpy("mockSerializer").and.returnValue({}),
+   serializeUrl: jasmine
+     .createSpy("mockSerializeUrl")
+     .and.returnValue("mockSerializedUrl"),
+ };
+	
   beforeEach(async () => {
     mockCdRef = jasmine.createSpyObj("ChangeDetectorRef", ["detectChanges"]);
     await TestBed.configureTestingModule({
@@ -79,6 +97,7 @@ describe("GenericMultiFeatureLayoutComponent", () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },
         { provide: ChangeDetectorRef, useValue: mockCdRef },
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
     }).compileComponents();
 
@@ -122,5 +141,22 @@ describe("GenericMultiFeatureLayoutComponent", () => {
       component.updateActiveTab();
       expect(component.activeTab).toEqual(tab);
     });
+  });
+
+  it("should set active feature on ngOnInit if featureRoute exists", () => {
+    spyOn(genericMultiFeatureUtilitiesService, "setActiveFeature");
+    component.ngOnInit();
+    expect(
+      genericMultiFeatureUtilitiesService.setActiveFeature
+    ).toHaveBeenCalledWith("feature" as any);
+  });
+
+  it("should subscribe to router events and call updateActiveTab on NavigationEnd", () => {
+    spyOn(component, "updateActiveTab");
+    component.ngOnInit();
+    (mockRouter.events as Subject<any>).next(
+      new NavigationEnd(1, "/feature/tab2", "/feature/tab2")
+    );
+    expect(component.updateActiveTab).toHaveBeenCalled();
   });
 });

@@ -58,6 +58,15 @@ describe("RegistrationVersionComponent", () => {
     );
   });
 
+  it("should dispatch fetchversionInfo when no data exists", () => {
+    store.setState({ home: { versionInfo: null as any, probesInfo: [], error: null } });
+    fixture.detectChanges();
+    component.ngOnInit();
+    expect(store.dispatch).toHaveBeenCalledWith(
+      HomeActions.fetchversionInfo()
+    );
+  });
+
   it("should select error from store", (done) => {
     component.error$.subscribe((error) => {
       expect(error).toBeNull();
@@ -65,11 +74,31 @@ describe("RegistrationVersionComponent", () => {
     });
   });
 
-  it("should unsubscribe fetchProbesSubscription on destroy", () => {
-    component.versionInfoSubscription = jasmine.createSpyObj("Subscription", [
-      "unsubscribe",
-    ]);
-    component.ngOnDestroy();
-    expect(component.versionInfoSubscription.unsubscribe).toHaveBeenCalled();
+  describe("ngOnDestroy", () => {
+    it("should complete the destroy$ subject", () => {
+      const completeSpy = spyOn(
+        (component as any).destroy$,
+        "complete"
+      ).and.callThrough();
+      const nextSpy = spyOn(
+        (component as any).destroy$,
+        "next"
+      ).and.callThrough();
+      component.ngOnDestroy();
+      expect(nextSpy).toHaveBeenCalled();
+      expect(completeSpy).toHaveBeenCalled();
+    });
+
+    it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+      let unsubscribed = false;
+      component["destroy$"].subscribe({
+        complete: () => {
+          unsubscribed = true;
+        },
+      });
+      component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
+    });
   });
 });

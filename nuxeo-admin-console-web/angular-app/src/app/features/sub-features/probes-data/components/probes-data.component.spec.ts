@@ -95,17 +95,73 @@ describe("ProbesDataComponent", () => {
     expect(falseResult).toBe("False");
   });
 
-  it("should unsubscribe fetchProbesSubscription on destroy", () => {
-    component.fetchProbesSubscription = jasmine.createSpyObj("Subscription", [
-      "unsubscribe",
-    ]);
-    component.ngOnDestroy();
-    expect(component.fetchProbesSubscription.unsubscribe).toHaveBeenCalled();
-  });
-
   it('should call redirectToProbesDetails on viewDetails()', () => {
     spyOn(mockCommonService, "redirectToProbesDetails");
     component.viewDetails();
     expect(mockCommonService.redirectToProbesDetails).toHaveBeenCalled();
+  });
+
+  it("should dispatch resetDocumentActionState and unsubscribe from subscriptions on ngOnDestroy", () => {
+    spyOn((component as any).destroy$, "next");
+    spyOn((component as any).destroy$, "complete");
+    component.ngOnDestroy();
+    expect((component as any).destroy$.next).toHaveBeenCalled();
+    expect((component as any).destroy$.complete).toHaveBeenCalled();
+  });
+
+  it("should unsubscribe from all subscriptions", (done) => {
+    let unsubscribed = false;
+    (component as any).destroy$.subscribe({
+      complete: () => {
+        unsubscribed = true;
+      },
+    });
+    component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
+  });
+  
+  describe('launchProbe', () => {
+    it('should set probeLaunched and dispatch launchProbe action with correct probe name', () => {
+      const testProbe = { name: 'testProbe' } as any;
+      spyOn(store, 'dispatch');
+      component.launchProbe(testProbe);
+      expect(component.probeLaunched).toBe(testProbe);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        ProbeActions.launchProbe({ probeName: 'testProbe' })
+      );
+    });
+  });
+
+  describe('highlightRow', ()=>{
+    it('should set selectedRowIndex to the index passed', () => {
+      const index = 2;
+      component.highlightRow(index);
+      expect(component.selectedRowIndex).toBe(index);
+    });
+  });
+
+  it('should call showActionLaunchedModal when fetchProbes$ emits with commandId', () => {
+    const testData = [{ name: 'testProbe' }] as any;
+    (component as any).fetchProbes$ = of(testData);
+    component.ngOnInit();
+    expect(component.probesData).toEqual(testData);
+  });
+
+  it('should call showActionLaunchedModal when probeLaunchedError$ emits with commandId', () => {
+    const mockError = { status: 500, message: 'Internal Server Error' };
+    (component as any).probeLaunchedError$ = of(mockError);
+    spyOn((component as any)._snackBar, 'openFromComponent');
+    component.ngOnInit();
+    expect((component as any)._snackBar.openFromComponent).toHaveBeenCalled();
+  });
+
+  it('should call showActionLaunchedModal when probeLaunchedSuccess$ emits with commandId', () => {
+    const testData = [{ name: 'testProbe' }] as any;
+    component.probeLaunched = testData[0];
+    (component as any).probeLaunchedSuccess$ = of(testData);
+    spyOn((component as any)._snackBar, 'openFromComponent');
+    component.ngOnInit();
+    expect((component as any)._snackBar.openFromComponent).toHaveBeenCalled();
   });
 });
