@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { STREAM_LABELS } from "../stream.constants";
-import { Observable, skip, Subscription } from "rxjs";
+import { Observable, skip, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../store/reducers";
 import { StreamService } from "../services/stream.service";
@@ -17,22 +17,16 @@ import { CustomSnackBarComponent } from "../../../shared/components/custom-snack
 export class StreamComponent implements OnInit, OnDestroy {
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;
   records: { type?: string }[] = [];
-  fetchRecordsErrorSubscription = new Subscription();
-  fetchRecordsSuccessSubscription = new Subscription();
   fetchRecordsSuccess$!: Observable<{ type?: string }[]>;
   fetchRecordsError$!: Observable<HttpErrorResponse | null>;
   recordCount = 0;
-  clearRecordsDisplaySubscription: Subscription = new Subscription();
   clearRecordsDisplay = false;
   recordsFetchedStatusText = "";
   stopFetchSuccess$: Observable<boolean | null>;
   stopFetchError$: Observable<unknown>;
   isStopFetchSuccess: boolean | null = null;
-  isStopFetchSuccessSubscription: Subscription = new Subscription();
-  isStopFetchErrorSubscription: Subscription = new Subscription();
   isFetchingRecords = false;
-  isFetchingRecordsSubscription: Subscription = new Subscription();
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(private store: Store<{ streams: StreamsState }>,
     private cdRef: ChangeDetectorRef,
     private streamService: StreamService,
@@ -58,8 +52,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isFetchingRecordsSubscription =
-      this.streamService.isFetchingRecords.subscribe(
+      this.streamService.isFetchingRecords.pipe(takeUntil(this.destroy$)).subscribe(
         (status) => {
           this.isFetchingRecords = status;
           this.streamService.isViewRecordsDisabled.next(this.isFetchingRecords);
@@ -71,16 +64,14 @@ export class StreamComponent implements OnInit, OnDestroy {
               this.recordsFetchedStatusText = "";
             } else {
               this.streamService.isClearRecordsDisabled.next(false);
-              this.recordsFetchedStatusText = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
+              this.recordsFetchedStatusText =  STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
             }
           }
           this.cdRef.detectChanges();
         }
       );
 
-
-    this.clearRecordsDisplaySubscription =
-      this.streamService.clearRecordsDisplay.subscribe(
+      this.streamService.clearRecordsDisplay.pipe(takeUntil(this.destroy$)).subscribe(
         (clearStatus) => {
           if (this.records?.length > 0) {
             this.clearRecordsDisplay = clearStatus;
@@ -90,7 +81,7 @@ export class StreamComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.fetchRecordsSuccessSubscription = this.fetchRecordsSuccess$.subscribe(
+    this.fetchRecordsSuccess$.pipe(takeUntil(this.destroy$)).subscribe(
       (data: { type?: string }[]) => {
         this.records = data;
         this.recordsFetchedStatusText = this.isFetchingRecords ? STREAM_LABELS.FETCHING_RECORDS : STREAM_LABELS.FETCHED_RECORDS_COUNT.replace('{{ recordCount }}', this.recordCount.toString());
@@ -100,7 +91,7 @@ export class StreamComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.fetchRecordsErrorSubscription = this.fetchRecordsError$.subscribe(
+    this.fetchRecordsError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           console.error(error);
@@ -111,8 +102,7 @@ export class StreamComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.isStopFetchSuccessSubscription =
-      this.stopFetchSuccess$.subscribe(
+      this.stopFetchSuccess$.pipe(takeUntil(this.destroy$)).subscribe(
         (status: boolean | null) => {
           this.isStopFetchSuccess = status;
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
@@ -129,14 +119,12 @@ export class StreamComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.isStopFetchErrorSubscription =
-      this.stopFetchError$.subscribe(
+      this.stopFetchError$.pipe(takeUntil(this.destroy$)).subscribe(
         (error: unknown) => {
           this.isStopFetchSuccess = false;
           console.error(error);
         }
       );
-
   }
 
   getRecordCount(): number {
@@ -154,11 +142,7 @@ export class StreamComponent implements OnInit, OnDestroy {
     this.streamService.isStopFetchDisabled.next(true);
     this.streamService.isViewRecordsDisabled.next(false);
     this.streamService.isClearRecordsDisabled.next(true);
-    this.clearRecordsDisplaySubscription?.unsubscribe();
-    this.fetchRecordsSuccessSubscription?.unsubscribe();
-    this.fetchRecordsErrorSubscription?.unsubscribe();
-    this.isStopFetchSuccessSubscription?.unsubscribe();
-    this.isStopFetchErrorSubscription?.unsubscribe();
-    this.isFetchingRecordsSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

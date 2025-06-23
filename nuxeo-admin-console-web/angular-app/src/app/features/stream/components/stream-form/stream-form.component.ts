@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as StreamActions from "../../store/actions";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../../store/reducers";
-import { Observable, Subject, Subscription, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { RecordsPayload, Stream } from "../../stream.interface";
 import { StreamService } from "../../services/stream.service";
 import { ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
@@ -39,14 +39,6 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   streams: Stream[] = [];
   records: unknown[] = [];
   consumers: { stream: string; consumer: string }[] = [];
-  fetchStreamsErrorSubscription = new Subscription();
-  fetchStreamsSuccessSubscription = new Subscription();
-  fetchConsumersErrorSubscription = new Subscription();
-  fetchConsumersSuccessSubscription = new Subscription();
-  isClearBtnDisabledSubscription = new Subscription();
-  isStopFetchBtnDisabledSubscription = new Subscription();
-  isViewRecordsDisabledSubscription = new Subscription();
-  positionChangeSubscription = new Subscription();
   selectedConsumer = "";
   isClearBtnDisabled = true;
   isStopFetchBtnDisabled = true;
@@ -59,10 +51,9 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   selectedTimeoutValue = "";
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
-  private destroy$ = new Subject<void>();
   isEventStreamDisconnected = false;
   @ViewChild('focusMatSelect') focusMatSelect!: MatSelect;
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     private fb: FormBuilder,
     private store: Store<{ streams: StreamsState }>,
@@ -117,7 +108,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
 
     const positionControl = this.streamForm && this.streamForm.get("position");
     if (positionControl) {
-      this.positionChangeSubscription = this.streamForm.get("position")!.valueChanges.subscribe((value) => {
+      this.streamForm.get("position")!.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
         if (value === STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE) {
           this.streamForm.get("offset")?.enable();
           this.streamForm.get("partition")?.enable();
@@ -134,16 +125,16 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.isClearBtnDisabledSubscription = this.streamService.isClearRecordsDisabled.subscribe((isDisabled: boolean) => {
+    this.streamService.isClearRecordsDisabled.pipe(takeUntil(this.destroy$)).subscribe((isDisabled: boolean) => {
       this.isClearBtnDisabled = isDisabled;
     });
-    this.isStopFetchBtnDisabledSubscription = this.streamService.isStopFetchDisabled.subscribe((isDisabled: boolean) => {
+    this.streamService.isStopFetchDisabled.pipe(takeUntil(this.destroy$)).subscribe((isDisabled: boolean) => {
       this.isStopFetchBtnDisabled = isDisabled;
     });
-    this.isViewRecordsDisabledSubscription = this.streamService.isViewRecordsDisabled.subscribe((isDisabled: boolean) => {
+    this.streamService.isViewRecordsDisabled.pipe(takeUntil(this.destroy$)).subscribe((isDisabled: boolean) => {
       this.isSubmitBtnDisabled = isDisabled;
     });
-    this.fetchStreamsSuccessSubscription = this.fetchStreamsSuccess$.subscribe(
+    this.fetchStreamsSuccess$.pipe(takeUntil(this.destroy$)).subscribe(
       (data: Stream[]) => {
         if (data?.length > 0) {
           this.streams = data;
@@ -160,7 +151,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.fetchStreamsErrorSubscription = this.fetchStreamsError$.subscribe(
+    this.fetchStreamsError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -174,22 +165,21 @@ export class StreamFormComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.fetchConsumersSuccessSubscription =
-      this.fetchConsumersSuccess$.subscribe(
-        (data: { stream: string; consumer: string }[]) => {
-          if (data?.length > 0) {
-            this.consumers = data;
-            this.selectedConsumer = this.consumers
-              ? this.consumers[0]?.consumer
-              : "";
-            this.streamForm.patchValue({
-              selectedConsumer: this.selectedConsumer
-            })
-          }
+    this.fetchConsumersSuccess$.pipe(takeUntil(this.destroy$)).subscribe(
+      (data: { stream: string; consumer: string }[]) => {
+        if (data?.length > 0) {
+          this.consumers = data;
+          this.selectedConsumer = this.consumers
+            ? this.consumers[0]?.consumer
+            : "";
+          this.streamForm.patchValue({
+            selectedConsumer: this.selectedConsumer
+          });
         }
-      );
+      }
+    );
 
-    this.fetchConsumersErrorSubscription = this.fetchConsumersError$.subscribe(
+    this.fetchConsumersError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -321,21 +311,13 @@ export class StreamFormComponent implements OnInit, OnDestroy {
         },
       });
 
-      this.dialogService.afterAllClosed.subscribe(() => {  
+      this.dialogService.afterAllClosed.pipe(takeUntil(this.destroy$)).subscribe(() => {  
         this.focusMatSelect.focus(); 
       });
     });
   }
 
   ngOnDestroy(): void {
-    this.fetchStreamsSuccessSubscription?.unsubscribe();
-    this.fetchStreamsErrorSubscription?.unsubscribe();
-    this.fetchConsumersSuccessSubscription?.unsubscribe();
-    this.fetchConsumersErrorSubscription?.unsubscribe();
-    this.isClearBtnDisabledSubscription?.unsubscribe();
-    this.isStopFetchBtnDisabledSubscription?.unsubscribe();
-    this.isViewRecordsDisabledSubscription?.unsubscribe();
-    this.positionChangeSubscription?.unsubscribe();
     this.destroy$.next();    
     this.destroy$.complete(); 
   }

@@ -167,16 +167,6 @@ describe('StreamFormComponent', () => {
         );
     });
 
-    it('should unsubscribe from all subscriptions on ngOnDestroy', () => {
-        const unsubscribeSpy = jasmine.createSpy('unsubscribe');
-        component.fetchStreamsSuccessSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchStreamsErrorSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchConsumersSuccessSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchConsumersErrorSubscription.unsubscribe = unsubscribeSpy;
-        component.ngOnDestroy();
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(4);
-    });
-
     it('should dispatch onStopFetch action when onStopFetch is called', () => {
         component.onStopFetch();
         expect(store.dispatch).toHaveBeenCalledWith(StreamActions.onStopFetch());
@@ -185,20 +175,6 @@ describe('StreamFormComponent', () => {
     it('should dispatch resetFetchRecordsState and clear records on onClearRecords', () => {
         component.onClearRecords();
         expect(store.dispatch).toHaveBeenCalledWith(StreamActions.resetFetchRecordsState());
-    });
-
-    it('should dispatch reset actions and unsubscribe from all subscriptions on ngOnDestroy', () => {
-        const unsubscribeSpy = jasmine.createSpy('unsubscribe');
-
-        component.fetchStreamsSuccessSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchStreamsErrorSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchConsumersSuccessSubscription.unsubscribe = unsubscribeSpy;
-        component.fetchConsumersErrorSubscription.unsubscribe = unsubscribeSpy;
-        component.isClearBtnDisabledSubscription.unsubscribe = unsubscribeSpy;
-        component.isStopFetchBtnDisabledSubscription.unsubscribe = unsubscribeSpy;
-        component.isViewRecordsDisabledSubscription.unsubscribe = unsubscribeSpy;
-        component.ngOnDestroy();
-        expect(unsubscribeSpy).toHaveBeenCalledTimes(7);
     });
 
     it('should subscribe to button state observables in ngOnInit', () => {
@@ -276,13 +252,6 @@ describe('StreamFormComponent', () => {
         expect(component.isSubmitBtnDisabled).toBeFalse();
         expect(component.isClearBtnDisabled).toBeTrue();
     });
-
-    it("should unsubscribe from subscriptions on destroy", () => {
-        const unsubscribeSpy = spyOn(component.fetchStreamsSuccessSubscription, "unsubscribe");
-        component.ngOnDestroy();
-        expect(unsubscribeSpy).toHaveBeenCalled();
-    });
-   
     it("should properly initialize component values in ngOnInit", () => {
       component.ngOnInit();
       expect(component.rewindValues).toEqual(STREAM_LABELS.REWIND_VALUES);
@@ -510,5 +479,25 @@ describe('StreamFormComponent', () => {
       const value = component.convertTimeout('0s');
       expect(value).toBe('1ms');
     });
+
+  it("should unsubscribe from all subscriptions on destroy", () => {
+    spyOn((component as any).destroy$, "next");
+    spyOn((component as any).destroy$, "complete");
+    component.ngOnDestroy();
+    expect((component as any).destroy$.next).toHaveBeenCalled();
+    expect((component as any).destroy$.complete).toHaveBeenCalled();
+  });
+
+  it("should unsubscribe from all subscriptions", (done) => {
+    let unsubscribed = false;
+    (component as any).destroy$.subscribe({
+      complete: () => {
+        unsubscribed = true;
+      },
+    });
+    component.ngOnDestroy();
+    expect(unsubscribed).toBeTrue();
+    done();
+  });
 });
 

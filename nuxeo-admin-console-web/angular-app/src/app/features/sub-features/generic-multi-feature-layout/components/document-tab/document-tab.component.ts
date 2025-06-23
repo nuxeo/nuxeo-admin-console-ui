@@ -21,7 +21,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -52,13 +52,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
   documentActionLaunched$: Observable<ActionInfo>;
   documentActionError$: Observable<HttpErrorResponse | null>;
-  documentActionLaunchedSubscription = new Subscription();
-  documentActionErrorSubscription = new Subscription();
-  actionDialogClosedSubscription = new Subscription();
-  launchedDialogClosedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
-  launchedDialogOpenedSubscription = new Subscription();
-  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -76,6 +69,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
   FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   FEATURES = FEATURES;
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -128,14 +122,13 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.documentActionLaunchedSubscription =
-      this.documentActionLaunched$.subscribe((data) => {
-        if (data?.commandId) {
-          this.showActionLaunchedModal(data?.commandId);
-        }
-      });
+    this.documentActionLaunched$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      if (data?.commandId) {
+        this.showActionLaunchedModal(data?.commandId);
+      }
+    });
 
-    this.documentActionErrorSubscription = this.documentActionError$.subscribe(
+    this.documentActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -157,14 +150,16 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         error,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe(() => {
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.onActionErrorModalClose();
       });
 
-    this.errorDialogOpenedSubscription = this.errorDialogRef
+    this.errorDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -194,14 +189,16 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.launchedDialogClosedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
 
-    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -341,12 +338,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
-    this.documentActionLaunchedSubscription?.unsubscribe();
-    this.documentActionErrorSubscription?.unsubscribe();
-    this.actionDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogClosedSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogOpenedSubscription?.unsubscribe();
-    this.errorDialogOpenedSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

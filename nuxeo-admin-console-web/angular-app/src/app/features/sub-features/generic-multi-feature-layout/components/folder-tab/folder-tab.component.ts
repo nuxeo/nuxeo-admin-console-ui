@@ -11,7 +11,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil} from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -50,21 +50,11 @@ import {
 })
 export class FolderTabComponent implements OnInit, OnDestroy {
   spinnerVisible = false;
-  spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
   inputForm: FormGroup;
   folderActionLaunched$: Observable<ActionInfo>;
   folderActionError$: Observable<HttpErrorResponse | null>;
-  folderActionLaunchedSubscription = new Subscription();
-  folderActionErrorSubscription = new Subscription();
-  actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
-  launchedDialogClosedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
-  confirmDialogOpenedSubscription = new Subscription();
-  launchedDialogOpenedSubscription = new Subscription();
-  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -84,7 +74,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -103,12 +93,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     this.folderActionError$ = this.store.pipe(
       select((state) => state.folderAction?.error)
     );
-    this.spinnerStatusSubscription =
-      this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
-        (status) => {
-          this.spinnerVisible = status;
-        }
-      );
+    this.genericMultiFeatureUtilitiesService.spinnerStatus
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((status) => {
+        this.spinnerVisible = status;
+      });
   }
 
   ngOnInit(): void {
@@ -143,16 +132,15 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       );
     }
 
-    
-
-    this.folderActionLaunchedSubscription =
-      this.folderActionLaunched$.subscribe((data) => {
+    this.folderActionLaunched$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
         if (data?.commandId) {
           this.showActionLaunchedModal(data?.commandId);
         }
       });
 
-    this.folderActionErrorSubscription = this.folderActionError$.subscribe(
+    this.folderActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -176,14 +164,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         userInput: this.userInput,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe(() => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.onActionErrorModalClose();
       });
 
-    this.errorDialogOpenedSubscription = this.errorDialogRef
+    this.errorDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -214,14 +204,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.launchedDialogClosedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
 
-    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -405,14 +397,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.confirmDialogClosedSubscription = this.confirmDialogRef
+    this.confirmDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.onConfirmationModalClose(data);
       });
 
-    this.confirmDialogOpenedSubscription = this.confirmDialogRef
+    this.confirmDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -475,14 +469,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetFolderActionState());
-    this.folderActionLaunchedSubscription?.unsubscribe();
-    this.folderActionErrorSubscription?.unsubscribe();
-    this.confirmDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogClosedSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
-    this.spinnerStatusSubscription?.unsubscribe();
-    this.confirmDialogOpenedSubscription?.unsubscribe();
-    this.launchedDialogOpenedSubscription?.unsubscribe();
-    this.errorDialogOpenedSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
