@@ -19,6 +19,7 @@ import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
+  ERROR_MESSAGES,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -65,7 +66,15 @@ describe("DocumentTabComponent", () => {
     }
 
     handleErrorJson(): void {
-     return ;
+      return;
+    }
+
+    buildRequestQuery(): void {
+      return;
+    }
+
+    buildRequestParams(): void {
+      return;
     }
   }
 
@@ -433,5 +442,86 @@ describe("DocumentTabComponent", () => {
     component.ngOnDestroy();
       expect(unsubscribed).toBeTrue();
       done();
+  });
+
+  it("should show error modal if decodeURIComponent throws", () => {
+    component.inputForm = new FormBuilder().group({
+      inputIdentifier: ["mock%input", Validators.required],
+    });
+    component.isSubmitBtnDisabled = false;
+    spyOn(component, "triggerAction");
+    spyOn(component, "showActionErrorModal");
+    fixture.detectChanges();
+    spyOn(window, "decodeURIComponent").and.throwError("Mock Error");
+    fixture.detectChanges();
+    component.onFormSubmit();
+    expect(component.triggerAction).not.toHaveBeenCalled();
+    expect(component.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      details: { message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE },
+    });
+  });
+
+  describe('triggerAction', () => {
+    let fetchSpy: jasmine.Spy;
+    let buildRequestQuerySpy: jasmine.Spy;
+    let buildRequestParamsSpy: jasmine.Spy;
+    let storeDispatchSpy: jasmine.Spy;
+    let decodeAndReplaceSingleQuotesSpy: jasmine.Spy;
+    let showActionErrorModalSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      fetchSpy = jasmine.createSpy().and.returnValue(Promise.resolve({ path: '/mock/path' }));
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({ fetch: fetchSpy }),
+      } as any;
+      buildRequestQuerySpy = spyOn(genericMultiFeatureUtilitiesService, 'buildRequestQuery').and.returnValue('query');
+      buildRequestParamsSpy = spyOn(genericMultiFeatureUtilitiesService, 'buildRequestParams').and.returnValue({
+        requestUrl: 'url',
+        requestParams: '',
+        requestHeaders: {},
+      });
+      storeDispatchSpy = spyOn(store, 'dispatch');
+      decodeAndReplaceSingleQuotesSpy = spyOn(genericMultiFeatureUtilitiesService, 'decodeAndReplaceSingleQuotes');
+      showActionErrorModalSpy = spyOn(component, 'showActionErrorModal');
+      component.activeFeature = FEATURES.FULLTEXT_REINDEX as any;
+      component.templateConfigData = { data: {} } as any;
+      component.inputForm = new FormGroup({ inputIdentifier: new FormControl('') });
+    });
+
+    it('should build request and dispatch action for valid document', async () => {
+      await component.triggerAction('mock/path');
+      expect(component.nuxeo.repository).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith('mock/path');
+      expect(buildRequestQuerySpy).toHaveBeenCalled();
+      expect(buildRequestParamsSpy).toHaveBeenCalled();
+      expect(storeDispatchSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+        type: FeatureActions.performDocumentAction.type,
+      }));
+    });
+
+    it('should show error modal if buildRequestQuery throws', async () => {
+      buildRequestQuerySpy.and.throwError('error');
+      await component.triggerAction('/mock/path');
+      expect(showActionErrorModalSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+        type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      }));
+    });
+
+    it('should show error modal if decodeAndReplaceSingleQuotes throws', async () => {
+      fetchSpy.and.returnValue(Promise.resolve({ path: "/default-domain's" }));
+      decodeAndReplaceSingleQuotesSpy.and.throwError('mock error');
+      await component.triggerAction("/default-domain's");
+      expect(showActionErrorModalSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+        type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      }));
+    });
+
+    it('should not call buildRequestQuery if document is not object or missing path', async () => {
+      fetchSpy.and.returnValue(Promise.resolve(null));
+      await component.triggerAction('mock/path/document');
+      expect(buildRequestQuerySpy).not.toHaveBeenCalled();
+      expect(storeDispatchSpy).not.toHaveBeenCalled();
+    });
   });
 });

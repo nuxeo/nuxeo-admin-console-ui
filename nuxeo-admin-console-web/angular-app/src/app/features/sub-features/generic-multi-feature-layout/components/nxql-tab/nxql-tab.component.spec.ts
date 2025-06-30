@@ -54,6 +54,10 @@ describe("NXQLTabComponent", () => {
     secondsToHumanReadable() {
       return "";
     }
+
+    buildRequestParams(): void{
+      return;
+    }
   }
 
   beforeEach(async () => {
@@ -524,5 +528,37 @@ describe("NXQLTabComponent", () => {
     component.ngOnDestroy();
       expect(unsubscribed).toBeTrue();
       done();
+  });
+  describe('onConfirmationModalClose', () => {
+    let getFeatureKeyByValueSpy: jasmine.Spy;
+    let focusSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      getFeatureKeyByValueSpy = jasmine.createSpy('getFeatureKeyByValue');
+      focusSpy = spyOn(document, 'getElementById').and.returnValue({ focus: jasmine.createSpy('focus') } as any);
+      component.activeFeature = 'FULLTEXT_REINDEX' as any;
+      component.templateConfigData = {
+        data: {}
+      } as any;
+      component.requestQuery = 'mockQuery';
+      component.inputForm = new FormGroup({});
+    });
+
+    it('should focus inputIdentifier if data.continue is false', () => {
+      const data = { continue: false };
+      component.onConfirmationModalClose(data as any, 'mockQuery');
+      expect(focusSpy).toHaveBeenCalledWith('inputIdentifier');
+      expect((focusSpy as any).calls.mostRecent().returnValue.focus).toHaveBeenCalled();
+    });
+
+    it('should set isSubmitBtnDisabled to false always', () => {
+      component.isSubmitBtnDisabled = true;
+      component.onConfirmationModalClose({ continue: false } as any, 'mockQuery');
+      expect(component.isSubmitBtnDisabled).toBeFalse();
+      component.isSubmitBtnDisabled = true;
+      getFeatureKeyByValueSpy.and.returnValue('FULLTEXT_REINDEX');
+      component.onConfirmationModalClose({ continue: true } as any, 'mockQuery');
+      expect(component.isSubmitBtnDisabled).toBeFalse();
+    });
   });
 });

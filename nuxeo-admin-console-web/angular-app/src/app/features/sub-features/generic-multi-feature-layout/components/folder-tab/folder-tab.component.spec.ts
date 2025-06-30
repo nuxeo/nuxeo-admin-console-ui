@@ -80,6 +80,10 @@ describe("FolderTabComponent", () => {
     buildRequestParams():void {
       return;
     }
+
+    handleErrorJson(): void {
+      return;
+    }
   }
 
   beforeEach(async () => {
@@ -145,8 +149,6 @@ describe("FolderTabComponent", () => {
         }),
       }),
     };
-
-    spyOn(component, "fetchNoOfDocuments");
     fixture.detectChanges();
   });
 
@@ -420,6 +422,25 @@ describe("FolderTabComponent", () => {
     expect(component.triggerAction).toHaveBeenCalled();
   });
 
+   it("should show error modal if decodeURIComponent throws", () => {
+    component.inputForm = new FormBuilder().group({
+      inputIdentifier: ["mock%input", Validators.required],
+    });
+    component.isSubmitBtnDisabled = false;
+    spyOn(component, "triggerAction");
+    spyOn(component, "showActionErrorModal");
+    fixture.detectChanges();
+    spyOn(window, "decodeURIComponent").and.throwError("Mock URI Error");
+    spyOn(component,'isIdAndPathRequired').and.returnValue(false);
+    fixture.detectChanges();
+    component.onFormSubmit();
+    expect(component.triggerAction).not.toHaveBeenCalled();
+    expect(component.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.INVALID_DOC_ID,
+      details: { message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE },
+    });
+  });
+
   it("should process request directly when ID-only feature is used", () => {
     spyOn(component, "isIdAndPathRequired").and.returnValue(false);
     spyOn(component, "processRequest");
@@ -427,20 +448,6 @@ describe("FolderTabComponent", () => {
     expect(component.processRequest).toHaveBeenCalledWith("test-id");
   });
 
-  it("should handle processRequest errors appropriately", () => {
-    spyOn(
-      genericMultiFeatureUtilitiesService,
-      "buildRequestQuery"
-    ).and.throwError("Test error");
-    spyOn(component, "showActionErrorModal");
-    component.processRequest("test-input");
-    expect(component.showActionErrorModal).toHaveBeenCalledWith({
-      type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
-      details: {
-        message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
-      },
-    });
-  });
 
   it("should handle confirmation modal close with continue action", () => {
     const mockRequestParams = {
@@ -561,5 +568,94 @@ describe("FolderTabComponent", () => {
     component.ngOnDestroy();
       expect(unsubscribed).toBeTrue();
       done();
+  });
+
+  describe("processRequest", () => {
+    it("should call buildRequestQuery and fetchNoOfDocuments with correct arguments", () => {
+      const userInput = "mock-user-input";
+      const mockQuery = "SELECT * FROM Document";
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestQuery"
+      ).and.returnValue(mockQuery);
+      spyOn(component, "fetchNoOfDocuments");
+      component.templateConfigData = { some: "data" } as any;
+      component.processRequest(userInput);
+      expect(
+        genericMultiFeatureUtilitiesService.buildRequestQuery
+      ).toHaveBeenCalledWith(userInput, component.templateConfigData);
+      expect(component.fetchNoOfDocuments).toHaveBeenCalled();
+    });
+
+    it("should handle processRequest errors appropriately", () => {
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestQuery"
+      ).and.throwError("Mock error");
+      spyOn(component, "showActionErrorModal");
+      component.processRequest("mock-input");
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+        details: {
+          message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+        },
+      });
+    });
+  });
+  describe("triggerAction", () => {
+    beforeEach(() => {
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({
+          fetch: jasmine.createSpy(),
+        }),
+      } as any;
+    });
+
+    it("should call processRequest with doc.uid when areIdAndPathRequired is true and fetch resolves with document", async () => {
+      spyOn(component, "isIdAndPathRequired").and.returnValue(true);
+      const mockUid = "mock-uid";
+      const fetchSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve({ uid: mockUid }));
+      (component.nuxeo.repository as jasmine.Spy).and.returnValue({
+        fetch: fetchSpy,
+      });
+      const processRequestSpy = spyOn(component, "processRequest");
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleError"
+      );
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleErrorJson"
+      );
+      await component.triggerAction("mock-user-input");
+      await Promise.resolve();
+      expect(fetchSpy).toHaveBeenCalledWith("mock-user-input");
+      expect(processRequestSpy).toHaveBeenCalledWith(mockUid);
+    });
+
+    it("should not call processRequest if fetch resolves with null", async () => {
+      spyOn(component, "isIdAndPathRequired").and.returnValue(true);
+      const fetchSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve(null));
+      (component.nuxeo.repository as jasmine.Spy).and.returnValue({
+        fetch: fetchSpy,
+      });
+      const processRequestSpy = spyOn(component, "processRequest");
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleError"
+      );
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleErrorJson"
+      );
+      await component.triggerAction("mock-user-input");
+      await Promise.resolve();
+      expect(fetchSpy).toHaveBeenCalledWith("mock-user-input");
+      expect(processRequestSpy).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { GenericMultiFeatureUtilitiesService } from "./generic-multi-feature-utilities.service";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
-import { GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
 import { FormControl, FormGroup } from "@angular/forms";
 import { RequestParamType } from "../generic-multi-feature-layout.interface";
 
@@ -200,6 +200,36 @@ describe("GenericMultiFeatureUtilitiesService", () => {
         expect(result.requestUrl).toEqual("");
         expect(result.requestParams).toEqual("anotherParam=value");
       });
+    });
+  });
+  
+  describe("handleError", () => {
+    it("should call response.json() and resolve when error has response.json", async () => {
+      const jsonResult = { message: "error details" };
+      const err = {
+        response: {
+          json: jasmine.createSpy("json").and.returnValue(Promise.resolve(jsonResult)),
+        },
+      };
+      spyOn(service, "checkIfResponseHasError").and.returnValue(true);
+      const result = await service.handleError(err);
+      expect(service.checkIfResponseHasError).toHaveBeenCalledWith(err);
+      expect(err.response.json).toHaveBeenCalled();
+      expect(result).toEqual(jsonResult);
+    });
+
+    it("should reject with UNEXPECTED_ERROR when error does not have response.json", async () => {
+      const err = new Error("Mock error");
+      spyOn(service, "checkIfResponseHasError").and.returnValue(false);
+
+      try {
+        await service.handleError(err);
+        fail("Promise should have been rejected");
+      } catch (e) {
+        expect(e).toBeDefined();
+        expect(e).toBeTruthy();
+        expect(e).toBe(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+      }
     });
   });
 });

@@ -10,6 +10,7 @@ import { By } from "@angular/platform-browser";
 import { ProbesDataComponent } from "../sub-features/probes-data/components/probes-data.component";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatTableModule } from "@angular/material/table";
+import { MatPaginatorModule } from "@angular/material/paginator";
 
 describe("ProbesComponent", () => {
   let component: ProbesComponent;
@@ -26,6 +27,7 @@ describe("ProbesComponent", () => {
         MatSnackBarModule,
         MatTableModule,
         BrowserAnimationsModule,
+        MatPaginatorModule
       ],
     }).compileComponents();
 
