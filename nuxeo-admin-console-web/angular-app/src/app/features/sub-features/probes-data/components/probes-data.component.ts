@@ -17,7 +17,7 @@ import { MatTableDataSource } from "@angular/material/table";
   templateUrl: "./probes-data.component.html",
   styleUrls: ["./probes-data.component.scss"],
 })
-export class ProbesDataComponent implements OnInit, OnDestroy {
+export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() summary = false;
   probesData: MatTableDataSource<ProbesInfo> = new MatTableDataSource<ProbesInfo>([]);
   fetchProbes$: Observable<ProbesInfo[]>;
