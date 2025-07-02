@@ -208,7 +208,9 @@ describe("GenericMultiFeatureUtilitiesService", () => {
       const jsonResult = { message: "error details" };
       const err = {
         response: {
-          json: jasmine.createSpy("json").and.returnValue(Promise.resolve(jsonResult)),
+          json: jasmine
+            .createSpy("json")
+            .and.returnValue(Promise.resolve(jsonResult)),
         },
       };
       spyOn(service, "checkIfResponseHasError").and.returnValue(true);

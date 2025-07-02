@@ -19,7 +19,8 @@ import { MatTableDataSource } from "@angular/material/table";
 })
 export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() summary = false;
-  probesData: MatTableDataSource<ProbesInfo> = new MatTableDataSource<ProbesInfo>([]);
+  probesData: MatTableDataSource<ProbesInfo> =
+    new MatTableDataSource<ProbesInfo>([]);
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
@@ -53,7 +54,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   probeLaunchedSuccess$: Observable<ProbesInfo[]>;
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
-  @ViewChild('paginator') paginator!: MatPaginator;
+  @ViewChild("paginator") paginator!: MatPaginator;
 
   constructor(
     private store: Store<{ probes: ProbeState }>,
@@ -79,17 +80,19 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
       (col) => col.summaryOnly && this.summary
     );
 
-    this.fetchProbes$.pipe(takeUntil(this.destroy$)).subscribe(
-      (data: ProbesInfo[]) => {
+    this.fetchProbes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: ProbesInfo[]) => {
         if (data?.length !== 0) {
           this.probesData.data = data;
         } else {
           this.store.dispatch(ProbeActions.loadProbesData());
         }
-      }
-    );
+      });
 
-      this.probeLaunchedSuccess$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+    this.probeLaunchedSuccess$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
         if (
           data &&
           data?.length > 0 &&
@@ -109,8 +112,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-    this.probeLaunchedError$.pipe(takeUntil(this.destroy$)).subscribe(
-      (error) => {
+    this.probeLaunchedError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((error) => {
         if (error) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
@@ -124,8 +128,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
             panelClass: ["error-snack"],
           });
         }
-      }
-    );
+      });
   }
 
   deriveProbeDisplayName(probeName: string): string {

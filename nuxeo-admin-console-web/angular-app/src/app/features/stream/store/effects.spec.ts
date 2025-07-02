@@ -103,12 +103,12 @@ describe("StreamEffects", () => {
       });
     });
 
-    it('should dispatch onStopFetchFailure when an error occurs', (done) => {
-      const error = new Error('Mock Error');
+    it("should dispatch onStopFetchFailure when an error occurs", (done) => {
+      const error = new Error("Mock Error");
       const actions$ = of(StreamActions.onStopFetch());
       const mockStreamService = {
         stopSSEStream: () => {
-          throw error; 
+          throw error;
         },
         isFetchingRecords: {
           next: jasmine.createSpy(),
@@ -116,7 +116,9 @@ describe("StreamEffects", () => {
       };
       const effect$ = stopRecordsSSEStream$(actions$, mockStreamService as any);
       effect$.subscribe((result) => {
-        expect(mockStreamService.isFetchingRecords.next).toHaveBeenCalledWith(false);
+        expect(mockStreamService.isFetchingRecords.next).toHaveBeenCalledWith(
+          false
+        );
         expect(result).toEqual(StreamActions.onStopFetchFailure({ error }));
         done();
       });

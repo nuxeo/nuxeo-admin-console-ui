@@ -422,7 +422,7 @@ describe("FolderTabComponent", () => {
     expect(component.triggerAction).toHaveBeenCalled();
   });
 
-   it("should show error modal if decodeURIComponent throws", () => {
+  it("should show error modal if decodeURIComponent throws", () => {
     component.inputForm = new FormBuilder().group({
       inputIdentifier: ["mock%input", Validators.required],
     });
@@ -431,7 +431,7 @@ describe("FolderTabComponent", () => {
     spyOn(component, "showActionErrorModal");
     fixture.detectChanges();
     spyOn(window, "decodeURIComponent").and.throwError("Mock URI Error");
-    spyOn(component,'isIdAndPathRequired').and.returnValue(false);
+    spyOn(component, "isIdAndPathRequired").and.returnValue(false);
     fixture.detectChanges();
     component.onFormSubmit();
     expect(component.triggerAction).not.toHaveBeenCalled();
@@ -448,7 +448,6 @@ describe("FolderTabComponent", () => {
     expect(component.processRequest).toHaveBeenCalledWith("test-id");
   });
 
-
   it("should handle confirmation modal close with continue action", () => {
     const mockRequestParams = {
       requestUrl: "test-url",
@@ -464,8 +463,8 @@ describe("FolderTabComponent", () => {
     expect(component.isSubmitBtnDisabled).toBeFalse();
   });
 
-  it('should call buildRequestParams and store', () => {
-    component.activeFeature = 'elasticsearch-reindex' as any;
+  it("should call buildRequestParams and store", () => {
+    component.activeFeature = "elasticsearch-reindex" as any;
     const mockRequestParams = {
       requestUrl: "test-url",
       requestParams: "",
@@ -477,7 +476,9 @@ describe("FolderTabComponent", () => {
       "buildRequestParams"
     ).and.returnValue(mockRequestParams);
     component.onConfirmationModalClose({ continue: true });
-    expect(genericMultiFeatureUtilitiesService.buildRequestParams).toHaveBeenCalled();
+    expect(
+      genericMultiFeatureUtilitiesService.buildRequestParams
+    ).toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalled();
   });
 
@@ -566,8 +567,8 @@ describe("FolderTabComponent", () => {
       },
     });
     component.ngOnDestroy();
-      expect(unsubscribed).toBeTrue();
-      done();
+    expect(unsubscribed).toBeTrue();
+    done();
   });
 
   describe("processRequest", () => {

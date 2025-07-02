@@ -166,8 +166,8 @@ describe("ProbesDataComponent", () => {
     expect((component as any)._snackBar.openFromComponent).toHaveBeenCalled();
   });
 
-  describe('ngAfterViewInit', () => {
-    it('should assign paginator to probesData', () => {
+  describe("ngAfterViewInit", () => {
+    it("should assign paginator to probesData", () => {
       component.ngAfterViewInit();
       expect(component.probesData.paginator).toBe(component.paginator);
     });

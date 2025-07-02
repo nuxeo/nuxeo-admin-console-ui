@@ -529,35 +529,46 @@ describe("NXQLTabComponent", () => {
       expect(unsubscribed).toBeTrue();
       done();
   });
-  describe('onConfirmationModalClose', () => {
+  
+  describe("onConfirmationModalClose", () => {
     let getFeatureKeyByValueSpy: jasmine.Spy;
     let focusSpy: jasmine.Spy;
 
     beforeEach(() => {
-      getFeatureKeyByValueSpy = jasmine.createSpy('getFeatureKeyByValue');
-      focusSpy = spyOn(document, 'getElementById').and.returnValue({ focus: jasmine.createSpy('focus') } as any);
-      component.activeFeature = 'FULLTEXT_REINDEX' as any;
+      getFeatureKeyByValueSpy = jasmine.createSpy("getFeatureKeyByValue");
+      focusSpy = spyOn(document, "getElementById").and.returnValue({
+        focus: jasmine.createSpy("focus"),
+      } as any);
+      component.activeFeature = "FULLTEXT_REINDEX" as any;
       component.templateConfigData = {
-        data: {}
+        data: {},
       } as any;
-      component.requestQuery = 'mockQuery';
+      component.requestQuery = "mockQuery";
       component.inputForm = new FormGroup({});
     });
 
-    it('should focus inputIdentifier if data.continue is false', () => {
+    it("should focus inputIdentifier if data.continue is false", () => {
       const data = { continue: false };
-      component.onConfirmationModalClose(data as any, 'mockQuery');
-      expect(focusSpy).toHaveBeenCalledWith('inputIdentifier');
-      expect((focusSpy as any).calls.mostRecent().returnValue.focus).toHaveBeenCalled();
+      component.onConfirmationModalClose(data as any, "mockQuery");
+      expect(focusSpy).toHaveBeenCalledWith("inputIdentifier");
+      expect(
+        (focusSpy as any).calls.mostRecent().returnValue.focus
+      ).toHaveBeenCalled();
     });
 
-    it('should set isSubmitBtnDisabled to false always', () => {
+    it("should set isSubmitBtnDisabled to false always", () => {
       component.isSubmitBtnDisabled = true;
-      component.onConfirmationModalClose({ continue: false } as any, 'mockQuery');
+      component.onConfirmationModalClose(
+        { continue: false } as any,
+        "mockQuery"
+      );
       expect(component.isSubmitBtnDisabled).toBeFalse();
       component.isSubmitBtnDisabled = true;
-      getFeatureKeyByValueSpy.and.returnValue('FULLTEXT_REINDEX');
-      component.onConfirmationModalClose({ continue: true } as any, 'mockQuery');
+      getFeatureKeyByValueSpy.and.returnValue("FULLTEXT_REINDEX");
+      component.onConfirmationModalClose(
+        { continue: true } as any,
+        "mockQuery"
+      );
       expect(component.isSubmitBtnDisabled).toBeFalse();
     });
   });
