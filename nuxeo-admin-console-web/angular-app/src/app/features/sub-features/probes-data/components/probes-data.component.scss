@@ -40,8 +40,8 @@ mat-card {
   width: 100px;
   height: 36px;
   position: relative;
-  left: 85%;
-  top: 30%;
+  left: 0%;
+  top: 18%;
   margin-bottom: 20px;
   background-color: #0a60ce !important;
   font-family: "Open Sans", sans-serif;
@@ -58,8 +58,13 @@ mat-card {
   font-weight: 550;
 }
 
-mat-card-footer {
+.probes-data-card-footer {
   margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 1.5rem;
+  align-items: center;
+  margin-bottom: -0.6rem;
 }
 
 .table-container-summary {
@@ -73,9 +78,9 @@ mat-card-footer {
   max-height: 550px;
   overflow: auto;
 }
-@media (width < 800px) {
+@media (max-width: 799px) {
   .redirect-details-btn {
-    left: 75%;
+    left: -5%;
   }
 }
 

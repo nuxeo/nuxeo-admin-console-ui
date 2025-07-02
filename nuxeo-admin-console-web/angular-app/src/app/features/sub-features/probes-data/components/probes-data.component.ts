@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
@@ -9,6 +9,8 @@ import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
 
 @Component({
   selector: "probes-data",
@@ -17,7 +19,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class ProbesDataComponent implements OnInit, OnDestroy {
   @Input() summary = false;
-  probesData: ProbesInfo[] = [];
+  probesData: MatTableDataSource<ProbesInfo> = new MatTableDataSource<ProbesInfo>([]);
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
@@ -51,6 +53,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   probeLaunchedSuccess$: Observable<ProbesInfo[]>;
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
+  @ViewChild('paginator') paginator!: MatPaginator;
 
   constructor(
     private store: Store<{ probes: ProbeState }>,
@@ -79,7 +82,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     this.fetchProbes$.pipe(takeUntil(this.destroy$)).subscribe(
       (data: ProbesInfo[]) => {
         if (data?.length !== 0) {
-          this.probesData = data;
+          this.probesData.data = data;
         } else {
           this.store.dispatch(ProbeActions.loadProbesData());
         }
@@ -163,5 +166,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngAfterViewInit() {
+    this.probesData.paginator = this.paginator;
   }
 }
