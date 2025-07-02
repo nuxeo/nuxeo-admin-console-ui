@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
-import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
