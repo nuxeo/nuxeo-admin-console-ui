@@ -142,8 +142,12 @@
             </div>
 
         </mat-card-content>
-        <mat-card-footer *ngIf="summary">
-            <button mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()" tabindex="0">
+        <mat-card-footer [ngClass]="{ 'probes-data-card-footer': summary }">
+            <mat-paginator #paginator [length]="probesData.data.length || 0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+            </mat-paginator>
+            <button *ngIf="summary" mat-flat-button color="primary" class="redirect-details-btn" (click)="viewDetails()"
+                tabindex="0">
                 {{ PROBES_LABELS.DETAILS }}
             </button>
         </mat-card-footer>

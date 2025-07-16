@@ -102,5 +102,26 @@ describe("StreamEffects", () => {
         done();
       });
     });
+
+    it("should dispatch onStopFetchFailure when an error occurs", (done) => {
+      const error = new Error("Mock Error");
+      const actions$ = of(StreamActions.onStopFetch());
+      const mockStreamService = {
+        stopSSEStream: () => {
+          throw error;
+        },
+        isFetchingRecords: {
+          next: jasmine.createSpy(),
+        },
+      };
+      const effect$ = stopRecordsSSEStream$(actions$, mockStreamService as any);
+      effect$.subscribe((result) => {
+        expect(mockStreamService.isFetchingRecords.next).toHaveBeenCalledWith(
+          false
+        );
+        expect(result).toEqual(StreamActions.onStopFetchFailure({ error }));
+        done();
+      });
+    });
   });
 });

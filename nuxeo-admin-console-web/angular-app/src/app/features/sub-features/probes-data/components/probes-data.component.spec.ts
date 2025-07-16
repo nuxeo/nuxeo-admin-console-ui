@@ -9,6 +9,7 @@ import { PROBES_LABELS } from "../probes-data.constants";
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonService } from "../../../../shared/services/common.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatPaginatorModule } from "@angular/material/paginator";
 
 describe("ProbesDataComponent", () => {
   let component: ProbesDataComponent;
@@ -36,7 +37,7 @@ describe("ProbesDataComponent", () => {
 
     await TestBed.configureTestingModule({
       declarations: [ProbesDataComponent],
-      imports: [MatSnackBarModule],
+      imports: [MatSnackBarModule,MatPaginatorModule],
       providers: [
         provideMockStore({ initialState }),
         { provide: CommonService, useClass: CommonServiceStub }, 
@@ -145,7 +146,7 @@ describe("ProbesDataComponent", () => {
     const testData = [{ name: 'testProbe' }] as any;
     (component as any).fetchProbes$ = of(testData);
     component.ngOnInit();
-    expect(component.probesData).toEqual(testData);
+    expect(component.probesData.data).toEqual(testData);
   });
 
   it('should call showActionLaunchedModal when probeLaunchedError$ emits with commandId', () => {
@@ -164,4 +165,12 @@ describe("ProbesDataComponent", () => {
     component.ngOnInit();
     expect((component as any)._snackBar.openFromComponent).toHaveBeenCalled();
   });
+
+  describe("ngAfterViewInit", () => {
+    it("should assign paginator to probesData", () => {
+      component.ngAfterViewInit();
+      expect(component.probesData.paginator).toBe(component.paginator);
+    });
+  });
+
 });

@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
@@ -9,15 +9,18 @@ import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
 
 @Component({
   selector: "probes-data",
   templateUrl: "./probes-data.component.html",
   styleUrls: ["./probes-data.component.scss"],
 })
-export class ProbesDataComponent implements OnInit, OnDestroy {
+export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() summary = false;
-  probesData: ProbesInfo[] = [];
+  probesData: MatTableDataSource<ProbesInfo> =
+    new MatTableDataSource<ProbesInfo>([]);
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
@@ -51,6 +54,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   probeLaunchedSuccess$: Observable<ProbesInfo[]>;
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
+  @ViewChild("paginator") paginator!: MatPaginator;
 
   constructor(
     private store: Store<{ probes: ProbeState }>,
@@ -76,17 +80,19 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
       (col) => col.summaryOnly && this.summary
     );
 
-    this.fetchProbes$.pipe(takeUntil(this.destroy$)).subscribe(
-      (data: ProbesInfo[]) => {
+    this.fetchProbes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: ProbesInfo[]) => {
         if (data?.length !== 0) {
-          this.probesData = data;
+          this.probesData.data = data;
         } else {
           this.store.dispatch(ProbeActions.loadProbesData());
         }
-      }
-    );
+      });
 
-      this.probeLaunchedSuccess$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+    this.probeLaunchedSuccess$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
         if (
           data &&
           data?.length > 0 &&
@@ -106,8 +112,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.probeLaunchedError$.pipe(takeUntil(this.destroy$)).subscribe(
-      (error) => {
+    this.probeLaunchedError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((error) => {
         if (error) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
@@ -121,8 +128,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
             panelClass: ["error-snack"],
           });
         }
-      }
-    );
+      });
   }
 
   deriveProbeDisplayName(probeName: string): string {
@@ -163,5 +169,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngAfterViewInit() {
+    this.probesData.paginator = this.paginator;
   }
 }
