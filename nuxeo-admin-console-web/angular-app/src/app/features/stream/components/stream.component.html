@@ -1,16 +1,24 @@
-<div class="stream-container">
-    <h1 *ngIf="pageTitle" id="page-title" tabindex="0" aria-live="polite">
-        {{ pageTitle }}
-    </h1>
-    <div class="stream-container__placeholder">
-        <stream-form></stream-form>
-        <div *ngIf="isFetchingRecords || records!.length > 0">
-            <hr>
-            <stream-records-status [recordsFetchedStatusText]="recordsFetchedStatusText" [recordCount]="recordCount"
-                [isFetchingRecords]="isFetchingRecords"></stream-records-status>
+<mat-tab-group class="stream-tab-group" [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab label="Stream Management">
+        <div class="stream-container" *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.STREAM.ID"> <!-- Load only active tab -->
+            <div class="stream-container__placeholder">
+                <stream-form></stream-form>
+                <div *ngIf="isFetchingRecords || records!.length > 0">
+                    <hr>
+                    <stream-records-status [recordsFetchedStatusText]="recordsFetchedStatusText"
+                        [recordCount]="recordCount" [isFetchingRecords]="isFetchingRecords"></stream-records-status>
+                </div>
+                <div class="result" *ngIf="records!.length > 0 || !clearRecordsDisplay">
+                    <stream-records [records]="records"></stream-records>
+                </div>
+            </div>
         </div>
-        <div class="result" *ngIf="records!.length > 0 || !clearRecordsDisplay">
-            <stream-records [records]="records"></stream-records>
+    </mat-tab>
+    <mat-tab label="Consumer Thread Pool">
+        <div class="consumer-thread-pool-container">
+            <div class="consumer-thread-pool-container__placeholder">
+                <app-consumer-thread-pool *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID"></app-consumer-thread-pool>
+            </div>
         </div>
-    </div>
-</div>
+    </mat-tab>
+</mat-tab-group>

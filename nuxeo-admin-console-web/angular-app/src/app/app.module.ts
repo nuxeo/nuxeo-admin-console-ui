@@ -51,7 +51,7 @@ import {
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
-import { streamsReducer } from "./features/stream/store/reducers";
+import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
 
 @NgModule({
   declarations: [
@@ -80,7 +80,8 @@ import { streamsReducer } from "./features/stream/store/reducers";
       nxqlAction: nxqlActionReducer,
       bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
-      streams: streamsReducer
+      streams: streamsReducer,
+      consumerThreadPool: consumerThreadPoolReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(

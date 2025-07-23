@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
 import { CommonService } from "../../../../../shared/services/common.service";
 import { GenericModalData } from "../../generic-multi-feature-layout.interface";
+import { CONSUMER_THREAD_POOL_LABELS } from "../../../../stream/stream.constants";
 
 @Component({
   selector: "generic-modal",
@@ -11,6 +12,7 @@ import { GenericModalData } from "../../generic-multi-feature-layout.interface";
 })
 export class GenericModalComponent  {
   GENERIC_LABELS = GENERIC_LABELS;
+  CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
   constructor(
     private dialogRef: MatDialogRef<GenericModalComponent>,
     public commonService: CommonService,
@@ -39,5 +41,11 @@ export class GenericModalComponent  {
   seeStatus(): void {
     this.commonService.redirectToBulkActionMonitoring(this.data.commandId);
     this.dialogRef.close();
+  }
+
+  continueConsumerThreadPoolOperation(){
+    this.dialogRef.close({
+      continue: true,
+    });
   }
 }

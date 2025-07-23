@@ -119,3 +119,49 @@ export const stopRecordsSSEStream$ = createEffect(
   },
   { functional: true, dispatch: true }
 );
+
+export const startConsumerThreadPool$ = createEffect(
+  (actions$ = inject(Actions), streamService = inject(StreamService)) => {
+    return actions$.pipe(
+      ofType(StreamActions.onStartConsumerThreadPoolLaunch),
+      switchMap((action) =>
+        streamService.startConsumerThreadPool(action?.params).pipe(
+          map(() =>
+            StreamActions.onStartConsumerThreadPoolLaunchSuccess()
+          ),
+          catchError((error: HttpErrorResponse) =>
+            of(
+              StreamActions.onStartConsumerThreadPoolLaunchFailure({
+                error,
+              })
+            )
+          )
+        )
+      )
+    );
+  },
+  { functional: true, dispatch: true }
+);
+
+export const stopConsumerThreadPool$ = createEffect(
+  (actions$ = inject(Actions), streamService = inject(StreamService)) => {
+    return actions$.pipe(
+      ofType(StreamActions.onStopConsumerThreadPoolLaunch),
+      switchMap((action) =>
+        streamService.stopConsumerThreadPool(action?.params).pipe(
+          map(() =>
+            StreamActions.onStopConsumerThreadPoolLaunchSuccess()
+          ),
+          catchError((error: HttpErrorResponse) =>
+            of(
+              StreamActions.onStopConsumerThreadPoolLaunchFailure({
+                error,
+              })
+            )
+          )
+        )
+      )
+    );
+  },
+  { functional: true, dispatch: true }
+);

@@ -13,6 +13,8 @@ export const REST_END_POINTS = {
   STREAM: "STREAM",
   STREAM_CONSUMERS: "STREAM_CONSUMERS",
   STREAM_RECORDS: "STREAM_RECORDS",
+  START_CONSUMER_THREAD_POOL: "START_CONSUMER_THREAD_POOL",
+  STOP_CONSUMER_THREAD_POOL: "STOP_CONSUMER_THREAD_POOL",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -82,4 +84,12 @@ export const REST_END_POINT_CONFIG: Record<
     endpoint: "/management/stream/cat",
     method: "GET",
   },
+  START_CONSUMER_THREAD_POOL:{
+    endpoint: "/management/stream/consumer/start",
+    method: "PUT",
+  },
+  STOP_CONSUMER_THREAD_POOL: {
+    endpoint: "/management/stream/consumer/stop",
+    method: "PUT",
+  }
 };

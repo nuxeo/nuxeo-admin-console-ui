@@ -57,3 +57,40 @@ export const onStopFetchFailure = createAction(
 export const resetStopFetchState = createAction(
   "[Admin] Reset Stop Fetch State"
 );
+
+export const resetStreamErrorState = createAction(
+  "[Admin] Reset Stream State Error"  
+);
+
+// Consumer Thread Pool Actions
+export const onStartConsumerThreadPoolLaunch = createAction(
+  "[Admin] On Start Consumer Thread Pool",
+ props<{ params: { [key: string]: string }, }>()
+);
+
+export const onStartConsumerThreadPoolLaunchFailure = createAction(
+  "[Admin] On Start Consumer Thread Pool Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+
+export const onStartConsumerThreadPoolLaunchSuccess = createAction(
+  "[Admin] On Start Consumer Thread Pool Launch Success",
+);
+
+export const onStopConsumerThreadPoolLaunch = createAction(
+  "[Admin] On Stop Consumer Thread Pool",
+ props<{ params: { [key: string]: string }, }>()
+);
+
+export const onStopConsumerThreadPoolLaunchFailure = createAction(
+  "[Admin] On Stop Consumer Thread Pool Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+
+export const onStopConsumerThreadPoolLaunchSuccess = createAction(
+  "[Admin] On Stop Consumer Thread Pool Launch Success",
+);
+
+export const resetConsumerThreadPoolState = createAction(
+  "[Admin] Reset Consumer Thread Pool State"
+);

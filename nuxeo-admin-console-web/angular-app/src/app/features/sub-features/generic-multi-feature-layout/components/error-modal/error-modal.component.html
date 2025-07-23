@@ -3,7 +3,7 @@
 <mat-dialog-content class="mat-typography error-modal">
   <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
     <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
-    <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+    <p *ngIf="data.error.details.status">{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
     <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
   </div>
   <ng-template #customErrorMessage>

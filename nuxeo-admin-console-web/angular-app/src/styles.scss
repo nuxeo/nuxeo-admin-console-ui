@@ -487,7 +487,8 @@ mat-form-field.input-field.stream-field {
   margin-top: 5px;
 }
 
-mat-form-field.input-field.stream-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+mat-form-field.input-field.stream-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix,
+mat-form-field.input-field.consumer-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
   padding-top: 12px;
 }
 

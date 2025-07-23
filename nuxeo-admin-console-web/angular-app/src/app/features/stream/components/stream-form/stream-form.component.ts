@@ -318,6 +318,10 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(StreamActions.resetStreamErrorState()); // Reset stream error state to avoid showing existing errors and records again on tab change
+    this.streamService.isStopFetchDisabled.next(true); //update button state
+    this.streamService.isViewRecordsDisabled.next(false);
+    this.streamService.isClearRecordsDisabled.next(true);
     this.destroy$.next();    
     this.destroy$.complete(); 
   }

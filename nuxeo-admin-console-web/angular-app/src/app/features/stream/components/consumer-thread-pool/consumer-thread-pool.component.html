@@ -1,0 +1,56 @@
+<form [formGroup]="streamForm">
+  <div class="consumer-thread-pool-container">
+    <p class="required-indicator-label">
+      {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}
+    </p>
+    <div class="form-fields-row">
+      <div>
+        <p class="label form-param">
+          {{ STREAM_LABELS.STREAMS }}
+          <span class="required-field">*</span>
+        </p>
+        <mat-form-field appearance="outline" class="input-field consumer-field">
+          <mat-select #focusMatSelect formControlName="stream" id="stream"
+            (selectionChange)="onStreamChange($event.value)">
+            <mat-option *ngFor="let stream of streams" [value]="stream?.name">
+              {{ stream?.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <p class="label form-param">
+          {{ CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL }}
+          <span class="required-field">*</span>
+        </p>
+        <mat-form-field appearance="outline" class="input-field consumer-field">
+          <mat-select id="consumer" formControlName="consumer">
+            <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
+              {{ consumer?.consumer }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="consumer-thread-pool-btn-container">
+      <button mat-flat-button color="primary" type="button" class="consumer-thread-pool-btn-container__button"
+        [disabled]="isStartStopConsumerThreadBtnDisabled" (click)="
+          showConfirmationModal(
+            CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL
+          )
+        ">
+        {{
+        CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL_BUTTON_LABEL
+        }}
+      </button>
+      <button mat-flat-button color="primary" type="button" class="consumer-thread-pool-btn-container__button"
+        [disabled]="isStartStopConsumerThreadBtnDisabled" (click)="
+          showConfirmationModal(
+            CONSUMER_THREAD_POOL_LABELS.STOP_CONSUMER_THREAD_POOL
+          )
+        ">
+        {{ CONSUMER_THREAD_POOL_LABELS.STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL }}
+      </button>
+    </div>
+  </div>
+</form>

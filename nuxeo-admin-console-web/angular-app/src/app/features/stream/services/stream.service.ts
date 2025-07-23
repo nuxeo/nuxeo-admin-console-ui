@@ -3,7 +3,8 @@ import { Injectable } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
-import { EVENT_STREAM_ERROR_TYPE } from "../stream.constants";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { CustomSnackBarComponent } from "../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +20,10 @@ export class StreamService {
   streamDisconnected$ = this.streamDisconnectedSubject.asObservable();
   private eventSource?: EventSource;
 
-  constructor(private networkService: NetworkService) { }
+  constructor(
+    private networkService: NetworkService,
+    private _snackBar: MatSnackBar
+  ) {}
 
   getStreams(): Observable<Stream[]> {
     return this.networkService.makeHttpRequest<Stream[]>(
@@ -41,7 +45,8 @@ export class StreamService {
       this.eventSource = new EventSource(fullUrl, { withCredentials: true });
 
       this.eventSource.onmessage = (event) => {
-        if (JSON.parse(event.data).type === EVENT_STREAM_ERROR_TYPE.DISCONNECTED) {
+        const parsedData = JSON.parse(event.data);
+        if (parsedData && parsedData.type) {
           this.streamDisconnectedSubject.next(true);
         }
         observer.next(event.data);
@@ -77,5 +82,33 @@ export class StreamService {
       }
       return acc;
     }, {} as Record<string, string>);
+  }
+
+  startConsumerThreadPool(params: {
+    [key: string]: string;
+  }): Observable<void> {
+    return this.networkService.makeHttpRequest<void>(
+      REST_END_POINTS.START_CONSUMER_THREAD_POOL,
+      { queryParam: params }
+    );
+  }
+  stopConsumerThreadPool(params: {
+    [key: string]: string;
+  }): Observable<void> {
+    return this.networkService.makeHttpRequest<void>(
+      REST_END_POINTS.STOP_CONSUMER_THREAD_POOL,
+      { queryParam: params }
+    );
+  }
+
+  showSuccessMessage(message: string): void { //Shared method to show success messages
+    this._snackBar.openFromComponent(CustomSnackBarComponent, {
+      data: {
+        message: message,
+        panelClass: "success-snack",
+      },
+      duration: 5000,
+      panelClass: ["success-snack"],
+    });
   }
 }

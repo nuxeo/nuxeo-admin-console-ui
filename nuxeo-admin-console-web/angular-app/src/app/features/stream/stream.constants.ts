@@ -46,6 +46,27 @@ export const STREAM_LABELS = {
   SECOND: "s"
 };
 
+export const CONSUMER_THREAD_POOL_LABELS = {
+  STREAM :{
+    ID: 0,
+    LABEL: "stream-management",
+  },
+  CONSUMER: {
+    ID: 1,
+    LABEL: "consumer",
+  },
+  CONSUMER_THREAD_POOL: "Consumer Position",
+  START_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Start Consumer Thread Pool",
+  STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Stop Consumer Thread Pool",
+  START_CONSUMER_THREAD_POOL: "start",
+  STOP_CONSUMER_THREAD_POOL: "stop",
+  CONSUMER_THREAD_POOL_OPERATION: "Consumer Thread Pool Operation",
+  CONFIRMATION_MESSAGE: `This action will {operation} the consumer thread pool on all Nuxeo nodes : <b> Name { id = '{selectedConsumerName}', urn = '{selectedConsumerUrn}' } </b> <br><br> Do you want to continue?`,
+  CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG: "An existing consumer thread pool operation is already in progress. Please wait until it completes.",
+  START_CONSUMER_SUCCESS_MSG: "Start consumer thread pool operation completed successfully.",
+  STOP_CONSUMER_SUCCESS_MSG: "Stop consumer thread pool operation completed successfully.",
+}
+
 export const STREAM_MOCK_API_FAILURE = {
   STATUS_CODE: 404,
   MESSAGE: "Not Found"
