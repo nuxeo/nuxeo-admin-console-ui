@@ -15,7 +15,7 @@
   
   <ng-template #checkConsumerThreadPoolMsg>
     <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else launchMessage">
-      <p [innerHTML]="data.message"></p>
+      <p class="consumer-thread-pool-msg" [innerHTML]="data.message"></p>
     </div>
   </ng-template>
   <ng-template #launchMessage>
@@ -47,11 +47,11 @@
   </div>
   <ng-template #otherActions>
     <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else closeBtn">
-      <button mat-flat-button color="primary" (click)="close()">
-        {{ GENERIC_LABELS.CLOSE_LABEL }}
+      <button mat-stroked-button color="primary" (click)="close()" class="abort-btn">
+        {{ GENERIC_LABELS.ABORT_LABEL }}
       </button>
       <button mat-flat-button color="primary" (click)="continueConsumerThreadPoolOperation()">
-        Confirm
+        {{ GENERIC_LABELS.CONTINUE }}
       </button>
     </div>
     <ng-template #closeBtn>

@@ -15,7 +15,7 @@ import {
   MODAL_DIMENSIONS,
 } from "../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import * as StreamActions from "../../store/actions";
-import { ErrorModalComponent } from "src/app/features/sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { ErrorModalComponent } from "../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
 import {
   ErrorDetails,
   ErrorModalClosedInfo,
@@ -262,9 +262,10 @@ export class ConsumerThreadPoolComponent {
       this.genericDialogRef = this.dialogService.open(GenericModalComponent, {
         disableClose: true,
         hasBackdrop: true,
-        height: MODAL_DIMENSIONS.HEIGHT,
+        height: CONSUMER_THREAD_POOL_LABELS.DIALOG_BOX_HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         autoFocus: false,
+        panelClass: 'confirmation-dialog-height',
         data: {
           operationType:
             CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION,
@@ -277,7 +278,10 @@ export class ConsumerThreadPoolComponent {
               selectedConsumer.replace("/", "-")
             )
             .replace("{selectedConsumerUrn}", selectedConsumer),
-          title: CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION,
+          title: CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_DIALOG_MSG.replace(
+            "{operation}",
+            operation.charAt(0).toUpperCase() + operation.slice(1)
+          ),
         },
       });
       this.genericDialogRef
@@ -298,17 +302,18 @@ export class ConsumerThreadPoolComponent {
           message:
             CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG,
         },
-      });
+      }, 'error-dialog-height');
     }
   }
 
-  showActionErrorModal(error: ErrorDetails): void {
+  showActionErrorModal(error: ErrorDetails, panelClass?: string): void {
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
       hasBackdrop: true,
-      height: MODAL_DIMENSIONS.HEIGHT,
+      height: panelClass ? CONSUMER_THREAD_POOL_LABELS.DIALOG_BOX_HEIGHT : MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       autoFocus: false,
+      panelClass: panelClass ?? '',
       data: {
         error: error,
       },

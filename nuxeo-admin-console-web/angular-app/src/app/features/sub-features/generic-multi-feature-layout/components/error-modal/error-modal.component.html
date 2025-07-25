@@ -2,7 +2,9 @@
 <hr class="separator">
 <mat-dialog-content class="mat-typography error-modal">
   <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
-    <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
+    <p *ngIf="data.error.details.message !== CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG">
+      {{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}
+    </p> <!-- Hide generic error message for consumer thread pool operation -->
     <p *ngIf="data.error.details.status">{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
     <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
   </div>

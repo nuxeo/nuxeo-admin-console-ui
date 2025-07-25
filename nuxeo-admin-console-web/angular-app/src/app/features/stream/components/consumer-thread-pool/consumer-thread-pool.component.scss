@@ -76,3 +76,8 @@
 .input-field.consumer-field {
     max-height: 40px;
 }
+
+::ng-deep .confirmation-dialog-height .mdc-dialog .mdc-dialog__content.generic-modal,
+::ng-deep .error-dialog-height .mdc-dialog .mdc-dialog__content {
+    max-height: max-content !important;
+}

@@ -61,11 +61,13 @@ export const CONSUMER_THREAD_POOL_LABELS = {
   START_CONSUMER_THREAD_POOL: "start",
   STOP_CONSUMER_THREAD_POOL: "stop",
   CONSUMER_THREAD_POOL_OPERATION: "Consumer Thread Pool Operation",
-  CONFIRMATION_MESSAGE: `This action will {operation} the consumer thread pool on all Nuxeo nodes : <b> Name { id = '{selectedConsumerName}', urn = '{selectedConsumerUrn}' } </b> <br><br> Do you want to continue?`,
+  CONFIRMATION_MESSAGE: `This action will {operation} the consumer thread pool on all Nuxeo nodes :<br> <b> { id = '{selectedConsumerName}', urn = '{selectedConsumerUrn}' }. </b> <br> Would you like to continue?`,
   CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG: "An existing consumer thread pool operation is already in progress. Please wait until it completes.",
-  START_CONSUMER_SUCCESS_MSG: "Start consumer thread pool operation completed successfully.",
-  STOP_CONSUMER_SUCCESS_MSG: "Stop consumer thread pool operation completed successfully.",
-}
+  START_CONSUMER_SUCCESS_MSG: "Start consumer thread pool completed successfully.",
+  STOP_CONSUMER_SUCCESS_MSG: "Stop consumer thread pool completed successfully.",
+  CONSUMER_THREAD_POOL_DIALOG_MSG: '{operation} Consumer Thread Pool',
+  DIALOG_BOX_HEIGHT: '300px'
+};
 
 export const STREAM_MOCK_API_FAILURE = {
   STATUS_CODE: 404,
