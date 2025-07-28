@@ -126,9 +126,7 @@ export const startConsumerThreadPool$ = createEffect(
       ofType(StreamActions.onStartConsumerThreadPoolLaunch),
       switchMap((action) =>
         streamService.startConsumerThreadPool(action?.params).pipe(
-          map(() =>
-            StreamActions.onStartConsumerThreadPoolLaunchSuccess()
-          ),
+          map(() => StreamActions.onStartConsumerThreadPoolLaunchSuccess()),
           catchError((error: HttpErrorResponse) =>
             of(
               StreamActions.onStartConsumerThreadPoolLaunchFailure({
@@ -149,9 +147,7 @@ export const stopConsumerThreadPool$ = createEffect(
       ofType(StreamActions.onStopConsumerThreadPoolLaunch),
       switchMap((action) =>
         streamService.stopConsumerThreadPool(action?.params).pipe(
-          map(() =>
-            StreamActions.onStopConsumerThreadPoolLaunchSuccess()
-          ),
+          map(() => StreamActions.onStopConsumerThreadPoolLaunchSuccess()),
           catchError((error: HttpErrorResponse) =>
             of(
               StreamActions.onStopConsumerThreadPoolLaunchFailure({

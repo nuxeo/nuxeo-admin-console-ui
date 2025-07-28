@@ -12,7 +12,7 @@ export interface StreamsState {
   streamsError: HttpErrorResponse | null;
   consumersError: HttpErrorResponse | null;
   recordsError: HttpErrorResponse | null;
-  hasLoaded: boolean; // Indicates if the streams data has been loaded or not
+  streamDataLoaded: boolean; // Indicates if the streams data has been loaded or not
 }
 
 export const initialStreamsState: StreamsState = {
@@ -24,7 +24,7 @@ export const initialStreamsState: StreamsState = {
   streamsError: null,
   consumersError: null,
   recordsError: null,
-  hasLoaded: false,
+  streamDataLoaded: false,
 };
 
 export interface ConsumerThreadPoolState {
@@ -50,23 +50,23 @@ export const streamsReducer = createReducer(
   on(StreamActions.fetchStreams, (state) => ({
     ...state,
     streamsError: null,
-    hasLoaded: true,
+    streamDataLoaded: true,
   })),
   on(StreamActions.onFetchStreamsLaunch, (state, { streamsData }) => ({
     ...state,
     streams: streamsData,
-    hasLoaded: true,
+    streamDataLoaded: true,
   })),
   on(StreamActions.onFetchStreamsFailure, (state, { error }) => ({
     ...state,
     streamsError: error,
-    hasLoaded: false,
+    streamDataLoaded: false,
   })),
   on(StreamActions.resetFetchStreamsState, (state) => ({
     ...state,
     streams: initialStreamsState.streams,
     streamsError: null,
-    hasLoaded: false,
+    streamDataLoaded: false,
   })),
 
     on(StreamActions.resetStreamErrorState, (state) => ({
@@ -191,6 +191,6 @@ export const consumerThreadPoolReducer = createReducer(
   })),
 
   on(StreamActions.resetConsumerThreadPoolState, () => ({
-    ...initialConsumerThreadPoolState
+    ...initialConsumerThreadPoolState,
   }))
 );

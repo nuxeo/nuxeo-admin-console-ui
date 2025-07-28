@@ -105,7 +105,7 @@ export class ConsumerThreadPoolComponent {
 
   ngOnInit() {
     this.store
-      .select((state) => state?.streams?.hasLoaded)
+      .select((state) => state?.streams?.streamDataLoaded)
       .pipe(takeUntil(this.destroy$), take(1))
       .subscribe((loaded) => {
         if (!loaded) {
@@ -245,9 +245,7 @@ export class ConsumerThreadPoolComponent {
       this.store.dispatch(
         StreamActions.onStartConsumerThreadPoolLaunch({ params })
       );
-    } else if (
-      operationType === CONSUMER_THREAD_POOL_LABELS.STOP_CONSUMER_THREAD_POOL
-    ) {
+    } else {
       this.store.dispatch(
         StreamActions.onStopConsumerThreadPoolLaunch({ params })
       );
@@ -265,7 +263,7 @@ export class ConsumerThreadPoolComponent {
         height: CONSUMER_THREAD_POOL_LABELS.DIALOG_BOX_HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         autoFocus: false,
-        panelClass: 'confirmation-dialog-height',
+        panelClass: "confirmation-dialog-height",
         data: {
           operationType:
             CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION,
@@ -278,10 +276,11 @@ export class ConsumerThreadPoolComponent {
               selectedConsumer.replace("/", "-")
             )
             .replace("{selectedConsumerUrn}", selectedConsumer),
-          title: CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_DIALOG_MSG.replace(
-            "{operation}",
-            operation.charAt(0).toUpperCase() + operation.slice(1)
-          ),
+          title:
+            CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_DIALOG_MSG.replace(
+              "{operation}",
+              operation.charAt(0).toUpperCase() + operation.slice(1)
+            ),
         },
       });
       this.genericDialogRef
@@ -296,13 +295,16 @@ export class ConsumerThreadPoolComponent {
           }
         });
     } else {
-      this.showActionErrorModal({
-        type: ERROR_TYPES.SERVER_ERROR,
-        details: {
-          message:
-            CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG,
+      this.showActionErrorModal(
+        {
+          type: ERROR_TYPES.SERVER_ERROR,
+          details: {
+            message:
+              CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG,
+          },
         },
-      }, 'error-dialog-height');
+        "error-dialog-height"
+      );
     }
   }
 
@@ -310,10 +312,12 @@ export class ConsumerThreadPoolComponent {
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
       hasBackdrop: true,
-      height: panelClass ? CONSUMER_THREAD_POOL_LABELS.DIALOG_BOX_HEIGHT : MODAL_DIMENSIONS.HEIGHT,
+      height: panelClass
+        ? CONSUMER_THREAD_POOL_LABELS.DIALOG_BOX_HEIGHT
+        : MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       autoFocus: false,
-      panelClass: panelClass ?? '',
+      panelClass: panelClass ?? "",
       data: {
         error: error,
       },

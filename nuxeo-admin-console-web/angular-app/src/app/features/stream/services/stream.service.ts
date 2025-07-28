@@ -84,24 +84,21 @@ export class StreamService {
     }, {} as Record<string, string>);
   }
 
-  startConsumerThreadPool(params: {
-    [key: string]: string;
-  }): Observable<void> {
+  startConsumerThreadPool(params: { [key: string]: string }): Observable<void> {
     return this.networkService.makeHttpRequest<void>(
       REST_END_POINTS.START_CONSUMER_THREAD_POOL,
       { queryParam: params }
     );
   }
-  stopConsumerThreadPool(params: {
-    [key: string]: string;
-  }): Observable<void> {
+  stopConsumerThreadPool(params: { [key: string]: string }): Observable<void> {
     return this.networkService.makeHttpRequest<void>(
       REST_END_POINTS.STOP_CONSUMER_THREAD_POOL,
       { queryParam: params }
     );
   }
 
-  showSuccessMessage(message: string): void { //Shared method to show success messages
+  showSuccessMessage(message: string): void {
+    //Shared method to show success messages
     this._snackBar.openFromComponent(CustomSnackBarComponent, {
       data: {
         message: message,

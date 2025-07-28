@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from "@angular/core";
 import { CONSUMER_THREAD_POOL_LABELS, STREAM_LABELS } from "../stream.constants";
 import { filter, Observable, skip, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
@@ -148,8 +148,9 @@ export class StreamComponent implements OnInit, OnDestroy {
 
   }
 
-  onTabChange(value: any): void { // Navigate based on the selected tab
-    switch (value) { 
+  onTabChange(value: any): void {
+    // Navigate based on the selected tab
+    switch (value) {
       case CONSUMER_THREAD_POOL_LABELS.STREAM.ID:
         this.router.navigate([CONSUMER_THREAD_POOL_LABELS.STREAM.LABEL]);
         break;
@@ -163,9 +164,13 @@ export class StreamComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateActiveTab(url: string): void { // Update the active tab based on the current URL
-    const lastSegment = url?.split('/').pop();
-    if (lastSegment && lastSegment === CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL) {
+  updateActiveTab(url: string): void {
+    // Update the active tab based on the current URL
+    const lastSegment = url?.split("/").pop();
+    if (
+      lastSegment &&
+      lastSegment === CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL
+    ) {
       this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID;
     } else {
       this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.STREAM.ID;

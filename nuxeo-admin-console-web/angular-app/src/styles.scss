@@ -633,3 +633,19 @@ mat-radio-button.complex-radio {
     justify-content: center;
   }
 }
+
+.stream-tab-group .mat-mdc-tab-labels {
+  width: max-content !important;
+  .mdc-tab__text-label {
+    color: #173e65 !important;
+    letter-spacing: normal;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+
+  }
+}
+
+.confirmation-dialog-height .mdc-dialog .mdc-dialog__content.generic-modal,
+.error-dialog-height .mdc-dialog .mdc-dialog__content {
+  max-height: max-content !important;
+}
