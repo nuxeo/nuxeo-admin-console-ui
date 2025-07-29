@@ -1,4 +1,10 @@
-import { streamsReducer, initialStreamsState } from './reducers';
+import {
+  streamsReducer,
+  initialStreamsState,
+  consumerThreadPoolReducer,
+  ConsumerThreadPoolState,
+  initialConsumerThreadPoolState,
+} from "./reducers";
 import * as StreamActions from './actions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Stream } from '../stream.interface';
@@ -38,8 +44,9 @@ describe('streamsReducer', () => {
         recordsError: null,
         consumersError: null,
         streamsError: new HttpErrorResponse({ error: 'Some error' }),
-        isFetchStopped: false,        // Added missing property
-        isFetchStoppedError: null,    // Added missing property
+        isFetchStopped: false,
+        isFetchStoppedError: null,
+        streamDataLoaded: false,
       };
       const action = StreamActions.resetFetchStreamsState();
       const result = streamsReducer(state, action);
@@ -81,7 +88,8 @@ describe('streamsReducer', () => {
         streamsError: null,
         consumersError: new HttpErrorResponse({ error: 'Some error' }),
         isFetchStopped: false,        // Added missing property
-        isFetchStoppedError: null,    // Added missing property
+        isFetchStoppedError: null,
+        streamDataLoaded: false,
       };
       const action = StreamActions.resetFetchConsumersState();
       const result = streamsReducer(state, action);
@@ -123,7 +131,8 @@ describe('streamsReducer', () => {
         streamsError: null,
         consumersError: null,
         isFetchStopped: false,        // Added missing property
-        isFetchStoppedError: null,    // Added missing property
+        isFetchStoppedError: null,
+        streamDataLoaded: false,
       };
       const action = StreamActions.resetFetchRecordsState();
       const result = streamsReducer(state, action);
@@ -133,5 +142,126 @@ describe('streamsReducer', () => {
       expect(result.isFetchStoppedError).toBeNull();
     });
   });
+
+   describe("ConsumerThreadPool Reducer", () => {
+     it("should return the initial state", () => {
+       const action = { type: "Unknown" } as any;
+       const state = consumerThreadPoolReducer(undefined, action);
+       expect(state).toEqual(initialConsumerThreadPoolState);
+     });
+
+     it("should handle onStartConsumerThreadPoolLaunch", () => {
+       const action = StreamActions.onStartConsumerThreadPoolLaunch({
+         params: { stream: "consumer" },
+       });
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: true,
+         isStartProcessCompleted: false,
+         isStopProcessCompleted: false,
+         isStartConsumerStoppedError: null,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle onStartConsumerThreadPoolLaunchFailure", () => {
+       const error = new HttpErrorResponse({ error: "error", status: 500 });
+       const action = StreamActions.onStartConsumerThreadPoolLaunchFailure({
+         error,
+       });
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: false,
+         isStartProcessCompleted: false,
+         isStopProcessCompleted: false,
+         isStartConsumerStoppedError: error,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle onStartConsumerThreadPoolLaunchSuccess", () => {
+       const action = StreamActions.onStartConsumerThreadPoolLaunchSuccess();
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: false,
+         isStartProcessCompleted: true,
+         isStopProcessCompleted: false,
+         isStartConsumerStoppedError: null,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle onStopConsumerThreadPoolLaunch", () => {
+       const action = StreamActions.onStopConsumerThreadPoolLaunch({
+         params: { stream: "consumer" },
+       });
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: true,
+         isStartProcessCompleted: false,
+         isStopProcessCompleted: false,
+         isStopConsumerStoppedError: null,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle onStopConsumerThreadPoolLaunchFailure", () => {
+       const error = new HttpErrorResponse({ error: "error", status: 500 });
+       const action = StreamActions.onStopConsumerThreadPoolLaunchFailure({
+         error,
+       });
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: false,
+         isStartProcessCompleted: false,
+         isStopProcessCompleted: false,
+         isStopConsumerStoppedError: error,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle onStopConsumerThreadPoolLaunchSuccess", () => {
+       const action = StreamActions.onStopConsumerThreadPoolLaunchSuccess();
+       const expectedState: ConsumerThreadPoolState = {
+         ...initialConsumerThreadPoolState,
+         isStartStopConsumerPoolProcessRunning: false,
+         isStartProcessCompleted: false,
+         isStopProcessCompleted: true,
+         isStopConsumerStoppedError: null,
+       };
+       const state = consumerThreadPoolReducer(
+         initialConsumerThreadPoolState,
+         action
+       );
+       expect(state).toEqual(expectedState);
+     });
+
+     it("should handle resetConsumerThreadPoolState", () => {
+       const action = StreamActions.resetConsumerThreadPoolState();
+       const state = consumerThreadPoolReducer(undefined, action);
+       expect(state).toEqual(initialConsumerThreadPoolState);
+     });
+   });
+
 });
 

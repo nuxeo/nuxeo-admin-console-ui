@@ -2,11 +2,12 @@ import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { provideMockStore } from "@ngrx/store/testing";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { Action } from "@ngrx/store";
 import { StreamService } from "../services/stream.service";
 import * as StreamActions from "../store/actions";
-import { loadFetchStreamsEffect, loadFetchConsumersEffect, triggerRecordsSSEStream$, stopRecordsSSEStream$ } from "./effects";
+import { loadFetchStreamsEffect, loadFetchConsumersEffect, triggerRecordsSSEStream$, stopRecordsSSEStream$, startConsumerThreadPool$, stopConsumerThreadPool$ } from "./effects";
+import { HttpErrorResponse } from "@angular/common/http";
 
 describe("StreamEffects", () => {
   let actions$: Observable<Action>;
@@ -29,6 +30,12 @@ describe("StreamEffects", () => {
           return of(null)
         }
         stopSSEStream() {
+          return of(null)
+        }
+        startConsumerThreadPool(){
+          return of(null)
+        }
+        stopConsumerThreadPool(){
           return of(null)
         }
       }
@@ -120,6 +127,96 @@ describe("StreamEffects", () => {
           false
         );
         expect(result).toEqual(StreamActions.onStopFetchFailure({ error }));
+        done();
+      });
+    });
+  });
+
+  describe("startConsumerThreadPool$", () => {
+    it("should dispatch onStartConsumerThreadPoolLaunchSuccess on success", (done) => {
+      spyOn(streamService, "startConsumerThreadPool").and.returnValue(
+        of(undefined)
+      );
+      actions$ = of(
+        StreamActions.onStartConsumerThreadPoolLaunch({
+          params: { mockKey: "mock-value" },
+        })
+      );
+      startConsumerThreadPool$(actions$, streamService).subscribe((result) => {
+        expect(result).toEqual(
+          StreamActions.onStartConsumerThreadPoolLaunchSuccess()
+        );
+        expect(streamService.startConsumerThreadPool).toHaveBeenCalledWith({
+          mockKey: "mock-value",
+        });
+        done();
+      });
+    });
+
+    it("should dispatch onStartConsumerThreadPoolLaunchFailure on error", (done) => {
+      const mockError = new HttpErrorResponse({
+        error: "mock-error",
+        status: 500,
+      });
+      spyOn(streamService, "startConsumerThreadPool").and.returnValue(
+        throwError(() => mockError)
+      );
+      actions$ = of(
+        StreamActions.onStartConsumerThreadPoolLaunch({
+          params: { mockKey: "mock-value" },
+        })
+      );
+      startConsumerThreadPool$(actions$, streamService).subscribe((result) => {
+        expect(result).toEqual(
+          StreamActions.onStartConsumerThreadPoolLaunchFailure({
+            error: mockError,
+          })
+        );
+        done();
+      });
+    });
+  });
+
+  describe("stopConsumerThreadPool$", () => {
+    it("should dispatch onStopConsumerThreadPoolLaunchSuccess on success", (done) => {
+      spyOn(streamService, "stopConsumerThreadPool").and.returnValue(
+        of(undefined)
+      );
+      actions$ = of(
+        StreamActions.onStopConsumerThreadPoolLaunch({
+          params: { mockKey: "mock-value" },
+        })
+      );
+      stopConsumerThreadPool$(actions$, streamService).subscribe((result) => {
+        expect(result).toEqual(
+          StreamActions.onStopConsumerThreadPoolLaunchSuccess()
+        );
+        expect(streamService.stopConsumerThreadPool).toHaveBeenCalledWith({
+          mockKey: "mock-value",
+        });
+        done();
+      });
+    });
+
+    it("should dispatch onStopConsumerThreadPoolLaunchFailure on error", (done) => {
+      const mockError = new HttpErrorResponse({
+        error: "mock-error",
+        status: 500,
+      });
+      spyOn(streamService, "stopConsumerThreadPool").and.returnValue(
+        throwError(() => mockError)
+      );
+      actions$ = of(
+        StreamActions.onStopConsumerThreadPoolLaunch({
+          params: { mockKey: "mock-value" },
+        })
+      );
+      stopConsumerThreadPool$(actions$, streamService).subscribe((result) => {
+        expect(result).toEqual(
+          StreamActions.onStopConsumerThreadPoolLaunchFailure({
+            error: mockError,
+          })
+        );
         done();
       });
     });

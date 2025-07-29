@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { Store, StoreModule } from "@ngrx/store";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { StreamComponent } from "./stream.component";
 import { StreamsState } from "../store/reducers";
 import { StreamService } from "../services/stream.service";
@@ -22,7 +22,8 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { StreamRecordsStatusComponent } from "./stream-records-status/stream-records-status.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { STREAM_LABELS } from "../stream.constants";
+import { CONSUMER_THREAD_POOL_LABELS, STREAM_LABELS } from "../stream.constants";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 
 describe("StreamComponent", () => {
   let component: StreamComponent;
@@ -31,6 +32,8 @@ describe("StreamComponent", () => {
   let streamService: jasmine.SpyObj<StreamService>;
   let cdRef: jasmine.SpyObj<ChangeDetectorRef>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let activatedRoute : jasmine.SpyObj<ActivatedRoute>;
+  let router: jasmine.SpyObj<Router>;
 
   class streamServiceStub {
     isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -42,6 +45,8 @@ describe("StreamComponent", () => {
 
   beforeEach(async () => {
     snackBar = jasmine.createSpyObj("MatSnackBar", ["openFromComponent"]);
+    activatedRoute = jasmine.createSpyObj("ActivatedRoute", ["snapshot"]);
+    router = jasmine.createSpyObj("Router", ["navigate"]);
 
     await TestBed.configureTestingModule({
       declarations: [StreamComponent, StreamFormComponent, StreamRecordsComponent, StreamRecordsStatusComponent],
@@ -63,6 +68,15 @@ describe("StreamComponent", () => {
         { provide: StreamService, useClass: streamServiceStub },
         { provide: ChangeDetectorRef, useValue: cdRef },
         { provide: MatSnackBar, useValue: snackBar },
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { 
+          provide: Router, 
+          useValue: { 
+            url: '/consumer', 
+            events: new Subject<NavigationEnd>(),
+            navigate: jasmine.createSpy('navigate') 
+          } 
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
@@ -196,12 +210,33 @@ describe("StreamComponent", () => {
       spyOn(streamService.isViewRecordsDisabled, "next").and.callThrough();
       fixture.detectChanges();
     });
+    
+  it("should update active tab based on the current router URL", () => {
+    spyOn(component, "updateActiveTab").and.callThrough();
+    component.ngOnInit();
+    console.log(router);
+    expect(component.updateActiveTab).toHaveBeenCalledWith(
+      (component as any).router.url
+    );
+  });
 
-    it("should update isFetchingRecords and related flags when isFetchingRecords emits true", () => {
-      const cdSpy = spyOn(component['cdRef'], 'detectChanges').and.callThrough();
-      streamService.isFetchingRecords.next(true);
-      component.ngOnInit();
-      streamService.isFetchingRecords.next(true);
+  it("should update active tab on navigation end", () => {
+    spyOn(component, "updateActiveTab").and.callThrough();
+    const mockEvent = new NavigationEnd(
+      1,
+      "stream-management/consumer",
+      "/consumer"
+    );
+    component.ngOnInit();
+    (component["router"].events as Subject<any>).next(mockEvent);
+    expect(component.updateActiveTab).toHaveBeenCalledWith("/consumer");
+  });
+
+  it("should update isFetchingRecords and related flags when isFetchingRecords emits true", () => {
+    const cdSpy = spyOn(component['cdRef'], 'detectChanges').and.callThrough();
+    streamService.isFetchingRecords.next(true);
+    component.ngOnInit();
+    streamService.isFetchingRecords.next(true);
       expect(component.isFetchingRecords).toBeTrue();
       expect(streamService.isViewRecordsDisabled.value).toBeTrue();
       expect(streamService.isStopFetchDisabled.value).toBeFalse();
@@ -280,6 +315,69 @@ describe("StreamComponent", () => {
       expect(streamService.isViewRecordsDisabled.next).toHaveBeenCalledWith(true);
       expect(streamService.isStopFetchDisabled.next).toHaveBeenCalledWith(false);
       expect(component.recordsFetchedStatusText).toBe(STREAM_LABELS.FETCHING_RECORDS);
+    });
+  });
+
+  describe("onTabChange", () => {
+    it("should navigate to the stream route when active tab is stream", () => {
+      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.STREAM.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith([
+        CONSUMER_THREAD_POOL_LABELS.STREAM.LABEL,
+      ]);
+    });
+
+    it("should navigate to the consumer route when active tab is consumer", () => {
+      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith(
+        [CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL],
+        { relativeTo: component["route"] }
+      );
+    });
+
+    it("should not navigate if the tab ID does not match any known IDs", () => {
+      const unknownTabId = "unknown";
+      component.onTabChange(unknownTabId);
+      expect(component["router"].navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateActiveTab", () => {
+    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID when URL ends with consumer label", () => {
+      const consumerUrl = "/stream-management/consumer";
+      component.updateActiveTab(consumerUrl);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID
+      );
+    });
+
+    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.STREAM.ID when URL does not end with consumer label", () => {
+      const streamUrl = "/stream-management/stream";
+      component.updateActiveTab(streamUrl);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+      );
+    });
+
+    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.STREAM.ID for an empty URL", () => {
+      const emptyUrl = "";
+      component.updateActiveTab(emptyUrl);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+      );
+    });
+
+    it("should handle URLs with trailing slashes correctly", () => {
+      const consumerUrlWithSlash = "stream-management/consumer";
+      component.updateActiveTab(consumerUrlWithSlash);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID
+      );
+
+      const streamUrlWithSlash = "/stream-management/stream/";
+      component.updateActiveTab(streamUrlWithSlash);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+      );
     });
   });
 });
