@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { CONSUMER_THREAD_POOL_LABELS, STREAM_LABELS } from "../stream.constants";
 import { filter, Observable, skip, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
