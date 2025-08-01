@@ -13,9 +13,11 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from "@angular/material/card";
 import { StreamRecordsStatusComponent } from "./components/stream-records-status/stream-records-status.component";
 import { MatDialogModule } from "@angular/material/dialog";
+import { MatTabsModule } from "@angular/material/tabs";
+import { ConsumerThreadPoolComponent } from './components/consumer-thread-pool/consumer-thread-pool.component';
 
 @NgModule({
-  declarations: [StreamComponent, StreamFormComponent, StreamRecordsComponent, StreamRecordsStatusComponent],
+  declarations: [StreamComponent, StreamFormComponent, StreamRecordsComponent, StreamRecordsStatusComponent, ConsumerThreadPoolComponent],
   imports: [
     CommonModule,
     StreamRoutingModule,
@@ -26,7 +28,8 @@ import { MatDialogModule } from "@angular/material/dialog";
     MatSelectModule,
     MatRadioModule,
     MatCardModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTabsModule,
   ],
 })
 export class StreamModule { }

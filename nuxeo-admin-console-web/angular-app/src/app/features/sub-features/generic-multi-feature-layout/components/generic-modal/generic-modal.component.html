@@ -1,7 +1,7 @@
 <h2> {{ data.title }}</h2>
 <hr class="separator">
 <mat-dialog-content class="mat-typography generic-modal">
-  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm else launchMessage;">
+  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else checkConsumerThreadPoolMsg">
     <div>
       <p>
         {{ GENERIC_LABELS.IMPACT_MESSAGE }}
@@ -12,6 +12,12 @@
       </p>
     </div>
   </div>
+  
+  <ng-template #checkConsumerThreadPoolMsg>
+    <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else launchMessage">
+      <p class="consumer-thread-pool-msg" [innerHTML]="data.message"></p>
+    </div>
+  </ng-template>
   <ng-template #launchMessage>
     <p>{{ data.launchedMessage }}</p>
     <div id="action-buttons-container">
@@ -28,11 +34,10 @@
     </div>
   </ng-template>
 
-
 </mat-dialog-content>
 <hr class="separator">
 <mat-dialog-actions>
-  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else closeBtn">
+  <div *ngIf="data.type === GENERIC_LABELS.MODAL_TYPE.confirm; else otherActions">
     <button mat-stroked-button color="primary" (click)="close()" class="abort-btn">
       {{ GENERIC_LABELS.ABORT_LABEL }}
     </button>
@@ -40,10 +45,19 @@
       {{ GENERIC_LABELS.CONTINUE }}
     </button>
   </div>
-
-  <ng-template #closeBtn>
-    <button mat-flat-button color="primary" (click)="close()">
-      {{ GENERIC_LABELS.CLOSE_LABEL }}
-    </button>
+  <ng-template #otherActions>
+    <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else closeBtn">
+      <button mat-stroked-button color="primary" (click)="close()" class="abort-btn">
+        {{ GENERIC_LABELS.ABORT_LABEL }}
+      </button>
+      <button mat-flat-button color="primary" (click)="continueConsumerThreadPoolOperation()">
+        {{ GENERIC_LABELS.CONTINUE }}
+      </button>
+    </div>
+    <ng-template #closeBtn>
+      <button mat-flat-button color="primary" (click)="close()">
+        {{ GENERIC_LABELS.CLOSE_LABEL }}
+      </button>
+    </ng-template>
   </ng-template>
 </mat-dialog-actions>

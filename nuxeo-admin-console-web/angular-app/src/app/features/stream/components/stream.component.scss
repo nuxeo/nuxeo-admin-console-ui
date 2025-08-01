@@ -2,23 +2,35 @@
   background-color: #f4f4f4;
   margin: 0px;
   padding: 20px;
-  height: 100%;
+  height: calc(100vh - 15vh);
 
-  h1 {
-    font-size: 20px;
-    font-weight: 500;
-    width: fit-content;
-  }
 
   &__placeholder {
     background-color: #fff;
-    min-height: 95%;
-    max-height: 550px;
+    height: 100%;
     overflow: auto;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
   }
 
   .result {
     margin-top: 15px;
   }
+}
+
+.consumer-thread-pool-container {
+  background-color: #f4f4f4;
+  margin: 0px;
+  padding: 20px;
+  height: calc(100vh - 15vh);
+
+  &__placeholder {
+    background-color: #fff;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+}
+
+.stream-tab-group {
+  margin-left: 2px;
 }

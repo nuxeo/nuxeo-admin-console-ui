@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StreamService } from '../../services/stream.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import * as StreamActions from '../../store/actions';
-import { StreamsState } from '../../store/reducers';
+import { ConsumerThreadPoolState, StreamsState } from '../../store/reducers';
 import { STREAM_LABELS, STREAM_MOCK_API_FAILURE } from '../../stream.constants';
 import { ERROR_TYPES, GENERIC_LABELS, MODAL_DIMENSIONS } from '../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,9 +37,17 @@ interface StreamServiceMock {
 describe('StreamFormComponent', () => {
     let component: StreamFormComponent;
     let fixture: ComponentFixture<StreamFormComponent>;
-    let store: Store<{ streams: StreamsState }>;
+    let store: Store<{
+      streams: StreamsState;
+      consumerThreadPool: ConsumerThreadPoolState;
+    }>;
     let streamServiceMock: StreamServiceMock;
-    let storeSpy: jasmine.SpyObj<Store<{ streams: StreamsState }>>;
+    let storeSpy: jasmine.SpyObj<
+      Store<{
+        streams: StreamsState;
+        consumerThreadPool: ConsumerThreadPoolState;
+      }>
+    >;
     const mockError = new HttpErrorResponse({
         status: STREAM_MOCK_API_FAILURE.STATUS_CODE,
         statusText: STREAM_MOCK_API_FAILURE.MESSAGE,
@@ -499,5 +507,26 @@ describe('StreamFormComponent', () => {
     expect(unsubscribed).toBeTrue();
     done();
   });
+
+  it("should dispatch resetStreamErrorState and update service states on ngOnDestroy", () => {
+    spyOn(streamServiceMock.isStopFetchDisabled, "next");
+    spyOn(streamServiceMock.isViewRecordsDisabled, "next");
+    spyOn(streamServiceMock.isClearRecordsDisabled, "next");
+    component.ngOnDestroy();
+    expect(store.dispatch).toHaveBeenCalledWith(
+      StreamActions.resetStreamErrorState()
+    );
+    expect(streamServiceMock.isStopFetchDisabled.next).toHaveBeenCalledWith(
+      true
+    );
+    expect(streamServiceMock.isViewRecordsDisabled.next).toHaveBeenCalledWith(
+      false
+    );
+    expect(streamServiceMock.isClearRecordsDisabled.next).toHaveBeenCalledWith(
+      true
+    );
+  });
 });
+
+
 

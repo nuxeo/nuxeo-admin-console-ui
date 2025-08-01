@@ -184,6 +184,11 @@
     color: #fff;
   }
 
+  &__consumer-thread-pool-button {
+    @extend .stream-form-container__button;
+    width: max-content !important; // Override width for this button
+  }
+
   .stream-form-container--config-container {
     display: flex;
     align-items: flex-start;

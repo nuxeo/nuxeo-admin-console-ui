@@ -123,4 +123,11 @@ describe("GenericModalComponent", () => {
     );
     expect(closeDialogSpy).toHaveBeenCalled(); 
   });
+
+  it("should emit continue: true & commandId when user chooses to continue", () => {
+    component.continueConsumerThreadPoolOperation();
+    expect(dialogRef.close).toHaveBeenCalledWith({
+      continue: true,
+    });
+  });
 });
