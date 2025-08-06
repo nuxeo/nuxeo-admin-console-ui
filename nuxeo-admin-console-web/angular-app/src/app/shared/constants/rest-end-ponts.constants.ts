@@ -15,6 +15,7 @@ export const REST_END_POINTS = {
   STREAM_RECORDS: "STREAM_RECORDS",
   START_CONSUMER_THREAD_POOL: "START_CONSUMER_THREAD_POOL",
   STOP_CONSUMER_THREAD_POOL: "STOP_CONSUMER_THREAD_POOL",
+  INSTANCE_INFO: "INSTANCE_INFO",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -91,5 +92,9 @@ export const REST_END_POINT_CONFIG: Record<
   STOP_CONSUMER_THREAD_POOL: {
     endpoint: "/management/stream/consumer/stop",
     method: "PUT",
-  }
+  },
+  INSTANCE_INFO: {
+    endpoint: "/management/connect/status",
+    method: "GET",
+  },
 };
