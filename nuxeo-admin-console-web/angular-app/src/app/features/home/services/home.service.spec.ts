@@ -4,6 +4,7 @@ import { NetworkService } from "../../../shared/services/network.service";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { of, throwError } from "rxjs";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
+import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
 
 describe("HomeService", () => {
   let service: HomeService;
@@ -64,4 +65,35 @@ describe("HomeService", () => {
     });
   });
 
+  describe("getInstanceInfo", () => {
+    it("should call networkService.makeHttpRequest with correct URL", (done) => {
+      const mockResponse: InstanceInfo = {} as InstanceInfo;
+      networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+      service.getInstanceInfo().subscribe();
+      expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+        REST_END_POINTS.INSTANCE_INFO
+      );
+      done();
+    });
+
+    it("should propagate instance info error when networkService.makeHttpRequest fails", (done) => {
+      const mockError = new Error("Network error");
+      networkServiceSpy.makeHttpRequest.and.returnValue(
+        throwError(() => mockError)
+      );
+      service.getInstanceInfo().subscribe({
+        next: () => {
+          fail("Expected error, but got success response");
+          done();
+        },
+        error: (error) => {
+          expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+            REST_END_POINTS.INSTANCE_INFO
+          );
+          expect(error).toBe(mockError);
+          done();
+        },
+      });
+    });
+  });
 });
