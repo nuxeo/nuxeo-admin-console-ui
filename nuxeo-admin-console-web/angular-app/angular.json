@@ -94,7 +94,11 @@
             "tsConfig": "tsconfig.spec.json",
             "assets": ["src/favicon.svg", "src/assets"],
             "styles": ["src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "include": [
+              "src/**/*.spec.ts",
+              "src/**/*.d.ts"
+            ]
           }
         },
         "lint": {

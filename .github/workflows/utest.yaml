@@ -81,4 +81,4 @@ jobs:
       - name: Unit tests
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm test
+          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm run test:verbose
