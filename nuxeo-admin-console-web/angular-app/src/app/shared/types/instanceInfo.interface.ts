@@ -9,5 +9,6 @@ export interface InstanceInfo {
     endDate: string;
     CLID: string;
     CTID: string;
+    [key: string]:any;
 }
 

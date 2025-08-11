@@ -17,3 +17,12 @@ export const INSTANCE_INFO_LABELS = {
   CTID: "CTID:",
   INSTANCE_INFO_LABEL: "Instance Information",
 };
+
+export const INSTANCE_INFO_DATA_LABELS = [
+  { label: INSTANCE_INFO_LABELS.REGISTERED, key: 'registered' },
+  { label: INSTANCE_INFO_LABELS.REGISTRATION_EXPIRATION, key: 'registrationExpiration', isDate: true },
+  { label: INSTANCE_INFO_LABELS.INSTANCE_TYPE, key: 'instanceType' },
+  { label: INSTANCE_INFO_LABELS.CONTRACT_STATUS, key: 'contractStatus' },
+  { label: INSTANCE_INFO_LABELS.DESCRIPTION, key: 'description' },
+  { label: INSTANCE_INFO_LABELS.MESSAGE, key: 'message' },
+];

@@ -14,22 +14,14 @@
       <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
       {{ versionInformation?.clusterEnabled }}
     </p>
-    <div *ngFor="let item of [
-            { label: INSTANCE_INFO_LABEL.ENTITY_TYPE, value: instanceInformation?.['entity-type'] },
-            { label: INSTANCE_INFO_LABEL.REGISTERED, value: instanceInformation?.registered },
-            { label: INSTANCE_INFO_LABEL.REGISTRATION_EXPIRATION, value: instanceInformation?.registrationExpiration, isDate: true },
-            { label: INSTANCE_INFO_LABEL.INSTANCE_TYPE, value: instanceInformation?.instanceType },
-            { label: INSTANCE_INFO_LABEL.CONTRACT_STATUS, value: instanceInformation?.contractStatus },
-            { label: INSTANCE_INFO_LABEL.DESCRIPTION, value: instanceInformation?.description },
-            { label: INSTANCE_INFO_LABEL.MESSAGE, value: instanceInformation?.message },
-          ]">
+    <div *ngFor="let item of INSTANCE_INFO_DATA_LABELS">
       <p class="instance-info__item">
         <span class="instance-info__label">{{ item.label }}</span>
         <ng-container *ngIf="item.isDate; else normalValue">
-          {{ item.value | date: 'medium' }}
+          {{ instanceInformation?.[item.key] | date: 'medium' }}
         </ng-container>
         <ng-template #normalValue>
-          {{ item.value || 'NA'}}
+          {{ instanceInformation?.[item.key] || 'NA'}}
         </ng-template>
       </p>
     </div>

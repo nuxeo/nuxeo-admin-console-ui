@@ -5,7 +5,7 @@ import { Observable, Subject, takeUntil } from "rxjs";
 import * as HomeActions from "../../store/actions";
 import { HomeState, InstanceState } from "../../store/reducers";
 import { HttpErrorResponse } from "@angular/common/http";
-import { INSTANCE_INFO_LABELS, REGISTRATION_VERSION_LABELS } from "./../../../../features/home/home.constants"; 
+import { INSTANCE_INFO_LABELS, INSTANCE_INFO_DATA_LABELS, REGISTRATION_VERSION_LABELS } from "./../../../../features/home/home.constants"; 
 import { ERROR_TYPES } from "../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { InstanceInfo } from "../../../../shared/types/instanceInfo.interface";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
@@ -25,6 +25,7 @@ export class RegistrationVersionComponent implements OnInit, OnDestroy {
   instanceInfoFailure$!: Observable<HttpErrorResponse | null>;
   instanceInformation: InstanceInfo | null = null;
   INSTANCE_INFO_LABEL = INSTANCE_INFO_LABELS;
+  INSTANCE_INFO_DATA_LABELS = INSTANCE_INFO_DATA_LABELS;
   constructor(
     private store: Store<{ home: HomeState; instanceInfo: InstanceState }>,
     private sharedMethodsService: SharedMethodsService
