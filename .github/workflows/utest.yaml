@@ -3,11 +3,10 @@ name: Unit-test
 on:
   pull_request:
     branches:
-      - dev
+      - '**' # Matches all branches for pull requests
   push:
     branches:
-      - dev
-      - 'feature/**'
+      - '**' # Matches all branches for pushes
   workflow_call:
     inputs:
       branch:
@@ -22,6 +21,7 @@ on:
       GIT_TOKEN:
         description: 'GIT_TOKEN'
         required: true
+
 env:
   BRANCH_NAME: ${{ github.head_ref || inputs.branch || 'dev' }}
 
@@ -44,14 +44,12 @@ jobs:
           node-version: 20
           scope: '@nuxeo'
 
-
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
@@ -66,7 +64,6 @@ jobs:
 
       - name: Install @angular/cli
         run: npm install -g @angular/cli
-      
 
       - name: Install Dependencies
         working-directory: nuxeo-admin-console-web/angular-app
