@@ -7,8 +7,6 @@
     "build": "ng build --base-href=/nuxeo/nuxeoadmin/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage --watch=false",
-    "test:headless": "ng test --no-watch --no-progress --browsers=ChromeHeadless --code-coverage",
-    "test:verbose": "ng test --no-watch --browsers=ChromeHeadless --code-coverage --source-map=true",
     "lint": "ng lint",
     "clean": "npm cache clean --force",
     "prepare": "husky"

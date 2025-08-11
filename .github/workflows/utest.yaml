@@ -3,10 +3,7 @@ name: Unit-test
 on:
   pull_request:
     branches:
-      - '**' # Matches all branches for pull requests
-  push:
-    branches:
-      - '**' # Matches all branches for pushes
+      - dev
   workflow_call:
     inputs:
       branch:
