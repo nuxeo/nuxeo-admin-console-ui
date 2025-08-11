@@ -2,24 +2,18 @@
   class="registration-version registration-version--mdc">
   <mat-card-content class="registration-version__content registration-version__content--first">
     <div class="version-info">
-      {{ REGISTRATION_VERSION_LABELS.VERSION_INFO }}
-    </div>
-  </mat-card-content>
-  <p class="registration-version__version">
-    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.VERSION_TITLE }}</span>
-    {{ versionInformation?.version }}
-  </p>
-  <p class="registration-version__cluster">
-    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
-    {{ versionInformation?.clusterEnabled }}
-  </p>
-  <mat-divider></mat-divider>
-  <mat-card-content class="instance-info-header-content">
-    <div class="instance-info-header">
       {{ INSTANCE_INFO_LABEL.INSTANCE_INFO_LABEL }}
     </div>
   </mat-card-content>
   <div class="instance-info">
+    <p>
+      <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.VERSION_TITLE }}</span>
+      {{ versionInformation?.version }}
+    </p>
+    <p>
+      <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
+      {{ versionInformation?.clusterEnabled }}
+    </p>
     <div *ngFor="let item of [
             { label: INSTANCE_INFO_LABEL.ENTITY_TYPE, value: instanceInformation?.['entity-type'] },
             { label: INSTANCE_INFO_LABEL.REGISTERED, value: instanceInformation?.registered },
@@ -35,9 +29,9 @@
           {{ item.value | date: 'medium' }}
         </ng-container>
         <ng-template #normalValue>
-          {{ item.value || '-'}}
+          {{ item.value || 'NA'}}
         </ng-template>
       </p>
     </div>
   </div>
-  </mat-card>
+</mat-card>
