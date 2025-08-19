@@ -8,6 +8,7 @@ import { ProbesSummaryComponent } from "./components/probes-summary/probes-summa
 import { RegistrationVersionComponent } from "./components/registration-version/registration-version.component";
 import { HomeRoutingModule } from "./home-routing.module";
 import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module";
+import { MatDividerModule } from "@angular/material/divider";
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module
     HomeRoutingModule,
     MatProgressSpinnerModule,
     ProbesDataModule,
+    MatDividerModule
   ],
 })
 export class HomeModule {}

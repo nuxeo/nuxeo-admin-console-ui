@@ -29,7 +29,7 @@ import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
-import { homeReducer } from "./features/home/store/reducers";
+import { homeReducer, instanceInfoReducer } from "./features/home/store/reducers";
 import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
@@ -75,6 +75,7 @@ import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/sto
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
+      instanceInfo: instanceInfoReducer,
       documentAction: documentActionReducer,
       folderAction: folderActionReducer,
       nxqlAction: nxqlActionReducer,
