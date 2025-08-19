@@ -39,5 +39,10 @@ export interface Probe {
       UNKNOWN: "assets/images/question.svg",
       FALSE: "assets/images/error.svg",
     },
+    LAUNCH_ALL_PROBES: {
+      SUCCESS_MESSAGE: "All probes checked successfully. Success: True",
+      ERROR_MESSAGE: "An error occurred while checking all probes. Success: False",
+      BUTTON_LABEL: "Check All Probes"
+    }
   };
   

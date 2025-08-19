@@ -10,6 +10,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonService } from "../../../../shared/services/common.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 describe("ProbesDataComponent", () => {
   let component: ProbesDataComponent;
@@ -37,7 +38,7 @@ describe("ProbesDataComponent", () => {
 
     await TestBed.configureTestingModule({
       declarations: [ProbesDataComponent],
-      imports: [MatSnackBarModule,MatPaginatorModule],
+      imports: [MatSnackBarModule,MatPaginatorModule,MatTooltipModule],
       providers: [
         provideMockStore({ initialState }),
         { provide: CommonService, useClass: CommonServiceStub }, 
@@ -159,11 +160,28 @@ describe("ProbesDataComponent", () => {
 
   it('should call showActionLaunchedModal when probeLaunchedSuccess$ emits with commandId', () => {
     const testData = [{ name: 'testProbe' }] as any;
-    component.probeLaunched = testData[0];
+    const showLaunchAllSuccessSnackbar = false;
+    (component as any).isLaunchAllProbeSuccess$ = of(showLaunchAllSuccessSnackbar);
     (component as any).probeLaunchedSuccess$ = of(testData);
+    component.probeLaunched = testData[0];
     spyOn((component as any)._snackBar, 'openFromComponent');
     component.ngOnInit();
     expect((component as any)._snackBar.openFromComponent).toHaveBeenCalled();
+  });
+
+  it("should call showActionLaunchedModal when probeLaunchedSuccess$ emits with commandId", () => {
+    const testData = [{ name: "testProbe" }] as any;
+    const showLaunchAllSuccessSnackbar = true;
+    (component as any).isLaunchAllProbeSuccess$ = of(
+      showLaunchAllSuccessSnackbar
+    );
+    component.probeLaunched = testData[0];
+    (component as any).probeLaunchedSuccess$ = of(testData);
+    spyOn((component as any)._snackBar, "openFromComponent");
+    component.ngOnInit();
+    expect(
+      (component as any)._snackBar.openFromComponent
+    ).not.toHaveBeenCalled();
   });
 
   describe("ngAfterViewInit", () => {

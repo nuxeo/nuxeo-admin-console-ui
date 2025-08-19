@@ -2,7 +2,7 @@ import { CustomSnackBarComponent } from "./../../../../shared/components/custom-
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { Observable, Subject, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil, withLatestFrom } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
 import * as ProbeActions from "../store/actions";
@@ -11,7 +11,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
-
 @Component({
   selector: "probes-data",
   templateUrl: "./probes-data.component.html",
@@ -55,7 +54,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
   @ViewChild("paginator") paginator!: MatPaginator;
-
+  isLaunchAllProbeSuccess$: Observable<boolean | undefined>;
   constructor(
     private store: Store<{ probes: ProbeState }>,
     private probeService: ProbeDataService,
@@ -70,6 +69,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     this.probeLaunchedError$ = this.store.pipe(
       select((state) => state.probes?.error)
+    );
+    this.isLaunchAllProbeSuccess$ = this.store.pipe(
+      select((state) => state.probes?.showLaunchAllSuccessSnackbar)
     );
   }
   ngOnInit(): void {
@@ -91,12 +93,16 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.probeLaunchedSuccess$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
+      .pipe(
+        withLatestFrom(this.isLaunchAllProbeSuccess$), //get latest value of isLaunchAllProbeSuccess$
+        takeUntil(this.destroy$)
+      )
+      .subscribe(([data, showLaunchAllSuccessSnackbar]) => {
         if (
           data &&
           data?.length > 0 &&
-          Object.entries(this.probeLaunched).length > 0
+          Object.entries(this.probeLaunched).length &&
+          !showLaunchAllSuccessSnackbar /* Ensure the individual probe launch success snackbar is not shown when the 'Launch All Probes' success snackbar is triggered */
         ) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
