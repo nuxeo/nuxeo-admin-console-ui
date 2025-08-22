@@ -3,6 +3,12 @@ name: Veracode
 on:
     schedule:
         - cron: '30 14 * * *'  # 8:00 PM IST (2:30 PM UTC)
+    workflow_dispatch:
+      inputs:
+        branch:
+          description: 'Branch to scan'
+          required: false
+          default: 'dev'
 
 permissions:
     contents: read
@@ -17,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: ${{ github.event.inputs.branch || 'dev' }}
 
       - uses: actions/setup-node@v4
         with:
@@ -102,7 +108,8 @@ jobs:
           name: nuxeo-admin-console-ui
           path: .
 
-      - name: Veracode Upload And Scan
+      # ---- Veracode Upload ----
+      - name: Veracode Upload
         uses: veracode/veracode-uploadandscan-action@0.2.6
         with:
           appname: 'nuxeo-admin-console-ui'
@@ -111,7 +118,28 @@ jobs:
           vid: '${{ secrets.VERACODE_SECRET_API_ID }}'
           vkey: '${{ secrets.VERACODE_SECRET_KEY }}'
           sandboxname: 'master'
-          scantimeout: 600
           include: '*.war, *.zip, *.js, *.html, *.css, *.json'
           criticality: 'High'
           includenewmodules: 'true'
+          deleteincompletescan: 'true'
+          scanpolling: false   # 👈 only upload, don’t auto-scan
+
+      # ---- Veracode Begin Scan ----
+      - name: Veracode Begin Scan
+        uses: veracode/veracode-beginscan-action@0.2.6
+        with:
+          appname: 'nuxeo-admin-console-ui'
+          sandboxname: 'master'
+          vid: '${{ secrets.VERACODE_SECRET_API_ID }}'
+          vkey: '${{ secrets.VERACODE_SECRET_KEY }}'
+          deleteincompletescan: 'true'
+
+      # ---- Veracode Wait For Results ----
+      - name: Veracode Wait for Scan & Fail if Issues
+        uses: veracode/veracode-waitforresults-action@0.2.6
+        with:
+          appname: 'nuxeo-admin-console-ui'
+          sandboxname: 'master'
+          vid: '${{ secrets.VERACODE_SECRET_API_ID }}'
+          vkey: '${{ secrets.VERACODE_SECRET_KEY }}'
+          scantimeout: '600'   # wait max 10 minutes
