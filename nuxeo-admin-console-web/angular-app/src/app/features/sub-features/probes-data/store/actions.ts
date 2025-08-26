@@ -29,3 +29,21 @@ export const launchProbeFailure = createAction(
   "[Admin] Launch Probe Failure",
   props<{ error: HttpErrorResponse }>()
 );
+
+export const launchAllProbes = createAction(
+  "[Admin] Launch All Probes"
+);
+
+export const launchAllProbesSuccess = createAction(
+  "[Admin] Launch All Probes Success",
+  props<{ probesData: ProbesInfo[] }>()
+);
+
+export const launchAllProbesFailure = createAction(
+  "[Admin] Launch All Probes Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+
+export const resetLaunchAllProbesState = createAction(
+  "[Admin] Reset Launch All Probes State"
+);

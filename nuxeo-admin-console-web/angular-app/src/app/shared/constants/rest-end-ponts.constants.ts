@@ -2,6 +2,7 @@ export const REST_END_POINTS = {
   ELASTIC_SEARCH_REINDEX: "ELASTIC_SEARCH_REINDEX",
   PROBES: "PROBES",
   LAUNCH_PROBE: "LAUNCH_PROBE",
+  LAUNCH_ALL_PROBES: "LAUNCH_ALL_PROBES",
   CURRENT_USER: "CURRENT_USER",
   CAPABILITIES: "CAPABILITIES",
   LOGOUT: "LOGOUT",
@@ -39,6 +40,10 @@ export const REST_END_POINT_CONFIG: Record<
   },
   LAUNCH_PROBE: {
     endpoint: "/management/probes/{probeName}",
+    method: "POST",
+  },
+  LAUNCH_ALL_PROBES: {
+    endpoint: "/management/probes",
     method: "POST",
   },
   CAPABILITIES: {

@@ -51,3 +51,29 @@ export const launchProbeEffect = createEffect(
   },
   { functional: true }
 );
+
+export const launchAllProbesEffect = createEffect(
+  (actions$ = inject(Actions), probeService = inject(ProbeDataService)) => {
+    return actions$.pipe(
+      ofType(ProbeActions.launchAllProbes),
+      switchMap(() => {
+        return probeService.launchAllProbes().pipe(
+          map((data: ProbesResponse) => {
+            const probesData = data.entries.map((entry) => ({
+              name: entry.name,
+              status: entry.status,
+              history: entry.history,
+              counts: entry.counts,
+              time: entry.time,
+            }));
+            return ProbeActions.launchAllProbesSuccess({ probesData });
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(ProbeActions.launchAllProbesFailure({ error: error }));
+          })
+        );
+      })
+    );
+  },
+  { functional: true }
+);
