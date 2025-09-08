@@ -36,6 +36,7 @@ import * as ProbesEffects from "./features/sub-features/probes-data/store/effect
 import * as ReindexEffects from "./features/sub-features/generic-multi-feature-layout/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
 import * as StreamEffects from "./features/stream/store/effects";
+import * as ConsumerPositionEffects from "./features/stream/components/change-consumer-position/store/effects";
 import {
   folderActionReducer,
   documentActionReducer,
@@ -52,6 +53,7 @@ import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/cu
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
 import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
+import { changeConsumerPositionReducer } from "./features/stream/components/change-consumer-position/store/reducers";
 
 @NgModule({
   declarations: [
@@ -82,7 +84,8 @@ import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/sto
       bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
       streams: streamsReducer,
-      consumerThreadPool: consumerThreadPoolReducer
+      consumerThreadPool: consumerThreadPoolReducer,
+      consumerPosition: changeConsumerPositionReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(
@@ -91,7 +94,8 @@ import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/sto
       ReindexEffects,
       BulkActionMonitoringEffects,
       ProbesEffects,
-      StreamEffects
+      StreamEffects,
+      ConsumerPositionEffects
     ),
     MatIconModule,
     MatTooltipModule,

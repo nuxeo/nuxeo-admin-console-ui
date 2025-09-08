@@ -55,7 +55,11 @@ export const CONSUMER_THREAD_POOL_LABELS = {
     ID: 1,
     LABEL: "consumer",
   },
-  CONSUMER_THREAD_POOL: "Consumer Position",
+  CHANGE_CONSUMER: {
+    ID: 2,
+    LABEL: "change-consumer-position",
+  },
+  CONSUMER_THREAD_POOL: "Consumer Group",
   START_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Start Consumer Thread Pool",
   STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Stop Consumer Thread Pool",
   START_CONSUMER_THREAD_POOL: "start",
@@ -77,3 +81,71 @@ export const STREAM_MOCK_API_FAILURE = {
 export const EVENT_STREAM_ERROR_TYPE = {
   DISCONNECTED: "disconnect",
 };
+
+export const CONSUMER_POSITION_CONFIRM_MSGS = {
+  BEGINNING_END_MSG:
+    "This action will change the consumer position to <b> {positionName} </b> of the stream.",
+  OFFSET_MSG:
+    "This action will change the consumer position to a <b> Specific offset. </b>",
+  DATE_MSG:
+    "This action will change the consumer position <b> After a given date. </b>",
+  GENERIC_MSG: `<br> Would you like to continue? <br> <br>
+    <b> Note: The consumer must be stopped before performing this operation. Please use the consumer thread pool tab to stop the consumer. </b> <br>`,
+};
+
+export const CHANGE_CONSUMER_POSITION_LABELS = {
+  STREAMS: STREAM_LABELS.STREAMS,
+  CONSUMER: "Consumer Group",
+  CONSUMER_POSITION_LABEL: "Change Consumer Position",
+  OPERATION_TYPE: "Consumer Position",
+  BEGINNING_END_CONFIRM_MESSAGE:
+    CONSUMER_POSITION_CONFIRM_MSGS.BEGINNING_END_MSG +
+    CONSUMER_POSITION_CONFIRM_MSGS.GENERIC_MSG,
+  OFFSET_CONFIRM_MESSAGE:
+    CONSUMER_POSITION_CONFIRM_MSGS.OFFSET_MSG +
+    CONSUMER_POSITION_CONFIRM_MSGS.GENERIC_MSG,
+  DATE_CONFIRM_MESSAGE:
+    CONSUMER_POSITION_CONFIRM_MSGS.DATE_MSG +
+    CONSUMER_POSITION_CONFIRM_MSGS.GENERIC_MSG,  
+  DIALOG_BOX_HEIGHT: '330px',
+  DIALOG_BOX_WIDTH: '590px',
+  SUCCESS_SNACKBAR_MESSAGE: "Consumer position changed successfully",
+  POSITION: {
+    LABEL: "position",
+    VALUE: "value",
+    BEGINNING: {
+      LABEL: "Beginning",
+      VALUE: "beginning",
+    },
+    END: {
+      LABEL: "End",
+      VALUE: "end",
+    },
+    OFFSET: {
+      LABEL: "Offset",
+      VALUE: "offset",
+    },
+    PARTITION: {
+      LABEL: "Partition",
+      VALUE: "partition",
+    },
+    DATE: {
+      LABEL: "Choose a date",
+      VALUE: "after",
+    },
+  },
+};
+
+export const ISO_DATE_FORMATS = { //To Override the default date format of Angular Material Datepicker
+  parse: {
+    dateInput: 'YYYY-MM-DD',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'YYYY-MM-DD',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
+

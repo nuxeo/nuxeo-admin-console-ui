@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
 import { CommonService } from "../../../../../shared/services/common.service";
 import { GenericModalData } from "../../generic-multi-feature-layout.interface";
-import { CONSUMER_THREAD_POOL_LABELS } from "../../../../stream/stream.constants";
+import { CHANGE_CONSUMER_POSITION_LABELS, CONSUMER_THREAD_POOL_LABELS } from "../../../../stream/stream.constants";
 
 @Component({
   selector: "generic-modal",
@@ -13,12 +13,12 @@ import { CONSUMER_THREAD_POOL_LABELS } from "../../../../stream/stream.constants
 export class GenericModalComponent  {
   GENERIC_LABELS = GENERIC_LABELS;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
+  CHANGE_CONSUMER_POSITION_LABELS = CHANGE_CONSUMER_POSITION_LABELS;
   constructor(
     private dialogRef: MatDialogRef<GenericModalComponent>,
     public commonService: CommonService,
     @Inject(MAT_DIALOG_DATA) public data: GenericModalData
   ) {}
-
   continue(): void {
     this.dialogRef.close({
       continue: true,

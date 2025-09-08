@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CustomSnackBarComponent } from "../../../shared/components/custom-snack-bar/custom-snack-bar.component";
+import { ChangeConsumerPosition } from "../components/change-consumer-position/store/reducers";
 
 @Injectable({
   providedIn: "root",
@@ -31,14 +32,18 @@ export class StreamService {
     );
   }
 
-  getConsumers(params: { [key: string]: string; }): Observable<{ stream: string; consumer: string }[]> {
+  getConsumers(params: {
+    [key: string]: string;
+  }): Observable<{ stream: string; consumer: string }[]> {
     return this.networkService.makeHttpRequest<
       { stream: string; consumer: string }[]
     >(REST_END_POINTS.STREAM_CONSUMERS, { queryParam: params });
   }
 
   startSSEStream(params: RecordsPayload) {
-    const url = this.networkService.getAPIEndpoint(REST_END_POINTS.STREAM_RECORDS);
+    const url = this.networkService.getAPIEndpoint(
+      REST_END_POINTS.STREAM_RECORDS
+    );
     const fullUrl = this.appendParamsToUrl(url, params);
     this.streamDisconnectedSubject.next(false);
     return new Observable((observer) => {
@@ -69,9 +74,10 @@ export class StreamService {
     return of(void 0);
   }
 
-
   private appendParamsToUrl(url: string, params: RecordsPayload) {
-    const queryString = new URLSearchParams(this.convertObjToString(params))?.toString();
+    const queryString = new URLSearchParams(
+      this.convertObjToString(params)
+    )?.toString();
     return `${url}?${queryString}`;
   }
 
@@ -94,6 +100,16 @@ export class StreamService {
     return this.networkService.makeHttpRequest<void>(
       REST_END_POINTS.STOP_CONSUMER_THREAD_POOL,
       { queryParam: params }
+    );
+  }
+
+  changeConsumerPosition(
+    consumerPosition: string,
+    params: { [key: string]: string }
+  ): Observable<ChangeConsumerPosition[]> {
+    return this.networkService.makeHttpRequest<ChangeConsumerPosition[]>(
+      REST_END_POINTS.CHANGE_CONSUMER_POSITION,
+      { urlParam: { consumerPosition }, queryParam: params }
     );
   }
 

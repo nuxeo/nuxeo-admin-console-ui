@@ -21,4 +21,12 @@
             </div>
         </div>
     </mat-tab>
+    <mat-tab label="Change Consumer Position">
+        <div class="change-consumer-position-container">
+            <div class="change-consumer-position-container__placeholder">
+                <change-consumer-position
+                    *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID"></change-consumer-position>
+            </div>
+        </div>
+    </mat-tab>
 </mat-tab-group>
