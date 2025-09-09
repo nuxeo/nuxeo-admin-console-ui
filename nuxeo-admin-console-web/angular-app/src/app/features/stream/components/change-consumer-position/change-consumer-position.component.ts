@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ERROR_TYPES,
@@ -34,7 +34,7 @@ import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface"
   templateUrl: "./change-consumer-position.component.html",
   styleUrls: ["./change-consumer-position.component.scss"],
 })
-export class ChangeConsumerPositionComponent {
+export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
   consumerPositionForm: FormGroup;
   GENERIC_LABELS = GENERIC_LABELS;
   STREAM_LABELS = STREAM_LABELS;

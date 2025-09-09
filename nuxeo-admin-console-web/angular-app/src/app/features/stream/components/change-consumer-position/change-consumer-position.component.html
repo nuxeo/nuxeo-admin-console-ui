@@ -53,7 +53,7 @@
                 <div class="field-group">
                   <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.LABEL }}</p>
                   <mat-form-field appearance="outline" class="offset-partition-field">
-                    <input type="number" id="offset" matNativeControl name="offset" formControlName="offset" matInput />
+                    <input type="number" id="offset" name="offset" formControlName="offset" matInput />
                   </mat-form-field>
                 </div>
                 <div class="field-group">
@@ -68,9 +68,14 @@
               <P class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.LABEL }}</P>
               <mat-form-field appearance="fill" class="date-field">
                 <input matInput [matDatepicker]="picker" formControlName="after">
-                <mat-hint>Date Format: YYYY/MM/DD</mat-hint>
+                <mat-hint>YYYY/MM/DD</mat-hint>
                 <mat-datepicker-toggle [disableRipple]="true" matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
+                <mat-datepicker #picker>
+                  <mat-datepicker-actions>
+                    <button mat-button matDatepickerCancel>Cancel</button>
+                    <button class="mat-date-picker-apply-btn" mat-raised-button matDatepickerApply>Apply</button>
+                  </mat-datepicker-actions>
+                </mat-datepicker>
               </mat-form-field>
             </mat-radio-button>
           </mat-radio-group>
