@@ -311,7 +311,7 @@ export class ChangeConsumerPositionComponent {
       selectedConsumerPosition ===
       CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE
     ) {
-      let date = consumerForm.get(
+      const date = consumerForm.get(
         CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE
       )?.value;
       params = { ...params, date: date.toISOString() };
