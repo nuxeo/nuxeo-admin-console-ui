@@ -27,7 +27,8 @@
 .change-consumer-position-btn {
   margin-top: 30px;
   margin-left: -20px;
-
+  display: flex;
+  gap: 20px;
   &__button {
     border-radius: 4px !important;
     width: max-content;
@@ -41,7 +42,6 @@
     background-color: #0a60ce;
     color: #fff;
   }
-
 }
 
 .required-indicator-label {
@@ -107,6 +107,7 @@
 
       @media (max-width: 1100px) {
         flex-direction: column;
+        gap: 0px;
       }
     }
   }
@@ -131,7 +132,7 @@
 }
 
 .data-container {
-  height: 95%;
+  height: 70%;
   overflow: auto;
   margin: 24px;
   border: 1px solid #ddd;
@@ -139,26 +140,22 @@
   background: #fefdfd;
   padding: 16px;
   box-sizing: border-box;
-
-  @media (max-width: 1100px) {
-    min-height: 250px;
-    min-width: max-content;
-  }
+  width: 60%;
 }
 
 .main-flex-container {
-  display: flex;
   height: 100%;
-
-  >div:first-child {
-    flex: 1;
-  }
-
-  @media (max-width: 1100px) {
-    flex-direction: column;
-  }
 }
 .mat-date-picker-apply-btn{
   background-color: #0a60ce;
   color: #fff;
+}
+
+.consumer-position-container--position-container .label {
+  margin-top: 3px;
+  margin-bottom: 2px;
+}
+
+.clear {
+  min-width: 100px;
 }

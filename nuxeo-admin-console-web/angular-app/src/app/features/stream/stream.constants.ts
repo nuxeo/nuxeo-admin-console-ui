@@ -90,13 +90,14 @@ export const CONSUMER_POSITION_CONFIRM_MSGS = {
   DATE_MSG:
     "This action will change the consumer position <b> After a given date. </b>",
   GENERIC_MSG: `<br> Would you like to continue? <br> <br>
-    <b> Note: The consumer must be stopped before performing this operation. Please use the consumer thread pool tab to stop the consumer. </b> <br>`,
+    <b> Note: </b> The consumer must be stopped before performing this operation. Please use the consumer thread pool tab to stop the consumer. <br>`,
 };
 
 export const CHANGE_CONSUMER_POSITION_LABELS = {
   STREAMS: STREAM_LABELS.STREAMS,
   CONSUMER: "Consumer Group",
   CONSUMER_POSITION_LABEL: "Change Consumer Position",
+  CLEAR_RECORDS: 'Clear',
   OPERATION_TYPE: "Consumer Position",
   BEGINNING_END_CONFIRM_MESSAGE:
     CONSUMER_POSITION_CONFIRM_MSGS.BEGINNING_END_MSG +
@@ -130,7 +131,7 @@ export const CHANGE_CONSUMER_POSITION_LABELS = {
       VALUE: "partition",
     },
     DATE: {
-      LABEL: "Choose a date",
+      LABEL: "Date",
       VALUE: "after",
     },
   },

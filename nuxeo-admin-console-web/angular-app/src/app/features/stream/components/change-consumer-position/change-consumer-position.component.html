@@ -41,7 +41,7 @@
             {{ STREAM_LABELS.POSITION }}<span class="required-field">*</span>
           </p>
           <mat-radio-group class="radio-group-container" formControlName="value" id="position"
-            (change)="onPositionChange($event.value)">
+            (change)="onPositionChange()">
             <mat-radio-button [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.BEGINNING.VALUE">
               <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.BEGINNING.LABEL }}</p>
             </mat-radio-button>
@@ -65,10 +65,10 @@
               </div>
             </mat-radio-button>
             <mat-radio-button [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE">
-              <P class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.LABEL }}</P>
+              <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.LABEL }}</p>
               <mat-form-field appearance="fill" class="date-field">
+                <mat-label *ngIf="!consumerPositionForm.get('position.after')?.value">yyyy/mm/dd</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="after">
-                <mat-hint>YYYY/MM/DD</mat-hint>
                 <mat-datepicker-toggle [disableRipple]="true" matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker>
                   <mat-datepicker-actions>
@@ -84,6 +84,10 @@
           <button [disabled]="isChangeConsumerPositionDisabled" mat-flat-button color="primary" type="submit"
             class="change-consumer-position-btn__button">
             {{ CHANGE_CONSUMER_POSITION_LABELS.CONSUMER_POSITION_LABEL }}
+          </button>
+           <button [disabled]="!isValidData(consumerPositionData)" mat-flat-button color="primary" type="button" (click)="clearRecords()"
+            class="change-consumer-position-btn__button clear">
+            {{ CHANGE_CONSUMER_POSITION_LABELS.CLEAR_RECORDS }}
           </button>
         </div>
       </div>

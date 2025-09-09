@@ -79,7 +79,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
         ],
         offset: [{ value: 0, disabled: true }],
         partition: [{ value: 0, disabled: true }],
-        after: [{ value: new Date(), disabled: true }], //date form control
+        after: [{ value: '', disabled: true }], //date form control
       }),
     });
 
@@ -242,13 +242,17 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
-  onPositionChange(value: any) {
+  onPositionChange() {
     const consumerForm = <FormGroup>(
       (this.consumerPositionForm.get(
         CHANGE_CONSUMER_POSITION_LABELS.POSITION.LABEL
       ) as FormGroup)
     );
-    if (value === CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.VALUE) {
+    const selectedPosition = consumerForm.get(
+      CHANGE_CONSUMER_POSITION_LABELS.POSITION.VALUE
+    )?.value;
+
+    if (selectedPosition === CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.VALUE) {
       consumerForm
         .get(CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.VALUE)
         ?.enable();
@@ -264,7 +268,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
         ?.disable();
     }
 
-    if (value === CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE) {
+    if (selectedPosition === CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE) {
       consumerForm
         .get(CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE)
         ?.enable();
@@ -339,6 +343,17 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       ) as FormGroup
     ).get(CHANGE_CONSUMER_POSITION_LABELS.POSITION.VALUE)?.value;
 
+    const date = (this.consumerPositionForm.get("position") as FormGroup).get(
+      "after"
+    )?.value;
+    if (
+      positionName === CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE &&
+      !date
+    ) {
+      this.sharedMethodService.showErrorSnackBar("Please select a valid date");
+      return;
+    }
+
     this.genericDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
       hasBackdrop: true,
@@ -374,6 +389,11 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
           this.focusMatSelect.focus();
         }
       });
+  }
+  
+  clearRecords(): void {
+    this.consumerPositionData = [];
+    this.store.dispatch(ConsumerPositionActions.resetConsumerPositionData());
   }
 
   ngOnDestroy(): void {
