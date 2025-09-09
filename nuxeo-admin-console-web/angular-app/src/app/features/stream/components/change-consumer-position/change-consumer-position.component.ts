@@ -343,9 +343,11 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       ) as FormGroup
     ).get(CHANGE_CONSUMER_POSITION_LABELS.POSITION.VALUE)?.value;
 
-    const date = (this.consumerPositionForm.get("position") as FormGroup).get(
-      "after"
-    )?.value;
+    const date = (
+      this.consumerPositionForm.get(
+        CHANGE_CONSUMER_POSITION_LABELS.POSITION.LABEL
+      ) as FormGroup
+    ).get(CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE)?.value;
     if (
       positionName === CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE &&
       !date
