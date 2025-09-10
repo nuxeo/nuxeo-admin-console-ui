@@ -334,6 +334,14 @@ describe("StreamComponent", () => {
       );
     });
 
+    it("should navigate to the consumer position route when active tab is change consumer position", () => {
+      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith(
+        [CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL],
+        { relativeTo: component["route"] }
+      );
+    });
+
     it("should not navigate if the tab ID does not match any known IDs", () => {
       const unknownTabId = "unknown";
       component.onTabChange(unknownTabId);
@@ -347,6 +355,14 @@ describe("StreamComponent", () => {
       component.updateActiveTab(consumerUrl);
       expect(component.selectedTabIndex).toBe(
         CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID
+      );
+    });
+
+    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
+      const streamUrl = "/stream-management/change-consumer-position";
+      component.updateActiveTab(streamUrl);
+      expect(component.selectedTabIndex).toBe(
+        CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID
       );
     });
 
