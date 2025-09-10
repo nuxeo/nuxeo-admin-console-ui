@@ -352,8 +352,8 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       positionName === CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE &&
       !date
     ) {
-      this.sharedMethodService.showErrorSnackBar("Please select a valid date");
-      return;
+      this.sharedMethodService.showErrorSnackBar(CHANGE_CONSUMER_POSITION_LABELS.DATE_VALIDATION_MSG);
+      return; // To prevent opening of confirmation dialog if date is not valid
     }
 
     this.genericDialogRef = this.dialogService.open(GenericModalComponent, {

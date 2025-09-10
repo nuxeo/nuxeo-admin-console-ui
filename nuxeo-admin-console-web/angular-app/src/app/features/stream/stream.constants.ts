@@ -111,6 +111,7 @@ export const CHANGE_CONSUMER_POSITION_LABELS = {
   DIALOG_BOX_HEIGHT: '330px',
   DIALOG_BOX_WIDTH: '590px',
   SUCCESS_SNACKBAR_MESSAGE: "Consumer position changed successfully",
+  DATE_VALIDATION_MSG: "Please enter a valid date",
   POSITION: {
     LABEL: "position",
     VALUE: "value",
