@@ -132,7 +132,8 @@
 }
 
 .data-container {
-  height: 70%;
+  height: 200px;
+  min-height: 350px;
   overflow: auto;
   margin: 24px;
   border: 1px solid #ddd;
