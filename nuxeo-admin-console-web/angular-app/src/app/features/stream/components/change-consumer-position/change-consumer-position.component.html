@@ -67,8 +67,7 @@
             <mat-radio-button [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE">
               <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.LABEL }}</p>
               <mat-form-field appearance="fill" class="date-field">
-                <mat-label *ngIf="!consumerPositionForm.get('position.after')?.value">yyyy/mm/dd</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="after">
+                <input placeholder="yyyy/mm/dd" matInput [matDatepicker]="picker" formControlName="after">
                 <mat-datepicker-toggle [disableRipple]="true" matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker>
                   <mat-datepicker-actions>
