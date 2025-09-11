@@ -3,7 +3,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "noUnusedLocals": true,
-    //"noUnusedParameters": true, // Commented out due to issues with unit test cases (Params)
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

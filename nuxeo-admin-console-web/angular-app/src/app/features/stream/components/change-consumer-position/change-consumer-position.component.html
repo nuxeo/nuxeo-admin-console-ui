@@ -93,7 +93,7 @@
     </form>
   </div>
   <div *ngIf="isValidData(consumerPositionData)" class="data-container">
-    <label>Position Details:</label>
+    <label>{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION_DETAILS }}</label>
     <pre>{{ consumerPositionData | json }}</pre>
   </div>
 </div>

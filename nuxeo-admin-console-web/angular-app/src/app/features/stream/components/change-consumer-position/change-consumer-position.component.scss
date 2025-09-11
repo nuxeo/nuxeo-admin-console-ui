@@ -23,7 +23,6 @@
   max-height: 40px;
 }
 
-
 .change-consumer-position-btn {
   margin-top: 30px;
   margin-left: -20px;
@@ -73,7 +72,6 @@
 
     #position {
       margin-left: -8px;
-
       mat-form-field.input-field.stream-field {
         width: 300px;
         max-width: 300px;
@@ -117,10 +115,14 @@
 .change-consumer-position-btn__button[disabled] {
   cursor: not-allowed;
   pointer-events: none;
-  color: var(--mdc-filled-button-disabled-label-text-color,
-      color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent));
-  background-color: var(--mdc-filled-button-disabled-container-color,
-      color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent));
+  color: var(
+    --mdc-filled-button-disabled-label-text-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent)
+  );
+  background-color: var(
+    --mdc-filled-button-disabled-container-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
+  );
 }
 
 .mat-mdc-radio-button.mat-accent {
@@ -147,7 +149,8 @@
 .main-flex-container {
   height: 100%;
 }
-.mat-date-picker-apply-btn{
+
+.mat-date-picker-apply-btn {
   background-color: #0a60ce;
   color: #fff;
 }
