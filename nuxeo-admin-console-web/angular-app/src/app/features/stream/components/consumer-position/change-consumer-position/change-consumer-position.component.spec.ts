@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ChangeConsumerPositionComponent } from "./change-consumer-position.component";
+import { ChangeConsumerPositionComponent } from "../../consumer-position/change-consumer-position/change-consumer-position.component";
 import { Store } from "@ngrx/store";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { StreamService } from "../../services/stream.service";
-import { StreamsState } from "../../store/reducers";
+import { StreamService } from "../../../services/stream.service";
+import { StreamsState } from "../../../store/reducers";
 import { of } from "rxjs";
 import { CommonModule } from "@angular/common";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
@@ -19,15 +19,16 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { MatNativeDateModule } from "@angular/material/core";
-import * as StreamActions from "../../store/actions";
-import * as ConsumerPositionActions from "./store/actions";
+import * as StreamActions from "../../../store/actions";
+import * as ConsumerPositionActions from "../store/actions";
 import {
   CHANGE_CONSUMER_POSITION_LABELS,
   CONSUMER_THREAD_POOL_LABELS,
-} from "../../stream.constants";
-import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
-import { ERROR_TYPES } from "../../../../features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
-import { ChangeConsumerPositionState } from "./store/reducers";
+} from "../../../stream.constants";
+import { SharedMethodsService } from "../../../../../shared/services/shared-methods.service";
+import { ERROR_TYPES } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { ChangeConsumerPositionState } from "../store/reducers";
+import { MatTabsModule } from "@angular/material/tabs";
 
 interface ErrorModalClosedInfo {
   isClosed: boolean;
@@ -93,6 +94,7 @@ describe("ChangeConsumerPositionComponent", () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatMomentDateModule,
+        MatTabsModule
       ],
     });
     fixture = TestBed.createComponent(ChangeConsumerPositionComponent);
@@ -193,7 +195,7 @@ describe("ChangeConsumerPositionComponent", () => {
     let streamId: string;
 
     beforeEach(() => {
-      consumerLabel = CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL;
+      consumerLabel = CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL;
       streamId = component.STREAM_LABELS.STREAM_ID;
       component.consumerPositionForm.patchValue({
         [consumerLabel]: "test-consumer",

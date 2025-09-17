@@ -1,6 +1,7 @@
 .change-consumer-position {
-  padding: 10px 0px 0px 10px;
+  padding: 2px 0px 0px 10px;
   background-color: white;
+  overflow: hidden;
 }
 
 .form-fields-row {
@@ -28,6 +29,7 @@
   margin-left: -20px;
   display: flex;
   gap: 20px;
+
   &__button {
     border-radius: 4px !important;
     width: max-content;
@@ -40,6 +42,10 @@
     letter-spacing: normal;
     background-color: #0a60ce;
     color: #fff;
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
   }
 }
 
@@ -84,7 +90,6 @@
       gap: 20px;
       justify-content: flex-start;
       align-items: baseline;
-
       mat-radio-button {
         display: flex;
         align-items: flex-start;
@@ -133,19 +138,6 @@
   --mat-radio-checked-ripple-color: #3f51b5;
 }
 
-.data-container {
-  height: 200px;
-  min-height: 350px;
-  overflow: auto;
-  margin: 24px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fefdfd;
-  padding: 16px;
-  box-sizing: border-box;
-  width: 80%;
-}
-
 .main-flex-container {
   height: 100%;
 }
@@ -162,4 +154,8 @@
 
 .clear {
   min-width: 100px;
+}
+
+.mat-date-radio-btn {
+  margin-top: -34px;
 }

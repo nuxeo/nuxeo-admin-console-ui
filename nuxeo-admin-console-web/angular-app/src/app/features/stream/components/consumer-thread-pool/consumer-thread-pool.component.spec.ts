@@ -160,7 +160,7 @@ describe("ConsumerThreadPoolComponent", () => {
   describe("showConfirmationModal", () => {
     beforeEach(() => {
       component.streamForm
-        .get(component.CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL)
+        .get(component.CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL)
         ?.setValue("consumer/urn");
       component.isStartOrStopConsumerThreadInProgress = false;
       matDialogSpy.open.and.returnValue({
@@ -246,7 +246,7 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle selectedConsumer with '/' in confirmation message", () => {
       component.streamForm
-        .get(component.CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL)
+        .get(component.CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL)
         ?.setValue("stream/consumer");
       component.showConfirmationModal(
         component.CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL

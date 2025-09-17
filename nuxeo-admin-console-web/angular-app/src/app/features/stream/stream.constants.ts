@@ -46,8 +46,8 @@ export const STREAM_LABELS = {
   SECOND: "s"
 };
 
-export const CONSUMER_THREAD_POOL_LABELS = {
-  STREAM :{
+export const MAIN_TAB_LABELS = {
+  STREAM: {
     ID: 0,
     LABEL: "stream-management",
   },
@@ -55,10 +55,26 @@ export const CONSUMER_THREAD_POOL_LABELS = {
     ID: 1,
     LABEL: "consumer",
   },
-  CHANGE_CONSUMER: {
+  CONSUMER_POSITION: {
     ID: 2,
-    LABEL: "change-consumer-position",
+    LABEL: "consumer-position",
+    SUB_TAB_LABELS: {
+      CHANGE_CONSUMER_POSITION: {
+        ID: 0,
+        LABEL: "Change Consumer Position",
+        ROUTE_LABEL: "change-consumer-position",
+      },
+      GET_CONSUMER_POSITION: {
+        ID: 1,
+        LABEL: "Get Consumer Position",
+        ROUTE_LABEL: "get-consumer-position",
+      },
+    },
   },
+};
+
+export const CONSUMER_THREAD_POOL_LABELS = {
+  CONSUMER_LABEL: 'consumer',
   CONSUMER_THREAD_POOL: "Consumer Group",
   START_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Start Consumer Thread Pool",
   STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Stop Consumer Thread Pool",
@@ -138,6 +154,14 @@ export const CHANGE_CONSUMER_POSITION_LABELS = {
     },
   },
 };
+
+export const GET_CONSUMER_POSITION_LABELS = {
+  STREAMS: 'Streams',
+  CONSUMER: 'Consumer Group',
+  GET_CONSUMER_POSITION: "Get Consumer Position",
+  CLEAR: 'Clear',
+  POSITION_DETAILS: "Position Details:",
+}
 
 export const ISO_DATE_FORMATS = { //To Override the default date format of Angular Material Datepicker
   parse: {

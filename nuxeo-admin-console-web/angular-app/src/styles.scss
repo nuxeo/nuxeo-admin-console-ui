@@ -679,3 +679,19 @@ mat-radio-button.complex-radio {
     cursor: pointer;
   }
 }
+
+.consumer-position-sub-tabs .mat-mdc-tab-labels .mdc-tab__text-label {
+  font-size: 12px;
+}
+
+.consumer-data-container {
+  height: 350px;
+  overflow: auto;
+  margin: 24px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fefdfd;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 80%;
+}

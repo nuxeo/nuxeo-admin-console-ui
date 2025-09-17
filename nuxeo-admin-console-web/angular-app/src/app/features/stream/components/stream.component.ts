@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import {
   CHANGE_CONSUMER_POSITION_LABELS,
   CONSUMER_THREAD_POOL_LABELS,
+  MAIN_TAB_LABELS,
   STREAM_LABELS,
 } from "../stream.constants";
 import { filter, Observable, skip, Subject, takeUntil } from "rxjs";
@@ -23,6 +24,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
   CHANGE_CONSUMER_POSITION_LABELS = CHANGE_CONSUMER_POSITION_LABELS;
+  MAIN_TAB_LABELS = MAIN_TAB_LABELS;
   records: { type?: string }[] = [];
   fetchRecordsSuccess$!: Observable<{ type?: string }[]>;
   fetchRecordsError$!: Observable<HttpErrorResponse | null>;
@@ -153,19 +155,19 @@ export class StreamComponent implements OnInit, OnDestroy {
 
   }
 
-  onTabChange(value: any): void {
+  onTabChange(value: number): void {
     // Navigate based on the selected tab
     switch (value) {
-      case CONSUMER_THREAD_POOL_LABELS.STREAM.ID:
-        this.router.navigate([CONSUMER_THREAD_POOL_LABELS.STREAM.LABEL]);
+      case MAIN_TAB_LABELS.STREAM.ID:
+        this.router.navigate(["./"], { relativeTo: this.route });
         break;
-      case CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID:
-        this.router.navigate([CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL], {
+      case MAIN_TAB_LABELS.CONSUMER.ID:
+        this.router.navigate([MAIN_TAB_LABELS.CONSUMER.LABEL], {
           relativeTo: this.route,
         });
         break;
-      case CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID:
-        this.router.navigate([CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL], {
+      case MAIN_TAB_LABELS.CONSUMER_POSITION.ID:
+        this.router.navigate([MAIN_TAB_LABELS.CONSUMER_POSITION.LABEL], {
           relativeTo: this.route,
         });
         break;
@@ -177,21 +179,23 @@ export class StreamComponent implements OnInit, OnDestroy {
   updateActiveTab(url: string): void {
     // Update the active tab based on the current URL
     const lastSegment = url?.split("/").pop();
-    if (
-      lastSegment &&
-      lastSegment === CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL
-    ) {
-      this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID;
+    if (lastSegment && lastSegment === MAIN_TAB_LABELS.CONSUMER.LABEL) {
+      this.selectedTabIndex = MAIN_TAB_LABELS.CONSUMER.ID;
     } else if (
       lastSegment &&
-      lastSegment === CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL
+      (lastSegment ===
+        MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS
+          .CHANGE_CONSUMER_POSITION.ROUTE_LABEL ||
+        lastSegment ===
+          MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.GET_CONSUMER_POSITION
+            .ROUTE_LABEL)
     ) {
-      this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID;
+      this.selectedTabIndex = MAIN_TAB_LABELS.CONSUMER_POSITION.ID;
     } else {
-      this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.STREAM.ID;
+      this.selectedTabIndex = MAIN_TAB_LABELS.STREAM.ID;
     }
   }
-  
+
   ngOnDestroy(): void {
     this.store.dispatch(StreamActions.resetStopFetchState());
     this.store.dispatch(StreamActions.resetFetchStreamsState());

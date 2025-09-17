@@ -3,7 +3,7 @@ import { switchMap, map, catchError, of } from "rxjs";
 import * as ConsumerPositionActions from "./actions";
 import { inject } from "@angular/core";
 import { StreamService } from "../../../services/stream.service";
-import { ChangeConsumerPosition } from "./reducers";
+import { ChangeConsumerPosition, ConsumerPositionDetails } from "./reducers";
 
 export const loadFetchStreamsEffect = createEffect(
   (actions$ = inject(Actions), streamService = inject(StreamService)) => {
@@ -24,6 +24,27 @@ export const loadFetchStreamsEffect = createEffect(
               );
             })
           );
+      })
+    );
+  },
+  { functional: true }
+);
+
+export const fetchConsumerPositionDataEffect = createEffect(
+  (actions$ = inject(Actions), streamService = inject(StreamService)) => {
+    return actions$.pipe(
+      ofType(ConsumerPositionActions.onFetchConsumerPosition),
+      switchMap(({ params }) => {
+        return streamService.fetchConsumerPosition(params).pipe(
+          map((res: ConsumerPositionDetails[]) => {
+            return ConsumerPositionActions.onFetchConsumerPositionSuccess(res);
+          }),
+          catchError((error) => {
+            return of(
+              ConsumerPositionActions.onFetchConsumerPositionFailure(error)
+            );
+          })
+        );
       })
     );
   },
