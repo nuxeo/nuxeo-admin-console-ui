@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Route } from "@angular/router";
 import { ConsumerThreadPoolComponent } from "./components/consumer-thread-pool/consumer-thread-pool.component";
+import { ChangeConsumerPositionComponent } from "./components/change-consumer-position/change-consumer-position.component";
 export const StreamRoutes: Route[] = [
   {
     path: "",
@@ -11,6 +12,10 @@ export const StreamRoutes: Route[] = [
       {
         path: "consumer",
         component: ConsumerThreadPoolComponent,
+      },
+      {
+        path: 'change-consumer-position',
+        component: ChangeConsumerPositionComponent,
       }
     ],
   },

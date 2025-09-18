@@ -10,6 +10,8 @@ import { MatDividerModule } from "@angular/material/divider";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
 import { InstanceInfo } from "../../../../shared/types/instanceInfo.interface";
 import { ERROR_TYPES } from "../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface";
+import { of } from "rxjs";
 
 describe("RegistrationVersionComponent", () => {
   let component: RegistrationVersionComponent;
@@ -27,6 +29,9 @@ describe("RegistrationVersionComponent", () => {
   };
 
   beforeEach(async () => {
+     sharedMethodsService = jasmine.createSpyObj("SharedMethodsService", [
+      "showActionErrorModal",
+    ]);
     await TestBed.configureTestingModule({
       declarations: [RegistrationVersionComponent],
       providers: [
@@ -40,9 +45,7 @@ describe("RegistrationVersionComponent", () => {
       imports: [MatCardModule, MatDividerModule],
     }).compileComponents();
     mockDialog = jasmine.createSpyObj("MatDialog", ["open"]);
-    sharedMethodsService = jasmine.createSpyObj("SharedMethodsService", [
-      "showActionErrorModal",
-    ]);
+   
     store = TestBed.inject(MockStore);
     fixture = TestBed.createComponent(RegistrationVersionComponent);
     component = fixture.componentInstance;
@@ -99,12 +102,17 @@ describe("RegistrationVersionComponent", () => {
       status: 500,
       message: "Server Error",
     } as HttpErrorResponse;
+     const mockModalResponse: ErrorModalClosedInfo = {
+       isClosed: true,
+       event: {},
+     };
+    sharedMethodsService.showActionErrorModal.and.returnValue(of(mockModalResponse));
     store.setState({ home: { ...initialState, error: mockError } } as any);
     fixture.detectChanges();
     component.error$.subscribe((error) => {
       expect(error).toEqual(mockError);
       expect(
-        (component as any).sharedMethodsService.showActionErrorModal
+       sharedMethodsService.showActionErrorModal
       ).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
         details: {

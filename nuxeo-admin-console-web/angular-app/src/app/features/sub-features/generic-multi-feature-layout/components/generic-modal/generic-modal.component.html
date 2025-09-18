@@ -14,10 +14,12 @@
   </div>
   
   <ng-template #checkConsumerThreadPoolMsg>
-    <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else launchMessage">
+    <div
+      *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION || data.operationType === CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE; else launchMessage">
       <p class="consumer-thread-pool-msg" [innerHTML]="data.message"></p>
     </div>
   </ng-template>
+  
   <ng-template #launchMessage>
     <p>{{ data.launchedMessage }}</p>
     <div id="action-buttons-container">
@@ -46,7 +48,7 @@
     </button>
   </div>
   <ng-template #otherActions>
-    <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION; else closeBtn">
+    <div *ngIf="data.operationType === CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION || data.operationType === CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE; else closeBtn">
       <button mat-stroked-button color="primary" (click)="close()" class="abort-btn">
         {{ GENERIC_LABELS.ABORT_LABEL }}
       </button>

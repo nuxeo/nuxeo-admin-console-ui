@@ -1,5 +1,9 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
-import { CONSUMER_THREAD_POOL_LABELS, STREAM_LABELS } from "../stream.constants";
+import {
+  CHANGE_CONSUMER_POSITION_LABELS,
+  CONSUMER_THREAD_POOL_LABELS,
+  STREAM_LABELS,
+} from "../stream.constants";
 import { filter, Observable, skip, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { StreamsState } from "../store/reducers";
@@ -18,6 +22,7 @@ import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 export class StreamComponent implements OnInit, OnDestroy {
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
+  CHANGE_CONSUMER_POSITION_LABELS = CHANGE_CONSUMER_POSITION_LABELS;
   records: { type?: string }[] = [];
   fetchRecordsSuccess$!: Observable<{ type?: string }[]>;
   fetchRecordsError$!: Observable<HttpErrorResponse | null>;
@@ -159,6 +164,11 @@ export class StreamComponent implements OnInit, OnDestroy {
           relativeTo: this.route,
         });
         break;
+      case CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID:
+        this.router.navigate([CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL], {
+          relativeTo: this.route,
+        });
+        break;
       default:
         break;
     }
@@ -172,6 +182,11 @@ export class StreamComponent implements OnInit, OnDestroy {
       lastSegment === CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL
     ) {
       this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID;
+    } else if (
+      lastSegment &&
+      lastSegment === CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL
+    ) {
+      this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID;
     } else {
       this.selectedTabIndex = CONSUMER_THREAD_POOL_LABELS.STREAM.ID;
     }

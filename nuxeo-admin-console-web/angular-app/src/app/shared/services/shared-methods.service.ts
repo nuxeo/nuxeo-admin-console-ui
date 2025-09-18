@@ -40,7 +40,7 @@ export class SharedMethodsService {
     });
   }
 
-  showActionErrorModal(error: ErrorDetails): void {
+  showActionErrorModal(error: ErrorDetails) {
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
       hasBackdrop: true,
@@ -51,5 +51,6 @@ export class SharedMethodsService {
         error: error,
       },
     });
+     return this.errorDialogRef.afterClosed();
   }
 }

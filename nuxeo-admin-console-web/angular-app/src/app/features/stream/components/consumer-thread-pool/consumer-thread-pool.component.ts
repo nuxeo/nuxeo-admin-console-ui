@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   CONSUMER_THREAD_POOL_LABELS,
   STREAM_LABELS,
@@ -31,7 +31,7 @@ import { StreamService } from "../../services/stream.service";
   templateUrl: "./consumer-thread-pool.component.html",
   styleUrls: ["./consumer-thread-pool.component.scss"],
 })
-export class ConsumerThreadPoolComponent {
+export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   GENERIC_LABELS = GENERIC_LABELS;
   streams: Stream[] = [];
   consumers: { stream: string; consumer: string }[] = [];
