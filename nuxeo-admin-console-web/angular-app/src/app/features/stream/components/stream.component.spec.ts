@@ -22,7 +22,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { StreamRecordsStatusComponent } from "./stream-records-status/stream-records-status.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { CONSUMER_THREAD_POOL_LABELS, STREAM_LABELS } from "../stream.constants";
+import { STREAM_LABELS, MAIN_TAB_LABELS } from "../stream.constants";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 
 describe("StreamComponent", () => {
@@ -320,30 +320,30 @@ describe("StreamComponent", () => {
 
   describe("onTabChange", () => {
     it("should navigate to the stream route when active tab is stream", () => {
-      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.STREAM.ID);
-      expect(component["router"].navigate).toHaveBeenCalledWith([
-        CONSUMER_THREAD_POOL_LABELS.STREAM.LABEL,
-      ]);
+      component.onTabChange(MAIN_TAB_LABELS.STREAM.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith(
+        ["./"], { relativeTo: component["route"] }
+      );
     });
 
     it("should navigate to the consumer route when active tab is consumer", () => {
-      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID);
+      component.onTabChange(MAIN_TAB_LABELS.CONSUMER.ID);
       expect(component["router"].navigate).toHaveBeenCalledWith(
-        [CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL],
+        [MAIN_TAB_LABELS.CONSUMER.LABEL],
         { relativeTo: component["route"] }
       );
     });
 
     it("should navigate to the consumer position route when active tab is change consumer position", () => {
-      component.onTabChange(CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID);
+      component.onTabChange(MAIN_TAB_LABELS.CONSUMER_POSITION.ID);
       expect(component["router"].navigate).toHaveBeenCalledWith(
-        [CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.LABEL],
+        [MAIN_TAB_LABELS.CONSUMER_POSITION.LABEL],
         { relativeTo: component["route"] }
       );
     });
 
     it("should not navigate if the tab ID does not match any known IDs", () => {
-      const unknownTabId = "unknown";
+      const unknownTabId = 5;
       component.onTabChange(unknownTabId);
       expect(component["router"].navigate).not.toHaveBeenCalled();
     });
@@ -354,7 +354,7 @@ describe("StreamComponent", () => {
       const consumerUrl = "/stream-management/consumer";
       component.updateActiveTab(consumerUrl);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID
+        MAIN_TAB_LABELS.CONSUMER.ID
       );
     });
 
@@ -362,7 +362,15 @@ describe("StreamComponent", () => {
       const streamUrl = "/stream-management/change-consumer-position";
       component.updateActiveTab(streamUrl);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID
+        MAIN_TAB_LABELS.CONSUMER_POSITION.ID
+      );
+    });
+
+     it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
+      const streamUrl = "/stream-management/get-consumer-position";
+      component.updateActiveTab(streamUrl);
+      expect(component.selectedTabIndex).toBe(
+        MAIN_TAB_LABELS.CONSUMER_POSITION.ID
       );
     });
 
@@ -370,7 +378,7 @@ describe("StreamComponent", () => {
       const streamUrl = "/stream-management/stream";
       component.updateActiveTab(streamUrl);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+        MAIN_TAB_LABELS.STREAM.ID
       );
     });
 
@@ -378,7 +386,7 @@ describe("StreamComponent", () => {
       const emptyUrl = "";
       component.updateActiveTab(emptyUrl);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+        MAIN_TAB_LABELS.STREAM.ID
       );
     });
 
@@ -386,13 +394,13 @@ describe("StreamComponent", () => {
       const consumerUrlWithSlash = "stream-management/consumer";
       component.updateActiveTab(consumerUrlWithSlash);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID
+        MAIN_TAB_LABELS.CONSUMER.ID
       );
 
       const streamUrlWithSlash = "/stream-management/stream/";
       component.updateActiveTab(streamUrlWithSlash);
       expect(component.selectedTabIndex).toBe(
-        CONSUMER_THREAD_POOL_LABELS.STREAM.ID
+        MAIN_TAB_LABELS.STREAM.ID
       );
     });
   });
