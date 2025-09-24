@@ -21,7 +21,7 @@ jobs:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
-  build:
+  build-v23:
     needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
@@ -129,9 +129,25 @@ jobs:
       - name: Archive Package
         uses: actions/upload-artifact@v4
         with:
-          name: packages
+          name: packages-v23
           path: |
             nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Verify Package Version
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+          echo "Verifying package version for v23..."
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          if [[ ! -f "$PACKAGE" ]]; then
+            echo "Error: Package $PACKAGE not found"
+            exit 1
+          fi
+          echo "Found package: $PACKAGE"
+          if [[ ! "$PACKAGE" =~ "23" ]]; then
+            echo "Error: Package version does not contain '23'"
+            exit 1
+          fi
+          echo "Package version verified successfully"
 
       - name: Tag
         run: |
@@ -139,18 +155,187 @@ jobs:
           git commit -a -m "Release ${{env.VERSION}}"
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
-        
+
       - name: Publish on Pre-Prod Marketplace
         working-directory: nuxeo-admin-console-package/target
         env:
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
           PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          echo "Publishing package: $PACKAGE"
           STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
           cat publish-req.output
           if [[ "$STATUS_CODE" != "200" ]]
           then
+            echo "Failed to publish package: $PACKAGE"
             exit 1
           else
+            echo "Successfully published package: $PACKAGE"
+            exit 0
+          fi
+
+  build-v25:
+    needs: [build-v23]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: ${{ env.NEXUS_URL }}
+          scope: '@nuxeo'
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Update to Version 25
+        run: |
+          # Fetch all tags
+          git fetch origin --tags
+          
+          # Get the latest v23 tag (which was just created by build-v23)
+          LATEST_V23_TAG=$(git tag --sort=taggerdate --list "v23*" | tail -1)
+          echo "Latest v23 tag: $LATEST_V23_TAG"
+          
+          # Get v23 version without 'v' prefix
+          V23_VERSION=${LATEST_V23_TAG#v}
+          echo "V23 version: $V23_VERSION"
+          
+          # Replace 23 with 25 to create v25 version
+          V25_VERSION=${V23_VERSION/23/25}
+          echo "V25 version: $V25_VERSION"
+          echo "VERSION=$V25_VERSION" >> $GITHUB_ENV
+          
+          # Create padded version for marketplace package (same RC number)
+          RC_NUMBER=$(echo "$V25_VERSION" | grep -oP 'rc\.\K\d+')
+          PADDED=$(printf '%03d' $RC_NUMBER)
+          PADDED_VERSION=$(echo "$V25_VERSION" | sed -E "s/(rc\.)[0-9]+/\\1$PADDED/g")
+          echo "V25 PADDED VERSION: $PADDED_VERSION"
+          echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
+          
+          # Extract the base version without the rc part
+          BASE_V23_VERSION=$(echo "$V23_VERSION" | sed 's/-rc\..*//')
+          BASE_V25_VERSION=$(echo "$V25_VERSION" | sed 's/-rc\..*//')
+          
+          # Generate the SNAPSHOT versions
+          V23_SNAPSHOT="${BASE_V23_VERSION}-SNAPSHOT"
+          V25_SNAPSHOT="${BASE_V25_VERSION}-SNAPSHOT"
+          echo "V23 SNAPSHOT: $V23_SNAPSHOT"
+          
+          # Update package.json version (using non-padded version)
+          pushd nuxeo-admin-console-web/angular-app
+          npm version $V25_VERSION --no-git-tag-version
+          popd
+          
+          
+          # For XML files:
+          # Replace SNAPSHOT versions with padded RC version
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i "s/$V23_SNAPSHOT/$PADDED_VERSION/g" {} \;
+          
+          # Fix parent version back to 2023.0
+          sed -i -e '/<parent>/,/<\/parent>/ s/<version>.*<\/version>/<version>2023.0<\/version>/g' pom.xml
+
+      - name: 'Update settings.xml with server configuration'
+        run: |
+          echo '<settings>
+              <servers>
+                <server>
+                  <id>maven-internal</id>
+                  <username>${{ secrets.PACKAGES_AUTH_USER }}</username>
+                  <password>${{ secrets.PACKAGES_AUTH_TOKEN }}</password>
+                </server>
+              </servers>
+              </settings>' > ~/.m2/settings.xml
+
+      - name: Configure .npmrc
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }}" >> .npmrc
+
+      - name: Cache node modules
+        id: cache-npm-v25
+        uses: actions/cache@v4
+        env:
+            cache-name: cache-node-modules-v25
+        with:
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install Dependencies
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm install
+
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: restore
+
+      - name: Build Angular Project
+        run: mvn package
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: save
+
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-v25
+          path: |
+            nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+
+      - name: Verify Package Version
+        working-directory: nuxeo-admin-console-package/target
+        run: |
+          echo "Verifying package version for v25..."
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          if [[ ! -f "$PACKAGE" ]]; then
+            echo "Error: Package $PACKAGE not found"
+            exit 1
+          fi
+          echo "Found package: $PACKAGE"
+          if [[ ! "$PACKAGE" =~ "25" ]]; then
+            echo "Error: Package version does not contain '25'"
+            exit 1
+          fi
+          echo "Package version verified successfully"
+
+      - name: Tag
+        run: |
+          git add nuxeo-admin-console-web/angular-app/package-lock.json
+          git commit -a -m "Release ${{env.VERSION}}"
+          git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
+          git push origin v${{env.VERSION}}
+
+      - name: Publish on Pre-Prod Marketplace
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: |
+          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
+          echo "Publishing package: $PACKAGE"
+          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
+          cat publish-req.output
+          if [[ "$STATUS_CODE" != "200" ]]
+          then
+            echo "Failed to publish package: $PACKAGE"
+            exit 1
+          else
+            echo "Successfully published package: $PACKAGE"
             exit 0
           fi

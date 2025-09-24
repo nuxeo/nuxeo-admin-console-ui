@@ -23,48 +23,120 @@ jobs:
         run: |
           echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
 
-      - name: Get latest beta tag
+      - name: Fetch tags and prepare versions
         run: |
+          # Fetch all tags
           git fetch origin --tags
-          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
-          echo "Latest beta tag: $latest_beta_tag"
-          echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
+          echo "========= v23 Version Processing ========="
+          
+          # Get input v23 RC version and base version
+          V23_INPUT_VERSION="${{ github.event.inputs.rc }}"
+          V23_BASE_VERSION=$(echo $V23_INPUT_VERSION | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+          echo "V23 Input version: $V23_INPUT_VERSION"
+          echo "V23 Base version: $V23_BASE_VERSION"
+          echo "INPUT_BASE_VERSION=$V23_BASE_VERSION" >> $GITHUB_ENV
+          
+          # Find latest v23 beta tag
+          V23_LATEST_BETA_TAG=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
+          echo "Latest v23 beta tag: ${V23_LATEST_BETA_TAG:-None}"
+          echo "LATEST_BETA_TAG=${V23_LATEST_BETA_TAG}" >> $GITHUB_ENV
+          
+          # Get v23 beta base version if exists
+          if [ -n "$V23_LATEST_BETA_TAG" ]; then
+            V23_BETA_BASE_VERSION=$(echo $V23_LATEST_BETA_TAG | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+            echo "V23 Beta base version: $V23_BETA_BASE_VERSION"
+          else
+            V23_BETA_BASE_VERSION=""
+            echo "No existing v23 beta tags found"
+          fi
+          echo "BETA_TAG_BASE_VERSION=${V23_BETA_BASE_VERSION}" >> $GITHUB_ENV
+          
+          echo "========= v25 Version Processing ========="
+          
+          # Create corresponding v25 versions
+          V25_INPUT_VERSION="${V23_INPUT_VERSION/23/25}"
+          V25_BASE_VERSION="${V23_BASE_VERSION/23/25}"
+          echo "V25 Input version: $V25_INPUT_VERSION"
+          echo "V25 Base version: $V25_BASE_VERSION"
+          echo "V25_INPUT_VERSION=$V25_INPUT_VERSION" >> $GITHUB_ENV
+          echo "V25_INPUT_BASE_VERSION=$V25_BASE_VERSION" >> $GITHUB_ENV
+          
+          # Find latest v25 beta tag
+          V25_LATEST_BETA_TAG=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v25\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
+          echo "Latest v25 beta tag: ${V25_LATEST_BETA_TAG:-None}"
+          echo "LATEST_BETA_TAG_V25=${V25_LATEST_BETA_TAG}" >> $GITHUB_ENV
+          
+          # Get v25 beta base version if exists
+          if [ -n "$V25_LATEST_BETA_TAG" ]; then
+            V25_BETA_BASE_VERSION=$(echo $V25_LATEST_BETA_TAG | sed -E 's/^(25\.[0-9]+\.[0-9]+).*/\1/')
+            echo "V25 Beta base version: $V25_BETA_BASE_VERSION"
+          else
+            V25_BETA_BASE_VERSION=""
+            echo "No existing v25 beta tags found"
+          fi
+          echo "V25_BETA_TAG_BASE_VERSION=${V25_BETA_BASE_VERSION}" >> $GITHUB_ENV
 
-      - name: Get Input & latest beta tag Base Version
+      - name: Generate new beta versions
         run: |
-          INPUT_VERSION="${{ github.event.inputs.rc }}"
-          INPUT_BASE_VERSION=$(echo $INPUT_VERSION | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
-          echo "INPUT_BASE_VERSION=$INPUT_BASE_VERSION" >> $GITHUB_ENV
-
-          BETA_TAG_BASE_VERSION=$(echo $LATEST_BETA_TAG | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
-          echo "BETA_TAG_BASE_VERSION=$BETA_TAG_BASE_VERSION" >> $GITHUB_ENV
-
-          echo $INPUT_BASE_VERSION $BETA_TAG_BASE_VERSION
-
-      - name: Update beta version
-        run: |
-          if [ "$INPUT_BASE_VERSION" = "$BETA_TAG_BASE_VERSION" ]; then
-            # Increment beta.x to x+1 while preserving the correct format
+          echo "========= Generating New Beta Versions ========="
+          
+          # Generate v23 beta version
+          if [ -n "$LATEST_BETA_TAG" ] && [ "$INPUT_BASE_VERSION" = "$BETA_TAG_BASE_VERSION" ]; then
+            # Increment beta number
             BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
             BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
             NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
             NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
+            echo "Incrementing v23 beta: $LATEST_BETA_TAG → $NEW_BETA_TAG"
           else
-            # Append -beta.0 to INPUT_BASE_VERSION
+            # Create new beta series
             NEW_BETA_TAG="${INPUT_BASE_VERSION}-beta.0"
+            echo "Creating new v23 beta series: $NEW_BETA_TAG"
           fi
-          echo "New beta tag: $NEW_BETA_TAG"
           echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
+          
+          # Generate v25 beta version
+          if [ -n "$LATEST_BETA_TAG_V25" ] && [ "$V25_INPUT_BASE_VERSION" = "$V25_BETA_TAG_BASE_VERSION" ]; then
+            # Increment beta number
+            BASE_VERSION=$(echo $LATEST_BETA_TAG_V25 | sed 's/-beta.*//')
+            BETA_NUMBER=$(echo $LATEST_BETA_TAG_V25 | sed 's/.*-beta.//')
+            NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
+            NEW_BETA_TAG_V25="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
+            echo "Incrementing v25 beta: $LATEST_BETA_TAG_V25 → $NEW_BETA_TAG_V25"
+          else
+            # Create new beta series
+            NEW_BETA_TAG_V25="${V25_INPUT_BASE_VERSION}-beta.0"
+            echo "Creating new v25 beta series: $NEW_BETA_TAG_V25"
+          fi
+          echo "NEW_BETA_TAG_V25=$NEW_BETA_TAG_V25" >> $GITHUB_ENV
 
-      - name: Store Beta Release Version as a Secret
+      - name: Store Beta Release Versions as Secrets
         run: |
-           gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
-        
+          echo "Storing v23 beta version: ${{ env.NEW_BETA_TAG }}"
+          gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+          
+          echo "Storing v25 beta version: ${{ env.NEW_BETA_TAG_V25 }}"
+          gh secret set BETA_RELEASE_VERSION_V25 --body ${{ env.NEW_BETA_TAG_V25 }}
 
       - name: Create Pull Request
         run: |
           rc_version="${{ github.event.inputs.rc }}"
+          rc_version_v25="${{ env.V25_INPUT_VERSION }}"
+          
+          echo "Creating Pull Request for RC versions v${rc_version} and v${rc_version_v25}"
+          
           gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
           It includes updates in preparation for the upcoming release.
-          **Release Candidate:** [v${rc_version}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
-          **Create Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})."
+          
+          **v23 Release Candidate:** [v${rc_version}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
+          **v23 Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})
+          
+          **v25 Release Candidate:** [v${rc_version_v25}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${rc_version_v25}).
+
+          **v25 Beta Release:** [v${{ env.NEW_BETA_TAG_V25 }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG_V25 }})
+          
+          **Note:** follow below format for the commit message
+          **Message:** Merge pull request #211 from nuxeo/dev
+          **Desc:** Code Freeze: Merge dev into main with Release Candidate v23.0.5-rc.15
+
+          **Also always select Create a merge commit option while merging this PR.**" 
