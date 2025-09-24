@@ -1,5 +1,7 @@
+
 export const REST_END_POINTS = {
   ELASTIC_SEARCH_REINDEX: "ELASTIC_SEARCH_REINDEX",
+  ELASTIC_SEARCH_REINDEX_OLD: "ELASTIC_SEARCH_REINDEX_OLD",
   PROBES: "PROBES",
   LAUNCH_PROBE: "LAUNCH_PROBE",
   LAUNCH_ALL_PROBES: "LAUNCH_ALL_PROBES",
@@ -32,6 +34,10 @@ export const REST_END_POINT_CONFIG: Record<
   RestEndpointConfig
 > = {
   ELASTIC_SEARCH_REINDEX: {
+    endpoint: "/management/search/reindex",
+    method: "POST",
+  },
+  ELASTIC_SEARCH_REINDEX_OLD: {
     endpoint: "/management/elasticsearch/reindex",
     method: "POST",
   },
