@@ -1,5 +1,11 @@
 name: Main
 
+permissions:
+  # Required to checkout code, commit changes, create tags and push them
+  contents: write
+  # Required to upload artifacts and publish packages
+  packages: write
+
 on:
   workflow_run:
     workflows: ["Hotfix"] 

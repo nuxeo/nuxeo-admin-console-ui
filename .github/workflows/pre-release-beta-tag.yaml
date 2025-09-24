@@ -1,4 +1,10 @@
 name: Get Latest Beta Tag
+
+permissions:
+  # Required to checkout repository and access git tags
+  contents: read
+  # No additional permissions needed as this workflow only reads data
+
 on:
   workflow_dispatch:
 
@@ -32,4 +38,3 @@ jobs:
             echo "${{ env.LATEST_BETA_TAG }}" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
 
-     

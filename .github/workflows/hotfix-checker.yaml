@@ -1,5 +1,11 @@
 name: Hotfix
 
+permissions:
+  # Required to checkout repository and read git history
+  contents: read
+  # Required to create PR.
+  pull-requests: write
+
 on:
   push:
     branches:

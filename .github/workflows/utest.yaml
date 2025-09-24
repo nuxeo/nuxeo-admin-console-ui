@@ -1,5 +1,10 @@
 name: Unit-test
 
+permissions:
+  # Only read access needed for code checkout and test execution
+  # No write permissions required as this workflow only runs tests without modifying the repository
+  contents: read
+
 on:
   pull_request:
     branches:
