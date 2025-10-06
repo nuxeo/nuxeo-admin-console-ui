@@ -1,0 +1,13 @@
+<div class="consumer-position-wrapper">
+  <mat-tab-group class="consumer-position-sub-tabs" [selectedIndex]="selectedTabIndex"
+    (selectedIndexChange)="onSubTabChange($event)">
+    <mat-tab label="Change Consumer Position">
+      <change-consumer-position
+        *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.CHANGE_CONSUMER_POSITION.ID"></change-consumer-position>
+    </mat-tab>
+    <mat-tab label="Get Consumer Position">
+      <fetch-consumer-position
+        *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.GET_CONSUMER_POSITION.ID"></fetch-consumer-position>
+    </mat-tab>
+  </mat-tab-group>
+</div>

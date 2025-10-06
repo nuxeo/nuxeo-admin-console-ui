@@ -6,6 +6,8 @@ import * as ConsumerPositionActions from "./actions";
 import { StreamService } from "../../../services/stream.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ChangeConsumerPosition } from "./reducers";
+import { fetchConsumerPositionDataEffect } from "./effects";
+import { ConsumerPositionDetails } from "./reducers";
 
 describe("loadFetchStreamsEffect", () => {
   let actions$: ReplaySubject<any>;
@@ -95,6 +97,81 @@ describe("loadFetchStreamsEffect", () => {
         ConsumerPositionActions.onChangeConsumerPositionFailure(mockError)
       );
       done();
+    });
+  });
+
+  describe("fetchConsumerPositionDataEffect", () => {
+    let actions$: ReplaySubject<any>;
+    let streamService: jasmine.SpyObj<StreamService>;
+
+    beforeEach(() => {
+      streamService = jasmine.createSpyObj("StreamService", [
+        "fetchConsumerPosition",
+      ]);
+      actions$ = new ReplaySubject(1);
+      TestBed.configureTestingModule({
+        providers: [
+          provideMockActions(() => actions$),
+          { provide: StreamService, useValue: streamService },
+        ],
+      });
+    });
+
+    it("should dispatch onFetchConsumerPositionSuccess on success", (done) => {
+      const params = { key: "value" };
+      const data: ConsumerPositionDetails[] = [
+        {
+          stream: "mock",
+          consumer: "mock/recomputeThumbnails",
+          lag: 0,
+          lags: [
+            {
+              partition: 0,
+              pos: 0,
+              end: 0,
+              lag: 0,
+            },
+          ],
+        },
+      ];
+      streamService.fetchConsumerPosition.and.returnValue(of(data));
+      const effect = fetchConsumerPositionDataEffect(
+        actions$ as Observable<any>,
+        streamService
+      );
+      actions$.next(
+        ConsumerPositionActions.onFetchConsumerPosition({ params })
+      );
+      effect.subscribe((action) => {
+        expect(action).toEqual(
+          ConsumerPositionActions.onFetchConsumerPositionSuccess(data)
+        );
+        done();
+      });
+    });
+
+    it("should dispatch onFetchConsumerPositionFailure on error", (done) => {
+      const params = { key: "value" };
+      const mockError = new HttpErrorResponse({
+        error: "mock-error",
+        status: 500,
+      });
+      streamService.fetchConsumerPosition.and.returnValue(
+        throwError(() => mockError)
+      );
+      const effect = fetchConsumerPositionDataEffect(
+        actions$ as Observable<any>,
+        streamService
+      );
+      actions$.next(
+        ConsumerPositionActions.onFetchConsumerPosition({ params })
+      );
+      effect.subscribe((action) => {
+        expect(action).toEqual(
+          ConsumerPositionActions.onFetchConsumerPositionFailure(mockError)
+        );
+        done();
+      });
     });
   });
 });

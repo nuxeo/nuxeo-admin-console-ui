@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CustomSnackBarComponent } from "../../../shared/components/custom-snack-bar/custom-snack-bar.component";
-import { ChangeConsumerPosition } from "../components/change-consumer-position/store/reducers";
+import { ChangeConsumerPosition, ConsumerPositionDetails } from "../components/consumer-position/store/reducers";
 
 @Injectable({
   providedIn: "root",
@@ -110,6 +110,15 @@ export class StreamService {
     return this.networkService.makeHttpRequest<ChangeConsumerPosition[]>(
       REST_END_POINTS.CHANGE_CONSUMER_POSITION,
       { urlParam: { consumerPosition }, queryParam: params }
+    );
+  }
+
+  fetchConsumerPosition(
+    params: { [key: string]: string }
+  ): Observable<ConsumerPositionDetails[]> {
+    return this.networkService.makeHttpRequest<ConsumerPositionDetails[]>(
+      REST_END_POINTS.FETCH_CONSUMER_POSITION,
+      { queryParam: params }
     );
   }
 

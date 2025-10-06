@@ -1,0 +1,86 @@
+.main-flex-container {
+  height: 100%;
+}
+
+.change-consumer-position {
+  padding: 2px 0px 0px 10px;
+  background-color: white;
+  overflow: hidden;
+}
+
+.form-fields-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1100px) {
+  .form-fields-row {
+    flex-direction: column;
+    align-items: stretch !important;
+    margin-bottom: 20px;
+  }
+}
+
+.required-indicator-label {
+  font-size: 14px;
+  color: rgb(218, 21, 0);
+  font-family: "Open Sans", sans-serif;
+  line-height: 1;
+  margin-top: 20px;
+}
+
+.required-field {
+  color: rgb(218, 21, 0);
+  font-family: "Open Sans", sans-serif;
+  padding-left: 2px;
+}
+
+.input-field.change-consumer-field {
+  width: 350px;
+  max-height: 40px;
+}
+
+.change-consumer-position-btn__button:disabled,
+.change-consumer-position-btn__button[disabled] {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: var(
+    --mdc-filled-button-disabled-label-text-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent)
+  );
+  background-color: var(
+    --mdc-filled-button-disabled-container-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
+  );
+}
+
+.change-consumer-position-btn {
+  margin-top: 30px;
+  margin-left: -20px;
+  display: flex;
+  gap: 20px;
+
+  &__button {
+    border-radius: 4px !important;
+    width: max-content;
+    height: 45px;
+    position: relative;
+    left: 20px;
+    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    letter-spacing: normal;
+    background-color: #0a60ce;
+    color: #fff;
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.clear {
+  min-width: 100px;
+}

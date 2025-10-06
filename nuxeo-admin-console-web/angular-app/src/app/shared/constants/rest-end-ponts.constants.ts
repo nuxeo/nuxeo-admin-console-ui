@@ -19,7 +19,8 @@ export const REST_END_POINTS = {
   START_CONSUMER_THREAD_POOL: "START_CONSUMER_THREAD_POOL",
   STOP_CONSUMER_THREAD_POOL: "STOP_CONSUMER_THREAD_POOL",
   INSTANCE_INFO: "INSTANCE_INFO",
-  CHANGE_CONSUMER_POSITION: "CHANGE_CONSUMER_POSITION"
+  CHANGE_CONSUMER_POSITION: "CHANGE_CONSUMER_POSITION",
+  FETCH_CONSUMER_POSITION: "FETCH_CONSUMER_POSITION",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -113,5 +114,10 @@ export const REST_END_POINT_CONFIG: Record<
   CHANGE_CONSUMER_POSITION: {
     endpoint: "/management/stream/consumer/position/{consumerPosition}",
     method: "PUT",
-  }
+  },
+  
+  FETCH_CONSUMER_POSITION: {
+    endpoint: "/management/stream/consumer/position",
+    method: "GET",
+  },
 };

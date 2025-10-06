@@ -1,6 +1,6 @@
 <mat-tab-group class="stream-tab-group" [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
     <mat-tab label="Stream Management">
-        <div class="stream-container" *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.STREAM.ID"> <!-- Load only active tab -->
+        <div class="stream-container" *ngIf="selectedTabIndex === MAIN_TAB_LABELS.STREAM.ID"> <!-- Load only active tab -->
             <div class="stream-container__placeholder">
                 <stream-form></stream-form>
                 <div *ngIf="isFetchingRecords || records!.length > 0">
@@ -17,15 +17,14 @@
     <mat-tab label="Consumer Thread Pool">
         <div class="consumer-thread-pool-container">
             <div class="consumer-thread-pool-container__placeholder">
-                <app-consumer-thread-pool *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID"></app-consumer-thread-pool>
+                <app-consumer-thread-pool *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER.ID"></app-consumer-thread-pool>
             </div>
         </div>
     </mat-tab>
-    <mat-tab label="Change Consumer Position">
+    <mat-tab label="Consumer Position">
         <div class="change-consumer-position-container">
             <div class="change-consumer-position-container__placeholder">
-                <change-consumer-position
-                    *ngIf="selectedTabIndex === CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID"></change-consumer-position>
+                <router-outlet></router-outlet>
             </div>
         </div>
     </mat-tab>

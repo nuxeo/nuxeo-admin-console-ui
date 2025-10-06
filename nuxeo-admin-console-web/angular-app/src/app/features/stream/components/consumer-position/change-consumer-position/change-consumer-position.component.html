@@ -1,5 +1,5 @@
-<div class="main-flex-container">
-  <div>
+<div>
+  <div class="main-flex-container">
     <form [formGroup]="consumerPositionForm" (ngSubmit)="showConfirmationModal()">
       <div class="change-consumer-position">
         <p class="required-indicator-label">
@@ -64,7 +64,7 @@
                 </div>
               </div>
             </mat-radio-button>
-            <mat-radio-button [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE">
+            <mat-radio-button class="mat-date-radio-btn" [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE">
               <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.LABEL }}</p>
               <mat-form-field appearance="fill" class="date-field">
                 <input placeholder="yyyy/mm/dd" matInput [matDatepicker]="picker" formControlName="after">
@@ -84,15 +84,15 @@
             class="change-consumer-position-btn__button">
             {{ CHANGE_CONSUMER_POSITION_LABELS.CONSUMER_POSITION_LABEL }}
           </button>
-           <button [disabled]="!isValidData(consumerPositionData)" mat-flat-button color="primary" type="button" (click)="clearRecords()"
-            class="change-consumer-position-btn__button clear">
+          <button [disabled]="!isValidData(consumerPositionData)" mat-flat-button color="primary" type="button"
+            (click)="clearRecords()" class="change-consumer-position-btn__button clear">
             {{ CHANGE_CONSUMER_POSITION_LABELS.CLEAR_RECORDS }}
           </button>
         </div>
       </div>
     </form>
   </div>
-  <div *ngIf="isValidData(consumerPositionData)" class="data-container">
+  <div *ngIf="isValidData(consumerPositionData)" class="consumer-data-container">
     <label>{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION_DETAILS }}</label>
     <pre>{{ consumerPositionData | json }}</pre>
   </div>

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { createAction, props } from "@ngrx/store";
+import { ConsumerPositionDetails } from "./reducers";
 
 export const onChangeConsumerPosition = createAction(
   "[Change Consumer Position] Change Consumer Position",
@@ -18,4 +19,23 @@ export const onChangeConsumerPositionFailure = createAction(
 
 export const resetConsumerPositionData = createAction(
   "[Change Consumer Position] Reset Consumer Position Data"
+);
+
+export const onFetchConsumerPosition = createAction(
+  "[Fetch Consumer Position] Fetch Consumer Position",
+  props<{ params: { [key: string]: string } }>()
+);
+
+export const onFetchConsumerPositionSuccess = createAction(
+  "[Fetch Consumer Position] Fetch Consumer Position Success",
+  (data: ConsumerPositionDetails[]) => ({ data })
+);
+
+export const onFetchConsumerPositionFailure = createAction(
+  "[Fetch Consumer Position] Fetch Consumer Position Failure",
+  props<{ error: HttpErrorResponse }>()
+);
+
+export const resetFetchConsumerPositionData = createAction(
+  "[Fetch Consumer Position] Reset Fetch Consumer Position Data"
 );

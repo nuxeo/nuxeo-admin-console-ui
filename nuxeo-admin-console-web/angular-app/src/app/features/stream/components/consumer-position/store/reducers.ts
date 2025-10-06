@@ -31,6 +31,16 @@ export const initialState: ChangeConsumerPositionState = {
   consumerData: [],
 };
 
+export interface FetchConsumerPositionState {
+  fetchConsumerError: HttpErrorResponse | null;
+  consumerPositionData: ConsumerPositionDetails[];
+}
+
+export const getConsumerPositionInitialState: FetchConsumerPositionState = {
+  fetchConsumerError: null,
+  consumerPositionData: [],
+};
+
 export const changeConsumerPositionReducer = createReducer(
   initialState,
   on(ConsumerPositionActions.onChangeConsumerPosition, (state) => ({
@@ -60,5 +70,37 @@ export const changeConsumerPositionReducer = createReducer(
     ...state,
     consumerError: null,
     consumerData: [],
+  }))
+);
+
+export const fetchConsumerPositionReducer = createReducer(
+  getConsumerPositionInitialState,
+  on(ConsumerPositionActions.onFetchConsumerPosition, (state) => ({
+    ...state,
+    consumerPositionData: [],
+    fetchConsumerError: null,
+  })),
+
+  on(
+    ConsumerPositionActions.onFetchConsumerPositionSuccess,
+    (state, { data }) => ({
+      ...state,
+      fetchConsumerError: null,
+      consumerPositionData: data,
+    })
+  ),
+
+  on(
+    ConsumerPositionActions.onFetchConsumerPositionFailure,
+    (state, { error }) => ({
+      ...state,
+      fetchConsumerError: error,
+    })
+  ),
+
+  on(ConsumerPositionActions.resetFetchConsumerPositionData, (state) => ({
+    ...state,
+    fetchConsumerError: null,
+    consumerPositionData: [],
   }))
 );

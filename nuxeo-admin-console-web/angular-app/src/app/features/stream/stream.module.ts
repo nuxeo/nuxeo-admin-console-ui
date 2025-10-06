@@ -15,12 +15,14 @@ import { StreamRecordsStatusComponent } from "./components/stream-records-status
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { ConsumerThreadPoolComponent } from './components/consumer-thread-pool/consumer-thread-pool.component';
-import { ChangeConsumerPositionComponent } from './components/change-consumer-position/change-consumer-position.component';
+import { ChangeConsumerPositionComponent } from './components/consumer-position/change-consumer-position/change-consumer-position.component';
 import { MatDividerModule } from "@angular/material/divider";
 import { MatDatepickerModule} from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { ISO_DATE_FORMATS } from "./stream.constants";
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { FetchConsumerPositionComponent } from './components/consumer-position/fetch-consumer-position/fetch-consumer-position.component';
+import { ConsumerPositionComponent } from './components/consumer-position/consumer-position.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     StreamRecordsStatusComponent,
     ConsumerThreadPoolComponent,
     ChangeConsumerPositionComponent,
+    FetchConsumerPositionComponent,
+    ConsumerPositionComponent,
   ],
   imports: [
     CommonModule,

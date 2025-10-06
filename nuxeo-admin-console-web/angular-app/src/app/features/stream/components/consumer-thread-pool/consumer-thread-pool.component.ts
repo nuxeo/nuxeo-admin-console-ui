@@ -236,7 +236,7 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
 
   onStartStopConsumerThreadPool(operationType: string): void {
     const params = {
-      consumer: this.streamForm?.get(CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL)
+      consumer: this.streamForm?.get(CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL)
         ?.value,
     };
     if (
@@ -255,7 +255,7 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   showConfirmationModal(operation: string): void {
     if (!this.isStartOrStopConsumerThreadInProgress) {
       const selectedConsumer = this.streamForm?.get(
-        CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL
+        CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL
       )?.value;
       this.genericDialogRef = this.dialogService.open(GenericModalComponent, {
         disableClose: true,

@@ -3,31 +3,31 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ERROR_TYPES,
   GENERIC_LABELS,
-} from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+} from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import {
   CHANGE_CONSUMER_POSITION_LABELS,
   CONSUMER_THREAD_POOL_LABELS,
   STREAM_LABELS,
-} from "../../stream.constants";
-import { Stream } from "../../stream.interface";
+} from "../../../stream.constants";
+import { Stream } from "../../../stream.interface";
 import { select, Store } from "@ngrx/store";
 import { Observable, Subject, take, takeUntil } from "rxjs";
-import { StreamsState } from "../../store/reducers";
-import * as StreamActions from "../../store/actions";
-import * as ConsumerPositionActions from "./store/actions";
+import { StreamsState } from "../../../store/reducers";
+import * as StreamActions from "../../../store/actions";
+import * as ConsumerPositionActions from "../store/actions";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { SharedMethodsService } from "./../../../../shared/services/shared-methods.service";
+import { SharedMethodsService } from "../../../../../shared/services/shared-methods.service";
 import {
   ChangeConsumerPositionState,
   ChangeConsumerPosition,
-} from "./store/reducers";
-import * as ConsumerPositionSelectors from "./store/selectors";
+} from "../store/reducers";
+import * as ConsumerPositionSelectors from "../store/selectors";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSelect } from "@angular/material/select";
-import { ErrorModalComponent } from "./../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
-import { GenericModalComponent } from "./../../../sub-features/generic-multi-feature-layout/components/generic-modal/generic-modal.component";
-import { GenericModalClosedInfo } from "./../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
-import { ErrorModalClosedInfo } from "../../../../shared/types/common.interface";
+import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
+import { GenericModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/generic-modal/generic-modal.component";
+import { GenericModalClosedInfo } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.interface";
+import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interface";
 
 @Component({
   selector: "change-consumer-position",
@@ -283,7 +283,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     let params: any = {
       consumer:
         this.consumerPositionForm.controls[
-          CONSUMER_THREAD_POOL_LABELS.CONSUMER.LABEL
+          CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL
         ]?.value,
       stream:
         this.consumerPositionForm.controls[STREAM_LABELS.STREAM_ID]?.value,
