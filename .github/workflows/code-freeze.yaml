@@ -6,6 +6,10 @@ on:
         description: 'Release Candidate version eg(23.0.0-rc.1)'
         required: true
         type: string
+permissions:
+  contents: write  # Required to checkout the repository and access git tags
+  pull-requests: write # Required to create pull requests, PR creation requires write permission
+  secrets: write  # Required for setting GitHub secrets for beta versions
 
 jobs:
   create-pull-request:

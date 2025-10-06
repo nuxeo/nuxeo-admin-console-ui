@@ -1,5 +1,9 @@
 name: Lint
 
+permissions:
+  # Only read access needed for code checkout and linting operations
+  contents: read
+  
 on:
   pull_request:
     branches:

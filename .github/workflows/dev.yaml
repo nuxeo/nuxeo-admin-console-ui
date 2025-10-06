@@ -1,5 +1,11 @@
 name: Dev
 
+permissions:
+  # Required to checkout code and push tags
+  contents: write
+  # Required to read packages from GitHub package registry
+  packages: read
+
 on:
   push:
     branches:

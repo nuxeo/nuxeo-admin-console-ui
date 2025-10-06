@@ -1,5 +1,9 @@
 name: Delete Marketplace Version (Pre-Prod)
 
+permissions:
+  # No write permissions required as this workflow only makes external API calls
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
