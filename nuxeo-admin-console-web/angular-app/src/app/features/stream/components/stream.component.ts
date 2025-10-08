@@ -171,6 +171,11 @@ export class StreamComponent implements OnInit, OnDestroy {
           relativeTo: this.route,
         });
         break;
+      case MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID:
+        this.router.navigate([MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL], {
+          relativeTo: this.route,
+        });
+        break;
       default:
         break;
     }
@@ -181,7 +186,11 @@ export class StreamComponent implements OnInit, OnDestroy {
     const lastSegment = url?.split("/").pop();
     if (lastSegment && lastSegment === MAIN_TAB_LABELS.CONSUMER.LABEL) {
       this.selectedTabIndex = MAIN_TAB_LABELS.CONSUMER.ID;
-    } else if (
+    } 
+    else if (lastSegment && lastSegment === MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL) {
+      this.selectedTabIndex = MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID;
+    }
+    else if (
       lastSegment &&
       (lastSegment ===
         MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS

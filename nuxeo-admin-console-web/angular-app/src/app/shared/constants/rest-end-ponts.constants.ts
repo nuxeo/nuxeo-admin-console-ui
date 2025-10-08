@@ -21,6 +21,7 @@ export const REST_END_POINTS = {
   INSTANCE_INFO: "INSTANCE_INFO",
   CHANGE_CONSUMER_POSITION: "CHANGE_CONSUMER_POSITION",
   FETCH_CONSUMER_POSITION: "FETCH_CONSUMER_POSITION",
+  GET_SCALING_ANALYSIS: "GET_SCALING_ANALYSIS",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -118,6 +119,11 @@ export const REST_END_POINT_CONFIG: Record<
   
   FETCH_CONSUMER_POSITION: {
     endpoint: "/management/stream/consumer/position",
+    method: "GET",
+  },
+
+  GET_SCALING_ANALYSIS: {
+    endpoint: "/management/stream/scale",
     method: "GET",
   },
 };

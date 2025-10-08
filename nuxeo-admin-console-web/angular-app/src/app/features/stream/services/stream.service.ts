@@ -122,6 +122,12 @@ export class StreamService {
     );
   }
 
+ getScalingAnalysis(): Observable<any> {
+    return this.networkService.makeHttpRequest<any>(
+      REST_END_POINTS.GET_SCALING_ANALYSIS
+    );
+  }
+
   showSuccessMessage(message: string): void {
     //Shared method to show success messages
     this._snackBar.openFromComponent(CustomSnackBarComponent, {

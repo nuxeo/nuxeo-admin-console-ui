@@ -6,6 +6,7 @@ import { ConsumerThreadPoolComponent } from "./components/consumer-thread-pool/c
 import { ChangeConsumerPositionComponent } from "./components/consumer-position/change-consumer-position/change-consumer-position.component";
 import { ConsumerPositionComponent } from "./components/consumer-position/consumer-position.component";
 import { FetchConsumerPositionComponent } from "./components/consumer-position/fetch-consumer-position/fetch-consumer-position.component";
+import { GetScalingAnalysisComponent } from "./components/get-scaling-analysis/get-scaling-analysis.component";
 export const StreamRoutes: Route[] = [
   {
     path: "",
@@ -34,6 +35,10 @@ export const StreamRoutes: Route[] = [
           },
         ],
       },
+      {
+        path: 'get-scaling-analysis',
+        component:GetScalingAnalysisComponent
+      }
     ],
   },
 ];

@@ -52,7 +52,7 @@ import {
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
-import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
+import { consumerThreadPoolReducer, scalingAnalysisReducer, streamsReducer } from "./features/stream/store/reducers";
 import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./features/stream/components/consumer-position/store/reducers";
 
 @NgModule({
@@ -84,6 +84,7 @@ import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./f
       bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
       streams: streamsReducer,
+      scalingAnalysis: scalingAnalysisReducer,
       consumerThreadPool: consumerThreadPoolReducer,
       consumerPosition: changeConsumerPositionReducer,
       fetchConsumerPosition: fetchConsumerPositionReducer,
