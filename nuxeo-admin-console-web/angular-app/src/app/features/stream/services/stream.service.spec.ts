@@ -231,4 +231,44 @@ describe('StreamService', () => {
         });
       });
     });
+
+    describe("getScalingAnalysis", () => {
+      it("should call makeHttpRequest with GET_SCALING_ANALYSIS and return data", (done) => {
+        const mockResult = { mockdata: "test", count: 1 };
+        networkServiceMock.makeHttpRequest.and.returnValue(of(mockResult));
+        service.getScalingAnalysis().subscribe({
+          next: (res) => {
+            expect(res).toEqual(mockResult);
+            expect(networkServiceMock.makeHttpRequest).toHaveBeenCalledOnceWith(
+              REST_END_POINTS.GET_SCALING_ANALYSIS
+            );
+            done();
+          },
+          error: () => {
+            fail("Expected successful response, but got error");
+            done();
+          },
+        });
+      });
+
+      it("should propagate error when makeHttpRequest throws", (done) => {
+        const mockError = new Error("Network failure");
+        networkServiceMock.makeHttpRequest.and.returnValue(
+          throwError(() => mockError)
+        );
+        service.getScalingAnalysis().subscribe({
+          next: () => {
+            fail("Expected error, but got success");
+            done();
+          },
+          error: (err) => {
+            expect(err).toBe(mockError);
+            expect(networkServiceMock.makeHttpRequest).toHaveBeenCalledWith(
+              REST_END_POINTS.GET_SCALING_ANALYSIS
+            );
+            done();
+          },
+        });
+      });
+    });
 });

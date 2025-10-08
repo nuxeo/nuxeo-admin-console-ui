@@ -51,6 +51,8 @@ export class GetScalingAnalysisComponent implements OnInit {
   }
 
   isValidData(data: any): boolean {
-    return data && Object.keys(data).length > 0;
+    if (!data) return false;
+    if (Object.keys(data).length === 0) return false;
+    return true;
   }
 }

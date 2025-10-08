@@ -342,6 +342,14 @@ describe("StreamComponent", () => {
       );
     });
 
+     it("should navigate to the get scaling analysis route when active tab is get scaling analysis", () => {
+      component.onTabChange(MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith(
+        [MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL],
+        { relativeTo: component["route"] }
+      );
+    });
+
     it("should not navigate if the tab ID does not match any known IDs", () => {
       const unknownTabId = 5;
       component.onTabChange(unknownTabId);
@@ -350,7 +358,7 @@ describe("StreamComponent", () => {
   });
 
   describe("updateActiveTab", () => {
-    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CONSUMER.ID when URL ends with consumer label", () => {
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.CONSUMER.ID when URL ends with consumer label", () => {
       const consumerUrl = "/stream-management/consumer";
       component.updateActiveTab(consumerUrl);
       expect(component.selectedTabIndex).toBe(
@@ -358,7 +366,7 @@ describe("StreamComponent", () => {
       );
     });
 
-    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
       const streamUrl = "/stream-management/change-consumer-position";
       component.updateActiveTab(streamUrl);
       expect(component.selectedTabIndex).toBe(
@@ -366,7 +374,7 @@ describe("StreamComponent", () => {
       );
     });
 
-     it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
+     it("should set selectedTabIndex to MAIN_TAB_LABELS.CHANGE_CONSUMER.ID when URL ends with change-consumer-position", () => {
       const streamUrl = "/stream-management/get-consumer-position";
       component.updateActiveTab(streamUrl);
       expect(component.selectedTabIndex).toBe(
@@ -374,7 +382,7 @@ describe("StreamComponent", () => {
       );
     });
 
-    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.STREAM.ID when URL does not end with consumer label", () => {
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.STREAM.ID when URL does not end with consumer label", () => {
       const streamUrl = "/stream-management/stream";
       component.updateActiveTab(streamUrl);
       expect(component.selectedTabIndex).toBe(
@@ -382,7 +390,15 @@ describe("StreamComponent", () => {
       );
     });
 
-    it("should set selectedTabIndex to CONSUMER_THREAD_POOL_LABELS.STREAM.ID for an empty URL", () => {
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID when URL ends with get-scaling-analysis", () => {
+      const streamUrl = "/stream-management/get-scaling-analysis";
+      component.updateActiveTab(streamUrl);
+      expect(component.selectedTabIndex).toBe(
+        MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID
+      );
+    });
+
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.STREAM.ID for an empty URL", () => {
       const emptyUrl = "";
       component.updateActiveTab(emptyUrl);
       expect(component.selectedTabIndex).toBe(
