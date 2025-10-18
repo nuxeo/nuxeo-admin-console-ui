@@ -23,6 +23,8 @@ import { ISO_DATE_FORMATS } from "./stream.constants";
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { FetchConsumerPositionComponent } from './components/consumer-position/fetch-consumer-position/fetch-consumer-position.component';
 import { ConsumerPositionComponent } from './components/consumer-position/consumer-position.component';
+import { GetScalingAnalysisComponent } from './components/get-scaling-analysis/get-scaling-analysis.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { ConsumerPositionComponent } from './components/consumer-position/consum
     ChangeConsumerPositionComponent,
     FetchConsumerPositionComponent,
     ConsumerPositionComponent,
+    GetScalingAnalysisComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +54,7 @@ import { ConsumerPositionComponent } from './components/consumer-position/consum
     MatDatepickerModule,
     MatNativeDateModule,
     MatMomentDateModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
    { provide: MAT_DATE_FORMATS, useValue: ISO_DATE_FORMATS },

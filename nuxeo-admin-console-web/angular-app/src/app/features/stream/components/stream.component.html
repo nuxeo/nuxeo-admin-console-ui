@@ -24,7 +24,14 @@
     <mat-tab label="Consumer Position">
         <div class="change-consumer-position-container">
             <div class="change-consumer-position-container__placeholder">
-                <router-outlet></router-outlet>
+                <router-outlet *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.ID"></router-outlet>
+            </div>
+        </div>
+    </mat-tab>
+     <mat-tab label="Get Scaling Analysis">
+        <div class="get-scaling-analysis-container">
+            <div class="get-scaling-analysis-container__placeholder">
+               <app-get-scaling-analysis *ngIf="selectedTabIndex === MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID"></app-get-scaling-analysis>
             </div>
         </div>
     </mat-tab>

@@ -1,0 +1,41 @@
+.main-flex-container {
+  height: 100%;
+  padding: 10px 0px 0px 10px;
+}
+
+.scaling-analysis-data-container {
+  padding: 2px 0px 0px 10px;
+  background-color: white;
+  height: 80%;
+  width: 90%;
+
+}
+
+.scaling-analysis-label {
+  font-family: "Open Sans", sans-serif;
+  line-height: 1;
+  margin-top: 10px;
+  padding-left: 2px;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.no-data {
+  padding: 2rem;
+}
+
+.spinner-container {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}

@@ -71,6 +71,11 @@ export const MAIN_TAB_LABELS = {
       },
     },
   },
+  GET_SCALING_ANALYSIS: {
+    ID: 3,
+    LABEL: "Scaling Analysis",
+    ROUTE_LABEL: "get-scaling-analysis",
+  },
 };
 
 export const CONSUMER_THREAD_POOL_LABELS = {
@@ -175,4 +180,6 @@ export const ISO_DATE_FORMATS = { //To Override the default date format of Angul
   },
 };
 
-
+export const GET_SCALING_ANALYSIS_LABELS = {
+  NO_DATA_MSG: "No scaling analysis data available",
+};
