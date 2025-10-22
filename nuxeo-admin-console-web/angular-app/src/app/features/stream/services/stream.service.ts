@@ -128,6 +128,12 @@ export class StreamService {
     );
   }
 
+  getStreamProcessorInfo(): Observable<any> {
+    return this.networkService.makeHttpRequest<any>(
+      REST_END_POINTS.GET_STREAM_PROCESSOR_INFO
+    );
+  }
+
   showSuccessMessage(message: string): void {
     //Shared method to show success messages
     this._snackBar.openFromComponent(CustomSnackBarComponent, {

@@ -4,6 +4,7 @@ import {
   CONSUMER_THREAD_POOL_LABELS,
   MAIN_TAB_LABELS,
   STREAM_LABELS,
+  STREAM_MAIN_HEADINGS,
 } from "../stream.constants";
 import { filter, Observable, skip, Subject, takeUntil } from "rxjs";
 import { Store, select } from "@ngrx/store";
@@ -37,6 +38,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   isFetchingRecords = false;
   selectedTabIndex = 0;
   private destroy$: Subject<void> = new Subject<void>();
+  readonly STREAM_MAIN_HEADINGS = STREAM_MAIN_HEADINGS;
   constructor(private store: Store<{ streams: StreamsState }>,
     private cdRef: ChangeDetectorRef,
     private streamService: StreamService,
@@ -172,9 +174,20 @@ export class StreamComponent implements OnInit, OnDestroy {
         });
         break;
       case MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID:
-        this.router.navigate([MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL], {
-          relativeTo: this.route,
-        });
+        this.router.navigate(
+          [MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL],
+          {
+            relativeTo: this.route,
+          }
+        );
+        break;
+      case MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID:
+        this.router.navigate(
+          [MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ROUTE_LABEL],
+          {
+            relativeTo: this.route,
+          }
+        );
         break;
       default:
         break;
@@ -189,6 +202,9 @@ export class StreamComponent implements OnInit, OnDestroy {
     } 
     else if (lastSegment && lastSegment === MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL) {
       this.selectedTabIndex = MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID;
+    }
+    else if (lastSegment && lastSegment === MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ROUTE_LABEL) {
+      this.selectedTabIndex = MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID;
     }
     else if (
       lastSegment &&

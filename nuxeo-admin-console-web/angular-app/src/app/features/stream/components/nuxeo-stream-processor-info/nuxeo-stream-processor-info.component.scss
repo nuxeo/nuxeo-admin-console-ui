@@ -1,3 +1,4 @@
+
 :host {
   display: block;
   height: 100%;
@@ -11,26 +12,19 @@
   flex-direction: column;
 }
 
-.scaling-analysis-data-container {
+.nuxeo-stream-data-container {
   padding: 2px 0px 0px 10px;
   background-color: white;
   height: 80%;
   width: 90%;
 }
 
-.scaling-analysis-label {
-  font-family: "Open Sans", sans-serif;
-  line-height: 1;
-  margin-top: 10px;
-  padding-left: 2px;
-}
-
-.scaling-analysis-container {
+.nuxeo-stream-container {
   height: 100%;
-  max-height: 100vh;
+  max-height: 100vh; 
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; 
 }
 
 .loading-container,
@@ -52,19 +46,19 @@
   color: #666;
 }
 
-.error-container button {
+.error-container button{
   background-color: #0a60ce;
   border-radius: 4px !important;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
   margin-top: 1rem;
-}
+} 
 
 .loading-container {
   mat-spinner {
     margin-bottom: 1.5rem;
   }
-
+  
   p {
     margin: 0;
     color: #666;

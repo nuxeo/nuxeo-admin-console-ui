@@ -25,6 +25,7 @@ import { FetchConsumerPositionComponent } from './components/consumer-position/f
 import { ConsumerPositionComponent } from './components/consumer-position/consumer-position.component';
 import { GetScalingAnalysisComponent } from './components/get-scaling-analysis/get-scaling-analysis.component';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { NuxeoStreamProcessorInfoComponent } from "./components/nuxeo-stream-processor-info/nuxeo-stream-processor-info.component";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     FetchConsumerPositionComponent,
     ConsumerPositionComponent,
     GetScalingAnalysisComponent,
+    NuxeoStreamProcessorInfoComponent,
   ],
   imports: [
     CommonModule,

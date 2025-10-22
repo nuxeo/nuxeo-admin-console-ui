@@ -684,7 +684,7 @@ mat-radio-button.complex-radio {
   font-size: 12px;
 }
 
-.consumer-data-container, .scaling-analysis-data-container {
+.consumer-data-container, .scaling-analysis-data-container, .nuxeo-stream-data-container {
   height: 350px;
   overflow: auto;
   margin: 24px 0px 10px 12px;
@@ -694,4 +694,11 @@ mat-radio-button.complex-radio {
   padding: 16px;
   box-sizing: border-box;
   width: 80%;
+}
+
+.stream-tab-group {
+  mat-tab-header {
+    background-color: white;
+    margin: 0px 20px;
+  }
 }
