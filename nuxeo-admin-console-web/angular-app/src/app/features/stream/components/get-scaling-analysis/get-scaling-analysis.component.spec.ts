@@ -56,7 +56,7 @@ describe("GetScalingAnalysisComponent", () => {
     expect(component.loadJsonData).toHaveBeenCalled();
   });
 
-  it("should call showActionErrorModal and set isDataLoaded to true on error", () => {
+  it("should call showActionErrorModal and set isDataLoaded to true on error when error object is present", () => {
     const errorResponse = new HttpErrorResponse({
       error: { status: 500, message: "Internal Server Error" }
     });
@@ -71,6 +71,25 @@ describe("GetScalingAnalysisComponent", () => {
       details: {
         status: errorResponse.error.status,
         message: errorResponse.error.message,
+      },
+    });
+  });
+
+  it("should call showActionErrorModal and set isDataLoaded to true on error when error object is not present", () => {
+    const errorResponse = new HttpErrorResponse({
+      status: 500, statusText: "Internal Server Error"
+    });
+    mockStreamService.getScalingAnalysis.and.returnValue(
+      throwError(() => errorResponse)
+    );
+    component.loadJsonData();
+    expect(component.isDataLoaded).toBeTrue();
+    expect(component.isError).toBeTrue();
+    expect(mockSharedService.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.SERVER_ERROR,
+      details: {
+        status: errorResponse.status,
+        message: errorResponse.message,
       },
     });
   });

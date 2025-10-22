@@ -45,7 +45,7 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.isDataLoaded = true;
           this.isError = true;
-          this.showErrorMessage(error.error);
+          this.showErrorMessage(error?.error || error);
         },
       });
   }

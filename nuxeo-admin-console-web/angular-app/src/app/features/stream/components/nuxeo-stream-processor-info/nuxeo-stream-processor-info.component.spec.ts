@@ -68,7 +68,7 @@ describe('NuxeoStreamProcessorInfoComponent', () => {
     expect(component.isError).toBe(false);
   });
 
-  it('should handle error when loading JSON data fails', () => {
+  it('should handle error when loading JSON data fails and error object is present', () => {
     const errorResponse = new HttpErrorResponse({
       error: { status: 500, message: 'Internal Server Error' }
     });
@@ -79,6 +79,19 @@ describe('NuxeoStreamProcessorInfoComponent', () => {
     expect(component.isDataLoaded).toBe(true);
     expect(component.isError).toBe(true);
     expect(component.showErrorMessage).toHaveBeenCalledWith(errorResponse.error);
+  });
+
+   it('should handle error when loading JSON data fails and error object is not present', () => {
+    const errorResponse = new HttpErrorResponse({
+      status: 500, statusText: 'Internal Server Error'
+    });
+    mockStreamService.getStreamProcessorInfo.and.returnValue(throwError(() => errorResponse));
+    component.streamProcessorJsonData = null;
+    spyOn(component, 'showErrorMessage');
+    component.loadJsonData();
+    expect(component.isDataLoaded).toBe(true);
+    expect(component.isError).toBe(true);
+    expect(component.showErrorMessage).toHaveBeenCalledWith(errorResponse);
   });
 
   it('should show error message correctly', () => {
