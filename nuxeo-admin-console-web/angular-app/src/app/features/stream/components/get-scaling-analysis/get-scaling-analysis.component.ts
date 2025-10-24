@@ -49,8 +49,8 @@ export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
           this.sharedService.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error.error as HttpErrorResponse)?.status || error.status,
-              message: (error.error as HttpErrorResponse)?.message || error.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         },
