@@ -183,7 +183,7 @@ describe("ConsumerThreadPoolComponent", () => {
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
             message: jasmine.stringMatching(/start/),
-            title: "Start Consumer Thread Pool",
+            title: "Start Consumer Thread Pools",
           }),
         })
       );
@@ -205,7 +205,7 @@ describe("ConsumerThreadPoolComponent", () => {
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
             message: jasmine.stringMatching(/stop/),
-            title: "Stop Consumer Thread Pool",
+            title: "Stop Consumer Thread Pools",
           }),
         })
       );
@@ -254,7 +254,6 @@ describe("ConsumerThreadPoolComponent", () => {
       const call = matDialogSpy.open.calls.mostRecent();
       const dialogArgs = call.args[1] as { data?: { message?: string } };
       expect(dialogArgs?.data?.message).toContain("stream-consumer");
-      expect(dialogArgs?.data?.message).toContain("stream/consumer");
     });
   });
 

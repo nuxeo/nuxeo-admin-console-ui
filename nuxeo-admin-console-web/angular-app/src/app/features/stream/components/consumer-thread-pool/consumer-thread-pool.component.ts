@@ -274,8 +274,7 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
             .replace(
               "{selectedConsumerName}",
               selectedConsumer.replace("/", "-")
-            )
-            .replace("{selectedConsumerUrn}", selectedConsumer),
+            ),
           title:
             CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_DIALOG_MSG.replace(
               "{operation}",
