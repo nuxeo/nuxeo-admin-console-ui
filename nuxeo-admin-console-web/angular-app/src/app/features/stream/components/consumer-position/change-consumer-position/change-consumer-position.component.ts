@@ -145,8 +145,8 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
             .showActionErrorModal({
               type: ERROR_TYPES.SERVER_ERROR,
               details: {
-                status: (error as HttpErrorResponse)?.status,
-                message: (error as HttpErrorResponse)?.message,
+                status: (error?.error as HttpErrorResponse)?.status || error.status,
+                message: (error?.error as HttpErrorResponse)?.message || error.message,
               },
             })
             .pipe(takeUntil(this.destroy$))
@@ -184,8 +184,8 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
             .showActionErrorModal({
               type: ERROR_TYPES.SERVER_ERROR,
               details: {
-                status: (error as HttpErrorResponse)?.status,
-                message: (error as HttpErrorResponse)?.message,
+                status: (error?.error as HttpErrorResponse)?.status || error.status,
+                message: (error?.error as HttpErrorResponse)?.message || error.message,
               },
             })
             .pipe(takeUntil(this.destroy$))
@@ -206,8 +206,8 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
             .showActionErrorModal({
               type: ERROR_TYPES.SERVER_ERROR,
               details: {
-                status: (error as HttpErrorResponse)?.status,
-                message: (error as HttpErrorResponse)?.message,
+                status: (error?.error as HttpErrorResponse)?.status || error.status,
+                message: (error?.error as HttpErrorResponse)?.message || error.message,
               },
             })
             .pipe(takeUntil(this.destroy$))

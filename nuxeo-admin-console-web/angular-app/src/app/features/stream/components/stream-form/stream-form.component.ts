@@ -32,10 +32,10 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   streamForm: FormGroup;
   isSubmitBtnDisabled = false;
   fetchStreamsSuccess$: Observable<Stream[]>;
-  fetchStreamsError$: Observable<unknown>;
+  fetchStreamsError$: Observable<HttpErrorResponse | null>;
   fetchConsumersSuccess$: Observable<{ stream: string; consumer: string }[]>;
-  fetchConsumersError$: Observable<unknown>;
-  fetchRecordsError$: Observable<unknown>;
+  fetchConsumersError$: Observable<HttpErrorResponse | null>;
+  fetchRecordsError$: Observable<HttpErrorResponse | null>;
   streams: Stream[] = [];
   records: unknown[] = [];
   consumers: { stream: string; consumer: string }[] = [];
@@ -157,8 +157,8 @@ export class StreamFormComponent implements OnInit, OnDestroy {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status ,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
@@ -185,8 +185,8 @@ export class StreamFormComponent implements OnInit, OnDestroy {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
@@ -203,7 +203,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
           this.showActionErrorModal({
             type: '',
             details: {
-              status: (error as HttpErrorResponse)?.status,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
               message: ERROR_MODAL_LABELS.ERROR_SUBHEADING,
             },
           });

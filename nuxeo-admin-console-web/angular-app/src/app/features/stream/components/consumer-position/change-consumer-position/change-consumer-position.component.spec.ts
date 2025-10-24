@@ -537,10 +537,9 @@ describe("ChangeConsumerPositionComponent", () => {
       );
     });
 
-    it("should handle fetchStreamsError", () => {
+    it("should handle fetchStreamsError when error object is available", () => {
       const mockError = new HttpErrorResponse({
-        status: 500,
-        statusText: "Server Error",
+        error: { status: 500, message: "Server Error" },
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,
@@ -550,7 +549,29 @@ describe("ChangeConsumerPositionComponent", () => {
       sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
         of(mockModalResponse)
       );
+      component.ngOnInit();
+      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
 
+    it("should handle when error object is not available in fetchStreamsError$", () => {
+      const mockError = new HttpErrorResponse({
+       status: 500, statusText: "Server Error" 
+      });
+      const mockModalResponse: ErrorModalClosedInfo = {
+        isClosed: true,
+        event: {},
+      };
+      component.fetchStreamsError$ = of(mockError);
+      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+        of(mockModalResponse)
+      );
       component.ngOnInit();
       expect(component.isChangeConsumerPositionDisabled).toBeTrue();
       expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
@@ -576,10 +597,33 @@ describe("ChangeConsumerPositionComponent", () => {
       );
     });
 
-    it("should handle fetchConsumersError", () => {
+    it("should handle fetchConsumersError when error object is available", () => {
       const mockError = new HttpErrorResponse({
-        status: 404,
-        statusText: "Not Found",
+        error: { status: 404, message: "Not Found" },
+      });
+      const mockModalResponse: ErrorModalClosedInfo = {
+        isClosed: true,
+        event: {},
+      };
+      component.fetchConsumersError$ = of(mockError);
+      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+        of(mockModalResponse)
+      );
+
+      component.ngOnInit();
+      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle when error object is not available in fetchConsumersError", () => {
+      const mockError = new HttpErrorResponse({
+        status: 404, statusText: "Not Found",
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,
@@ -601,10 +645,33 @@ describe("ChangeConsumerPositionComponent", () => {
       });
     });
 
-    it("should handle changeConsumerPositionError", () => {
+    it("should handle changeConsumerPositionError when error object is available", () => {
       const mockError = new HttpErrorResponse({
-        status: 400,
-        statusText: "Bad Request",
+        error: { status: 400, message: "Bad Request" },
+      });
+      const mockModalResponse: ErrorModalClosedInfo = {
+        isClosed: true,
+        event: {},
+      };
+      component.changeConsumerPositionError$ = of(mockError);
+      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+        of(mockModalResponse)
+      );
+
+      component.ngOnInit();
+      expect(component.consumerPositionData).toEqual([]);
+      expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+     it("should handle when error object is not available in changeConsumerPositionError", () => {
+      const mockError = new HttpErrorResponse({
+        status: 400, statusText: "Bad Request",
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,

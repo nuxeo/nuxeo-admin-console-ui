@@ -38,9 +38,9 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   STREAM_LABELS = STREAM_LABELS;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
   fetchStreamsSuccess$!: Observable<Stream[]>;
-  fetchStreamsError$!: Observable<unknown>;
+  fetchStreamsError$!: Observable<HttpErrorResponse | null>;
   fetchConsumersSuccess$!: Observable<{ stream: string; consumer: string }[]>;
-  fetchConsumersError$!: Observable<unknown>;
+  fetchConsumersError$!: Observable<HttpErrorResponse | null>;
   streamForm: FormGroup;
   private destroy$: Subject<void> = new Subject<void>();
   errorDialogRef:
@@ -53,9 +53,9 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   @ViewChild("focusMatSelect") focusMatSelect!: MatSelect;
   isStartOrStopConsumerThreadInProgress = false;
   isStartConsumerThreadPoolSuccess$!: Observable<ConsumerThreadPoolState>;
-  isStartConsumerThreadPoolFailure$!: Observable<unknown>;
+  isStartConsumerThreadPoolFailure$!: Observable<HttpErrorResponse | null>;
   isStopConsumerThreadPoolSuccess$!: Observable<ConsumerThreadPoolState>;
-  isStopConsumerThreadPoolFailure$!: Observable<unknown>;
+  isStopConsumerThreadPoolFailure$!: Observable<HttpErrorResponse | null>;
   isStartStopConsumerThreadBtnDisabled = false;
   constructor(
     private store: Store<{
@@ -136,8 +136,8 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
@@ -168,8 +168,8 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
@@ -192,13 +192,13 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
 
     this.isStartConsumerThreadPoolFailure$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((error: unknown) => {
+      .subscribe((error) => {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
@@ -221,13 +221,13 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
 
     this.isStopConsumerThreadPoolFailure$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((error: unknown) => {
+      .subscribe((error) => {
         if (error) {
           this.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error?.error as HttpErrorResponse)?.status || error.status,
+              message: (error?.error as HttpErrorResponse)?.message || error.message,
             },
           });
         }
