@@ -202,7 +202,7 @@ export const GENERIC_API_LABELS = {
 
 export const STREAM_MAIN_HEADINGS = {
   STREAM_RECORDS: "Get Stream Records",
-  CONSUMER_THREAD_POOL: "Start/Stop Consumer Thread Pool",
+  CONSUMER_THREAD_POOL: "Start / Stop Consumer Thread Pool",
   MANAGE_CONSUMER_POSITIONS: "Manage Consumer Positions",
   SCALING_ANALYSIS: "Get Scaling Analysis",
   NUXEO_STREAM_PROCESSOR_INFO: "Get Nuxeo Stream and Processor Information",
