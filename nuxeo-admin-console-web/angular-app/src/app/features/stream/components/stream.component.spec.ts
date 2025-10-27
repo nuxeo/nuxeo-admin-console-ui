@@ -342,10 +342,18 @@ describe("StreamComponent", () => {
       );
     });
 
-     it("should navigate to the get scaling analysis route when active tab is get scaling analysis", () => {
+    it("should navigate to the get scaling analysis route when active tab is get scaling analysis", () => {
       component.onTabChange(MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID);
       expect(component["router"].navigate).toHaveBeenCalledWith(
         [MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ROUTE_LABEL],
+        { relativeTo: component["route"] }
+      );
+    });
+
+    it("should navigate to the get nuxeo stream info route when active tab is get nuxeo stream info", () => {
+      component.onTabChange(MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID);
+      expect(component["router"].navigate).toHaveBeenCalledWith(
+        [MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ROUTE_LABEL],
         { relativeTo: component["route"] }
       );
     });
@@ -417,6 +425,14 @@ describe("StreamComponent", () => {
       component.updateActiveTab(streamUrlWithSlash);
       expect(component.selectedTabIndex).toBe(
         MAIN_TAB_LABELS.STREAM.ID
+      );
+    });
+
+    it("should set selectedTabIndex to MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID when URL ends with nuxeo-stream-processor-info", () => {
+      const streamUrl = "/stream-management/nuxeo-stream-processor-info";
+      component.updateActiveTab(streamUrl);
+      expect(component.selectedTabIndex).toBe(
+        MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID
       );
     });
   });

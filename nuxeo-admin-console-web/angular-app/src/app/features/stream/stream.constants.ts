@@ -76,6 +76,12 @@ export const MAIN_TAB_LABELS = {
     LABEL: "Scaling Analysis",
     ROUTE_LABEL: "get-scaling-analysis",
   },
+
+  GET_STREAM_PROCESSOR_INFO: {
+    ID: 4,
+    LABEL: "Nuxeo Stream Processor Info",
+    ROUTE_LABEL: "nuxeo-stream-processor-info",
+  },
 };
 
 export const CONSUMER_THREAD_POOL_LABELS = {
@@ -182,4 +188,22 @@ export const ISO_DATE_FORMATS = { //To Override the default date format of Angul
 
 export const GET_SCALING_ANALYSIS_LABELS = {
   NO_DATA_MSG: "No scaling analysis data available",
+};
+
+export const NUXEO_STREAM_PROCESSOR_INFO_LABELS = {
+  NO_DATA_MSG: "No stream processor info data available",
+  MAIN_LABEL: "Nuxeo Stream Processor Info",
+};
+
+export const GENERIC_API_LABELS = {
+  API_FAILURE_MESSAGE: "An error occurred while fetching data from the server.",
+  RETRY_BTN_LABEL: "Retry",
+};
+
+export const STREAM_MAIN_HEADINGS = {
+  STREAM_RECORDS: "Get Stream Records",
+  CONSUMER_THREAD_POOL: "Start/Stop Consumer Thread Pool",
+  MANAGE_CONSUMER_POSITIONS: "Manage Consumer Positions",
+  SCALING_ANALYSIS: "Get Scaling Analysis",
+  NUXEO_STREAM_PROCESSOR_INFO: "Get Nuxeo Stream and Processor Information",
 };

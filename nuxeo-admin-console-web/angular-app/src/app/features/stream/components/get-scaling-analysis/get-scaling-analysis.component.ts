@@ -1,10 +1,9 @@
-import { Component, OnInit } from "@angular/core";
-import { ScalingAnalysisState } from "../../store/reducers";
-import { delay, Subject, takeUntil } from "rxjs";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subject, takeUntil } from "rxjs";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
-import { Store } from "@ngrx/store";
 import { StreamService } from "../../services/stream.service";
 import {
+  GENERIC_API_LABELS,
   GET_SCALING_ANALYSIS_LABELS,
   MAIN_TAB_LABELS,
 } from "../../stream.constants";
@@ -16,19 +15,26 @@ import { HttpErrorResponse } from "@angular/common/http";
   templateUrl: "./get-scaling-analysis.component.html",
   styleUrls: ["./get-scaling-analysis.component.scss"],
 })
-export class GetScalingAnalysisComponent implements OnInit {
+export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
   scalingAnalysisData: any;
   destroy$: Subject<void> = new Subject<void>();
   readonly GET_SCALING_ANALYSIS_LABELS = GET_SCALING_ANALYSIS_LABELS;
   readonly MAIN_TAB_LABELS = MAIN_TAB_LABELS;
   isDataLoaded = false;
+  isError = false;
+  readonly GENERIC_API_LABELS = GENERIC_API_LABELS;
   constructor(
     private sharedService: SharedMethodsService,
     private streamService: StreamService
   ) {}
 
   ngOnInit() {
+    this.loadJsonData();
+  }
+
+  loadJsonData() {
     this.isDataLoaded = false; // This flag is used to display a loader while fetching data and to show a 'no data found' (if data is empty) message only after the fetch is complete
+    this.isError = false;
     this.streamService
       .getScalingAnalysis()
       .pipe(takeUntil(this.destroy$))
@@ -39,11 +45,12 @@ export class GetScalingAnalysisComponent implements OnInit {
         },
         error: (error) => {
           this.isDataLoaded = true;
+          this.isError = true;
           this.sharedService.showActionErrorModal({
             type: ERROR_TYPES.SERVER_ERROR,
             details: {
-              status: (error as HttpErrorResponse)?.status,
-              message: (error as HttpErrorResponse)?.message,
+              status: (error.error as HttpErrorResponse)?.status || error.status,
+              message: (error.error as HttpErrorResponse)?.message || error.message,
             },
           });
         },
@@ -54,5 +61,10 @@ export class GetScalingAnalysisComponent implements OnInit {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

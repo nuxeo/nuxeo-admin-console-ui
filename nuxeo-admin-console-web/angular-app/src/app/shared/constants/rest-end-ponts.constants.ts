@@ -22,6 +22,7 @@ export const REST_END_POINTS = {
   CHANGE_CONSUMER_POSITION: "CHANGE_CONSUMER_POSITION",
   FETCH_CONSUMER_POSITION: "FETCH_CONSUMER_POSITION",
   GET_SCALING_ANALYSIS: "GET_SCALING_ANALYSIS",
+  GET_STREAM_PROCESSOR_INFO: "GET_STREAM_PROCESSOR_INFO",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -124,6 +125,11 @@ export const REST_END_POINT_CONFIG: Record<
 
   GET_SCALING_ANALYSIS: {
     endpoint: "/management/stream/scale",
+    method: "GET",
+  },
+
+  GET_STREAM_PROCESSOR_INFO: {
+    endpoint: "/management/stream/",
     method: "GET",
   },
 };

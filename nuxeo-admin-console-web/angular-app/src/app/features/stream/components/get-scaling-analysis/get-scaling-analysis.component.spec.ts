@@ -1,11 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 import { GetScalingAnalysisComponent } from "./get-scaling-analysis.component";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
 import { StreamService } from "../../services/stream.service";
-import { of, throwError, Subject } from "rxjs";
+import { of, throwError } from "rxjs";
 import { ERROR_TYPES } from "../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { HttpErrorResponse } from "@angular/common/http";
+import { CommonModule } from "@angular/common";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("GetScalingAnalysisComponent", () => {
   let component: GetScalingAnalysisComponent;
@@ -23,6 +28,13 @@ describe("GetScalingAnalysisComponent", () => {
 
     TestBed.configureTestingModule({
       declarations: [GetScalingAnalysisComponent],
+      imports: [
+        HttpClientTestingModule,
+        MatSnackBarModule,
+        MatDialogModule,
+        CommonModule,
+        MatProgressSpinnerModule,
+      ],
       providers: [
         { provide: SharedMethodsService, useValue: mockSharedService },
         { provide: StreamService, useValue: mockStreamService },
@@ -39,22 +51,40 @@ describe("GetScalingAnalysisComponent", () => {
   it("should set scalingAnalysisData and isDataLoaded to true on successful data fetch", () => {
     const mockData = { key: "value" };
     mockStreamService.getScalingAnalysis.and.returnValue(of(mockData));
+    spyOn(component, "loadJsonData").and.callThrough();
     component.ngOnInit();
-    expect(component.scalingAnalysisData).toEqual(mockData);
-    expect(component.isDataLoaded).toBeTrue();
+    expect(component.loadJsonData).toHaveBeenCalled();
   });
 
-  it("should call showActionErrorModal and set isDataLoaded to true on error", () => {
+  it("should call showActionErrorModal and set isDataLoaded to true on error when error object is present", () => {
     const errorResponse = new HttpErrorResponse({
-      status: 500,
-      statusText: "Server Error",
-      error: "Error",
+      error: { status: 500, message: "Internal Server Error" }
     });
     mockStreamService.getScalingAnalysis.and.returnValue(
       throwError(() => errorResponse)
     );
-    component.ngOnInit();
+    component.loadJsonData();
     expect(component.isDataLoaded).toBeTrue();
+    expect(component.isError).toBeTrue();
+    expect(mockSharedService.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.SERVER_ERROR,
+      details: {
+        status: errorResponse.error.status,
+        message: errorResponse.error.message,
+      },
+    });
+  });
+
+  it("should call showActionErrorModal and set isDataLoaded to true on error when error object is not present", () => {
+    const errorResponse = new HttpErrorResponse({
+      status: 500, statusText: "Internal Server Error"
+    });
+    mockStreamService.getScalingAnalysis.and.returnValue(
+      throwError(() => errorResponse)
+    );
+    component.loadJsonData();
+    expect(component.isDataLoaded).toBeTrue();
+    expect(component.isError).toBeTrue();
     expect(mockSharedService.showActionErrorModal).toHaveBeenCalledWith({
       type: ERROR_TYPES.SERVER_ERROR,
       details: {

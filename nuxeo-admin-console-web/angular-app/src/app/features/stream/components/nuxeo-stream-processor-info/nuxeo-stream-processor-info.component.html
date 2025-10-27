@@ -1,0 +1,24 @@
+<div class="nuxeo-stream-container">
+  <div class="loading-container" *ngIf="!isDataLoaded && !isError"> <!-- Loading State -->
+    <mat-spinner [diameter]="50"></mat-spinner>
+    <p>Loading data...</p>
+  </div>
+  <div class="error-container" *ngIf="isError"> <!-- Error State -->
+    <h3>
+      {{ GENERIC_API_LABELS.API_FAILURE_MESSAGE }}
+    </h3>
+    <button mat-raised-button color="primary" (click)="loadJsonData()">
+      {{ GENERIC_API_LABELS.RETRY_BTN_LABEL }}
+    </button>
+  </div>
+  <!-- No Data State -->
+  <div class="no-data-container" *ngIf="isDataLoaded && !isError && !isValidData(streamProcessorJsonData)">
+    <h3>{{ NUXEO_STREAM_PROCESSOR_INFO_LABELS.NO_DATA_MSG }}</h3>
+  </div>
+  <!-- Data Available State -->
+  <div class="main-flex-container" *ngIf="isDataLoaded && !isError && isValidData(streamProcessorJsonData)">
+    <div class="nuxeo-stream-data-container">
+      <pre>{{ streamProcessorJsonData | json }}</pre>
+    </div>
+  </div>
+</div>

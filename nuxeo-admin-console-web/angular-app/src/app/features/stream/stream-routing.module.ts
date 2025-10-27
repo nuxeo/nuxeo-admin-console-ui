@@ -7,6 +7,7 @@ import { ChangeConsumerPositionComponent } from "./components/consumer-position/
 import { ConsumerPositionComponent } from "./components/consumer-position/consumer-position.component";
 import { FetchConsumerPositionComponent } from "./components/consumer-position/fetch-consumer-position/fetch-consumer-position.component";
 import { GetScalingAnalysisComponent } from "./components/get-scaling-analysis/get-scaling-analysis.component";
+import { NuxeoStreamProcessorInfoComponent } from "./components/nuxeo-stream-processor-info/nuxeo-stream-processor-info.component";
 export const StreamRoutes: Route[] = [
   {
     path: "",
@@ -38,6 +39,10 @@ export const StreamRoutes: Route[] = [
       {
         path: 'get-scaling-analysis',
         component:GetScalingAnalysisComponent
+      },
+      {
+        path: "nuxeo-stream-processor-info",
+        component: NuxeoStreamProcessorInfoComponent
       }
     ],
   },
