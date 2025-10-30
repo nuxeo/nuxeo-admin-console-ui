@@ -49,8 +49,10 @@ describe('StreamFormComponent', () => {
       }>
     >;
     const mockError = new HttpErrorResponse({
+      error: {
         status: STREAM_MOCK_API_FAILURE.STATUS_CODE,
-        statusText: STREAM_MOCK_API_FAILURE.MESSAGE,
+        message: STREAM_MOCK_API_FAILURE.MESSAGE,
+      },
     });
     let streamDisconnectedSubject: BehaviorSubject<boolean>; 
 
@@ -329,7 +331,24 @@ describe('StreamFormComponent', () => {
       );
     });
 
-    it("should handle stream error and show error modal", () => {
+    it("should handle stream error and show error modal when error object is present", () => {
+      spyOn(component, "showActionErrorModal");
+      component.fetchStreamsError$ = of(mockError);
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle stream error and show error modal when error object is not present", () => {
+      const mockError = new HttpErrorResponse({
+        status: STREAM_MOCK_API_FAILURE.STATUS_CODE,
+        statusText: STREAM_MOCK_API_FAILURE.MESSAGE,
+      });
       spyOn(component, "showActionErrorModal");
       component.fetchStreamsError$ = of(mockError);
       component.ngOnInit();
@@ -454,12 +473,29 @@ describe('StreamFormComponent', () => {
       expect(component.showActionErrorModal).not.toHaveBeenCalled();
     });
 
-    it("should call showActionErrorModal with correct details when fetchConsumersError$ emits an error", () => {
+    it("should call showActionErrorModal with correct details when fetchConsumersError$ emits an error with error object", () => {
       spyOn(component, "showActionErrorModal");
       const error = new HttpErrorResponse({
-        status: 500,
-        statusText: "Server Error",
-        error: { message: "Test error" },
+        error: { status: 404, message: "Test error" },
+      });
+      component.fetchConsumersError$ = of(error);
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          type: ERROR_TYPES.SERVER_ERROR,
+          details: {
+            status: error.error.status,
+            message: error.error.message,
+          },
+        })
+      );
+    });
+
+    it("should call showActionErrorModal with correct details when fetchConsumersError$ emits an error without error object", () => {
+      spyOn(component, "showActionErrorModal");
+      const error = new HttpErrorResponse({
+        status: 404,
+        statusText: "Test error",
       });
       component.fetchConsumersError$ = of(error);
       component.ngOnInit();

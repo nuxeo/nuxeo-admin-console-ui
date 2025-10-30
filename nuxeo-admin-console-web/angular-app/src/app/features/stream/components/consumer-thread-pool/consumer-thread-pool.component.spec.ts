@@ -183,7 +183,7 @@ describe("ConsumerThreadPoolComponent", () => {
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
             message: jasmine.stringMatching(/start/),
-            title: "Start Consumer Thread Pool",
+            title: "Start Consumer Thread Pools",
           }),
         })
       );
@@ -205,7 +205,7 @@ describe("ConsumerThreadPoolComponent", () => {
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
             message: jasmine.stringMatching(/stop/),
-            title: "Stop Consumer Thread Pool",
+            title: "Stop Consumer Thread Pools",
           }),
         })
       );
@@ -254,7 +254,6 @@ describe("ConsumerThreadPoolComponent", () => {
       const call = matDialogSpy.open.calls.mostRecent();
       const dialogArgs = call.args[1] as { data?: { message?: string } };
       expect(dialogArgs?.data?.message).toContain("stream-consumer");
-      expect(dialogArgs?.data?.message).toContain("stream/consumer");
     });
   });
 
@@ -355,10 +354,26 @@ describe("ConsumerThreadPoolComponent", () => {
       );
     });
 
-    it("should handle streams fetch error", () => {
+    it("should handle streams fetch error when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        status: 500,
-        statusText: "mock-error",
+        error: { status: 500, message: "mock-error" }
+      });
+      component.fetchStreamsError$ = of(mockError);
+      storeSpy.select.and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle streams fetch error when error object not is present", () => {
+      const mockError = new HttpErrorResponse({
+       status: 500, statusText: "mock-error"
       });
       component.fetchStreamsError$ = of(mockError);
       storeSpy.select.and.returnValue(of(true));
@@ -381,10 +396,26 @@ describe("ConsumerThreadPoolComponent", () => {
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
     });
 
-    it("should handle consumers fetch error", () => {
+    it("should handle consumers fetch error when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        status: 500,
-        statusText: "mock-error",
+        error: { status: 500, message: "mock-error" }
+      });
+      component.fetchConsumersError$ = of(mockError);
+      storeSpy.select.and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle consumers fetch error when error object is not present", () => {
+      const mockError = new HttpErrorResponse({
+       status: 500, statusText: "mock-error"
       });
       component.fetchConsumersError$ = of(mockError);
       storeSpy.select.and.returnValue(of(true));
@@ -413,10 +444,25 @@ describe("ConsumerThreadPoolComponent", () => {
       expect(streamServiceSpy.showSuccessMessage).not.toHaveBeenCalled();
     });
 
-    it("should handle start consumer thread pool failure", () => {
+    it("should handle start consumer thread pool failure when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        status: 500,
-        statusText: "mock-error",
+       error:{ status: 500, message: "mock-error" }
+      });
+      component.isStartConsumerThreadPoolFailure$ = of(mockError);
+      storeSpy.select.and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle start consumer thread pool failure when error object is not present", () => {
+      const mockError = new HttpErrorResponse({
+       status: 500, statusText: "mock-error"
       });
       component.isStartConsumerThreadPoolFailure$ = of(mockError);
       storeSpy.select.and.returnValue(of(true));
@@ -461,10 +507,25 @@ describe("ConsumerThreadPoolComponent", () => {
       expect(streamServiceSpy.showSuccessMessage).not.toHaveBeenCalled();
     });
 
-    it("should handle stop consumer thread pool failure", () => {
+    it("should handle stop consumer thread pool failure when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        status: 500,
-        statusText: "mock-error",
+        error: { status: 500, message: "mock-error" },
+      });
+      component.isStopConsumerThreadPoolFailure$ = of(mockError);
+      storeSpy.select.and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+
+    it("should handle stop consumer thread pool failure when error object is not present", () => {
+      const mockError = new HttpErrorResponse({
+        status: 500, statusText: "mock-error"
       });
       component.isStopConsumerThreadPoolFailure$ = of(mockError);
       storeSpy.select.and.returnValue(of(true));

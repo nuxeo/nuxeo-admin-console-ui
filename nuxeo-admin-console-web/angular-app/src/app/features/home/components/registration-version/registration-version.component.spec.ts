@@ -97,10 +97,34 @@ describe("RegistrationVersionComponent", () => {
     });
   });
   
-  it("should handle version info failure and show action error modal", () => {
+  it("should handle version info failure when error object is available and show action error modal", () => {
     const mockError = {
-      status: 500,
-      message: "Server Error",
+      error: { status: 500, message: "Server Error" },
+    } as HttpErrorResponse;
+     const mockModalResponse: ErrorModalClosedInfo = {
+       isClosed: true,
+       event: {},
+     };
+    sharedMethodsService.showActionErrorModal.and.returnValue(of(mockModalResponse));
+    store.setState({ home: { ...initialState, error: mockError } } as any);
+    fixture.detectChanges();
+    component.error$.subscribe((error) => {
+      expect(error).toEqual(mockError);
+      expect(
+       sharedMethodsService.showActionErrorModal
+      ).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+  });
+
+   it("should handle version info failure when error object is not available and show action error modal", () => {
+    const mockError = {
+      status: 500, message: "Server Error",
     } as HttpErrorResponse;
      const mockModalResponse: ErrorModalClosedInfo = {
        isClosed: true,
@@ -156,10 +180,31 @@ describe("RegistrationVersionComponent", () => {
     });
   });
 
-  it("should handle instance info failure and show action error modal", () => {
+  it("should handle instance info failure when error object is available and show action error modal", () => {
     const mockError = {
-      status: 500,
-      message: "Server Error",
+      error: { status: 500, message: "Server Error" },
+    } as HttpErrorResponse;
+    store.setState({
+      instanceInfo: { instanceInfo: null, instanceInfoError: mockError },
+    } as any);
+    fixture.detectChanges();
+    component.instanceInfoFailure$.subscribe((error) => {
+      expect(error).toEqual(mockError);
+      expect(
+        (component as any).sharedMethodsService.showActionErrorModal
+      ).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: {
+          status: mockError.error.status,
+          message: mockError.error.message,
+        },
+      });
+    });
+  });
+
+  it("should handle instance info failure when error object is not available and show action error modal", () => {
+    const mockError = {
+      status: 500, message: "Server Error",
     } as HttpErrorResponse;
     store.setState({
       instanceInfo: { instanceInfo: null, instanceInfoError: mockError },

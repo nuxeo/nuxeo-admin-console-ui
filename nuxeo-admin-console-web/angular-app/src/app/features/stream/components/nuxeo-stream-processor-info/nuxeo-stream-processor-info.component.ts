@@ -45,7 +45,7 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.isDataLoaded = true;
           this.isError = true;
-          this.showErrorMessage(error?.error || error);
+          this.showErrorMessage(error);
         },
       });
   }
@@ -54,8 +54,8 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
     this.sharedService.showActionErrorModal({
       type: ERROR_TYPES.SERVER_ERROR,
       details: {
-        status: (error as HttpErrorResponse)?.status,
-        message: (error as HttpErrorResponse)?.message,
+        status: (error?.error as HttpErrorResponse)?.status || error.status,
+        message: (error?.error as HttpErrorResponse)?.message || error.message,
       },
     });
   }

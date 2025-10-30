@@ -78,7 +78,7 @@ describe('NuxeoStreamProcessorInfoComponent', () => {
     component.loadJsonData();
     expect(component.isDataLoaded).toBe(true);
     expect(component.isError).toBe(true);
-    expect(component.showErrorMessage).toHaveBeenCalledWith(errorResponse.error);
+    expect(component.showErrorMessage).toHaveBeenCalledWith(errorResponse);
   });
 
    it('should handle error when loading JSON data fails and error object is not present', () => {
@@ -97,6 +97,21 @@ describe('NuxeoStreamProcessorInfoComponent', () => {
   it('should show error message correctly', () => {
     const errorResponse = new HttpErrorResponse({
       error: { status: 404, message: 'Resource not found' }
+    });
+    component.showErrorMessage(errorResponse);
+    expect(mockSharedService.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.SERVER_ERROR,
+      details: {
+        status: errorResponse.error.status,
+        message: errorResponse.error.message
+      }
+    });
+  });
+
+
+  it('should show error message correctly when error object is not present', () => {
+    const errorResponse = new HttpErrorResponse({
+      status: 404, statusText: 'Resource not found'
     });
     component.showErrorMessage(errorResponse);
     expect(mockSharedService.showActionErrorModal).toHaveBeenCalledWith({

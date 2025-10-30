@@ -1,6 +1,6 @@
 export const STREAM_LABELS = {
   STREAM_PAGE_TITLE: "Stream Management",
-  STREAMS: "Streams",
+  STREAMS: "Stream",
   STREAM_ID: "stream",
   REWIND_ID: "rewind",
   LIMIT_ID: "limit",
@@ -87,16 +87,16 @@ export const MAIN_TAB_LABELS = {
 export const CONSUMER_THREAD_POOL_LABELS = {
   CONSUMER_LABEL: 'consumer',
   CONSUMER_THREAD_POOL: "Consumer Group",
-  START_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Start Consumer Thread Pool",
-  STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Stop Consumer Thread Pool",
+  START_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Start Consumer Thread Pools",
+  STOP_CONSUMER_THREAD_POOL_BUTTON_LABEL: "Stop Consumer Thread Pools",
   START_CONSUMER_THREAD_POOL: "start",
   STOP_CONSUMER_THREAD_POOL: "stop",
   CONSUMER_THREAD_POOL_OPERATION: "Consumer Thread Pool Operation",
-  CONFIRMATION_MESSAGE: `This action will {operation} the consumer thread pool on all Nuxeo nodes :<br> <b> { id = '{selectedConsumerName}', urn = '{selectedConsumerUrn}' }. </b> <br> Would you like to continue?`,
+  CONFIRMATION_MESSAGE: `This action will {operation} all consumer thread pools for all nodes in the cluster :<br> <b>  '{selectedConsumerName}' . </b> <br> <br> Would you like to continue?`,
   CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG: "An existing consumer thread pool operation is already in progress. Please wait until it completes.",
-  START_CONSUMER_SUCCESS_MSG: "Consumer Thread Pool started successfully",
-  STOP_CONSUMER_SUCCESS_MSG: "Consumer Thread Pool stopped successfully",
-  CONSUMER_THREAD_POOL_DIALOG_MSG: '{operation} Consumer Thread Pool',
+  START_CONSUMER_SUCCESS_MSG: "Consumer thread pool start request successfully sent",
+  STOP_CONSUMER_SUCCESS_MSG: "Consumer thread pool stop request successfully sent",
+  CONSUMER_THREAD_POOL_DIALOG_MSG: '{operation} Consumer Thread Pools',
   DIALOG_BOX_HEIGHT: '300px'
 };
 
@@ -167,7 +167,7 @@ export const CHANGE_CONSUMER_POSITION_LABELS = {
 };
 
 export const GET_CONSUMER_POSITION_LABELS = {
-  STREAMS: 'Streams',
+  STREAMS: 'Stream',
   CONSUMER: 'Consumer Group',
   GET_CONSUMER_POSITION: "Get Consumer Position",
   CLEAR: 'Clear',
@@ -202,7 +202,7 @@ export const GENERIC_API_LABELS = {
 
 export const STREAM_MAIN_HEADINGS = {
   STREAM_RECORDS: "Get Stream Records",
-  CONSUMER_THREAD_POOL: "Start/Stop Consumer Thread Pool",
+  CONSUMER_THREAD_POOL: "Start / Stop Consumer Thread Pool",
   MANAGE_CONSUMER_POSITIONS: "Manage Consumer Positions",
   SCALING_ANALYSIS: "Get Scaling Analysis",
   NUXEO_STREAM_PROCESSOR_INFO: "Get Nuxeo Stream and Processor Information",
