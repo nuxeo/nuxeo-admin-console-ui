@@ -75,14 +75,8 @@ export const triggerRecordsSSEStream$ = createEffect(
             streamService.isFetchingRecords.next(true);
           }),
           scan((acc: unknown[], response: unknown) => {
-            let parsedResponse;
-            try {
-              parsedResponse =
-                typeof response === "string" ? JSON.parse(response) : response;
-            } catch (error) {
-              return acc;
-            }
-            return [...acc, parsedResponse];
+            // Response is already parsed in the service
+            return [...acc, response];
           }, []),
           map((recordsArray) =>
             StreamActions.onFetchRecordsLaunch({ recordsData: recordsArray })

@@ -50,7 +50,7 @@
                             <th mat-header-cell *matHeaderCellDef> <strong>{{ PROBES_LABELS.COLUMN_HEADERS.INFORMATION
                                     }}</strong> </th>
                             <td mat-cell *matCellDef="let row">
-                                <span>{{ row?.status?.infos?.info }}</span>
+                                <span [innerHTML]="row?.status?.infos?.info"> </span>
                             </td>
                         </ng-container>
 

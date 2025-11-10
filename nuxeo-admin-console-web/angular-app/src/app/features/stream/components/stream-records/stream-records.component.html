@@ -1,9 +1,8 @@
 <div class="stream-records">
   <mat-card class="stream-records__data" role="region" tabindex="0" aria-label="Stream content">
     <mat-card-content>
-      <div *ngFor="let record of records">
-        <pre>{{ record | json }}</pre>
-      </div>
+      <custom-nuxeo-json-viewer *ngIf="records && records.length > 0" [json]="records"
+        [expanded]="false"></custom-nuxeo-json-viewer>
     </mat-card-content>
   </mat-card>
 </div>

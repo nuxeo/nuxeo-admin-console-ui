@@ -54,7 +54,7 @@ export class StreamService {
         if (parsedData && parsedData.type) {
           this.streamDisconnectedSubject.next(true);
         }
-        observer.next(event.data);
+        observer.next(parsedData);
       };
 
       this.eventSource.onerror = (error) => {

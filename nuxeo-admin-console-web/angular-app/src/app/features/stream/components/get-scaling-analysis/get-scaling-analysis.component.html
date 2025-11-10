@@ -20,7 +20,6 @@
   <!-- Data Available State -->
   <div class="main-flex-container" *ngIf="isDataLoaded && !isError && isValidData(scalingAnalysisData)">
     <div class="scaling-analysis-data-container">
-      <pre>{{ scalingAnalysisData | json }}</pre>
+      <custom-nuxeo-json-viewer [json]="scalingAnalysisData" [expanded]="false"></custom-nuxeo-json-viewer>
     </div>
-  </div>
 </div>

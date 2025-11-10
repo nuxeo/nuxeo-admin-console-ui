@@ -88,12 +88,19 @@ describe("StreamEffects", () => {
       const recordsData = [{ record: "record1" }];
       const params = { stream: 'bulk/none', rewind: '0', limit: '2', timeout: '1ms' };
       const action = StreamActions.triggerRecordsSSEStream({ params });
-      spyOn(streamService, "startSSEStream").and.returnValue(of(JSON.stringify({ record: "record1" })));
+      spyOn(streamService, "startSSEStream").and.returnValue(of({ record: "record1" }));
       const outcome = StreamActions.onFetchRecordsLaunch({ recordsData });
       actions$ = of(action);
-      triggerRecordsSSEStream(actions$, streamService).subscribe((result: Action) => {
-        expect(result).toEqual(outcome);
-        done();
+      
+      const results: Action[] = [];
+      triggerRecordsSSEStream(actions$, streamService).subscribe({
+        next: (result: Action) => {
+          results.push(result);
+        },
+        complete: () => {
+          expect(results[results.length - 1]).toEqual(outcome);
+          done();
+        }
       });
     });
   });

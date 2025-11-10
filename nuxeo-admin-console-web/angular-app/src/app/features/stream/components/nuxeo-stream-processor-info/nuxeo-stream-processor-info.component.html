@@ -18,7 +18,7 @@
   <!-- Data Available State -->
   <div class="main-flex-container" *ngIf="isDataLoaded && !isError && isValidData(streamProcessorJsonData)">
     <div class="nuxeo-stream-data-container">
-      <pre>{{ streamProcessorJsonData | json }}</pre>
+      <custom-nuxeo-json-viewer [json]="streamProcessorJsonData" [expanded]="false"></custom-nuxeo-json-viewer>
     </div>
   </div>
 </div>

@@ -84,7 +84,7 @@ describe('StreamService', () => {
             let receivedData: unknown;
             service.startSSEStream(params).subscribe({
                 next: (data) => {
-                    receivedData = JSON.parse(data as string);
+                    receivedData = data;
                 },
                 error: (err) => {
                     fail('Expected success, but received error: ' + err);
