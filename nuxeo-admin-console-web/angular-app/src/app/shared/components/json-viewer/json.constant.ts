@@ -19,8 +19,6 @@ export const JSON_VIEWER_LABELS = {
   MAT_UNFOLD_MORE_ICON: "unfold_more",
   COLLAPSE_LOADER_MSG: "Collapsing...",
   EXPAND_LOADER_MSG: "Expanding...",
-  SEARCH_INPUT_TOO_LONG:
-    "Search input is too long; truncated to 100 characters.",
   SEARCHING_MSG: "Searching...",
   NO_MATCHES_FOUND: "No matches found",
 };

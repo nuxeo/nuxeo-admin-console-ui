@@ -337,9 +337,6 @@ describe("JsonViewerComponent", () => {
     it("should validate search terms", () => {
       expect((component as any).validateSearchTerm("")).toBeNull();
       expect((component as any).validateSearchTerm(" ")).toBeNull();
-      expect((component as any).validateSearchTerm("a".repeat(101))).toBe(
-        "a".repeat(100)
-      );
       expect((component as any).validateSearchTerm("valid")).toBe("valid");
       expect((component as any).validateSearchTerm(" valid ")).toBe("valid");
       expect((component as any).validateSearchTerm(null)).toBeNull();

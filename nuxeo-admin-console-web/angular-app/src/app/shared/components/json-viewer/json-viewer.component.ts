@@ -535,25 +535,8 @@ export class JsonViewerComponent
     return null;
   }
 
-  /**
-   * Validates and normalizes search input with 100-character limit.
-   * Auto-truncates overly long terms while notifying the user.
-   *
-   * @param term - Raw search input from user
-   * @returns Trimmed valid term or null if empty/invalid
-   */
   private validateSearchTerm(term: string | undefined): string | null {
-    const trimmed = term?.trim();
-    if (!trimmed) {
-      return null;
-    }
-    if (trimmed.length > 100) {
-      // Restricting search term length to 100 characters
-      const truncatedTerm = trimmed.substring(0, 100);
-      this.showErrorSnackbarMsg(JSON_VIEWER_LABELS.SEARCH_INPUT_TOO_LONG);
-      return truncatedTerm;
-    }
-    return trimmed;
+    return term?.trim() || null;
   }
 
   /**
