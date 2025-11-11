@@ -98,10 +98,13 @@ describe("GenericModalComponent", () => {
   });
 
   it("should display a JavaScript alert indicating action ID has been copied to clipboard", async () => {
-    const clipboardWriteTextSpy = spyOn(
-      navigator.clipboard,
-      "writeText"
-    ).and.returnValue(Promise.resolve());
+    const clipboardWriteTextSpy = jasmine
+      .createSpy("writeText")
+      .and.returnValue(Promise.resolve());
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboardWriteTextSpy },
+      writable: true,
+    });
     const alertSpy = spyOn(window, "alert");
 
     await component.copyActionId();

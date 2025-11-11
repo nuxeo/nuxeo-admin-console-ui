@@ -1,4 +1,5 @@
 @import "material-symbols/outlined.css";
+@import "material-icons/iconfont/material-icons.css";
 
 html {
   position: relative;
@@ -685,15 +686,15 @@ mat-radio-button.complex-radio {
 }
 
 .consumer-data-container, .scaling-analysis-data-container, .nuxeo-stream-data-container {
-  height: 350px;
+  height: 400px;
   overflow: auto;
   margin: 24px 0px 10px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fefdfd;
-  padding: 16px;
   box-sizing: border-box;
-  width: 80%;
+  width: 98%;
+  padding: 0px 0px 0px 10px !important;
 }
 
 .stream-tab-group {
@@ -701,4 +702,48 @@ mat-radio-button.complex-radio {
     background-color: white;
     margin: 0px 20px;
   }
+}
+
+json-table-view {
+  width: 80% !important;
+  display: grid;
+}
+
+.json-viewer-container .mat-mdc-form-field-wrapper {
+  padding-bottom: 0 !important;
+  align-items: center;
+}
+
+.json-viewer-container .mat-mdc-text-field-wrapper {
+  padding: 0 !important;
+  height: 40px;
+  align-items: center;
+}
+
+.json-viewer-container mark.search-match {
+  background-color: #fae41a;
+  color: #000;
+  padding: 1px 2px;
+  border-radius: 2px;
+
+  &.current-match {
+    background-color: #ff9800;
+    animation: pulse 1s ease-in-out;
+  }
+}
+
+.stream-records .json-controls.sticky-header {
+  margin-left: -16px;
+  margin-right: -16px;
+  margin-top: -16px;
+}
+
+.mdc-snackbar.mat-mdc-snack-bar-container {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 1000 !important;
 }

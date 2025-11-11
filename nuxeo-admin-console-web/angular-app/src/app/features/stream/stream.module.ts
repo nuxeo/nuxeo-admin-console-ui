@@ -26,6 +26,7 @@ import { ConsumerPositionComponent } from './components/consumer-position/consum
 import { GetScalingAnalysisComponent } from './components/get-scaling-analysis/get-scaling-analysis.component';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NuxeoStreamProcessorInfoComponent } from "./components/nuxeo-stream-processor-info/nuxeo-stream-processor-info.component";
+import { JsonViewerModule } from "../../shared/components/json-viewer/json-viewer.module";
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { NuxeoStreamProcessorInfoComponent } from "./components/nuxeo-stream-pro
     MatNativeDateModule,
     MatMomentDateModule,
     MatProgressSpinnerModule,
+    JsonViewerModule
   ],
   providers: [
    { provide: MAT_DATE_FORMATS, useValue: ISO_DATE_FORMATS },

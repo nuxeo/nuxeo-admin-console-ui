@@ -50,6 +50,7 @@ import {
   MatDialogModule,
 } from "@angular/material/dialog";
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
+import { JsonViewerModule } from "./shared/components/json-viewer/json-viewer.module";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
 import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
@@ -115,6 +116,7 @@ import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./f
     ProbesDataModule,
     GenericMultiFeatureLayoutModule,
     MatDialogModule,
+    JsonViewerModule,
   ],
   providers: [
     {
