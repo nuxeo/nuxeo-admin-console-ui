@@ -49,7 +49,7 @@
               <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.END.LABEL }}</p>
             </mat-radio-button>
             <mat-radio-button class="offset-radio-btn" [value]="CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.VALUE">
-              <div class="radio-content" (click)="$event.stopPropagation()" (change)="$event.stopPropagation()">
+              <div class="radio-content" role="presentation" (click)="$event.stopPropagation()" (change)="$event.stopPropagation()">
                 <div class="field-group">
                   <p class="label">{{ CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.LABEL }}</p>
                   <mat-form-field appearance="outline" class="offset-partition-field">

@@ -11,7 +11,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
 
 describe("HomeEffects", () => {
-  let actions$: Observable<Action> = of();
+  const actions$: Observable<Action> = of();
   let loadVersionInfo: typeof loadVersionInfoEffect;
   let loadInstanceInfo: typeof loadInstanceInfoEffect;
   let homeService: jasmine.SpyObj<HomeService>;

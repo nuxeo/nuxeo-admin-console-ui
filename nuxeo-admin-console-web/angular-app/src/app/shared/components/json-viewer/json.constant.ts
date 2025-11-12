@@ -11,8 +11,8 @@ export const JSON_VIEWER_LABELS = {
   CLEAR_SEARCH_TOOLTIP: "Clear search",
   PREVIOUS_MATCH_TOOLTIP: "Previous match",
   NEXT_MATCH_TOOLTIP: "Next match",
-  COPY_JSON_TOOLTIP: "Copy JSON to clipboard",
-  SEARCH_PLACEHOLDER: "Search JSON...",
+  COPY_JSON_TOOLTIP: "Copy JSON Data to clipboard",
+  SEARCH_PLACEHOLDER: "Search...",
   COLLAPSE_ALL: "Collapse All",
   EXPAND_ALL: "Expand All",
   MAT_UNFOLD_LESS_ICON: "unfold_less",
@@ -21,4 +21,11 @@ export const JSON_VIEWER_LABELS = {
   EXPAND_LOADER_MSG: "Expanding...",
   SEARCHING_MSG: "Searching...",
   NO_MATCHES_FOUND: "No matches found",
+  CLIPBOARD_SUCCESS_SNACKBAR_MSG: "Data copied to clipboard successfully.",
+  CLIPBOARD_ACCESS_DENIED_MSG:
+    "Clipboard access denied. Please check your browser permissions.",
+  CLIPBOARD_DATA_TOO_LARGE_MSG:
+    "Copy failed — data is too large for the clipboard.",
+  CLIPBOARD_GENERIC_ERROR_MSG:
+    "Copy failed — unable to copy data to clipboard.",
 };

@@ -18,7 +18,7 @@ export class SharedMethodsService {
 
   constructor(private snackBar: MatSnackBar, public dialogService: MatDialog) {}
 
-  showSuccessSnackBar(message: string, duration: number = 5000) {
+  showSuccessSnackBar(message: string, duration = 5000) {
     this.snackBar.openFromComponent(CustomSnackBarComponent, {
       data: {
         message: message,
@@ -29,7 +29,7 @@ export class SharedMethodsService {
     });
   }
 
-  showErrorSnackBar(message: string, duration: number = 5000) {
+  showErrorSnackBar(message: string, duration = 5000) {
     this.snackBar.openFromComponent(CustomSnackBarComponent, {
       data: {
         message: message,
