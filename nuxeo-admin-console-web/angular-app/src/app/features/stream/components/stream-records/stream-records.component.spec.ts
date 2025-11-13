@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StreamRecordsComponent } from './stream-records.component';
 import { MatCardModule } from '@angular/material/card';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('StreamRecordsComponent', () => {
     let component: StreamRecordsComponent;
@@ -10,6 +11,7 @@ describe('StreamRecordsComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [StreamRecordsComponent],
             imports: [MatCardModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
         }).compileComponents();
 
         fixture = TestBed.createComponent(StreamRecordsComponent);
