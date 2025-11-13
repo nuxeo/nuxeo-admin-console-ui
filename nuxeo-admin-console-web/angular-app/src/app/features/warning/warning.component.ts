@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
@@ -13,7 +13,7 @@ import { WARNING_DIALOG_CONSTANTS } from './warning.constants';
   templateUrl: "./warning.component.html",
   styleUrls: ["./warning.component.scss"],
 })
-export class WarningComponent implements OnInit {
+export class WarningComponent implements OnInit, OnDestroy {
   public doNotWarn = false;
   public currentUser$: Observable<UserInterface | null | undefined>;
   public currentUser: UserInterface | null | undefined = undefined;

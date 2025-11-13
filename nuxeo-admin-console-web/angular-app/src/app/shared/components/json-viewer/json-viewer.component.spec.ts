@@ -11,6 +11,7 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { JsonViewerComponent } from "./json-viewer.component";
 import { JsonViewerModule } from "./json-viewer.module";
 import { SharedMethodsService } from "../../services/shared-methods.service";
+import { JSON_VIEWER_LABELS } from "./json.constant";
 
 class MockMutationObserver {
   static instances: MockMutationObserver[] = [];
@@ -242,7 +243,6 @@ describe("JsonViewerComponent", () => {
       const mockInput = document.createElement("input");
       component.searchInputRef = new ElementRef(mockInput);
       spyOn(mockInput, "removeEventListener");
-      (component as any).inputEventListener = () => {};
       component.ngOnDestroy();
       expect(mockInput.removeEventListener).toHaveBeenCalledWith(
         "input",
@@ -618,7 +618,7 @@ describe("JsonViewerComponent", () => {
         JSON.stringify({ test: "data" }, null, 2)
       );
       expect(sharedMethodsServiceMock.showSuccessSnackBar).toHaveBeenCalledWith(
-        "JSON copied to clipboard successfully"
+        JSON_VIEWER_LABELS.CLIPBOARD_SUCCESS_SNACKBAR_MSG
       );
     });
 
@@ -649,7 +649,7 @@ describe("JsonViewerComponent", () => {
       spyOn(component as any, "showErrorSnackbarMsg");
       await component.copyToClipboard();
       expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
-        "Failed to copy JSON to clipboard"
+        JSON_VIEWER_LABELS.CLIPBOARD_GENERIC_ERROR_MSG
       );
     });
 
@@ -673,7 +673,7 @@ describe("JsonViewerComponent", () => {
       spyOn(component as any, "showErrorSnackbarMsg");
       await component.copyToClipboard();
       expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
-        "Clipboard access denied. Please check browser permissions."
+          JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
       );
     });
 
@@ -697,7 +697,7 @@ describe("JsonViewerComponent", () => {
       spyOn(component as any, "showErrorSnackbarMsg");
       await component.copyToClipboard();
       expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
-        "Failed to copy - data too large for clipboard"
+        JSON_VIEWER_LABELS.CLIPBOARD_DATA_TOO_LARGE_MSG
       );
     });
   });
@@ -1172,7 +1172,9 @@ describe("JsonViewerComponent", () => {
         [new Date(), "date"],
         [[], "array"],
         [{}, "object"],
-        [function () {}, "function"],
+        [function (): void {
+          // Test function for type detection
+        }, "function"],
       ];
       testCases.forEach(([value, expectedType]) => {
         const result = (component as any).parseKeyValue("test", value);
@@ -1330,7 +1332,7 @@ describe("JsonViewerComponent", () => {
         Promise.resolve()
       );
       spyOn(component as any, "executeAfterRender").and.callFake(
-        (callback: Function) => {
+        (callback: () => void) => {
           return callback();
         }
       );

@@ -37,26 +37,26 @@ export class JsonViewerComponent
   implements OnChanges, OnDestroy, AfterViewInit
 {
   @Input() json: unknown;
-  @Input() expanded: boolean = true;
-  @Input() depth: number = -1;
-  @Input() currentDepth: number = 0;
-  @Input() expandAll: boolean = false;
-  @Input() isSearchActiveInput: boolean = false;
+  @Input() expanded = true;
+  @Input() depth = -1;
+  @Input() currentDepth = 0;
+  @Input() expandAll = false;
+  @Input() isSearchActiveInput = false;
   @ViewChild("searchInput") searchInputRef!: ElementRef<HTMLInputElement>;
   segments: Segment[] = [];
-  searchTerm: string = "";
-  totalMatches: number = 0;
-  currentMatchIndex: number = -1;
-  private _isSearchActive: boolean = false;
-  isExpandCollapseLoading: boolean = false;
-  isSearchLoading: boolean = false;
+  searchTerm = "";
+  totalMatches = 0;
+  currentMatchIndex = -1;
+  private _isSearchActive = false;
+  isExpandCollapseLoading = false;
+  isSearchLoading = false;
   private static readonly SEARCH_DEBOUNCE_MS = 300;
   private processedJson: unknown = null;
   private cachedJsonString: string | null = null;
   private cachedFormattedJsonString: string | null = null;
   private destroy$ = new Subject<void>();
   private searchInput$ = new Subject<string>();
-  private currentSearchRequestId: number = 0;
+  private currentSearchRequestId = 0;
   private inputEventListener: ((event: Event) => void) | null = null;
   readonly JSON_VIEWER_LABELS = JSON_VIEWER_LABELS;
 
@@ -131,10 +131,12 @@ export class JsonViewerComponent
 
       //running change detection outside angular zone for better performance
       this.ngZone.runOutsideAngular(() => {
-        this.searchInputRef.nativeElement.addEventListener(
-          "input",
-          this.inputEventListener!
-        );
+        if (this.inputEventListener) {
+          this.searchInputRef.nativeElement.addEventListener(
+            "input",
+            this.inputEventListener
+          );
+        }
       });
     }
   }
@@ -295,7 +297,7 @@ export class JsonViewerComponent
       this.highlightTemplateSegments();
       await this.highlightTextInDOM();
 
-      this.totalMatches = this.countMatchesInRawData(this.searchTerm!.trim());
+      this.totalMatches = this.countMatchesInRawData(this.searchTerm?.trim() || "");
       if (this.totalMatches > 0) {
         this.currentMatchIndex = Math.min(
           previousMatchIndex,
@@ -317,20 +319,20 @@ export class JsonViewerComponent
       const jsonString = this.getFormattedJsonString();
       await navigator.clipboard.writeText(jsonString);
       this.sharedMethodsService.showSuccessSnackBar(
-        "JSON copied to clipboard successfully"
+        JSON_VIEWER_LABELS.CLIPBOARD_SUCCESS_SNACKBAR_MSG
       );
     } catch (error) {
       // Handling both JSON serialization errors and clipboard API errors uniformly
       if (error instanceof Error && error.name === "NotAllowedError") {
         this.showErrorSnackbarMsg(
-          "Clipboard access denied. Please check browser permissions."
+          JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
         );
       } else if (error instanceof Error && error.name === "DataError") {
         this.showErrorSnackbarMsg(
-          "Failed to copy - data too large for clipboard"
+          JSON_VIEWER_LABELS.CLIPBOARD_DATA_TOO_LARGE_MSG
         );
       } else {
-        this.showErrorSnackbarMsg("Failed to copy JSON to clipboard");
+        this.showErrorSnackbarMsg(JSON_VIEWER_LABELS.CLIPBOARD_GENERIC_ERROR_MSG);
       }
     }
   }
