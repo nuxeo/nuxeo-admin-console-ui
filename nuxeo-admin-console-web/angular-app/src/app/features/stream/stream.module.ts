@@ -27,6 +27,7 @@ import { GetScalingAnalysisComponent } from './components/get-scaling-analysis/g
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NuxeoStreamProcessorInfoComponent } from "./components/nuxeo-stream-processor-info/nuxeo-stream-processor-info.component";
 import { JsonViewerModule } from "../../shared/components/json-viewer/json-viewer.module";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { JsonViewerModule } from "../../shared/components/json-viewer/json-viewe
     MatNativeDateModule,
     MatMomentDateModule,
     MatProgressSpinnerModule,
-    JsonViewerModule
+    JsonViewerModule,       
+    MatTooltipModule
   ],
   providers: [
    { provide: MAT_DATE_FORMATS, useValue: ISO_DATE_FORMATS },
