@@ -458,7 +458,10 @@ export class JsonViewerComponent
     if (this.totalMatches === 0) return;
     this.currentMatchIndex = (this.currentMatchIndex + 1) % this.totalMatches;
     await this.ensureDataExpandedForNavigation();
-    await this.scrollToCurrentMatch();
+    // Wait a bit more to ensure all highlighting is complete
+    await this.executeAfterRender(async () => {
+      await this.scrollToCurrentMatch();
+    });
   }
 
   /**
@@ -472,7 +475,10 @@ export class JsonViewerComponent
         ? this.totalMatches - 1
         : this.currentMatchIndex - 1;
     await this.ensureDataExpandedForNavigation();
-    await this.scrollToCurrentMatch();
+    // Wait a bit more to ensure all highlighting is complete
+    await this.executeAfterRender(async () => {
+      await this.scrollToCurrentMatch();
+    });
   }
 
   // Ensures all JSON data is expanded when navigating between matches
@@ -481,9 +487,30 @@ export class JsonViewerComponent
     this.setAllSegmentsExpanded(true);
     this.cdr.markForCheck();
 
-    // Wait for DOM updates before updating highlights
-    await this.executeAfterRender(() => {
+    // Wait for DOM updates, then re-apply all highlighting
+    await this.executeAfterRender(async () => {
+      // Clear old highlights first
+      this.clearTextHighlightFromDOM();
+      
+      // Apply template highlights
       this.highlightTemplateSegments();
+      this.cdr.detectChanges();
+      
+      // Wait for template changes to render, then apply DOM highlights
+      await this.executeAfterRender(async () => {
+        await this.highlightTextInDOM();
+        
+        // Wait for DOM highlights to be fully applied
+        await this.executeAfterRender(() => {
+          // Update match count after re-highlighting
+          this.totalMatches = this.countMatchesInRawData(this.searchTerm?.trim() || "");
+          
+          // Ensure current match index is valid
+          if (this.currentMatchIndex >= this.totalMatches) {
+            this.currentMatchIndex = Math.max(0, this.totalMatches - 1);
+          }
+        });
+      });
     });
   }
 
