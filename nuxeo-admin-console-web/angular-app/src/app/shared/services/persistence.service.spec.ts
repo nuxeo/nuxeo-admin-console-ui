@@ -49,5 +49,43 @@ describe("PersistenceService", () => {
       localStorage.removeItem("doNotWarn-Administrator");
       expect(service.get("doNotWarn-Administrator")).toBe(null);
     });
+
+    it("should call localStorage.setItem with correct key and stringified value", () => {
+      const key = "mockKey";
+      const value = { foo: "mockValue" };
+      service.set(key, value);
+      expect(localStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify(value));
+    });
+  });
+
+  it("should handle errors thrown by localStorage.setItem gracefully", () => {
+    spyOn(localStorage, "setItem").and.throwError("");
+    spyOn(console, "error");
+    service.set("errorKey", "value");
+    expect(console.error).toHaveBeenCalledWith(
+      "Error saving to local storage",
+      jasmine.any(Error)
+    );
+  });
+
+  it("should handle errors thrown by localStorage.setItem gracefully", () => {
+    spyOn(localStorage, "getItem").and.throwError("");
+    spyOn(console, "error");
+    service.get("errorKey");
+    expect(console.error).toHaveBeenCalledWith(
+      "Error getting from local storage",
+      jasmine.any(Error)
+    );
+  });
+
+  it("should return the correct value for primitive types", () => {
+    service.set("numberKey", 123);
+    expect(service.get<number>("numberKey")).toBe(123);
+
+    service.set("booleanKey", true);
+    expect(service.get<boolean>("booleanKey")).toBe(true);
+
+    service.set("stringKey", "test");
+    expect(service.get<string>("stringKey")).toBe("test");
   });
 });

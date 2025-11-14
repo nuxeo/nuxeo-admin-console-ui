@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Store, select } from "@ngrx/store";
 import { authActions } from "../../auth/store/actions";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { AuthStateInterface } from "../../auth/types/authState.interface";
 import { UserInterface } from "../../shared/types/user.interface";
-import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
 import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
 @Component({
@@ -14,15 +13,13 @@ import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
 })
 export class HeaderBarComponent implements OnInit, OnDestroy {
   currentUser$: Observable<UserInterface | null | undefined>;
-  currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
   displayName: string | undefined;
   readonly BRAND_TITLE = HEADER_BAR_CONSTANTS.BRAND_TITLE
   readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     private store: Store<{ auth: AuthStateInterface }>,
-    private nuxeoJsClientService: NuxeoJSClientService,
     private router: Router
   ) {
     this.currentUser$ = this.store.pipe(
@@ -31,7 +28,7 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.currentUserSubscription = this.currentUser$.subscribe(
+    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(
       (currentUser) => {
         this.currentUser = currentUser;
         this.setDisplayName();
@@ -40,7 +37,8 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.currentUserSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSignOut(): void {

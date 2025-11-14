@@ -17,7 +17,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { AppRoutingModule } from "./app-routing.module";
 import { HomeModule } from "./features/home/home.module";
 import { WarningComponent } from "./features/warning/warning.component";
-import { BackendErrorMessagesComponent } from "./shared/components/backendErrorMessages/backendErrorMessages.component";
 import { AppComponent } from "./app.component";
 import { authReducer } from "./auth/store/reducers";
 import * as authEffects from "./auth/store/effects";
@@ -30,12 +29,14 @@ import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
-import { homeReducer } from "./features/home/store/reducers";
+import { homeReducer, instanceInfoReducer } from "./features/home/store/reducers";
 import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
 import * as ReindexEffects from "./features/sub-features/generic-multi-feature-layout/store/effects";
 import * as BulkActionMonitoringEffects from "./features/bulk-action-monitoring/store/effects";
+import * as StreamEffects from "./features/stream/store/effects";
+import * as ConsumerPositionEffects from "./features/stream/components/consumer-position/store/effects";
 import {
   folderActionReducer,
   documentActionReducer,
@@ -49,7 +50,11 @@ import {
   MatDialogModule,
 } from "@angular/material/dialog";
 import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/custom-snack-bar.component";
+import { JsonViewerModule } from "./shared/components/json-viewer/json-viewer.module";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
+import { StreamModule } from "./features/stream/stream.module";
+import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
+import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./features/stream/components/consumer-position/store/reducers";
 
 @NgModule({
   declarations: [
@@ -57,7 +62,6 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
     HeaderBarComponent,
     MenuBarComponent,
     WarningComponent,
-    BackendErrorMessagesComponent,
     BaseLayoutComponent,
     GenericModalComponent,
     ErrorModalComponent,
@@ -74,11 +78,16 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
       router: routerReducer,
       auth: authReducer,
       home: homeReducer,
+      instanceInfo: instanceInfoReducer,
       documentAction: documentActionReducer,
       folderAction: folderActionReducer,
       nxqlAction: nxqlActionReducer,
       bulkActionMonitoring: bulkActionMonitoringReducer,
       probes: ProbeDataReducer,
+      streams: streamsReducer,
+      consumerThreadPool: consumerThreadPoolReducer,
+      consumerPosition: changeConsumerPositionReducer,
+      fetchConsumerPosition: fetchConsumerPositionReducer,
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot(
@@ -86,7 +95,9 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
       HomeEffects,
       ReindexEffects,
       BulkActionMonitoringEffects,
-      ProbesEffects
+      ProbesEffects,
+      StreamEffects,
+      ConsumerPositionEffects
     ),
     MatIconModule,
     MatTooltipModule,
@@ -94,6 +105,7 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
     MatButtonModule,
     MatSidenavModule,
     HomeModule,
+    StreamModule,
     MatListModule,
     BaseLayoutModule,
     MatSidenavModule,
@@ -104,6 +116,7 @@ import { AuthInterceptorService } from "./auth/services/auth-interceptor.service
     ProbesDataModule,
     GenericMultiFeatureLayoutModule,
     MatDialogModule,
+    JsonViewerModule,
   ],
   providers: [
     {

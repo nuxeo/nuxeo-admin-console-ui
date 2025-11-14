@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
 import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
-import { Component, Input, OnChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
 import { Store } from "@ngrx/store";
 import { BulkActionMonitoringState } from "../../../../store/reducers";
@@ -11,6 +11,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   selector: "bulk-action-monitoring-summary",
   templateUrl: "./bulk-action-monitoring-summary.component.html",
   styleUrls: ["./bulk-action-monitoring-summary.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BulkActionMonitoringSummaryComponent implements OnChanges {
   @Input() bulkActionSummary: BulkActionInfoSummary =

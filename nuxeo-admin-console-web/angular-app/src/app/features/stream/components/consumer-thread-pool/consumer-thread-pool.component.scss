@@ -1,0 +1,84 @@
+.consumer-thread-pool-container {
+  padding: 10px 0px 0px 10px;
+  background-color: white;
+  height: 95%;
+}
+
+.form-fields-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 30px;
+}
+
+@media (max-width: 900px) {
+  .form-fields-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .consumer-thread-pool-btn-container {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+}
+
+.input-field.consumer-field {
+  width: 350px;
+}
+
+.consumer-thread-pool-btn-container__button {
+  border-radius: 4px !important;
+  width: max-content;
+  height: 45px;
+  position: relative;
+  left: 20px;
+  font-size: 16px;
+  bottom: 30px;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  letter-spacing: normal;
+  background-color: #0a60ce;
+  color: #fff;
+}
+
+/* styles for disabled state */
+.consumer-thread-pool-btn-container__button:disabled,
+.consumer-thread-pool-btn-container__button[disabled] {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: var(
+    --mdc-filled-button-disabled-label-text-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent)
+  );
+  background-color: var(
+    --mdc-filled-button-disabled-container-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
+  );
+}
+
+.consumer-thread-pool-btn-container {
+  margin-top: 100px;
+  margin-left: -20px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.required-indicator-label {
+  font-size: 14px;
+  color: rgb(218, 21, 0);
+  font-family: "Open Sans", sans-serif;
+  line-height: 1;
+  margin-top: 20px;
+}
+
+.required-field {
+  color: rgb(218, 21, 0);
+  font-family: "Open Sans", sans-serif;
+  padding-left: 2px;
+}
+
+.input-field.consumer-field {
+  max-height: 40px;
+}

@@ -1,9 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
 import { Store, select } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthStateInterface } from '../../auth/types/authState.interface';
 import { UserInterface } from '../../shared/types/user.interface';
 import { WARNING_DIALOG_CONSTANTS } from './warning.constants'; 
@@ -13,12 +13,12 @@ import { WARNING_DIALOG_CONSTANTS } from './warning.constants';
   templateUrl: "./warning.component.html",
   styleUrls: ["./warning.component.scss"],
 })
-export class WarningComponent implements OnInit {
+export class WarningComponent implements OnInit, OnDestroy {
   public doNotWarn = false;
   public currentUser$: Observable<UserInterface | null | undefined>;
   public currentUser: UserInterface | null | undefined = undefined;
   public WARNING_LABELS = WARNING_DIALOG_CONSTANTS;
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
@@ -29,7 +29,7 @@ export class WarningComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentUser$.subscribe(user => {
+    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       this.currentUser = user;
       if (this.currentUser) {
         const preferenceKey = `doNotWarn-${this.currentUser.id}`;
@@ -50,5 +50,10 @@ export class WarningComponent implements OnInit {
 
   closeDialog(): void {
     this.dialogService.closeAll();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

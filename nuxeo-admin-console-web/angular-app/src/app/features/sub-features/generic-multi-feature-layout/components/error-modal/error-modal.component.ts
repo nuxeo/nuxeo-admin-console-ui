@@ -1,8 +1,8 @@
 import { ERROR_MESSAGES, ERROR_MODAL_LABELS, ERROR_TYPES, GENERIC_LABELS } from '../../generic-multi-feature-layout.constants';
-
 import { ErrorModalData } from "../../../../../shared/types/common.interface";
 import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { CONSUMER_THREAD_POOL_LABELS } from '../../../../stream/stream.constants';
 
 @Component({
   selector: "error-modal",
@@ -13,6 +13,7 @@ export class ErrorModalComponent {
   ERROR_TYPES = ERROR_TYPES;
   ERROR_MODAL_LABELS = ERROR_MODAL_LABELS;
   GENERIC_LABELS = GENERIC_LABELS;
+  CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
 
   constructor(
     private dialogRef: MatDialogRef<ErrorModalComponent>,

@@ -1,0 +1,53 @@
+.stream-container {
+  background-color: #f4f4f4;
+  margin: 0px;
+  padding: 0px 20px 20px 20px;
+  height: calc(100vh - 15vh);
+
+
+  &__placeholder {
+    background-color: #fff;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+
+  .result {
+    margin-top: 15px;
+  }
+}
+
+.consumer-thread-pool-container,
+.change-consumer-position-container,
+.get-scaling-analysis-container,
+.nuxeo-stream-info-container {
+  background-color: #f4f4f4;
+  margin: 0px;
+  padding: 0px 20px 20px 20px;
+  height: calc(100vh - 15vh);
+
+  &__placeholder {
+    background-color: #fff;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+}
+
+.stream-tab-group {
+  margin-left: 2px;
+}
+
+@media (max-width: 900px) {
+
+  .nuxeo-stream-info-container,
+  .get-scaling-analysis-container {
+    width: 100%;
+    min-height: 350px;
+  }
+}
+
+h1 {
+  font-size: 20px;
+  margin: 20px 0 9px 20px;
+}

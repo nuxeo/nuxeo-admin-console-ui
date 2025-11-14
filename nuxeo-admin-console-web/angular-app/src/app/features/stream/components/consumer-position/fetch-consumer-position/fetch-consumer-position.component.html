@@ -1,0 +1,54 @@
+<div>
+  <div class="main-flex-container">
+    <form [formGroup]="fetchConsumerForm" (ngSubmit)="fetchConsumerPositionDetails()">
+      <div class="change-consumer-position">
+        <p class="required-indicator-label">
+          {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}
+        </p>
+        <div class="form-fields-row">
+          <div>
+            <p class="label form-param">
+              {{ CHANGE_CONSUMER_POSITION_LABELS.STREAMS }}
+              <span class="required-field">*</span>
+            </p>
+            <mat-form-field appearance="outline" class="input-field change-consumer-field">
+              <mat-select #focusMatSelect formControlName="stream" id="stream"
+                (selectionChange)="onStreamChange($event.value)">
+                <mat-option *ngFor="let stream of streams" [value]="stream?.name">
+                  {{ stream?.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <p class="label form-param">
+              {{ CHANGE_CONSUMER_POSITION_LABELS.CONSUMER }}
+              <span class="required-field">*</span>
+            </p>
+            <mat-form-field appearance="outline" class="input-field change-consumer-field">
+              <mat-select id="consumer" formControlName="consumer">
+                <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
+                  {{ consumer?.consumer }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <br />
+        <div class="change-consumer-position-btn">
+          <button [disabled]="isFetchConsumerPositionBtnDisabled" mat-flat-button color="primary" type="submit"
+            class="change-consumer-position-btn__button">
+            {{ GET_CONSUMER_POSITION_LABELS.GET_CONSUMER_POSITION }}
+          </button>
+          <button [disabled]="!isValidData(getConsumerPositionData)" mat-flat-button color="primary" type="button"
+            (click)="clearRecords()" class="change-consumer-position-btn__button clear">
+            {{ GET_CONSUMER_POSITION_LABELS.CLEAR }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="isValidData(getConsumerPositionData)" class="consumer-data-container">
+      <custom-nuxeo-json-viewer [json]="getConsumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
+  </div>
+</div>

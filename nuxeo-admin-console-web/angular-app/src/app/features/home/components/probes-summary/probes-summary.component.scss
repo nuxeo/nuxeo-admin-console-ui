@@ -4,16 +4,17 @@
     border-radius: 4px;
     width: 79px;
     height: 36px;
-    position: absolute;
+    position: relative;
     bottom: 8%;
     right: 4%;
   }
 }
 
-::ng-deep .probes-data {
-  height: 100% !important;
+.probes-summary mat-paginator {
+  width: max-content;
 }
 
 ::ng-deep .probes-data {
+  height: 100% !important;
   padding: 20px !important;
 }
