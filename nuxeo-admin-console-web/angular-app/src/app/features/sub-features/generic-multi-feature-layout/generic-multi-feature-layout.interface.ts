@@ -33,6 +33,8 @@ export interface GenericModalData {
   launchedMessage: string;
   commandId: string;
   userInput: string;
+  operationType?:string
+  message?: string; // Optional message and operationType for consumer thread pool
 }
 
 export interface labelsList {

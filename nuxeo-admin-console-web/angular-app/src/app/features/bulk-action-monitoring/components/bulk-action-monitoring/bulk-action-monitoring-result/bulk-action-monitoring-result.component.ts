@@ -3,12 +3,13 @@ import {
   BulkActionInfoSummary,
   BulkActionInfoDetails,
 } from "./../../../bulk-action-monitoring.interface";
-import { Component, Input, OnChanges } from "@angular/core";
+import { Component, Input, OnChanges, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "bulk-action-monitoring-result",
   templateUrl: "./bulk-action-monitoring-result.component.html",
   styleUrls: ["./bulk-action-monitoring-result.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BulkActionMonitoringResultComponent implements OnChanges {
   @Input() resultData = {} as BulkActionMonitoringInfo;

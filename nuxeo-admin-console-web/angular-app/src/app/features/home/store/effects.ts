@@ -29,3 +29,21 @@ export const loadVersionInfoEffect = createEffect(
   { functional: true }
 );
 
+export const loadInstanceInfoEffect = createEffect(
+  (actions$ = inject(Actions), homeService = inject(HomeService)) => {
+    return actions$.pipe(
+      ofType(HomeActions.fetchInstanceInfo),
+      switchMap(() => {
+        return homeService.getInstanceInfo().pipe(
+          map((data) => {
+            return HomeActions.fetchInstanceInfoSuccess({ instanceInfo: data });
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(HomeActions.fetchInstanceInfoFailure({ error }));
+          })
+        );
+      })
+    );
+  },
+  { functional: true }
+);

@@ -1,7 +1,19 @@
 <div class="probes">
-  <h1 id="page-title" tabindex="0" aria-live="polite">
-    {{ PROBES_LABELS.PROBE_STATUS }}
-  </h1>
+  <div class="probes__container">
+    <h1 id="page-title" tabindex="0" aria-live="polite">
+      {{ PROBES_LABELS.PROBE_STATUS }}
+    </h1>
+    <button
+      [disabled]="isCheckAllProbesBtnDisabled"
+      mat-flat-button
+      color="primary"
+      type="button"
+      class="probes__button"
+      (click)="launchAllProbes()"
+    >
+      {{ PROBES_LABELS.LAUNCH_ALL_PROBES.BUTTON_LABEL }}
+    </button>
+  </div>
   <div class="probes-data">
     <probes-data></probes-data>
   </div>

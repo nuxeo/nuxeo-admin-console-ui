@@ -1,5 +1,6 @@
 .registration-version {
   height: 100%;
+  overflow-y: scroll;
   &.mdc-card {
     border-radius: 12px;
     padding: 24px;
@@ -18,28 +19,38 @@
   right: 4%;
 }
 
-.registration-version__content {
+.registration-version__content, .instance-info-header-content {
   display: block;
   padding: 0 0 !important;
   font-size: 20px;
 }
 
-.registration-version__content--first {
+.registration-version__content--first, .instance-info-header-content {
   padding-top: 0;
 }
 
-.registration-version__version {
-  margin-top: 15px;
-}
-
-.registration-version__label {
+.registration-version__label, .instance-info__label {
   font-weight: bold;
   margin-right: 10px;
   margin-left: 21px;
   font-size: 14px;
 }
 
-.version-info {
+.version-info, .instance-info-header {
   margin-left: 21px;
   color: black;
+}
+.instance-info {
+  margin-top: 15px;
+}
+
+.instance-info__item {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  align-items: center;
+}
+
+.instance-info-header-content {
+  margin-top: 24px;
 }

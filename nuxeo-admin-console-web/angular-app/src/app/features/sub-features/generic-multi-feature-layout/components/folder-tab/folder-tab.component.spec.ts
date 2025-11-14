@@ -15,8 +15,8 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
-import { BehaviorSubject, of } from "rxjs";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { BehaviorSubject, of, Subject } from "rxjs";
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import * as FeatureActions from "../../store//actions";
 import { FolderActionState } from "../../store/reducers";
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
@@ -24,6 +24,7 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
+  ERROR_MESSAGES,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -33,6 +34,8 @@ import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
 import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
+import { HttpErrorResponse } from "@angular/common/http";
+import { VIDEO_RENDITIONS_LABELS } from "../../../../video-renditions-generation/video-renditions-generation.constants";
 
 describe("FolderTabComponent", () => {
   let component: FolderTabComponent;
@@ -61,6 +64,26 @@ describe("FolderTabComponent", () => {
     handleError(): Promise<unknown> {
      return Promise.resolve("");
     }  
+
+    removeLeadingCharacters(): string {
+      return "mock-value";
+    }
+
+    decodeAndReplaceSingleQuotes():string {
+      return "mock-value"
+    }
+
+    buildRequestQuery():void {
+      return;
+    }
+
+    buildRequestParams():void {
+      return;
+    }
+
+    handleErrorJson(): void {
+      return;
+    }
   }
 
   beforeEach(async () => {
@@ -126,9 +149,6 @@ describe("FolderTabComponent", () => {
         }),
       }),
     };
-
-    spyOn(component, "fetchNoOfDocuments");
-    spyOn(genericMultiFeatureUtilitiesService, "getActiveFeature");
     fixture.detectChanges();
   });
 
@@ -216,32 +236,25 @@ describe("FolderTabComponent", () => {
     expect(errorMessage).toBeNull();
   });
 
+  it("should return null when inputIdentifier does not have a required error", () => {
+   component.inputForm = new FormBuilder().group({
+      inputIdentifier: ["", Validators.required],
+    });
+    spyOn(component, 'isIdAndPathRequired').and.returnValue(false);
+    const errorMessage = component.getErrorMessage();
+    expect(errorMessage).toBe(GENERIC_LABELS.REQUIRED_DOCID_ERROR)
+  });
+
   it("should dispatch resetDocumentReindexState and unsubscribe from subscriptions on ngOnDestroy", () => {
     const dispatchSpy = spyOn(store, "dispatch");
-    spyOn(component.folderActionLaunchedSubscription, "unsubscribe");
-    spyOn(component.folderActionErrorSubscription, "unsubscribe");
-    spyOn(component.confirmDialogClosedSubscription, "unsubscribe");
-    spyOn(component.launchedDialogClosedSubscription, "unsubscribe");
-    spyOn(component.errorDialogClosedSubscription, "unsubscribe");
+    spyOn((component as any).destroy$, "next");
+    spyOn((component as any).destroy$, "complete");
     component.ngOnDestroy();
     expect(dispatchSpy).toHaveBeenCalledWith(
       FeatureActions.resetFolderActionState()
     );
-    expect(
-      component.folderActionLaunchedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.folderActionErrorSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.confirmDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.launchedDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.errorDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
+    expect((component as any).destroy$.next).toHaveBeenCalled();
+    expect((component as any).destroy$.complete).toHaveBeenCalled();
   });
 
   it("should open the confirmation modal with correct data and subscribe to afterClosed", () => {
@@ -267,7 +280,6 @@ describe("FolderTabComponent", () => {
     expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     expect(onConfirmationModalCloseSpy).toHaveBeenCalled();
   });
-
   it("should get human readable time", () => {
     const seconds = 3661;
     const humanReadableTime = "1 hour 1 minute 1 second";
@@ -304,6 +316,347 @@ describe("FolderTabComponent", () => {
       const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.FOLDER);
       expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.FOLDER_REINDEX_TITLE);
       expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
+    });
+  });
+
+  describe("ngOnInit", () => {
+    let addControlSpy: jasmine.Spy;
+    beforeEach(() => {
+      addControlSpy = spyOn(
+        component.inputForm,
+        "addControl"
+      ).and.callThrough();
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "getActiveFeature"
+      ).and.returnValue("elasticsearch-reindex" as any);
+    });
+
+    it("it should call showActionLaunchedModal with commandId", () => {
+      const data = { commandId: "mockCommandId" };
+      component.folderActionLaunched$ = of(data);
+      spyOn(component, "showActionLaunchedModal");
+      component.ngOnInit();
+      expect(component.showActionLaunchedModal).toHaveBeenCalledWith(
+        data.commandId
+      );
+    });
+
+    it('should update templateLabels data', () => {
+       component.templateConfigData =
+         {
+           labels: {
+             pageTitle: 'test',
+             submitBtnLabel: 'confirm'
+           }
+         } as any
+       component.ngOnInit();
+       expect(component.templateLabels).toEqual(component.templateConfigData.labels)
+     });
+
+    it("it should call showActionLaunchedModal with commandId", () => {
+      const error = new HttpErrorResponse({
+        error: { message: "mockErrorMessage" },
+        status: 500,
+        statusText: "Server Error",
+      });
+      component.folderActionError$ = of(error);
+      spyOn(component, "showActionErrorModal");
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: { status: error.status, message: error.message },
+      });
+    });
+
+    it("should add force control if feature is FULLTEXT_REINDEX", () => {
+      spyOn(component, "isFeatureFullTextReindex").and.returnValue(true);
+      component.ngOnInit();
+      expect(addControlSpy).toHaveBeenCalledWith(
+        FULLTEXT_REINDEX_LABELS.FORCE,
+        jasmine.any(FormControl)
+      );
+    });
+
+    it("should add video renditions controls if feature is VIDEO_RENDITIONS_GENERATION", () => {
+      spyOn(component, "isFeatureFullTextReindex").and.returnValue(false);
+      spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+      component.activeFeature = FEATURES.VIDEO_RENDITIONS_GENERATION as any;
+      component.ngOnInit();
+      expect(addControlSpy).toHaveBeenCalledWith(
+        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+        jasmine.any(FormControl)
+      );
+      expect(addControlSpy).toHaveBeenCalledWith(
+        VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
+        jasmine.any(FormControl)
+      );
+    });
+  });
+
+  it("should disable submit button when form is submitted", () => {
+    component.inputForm.get("inputIdentifier")?.setValue("test input");
+    component.isSubmitBtnDisabled = false;
+    fixture.detectChanges();
+    spyOn(genericMultiFeatureUtilitiesService, "removeLeadingCharacters");
+    component.onFormSubmit();
+    expect(component.isSubmitBtnDisabled).toBeFalse();
+  });
+
+  it("should handle form submission for valid path with single quotes", () => {
+    const mockDecodedInput = "/mockValue";
+    spyOn(genericMultiFeatureUtilitiesService, "removeLeadingCharacters");
+    spyOn(
+      genericMultiFeatureUtilitiesService,
+      "decodeAndReplaceSingleQuotes"
+    ).and.returnValue(mockDecodedInput);
+    spyOn(component, "triggerAction");
+    component.inputForm.get("inputIdentifier")?.setValue("mock input");
+    component.onFormSubmit();
+    expect(
+      genericMultiFeatureUtilitiesService.removeLeadingCharacters
+    ).toHaveBeenCalled();
+    expect(
+      genericMultiFeatureUtilitiesService.decodeAndReplaceSingleQuotes
+    ).toHaveBeenCalled();
+    expect(component.triggerAction).toHaveBeenCalled();
+  });
+
+  it("should show error modal if decodeURIComponent throws", () => {
+    component.inputForm = new FormBuilder().group({
+      inputIdentifier: ["mock%input", Validators.required],
+    });
+    component.isSubmitBtnDisabled = false;
+    spyOn(component, "triggerAction");
+    spyOn(component, "showActionErrorModal");
+    fixture.detectChanges();
+    spyOn(window, "decodeURIComponent").and.throwError("Mock URI Error");
+    spyOn(component, "isIdAndPathRequired").and.returnValue(false);
+    fixture.detectChanges();
+    component.onFormSubmit();
+    expect(component.triggerAction).not.toHaveBeenCalled();
+    expect(component.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.INVALID_DOC_ID,
+      details: { message: ERROR_MESSAGES.INVALID_DOC_ID_MESSAGE },
+    });
+  });
+
+  it("should process request directly when ID-only feature is used", () => {
+    spyOn(component, "isIdAndPathRequired").and.returnValue(false);
+    spyOn(component, "processRequest");
+    component.triggerAction("test-id");
+    expect(component.processRequest).toHaveBeenCalledWith("test-id");
+  });
+
+  it("should handle confirmation modal close with continue action", () => {
+    const mockRequestParams = {
+      requestUrl: "test-url",
+      requestParams: "",
+      requestHeaders: {},
+    };
+    spyOn(store, "dispatch");
+    spyOn(
+      genericMultiFeatureUtilitiesService,
+      "buildRequestParams"
+    ).and.returnValue(mockRequestParams);
+    component.onConfirmationModalClose({ continue: true });
+    expect(component.isSubmitBtnDisabled).toBeFalse();
+  });
+
+  it("should call buildRequestParams and store", () => {
+    component.activeFeature = "elasticsearch-reindex" as any;
+    const mockRequestParams = {
+      requestUrl: "test-url",
+      requestParams: "",
+      requestHeaders: {},
+    };
+    spyOn(store, "dispatch");
+    spyOn(
+      genericMultiFeatureUtilitiesService,
+      "buildRequestParams"
+    ).and.returnValue(mockRequestParams);
+    component.onConfirmationModalClose({ continue: true });
+    expect(
+      genericMultiFeatureUtilitiesService.buildRequestParams
+    ).toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalled();
+  });
+
+  it("should focus input on confirmation modal close without continue", () => {
+    const mockElement = document.createElement("input");
+    spyOn(document, "getElementById").and.returnValue(mockElement);
+    spyOn(mockElement, "focus");
+    component.onConfirmationModalClose({ continue: false });
+    expect(document.getElementById).toHaveBeenCalledWith("inputIdentifier");
+    expect(mockElement.focus).toHaveBeenCalled();
+  });
+
+  it("should reset", () => {
+    spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+    const control = new FormControl("");
+    const resetSpy = spyOn(control, "reset");
+    component.inputForm = new FormGroup({
+      conversionNames: control,
+    });
+    component.onActionLaunchedModalClose();
+    expect(resetSpy).toHaveBeenCalled();
+  });
+
+  it("should call focus on .cdk-dialog-container when showActionErrorModal dialog is opened", () => {
+    const mockDialogElement = document.createElement("div");
+    mockDialogElement.classList.add("cdk-dialog-container");
+    const focusSpy = spyOn(mockDialogElement, "focus");
+    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const afterOpened$ = new Subject<void>();
+    const afterClosed$ = new Subject<void>();
+    const mockDialogRef = {
+      afterOpened: () => afterOpened$.asObservable(),
+      afterClosed: () => afterClosed$.asObservable(),
+    } as MatDialogRef<ErrorModalComponent>;
+
+    dialogService.open.and.returnValue(mockDialogRef);
+    const fakeError: ErrorDetails = { message: "Test", code: "Error" } as any;
+    component["userInput"] = "mockInput";
+    component.showActionErrorModal(fakeError);
+    afterOpened$.next();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("should call focus on .cdk-dialog-container when showActionLaunchedModal dialog is opened", () => {
+    const mockDialogElement = document.createElement("div");
+    mockDialogElement.classList.add("cdk-dialog-container");
+    const focusSpy = spyOn(mockDialogElement, "focus");
+    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const afterOpened$ = new Subject<void>();
+    const afterClosed$ = new Subject<void>();
+    const mockDialogRef = {
+      afterOpened: () => afterOpened$.asObservable(),
+      afterClosed: () => afterClosed$.asObservable(),
+    } as MatDialogRef<ErrorModalComponent>;
+    dialogService.open.and.returnValue(mockDialogRef);
+    const commandId = "mockCommandId";
+    component.showActionLaunchedModal(commandId);
+    afterOpened$.next();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("should call focus on .cdk-dialog-container when showConfirmationModal dialog is opened", () => {
+    const mockDialogElement = document.createElement("div");
+    mockDialogElement.classList.add("cdk-dialog-container");
+    const focusSpy = spyOn(mockDialogElement, "focus");
+    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const afterOpened$ = new Subject<void>();
+    const afterClosed$ = new Subject<void>();
+    const mockDialogRef = {
+      afterOpened: () => afterOpened$.asObservable(),
+      afterClosed: () => afterClosed$.asObservable(),
+    } as MatDialogRef<ErrorModalComponent>;
+
+    dialogService.open.and.returnValue(mockDialogRef);
+    const commandId = 123;
+    component.showConfirmationModal(commandId);
+    afterOpened$.next();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("should unsubscribe from all subscriptions", (done) => {
+    let unsubscribed = false;
+    (component as any).destroy$.subscribe({
+      complete: () => {
+        unsubscribed = true;
+      },
+    });
+    component.ngOnDestroy();
+    expect(unsubscribed).toBeTrue();
+    done();
+  });
+
+  describe("processRequest", () => {
+    it("should call buildRequestQuery and fetchNoOfDocuments with correct arguments", () => {
+      const userInput = "mock-user-input";
+      const mockQuery = "SELECT * FROM Document";
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestQuery"
+      ).and.returnValue(mockQuery);
+      spyOn(component, "fetchNoOfDocuments");
+      component.templateConfigData = { some: "data" } as any;
+      component.processRequest(userInput);
+      expect(
+        genericMultiFeatureUtilitiesService.buildRequestQuery
+      ).toHaveBeenCalledWith(userInput, component.templateConfigData);
+      expect(component.fetchNoOfDocuments).toHaveBeenCalled();
+    });
+
+    it("should handle processRequest errors appropriately", () => {
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestQuery"
+      ).and.throwError("Mock error");
+      spyOn(component, "showActionErrorModal");
+      component.processRequest("mock-input");
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+        details: {
+          message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE,
+        },
+      });
+    });
+  });
+  describe("triggerAction", () => {
+    beforeEach(() => {
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({
+          fetch: jasmine.createSpy(),
+        }),
+      } as any;
+    });
+
+    it("should call processRequest with doc.uid when areIdAndPathRequired is true and fetch resolves with document", async () => {
+      spyOn(component, "isIdAndPathRequired").and.returnValue(true);
+      const mockUid = "mock-uid";
+      const fetchSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve({ uid: mockUid }));
+      (component.nuxeo.repository as jasmine.Spy).and.returnValue({
+        fetch: fetchSpy,
+      });
+      const processRequestSpy = spyOn(component, "processRequest");
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleError"
+      );
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleErrorJson"
+      );
+      await component.triggerAction("mock-user-input");
+      await Promise.resolve();
+      expect(fetchSpy).toHaveBeenCalledWith("mock-user-input");
+      expect(processRequestSpy).toHaveBeenCalledWith(mockUid);
+    });
+
+    it("should not call processRequest if fetch resolves with null", async () => {
+      spyOn(component, "isIdAndPathRequired").and.returnValue(true);
+      const fetchSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve(null));
+      (component.nuxeo.repository as jasmine.Spy).and.returnValue({
+        fetch: fetchSpy,
+      });
+      const processRequestSpy = spyOn(component, "processRequest");
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleError"
+      );
+      spyOn(
+        (component as any).genericMultiFeatureUtilitiesService,
+        "handleErrorJson"
+      );
+      await component.triggerAction("mock-user-input");
+      await Promise.resolve();
+      expect(fetchSpy).toHaveBeenCalledWith("mock-user-input");
+      expect(processRequestSpy).not.toHaveBeenCalled();
     });
   });
 });

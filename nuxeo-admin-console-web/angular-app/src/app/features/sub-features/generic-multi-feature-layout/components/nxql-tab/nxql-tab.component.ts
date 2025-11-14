@@ -10,7 +10,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -52,20 +52,10 @@ import {
 export class NXQLTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
   spinnerVisible = false;
-  spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
   nxqlActionLaunched$: Observable<ActionInfo>;
   nxqlActionError$: Observable<HttpErrorResponse | null>;
-  nxqlActionLaunchedSubscription = new Subscription();
-  nxqlActionErrorSubscription = new Subscription();
-  actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
-  launchedDialogClosedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
-  confirmDialogOpenedSubscription = new Subscription();
-  launchedDialogOpenedSubscription = new Subscription();
-  errorDialogOpenedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -88,6 +78,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   activeFeature: FeaturesKey = {} as FeaturesKey;
   inputPlaceholder = "";
   requestQuery = "";
+  private destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     public dialogService: MatDialog,
@@ -131,12 +122,11 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
     }
-    this.spinnerStatusSubscription =
-      this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
-        (status) => {
-          this.spinnerVisible = status;
-        }
-      );
+    this.genericMultiFeatureUtilitiesService.spinnerStatus.pipe(takeUntil(this.destroy$)).subscribe(
+      (status) => {
+        this.spinnerVisible = status;
+      }
+    );
     if (this.isFeatureVideoRenditions()) {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
@@ -153,7 +143,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         new FormControl("false")
       );
     }
-    this.nxqlActionLaunchedSubscription = this.nxqlActionLaunched$.subscribe(
+    this.nxqlActionLaunched$.pipe(takeUntil(this.destroy$)).subscribe(
       (data) => {
         if (data?.commandId) {
           this.showActionLaunchedModal(data?.commandId);
@@ -161,7 +151,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.nxqlActionErrorSubscription = this.nxqlActionError$.subscribe(
+    this.nxqlActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -198,14 +188,16 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
         error,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
+      ?.pipe(takeUntil(this.destroy$))
       ?.subscribe(() => {
         this.onActionErrorModalClose();
       });
 
-    this.errorDialogOpenedSubscription = this.errorDialogRef
+    this.errorDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -236,14 +228,16 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.launchedDialogClosedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onActionLaunchedModalClose();
       });
 
-    this.launchedDialogOpenedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -363,14 +357,16 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.confirmDialogClosedSubscription = this.confirmDialogRef
+    this.confirmDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.onConfirmationModalClose(data as GenericModalClosedInfo, query);
       });
 
-    this.confirmDialogOpenedSubscription = this.confirmDialogRef
+    this.confirmDialogRef
       .afterOpened()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         const dialogElement = document.querySelector(
           ".cdk-dialog-container"
@@ -448,14 +444,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetNxqlActionState());
-    this.nxqlActionLaunchedSubscription?.unsubscribe();
-    this.nxqlActionErrorSubscription?.unsubscribe();
-    this.actionDialogClosedSubscription?.unsubscribe();
-    this.confirmDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogClosedSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
-    this.confirmDialogOpenedSubscription?.unsubscribe();
-    this.launchedDialogOpenedSubscription?.unsubscribe();
-    this.errorDialogOpenedSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

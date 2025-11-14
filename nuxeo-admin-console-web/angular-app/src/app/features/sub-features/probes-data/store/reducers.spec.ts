@@ -15,6 +15,8 @@ describe("Probe Reducer", () => {
     const expectedState: ProbeState = {
       probesInfo: [],
       error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
 
     const state = ProbeDataReducer(initialState, action);
@@ -52,6 +54,8 @@ describe("Probe Reducer", () => {
     const expectedState: ProbeState = {
       probesInfo: probesData,
       error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
 
     const state = ProbeDataReducer(initialState, action);
@@ -68,6 +72,8 @@ describe("Probe Reducer", () => {
     const expectedState: ProbeState = {
       probesInfo: [],
       error: error,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
 
     const state = ProbeDataReducer(initialState, action);
@@ -121,6 +127,8 @@ describe("Probe Reducer", () => {
         },
       ],
       error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
 
     const updatedProbeInfo = {
@@ -179,6 +187,8 @@ describe("Probe Reducer", () => {
         },
       ],
       error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
     const state = ProbeDataReducer(initialProbesState, action);
     expect(state).toEqual(expectedState);
@@ -194,8 +204,95 @@ describe("Probe Reducer", () => {
     const expectedState: ProbeState = {
       probesInfo: [],
       error: error,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
     };
     const state = ProbeDataReducer(initialState, action);
     expect(state).toEqual(expectedState);
   });
+
+  it("should handle launchAllProbes and reset launchAllProbeError and isLaunchProbeSuccess", () => {
+    const prevState: ProbeState = {
+      probesInfo: [],
+      error: null,
+      launchAllProbeError: new HttpErrorResponse({ error: "Mock error" }),
+      showLaunchAllSuccessSnackbar: true,
+    };
+    const action = ProbeActions.launchAllProbes();
+    const expectedState: ProbeState = {
+      ...prevState,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
+    };
+    const state = ProbeDataReducer(prevState, action);
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should handle launchAllProbesSuccess and update probesInfo and isLaunchProbeSuccess", () => {
+    const probesData = [
+      {
+        name: "probeA",
+        status: { neverExecuted: false, success: true, infos: { info: "ok" } },
+        history: {
+          lastRun: "2024-01-01T12:00:00.000Z",
+          lastSuccess: "2024-01-01T12:00:00.000Z",
+          lastFail: "",
+        },
+        counts: { run: 1, success: 1, failure: 0 },
+      },
+    ];
+    const prevState: ProbeState = {
+      probesInfo: [],
+      error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: false,
+    };
+    const action = ProbeActions.launchAllProbesSuccess({ probesData });
+    const expectedState: ProbeState = {
+      ...prevState,
+      probesInfo: probesData,
+      showLaunchAllSuccessSnackbar: true,
+    };
+    const state = ProbeDataReducer(prevState, action);
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should handle launchAllProbesFailure and set launchAllProbeError and isLaunchProbeSuccess to false", () => {
+    const error = new HttpErrorResponse({
+      error: "Launch all failed",
+      status: 500,
+    });
+    const prevState: ProbeState = {
+      probesInfo: [],
+      error: null,
+      launchAllProbeError: null,
+      showLaunchAllSuccessSnackbar: true,
+    };
+    const action = ProbeActions.launchAllProbesFailure({ error });
+    const expectedState: ProbeState = {
+      ...prevState,
+      launchAllProbeError: error,
+      showLaunchAllSuccessSnackbar: false,
+    };
+    const state = ProbeDataReducer(prevState, action);
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should handle resetLaunchAllProbesState and reset isLaunchProbeSuccess and launchAllProbeError", () => {
+    const prevState: ProbeState = {
+      probesInfo: [],
+      error: null,
+      launchAllProbeError: new HttpErrorResponse({ error: "Mock error" }),
+      showLaunchAllSuccessSnackbar: true,
+    };
+    const action = ProbeActions.resetLaunchAllProbesState();
+    const expectedState: ProbeState = {
+      ...prevState,
+      showLaunchAllSuccessSnackbar: false,
+      launchAllProbeError: null,
+    };
+    const state = ProbeDataReducer(prevState, action);
+    expect(state).toEqual(expectedState);
+  });
 });
+

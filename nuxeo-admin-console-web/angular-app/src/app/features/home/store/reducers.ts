@@ -6,6 +6,7 @@ import { versionInfo } from "./../../../shared/types/version-info.interface";
 import { createReducer, on } from "@ngrx/store";
 import * as HomeActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
+import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
 
 export interface ProbesInfo {
   name: string;
@@ -25,6 +26,16 @@ export const initialState: HomeState = {
   error: null,
 };
 
+export interface InstanceState {
+  instanceInfo: InstanceInfo;
+  instanceInfoError: HttpErrorResponse | null;
+}
+
+export const initialInstanceState: InstanceState = {
+  instanceInfo: {} as InstanceInfo,
+  instanceInfoError: null,
+};
+
 export const homeReducer = createReducer(
   initialState,
   on(HomeActions.fetchversionInfo, (state) => ({
@@ -39,4 +50,20 @@ export const homeReducer = createReducer(
     ...state,
     error,
   })),
+);
+export const instanceInfoReducer = createReducer(
+  initialInstanceState,
+  on(HomeActions.fetchInstanceInfo, (state) => ({
+    ...state,
+    instanceInfoError: null,
+  })),
+  on(HomeActions.fetchInstanceInfoSuccess, (state, { instanceInfo }) => ({
+    ...state,
+    instanceInfo,
+    instanceInfoError: null,
+  })),
+  on(HomeActions.fetchInstanceInfoFailure, (state, { error }) => ({
+    ...state,
+    instanceInfoError: error,
+  }))
 );

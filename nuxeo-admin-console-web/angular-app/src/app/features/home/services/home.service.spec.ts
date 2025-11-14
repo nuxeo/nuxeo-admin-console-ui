@@ -1,76 +1,99 @@
 import { TestBed } from "@angular/core/testing";
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from "@angular/common/http/testing";
 import { HomeService } from "./home.service";
+import { NetworkService } from "../../../shared/services/network.service";
+import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
+import { of, throwError } from "rxjs";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
+import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
 
 describe("HomeService", () => {
   let service: HomeService;
-  let httpMock: HttpTestingController;
-
-  const mockCapabilitiesResponse: CapabilitiesResponse = {
-    server: {
-      distributionVersion: "Nuxeo Platform 2021.45.8",
-    },
-    cluster: {
-      enabled: true,
-    },
-  };
-
+  let networkServiceSpy: jasmine.SpyObj<NetworkService>;
   beforeEach(() => {
+    const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [HomeService],
+      providers: [HomeService, { provide: NetworkService, useValue: spy }],
     });
-
     service = TestBed.inject(HomeService);
-    httpMock = TestBed.inject(HttpTestingController);
+    networkServiceSpy = TestBed.inject(
+      NetworkService
+    ) as jasmine.SpyObj<NetworkService>;
   });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
+  
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  describe("getVersionInfo", () => {
-    it("should fetch version info", () => {
-      service.getVersionInfo().subscribe((data) => {
-        expect(data).toEqual(mockCapabilitiesResponse);
+  it("should call networkService.makeHttpRequest with REST_END_POINTS.CAPABILITIES and return its result", (done) => {
+    const mockResponse: CapabilitiesResponse = {} as CapabilitiesResponse;
+    networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+    service.getVersionInfo().subscribe((response) => {
+      expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+        REST_END_POINTS.CAPABILITIES
+      );
+      expect(response).toBe(mockResponse);
+      done();
+    });
+  });
+
+  it("should propagate error when networkService.makeHttpRequest fails", (done) => {
+    const mockError = new Error("Network error");
+    networkServiceSpy.makeHttpRequest.and.returnValue(
+      throwError(() => mockError)
+    );
+    service.getVersionInfo().subscribe({
+      next: () => {
+        fail("Expected error, but got success response");
+        done();
+      },
+      error: (error) => {
+        expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+          REST_END_POINTS.CAPABILITIES
+        );
+        expect(error).toBe(mockError);
+        done();
+      },
+    });
+  });
+
+  it("should call makeHttpRequest only once per getVersionInfo call", (done) => {
+    const mockResponse: CapabilitiesResponse = {} as CapabilitiesResponse;
+    networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+    service.getVersionInfo().subscribe(() => {
+      expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledTimes(1);
+      done();
+    });
+  });
+
+  describe("getInstanceInfo", () => {
+    it("should call networkService.makeHttpRequest with correct URL", (done) => {
+      const mockResponse: InstanceInfo = {} as InstanceInfo;
+      networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+      service.getInstanceInfo().subscribe();
+      expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+        REST_END_POINTS.INSTANCE_INFO
+      );
+      done();
+    });
+
+    it("should propagate instance info error when networkService.makeHttpRequest fails", (done) => {
+      const mockError = new Error("Network error");
+      networkServiceSpy.makeHttpRequest.and.returnValue(
+        throwError(() => mockError)
+      );
+      service.getInstanceInfo().subscribe({
+        next: () => {
+          fail("Expected error, but got success response");
+          done();
+        },
+        error: (error) => {
+          expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
+            REST_END_POINTS.INSTANCE_INFO
+          );
+          expect(error).toBe(mockError);
+          done();
+        },
       });
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
-      );
-      expect(req.request.method).toBe("GET");
-      req.flush(mockCapabilitiesResponse);
     });
-
-    it("should handle http error", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Server Error",
-      };
-
-      service.getVersionInfo().subscribe(
-        () => fail("expected an error, not version info"),
-        (error) => {
-          expect(error.status).toBe(500);
-          expect(error.statusText).toBe("Server Error");
-        }
-      );
-
-      const req = httpMock.expectOne(
-        `${service["nuxeoJsClientService"].getApiUrl()}/capabilities`
-      );
-
-      expect(req.request.method).toBe("GET");
-      req.flush(null, errorResponse);
-    });
-
   });
 });

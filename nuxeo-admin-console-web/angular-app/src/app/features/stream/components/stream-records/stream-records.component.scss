@@ -1,0 +1,36 @@
+.stream-records {
+    padding: 0 30px 0 30px;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+
+    &__data {
+        width: 98%;
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        height: 400px;
+    }
+}
+
+mat-card {
+    &.mdc-card {
+        border-radius: 12px;
+        background: white;
+        border: 1px solid #d1d5db;
+        box-shadow: none;
+        min-height: 350px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .stream-records {
+        &__data {
+            width: 100%;
+            height: auto;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+    }
+}

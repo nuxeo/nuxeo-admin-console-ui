@@ -61,6 +61,13 @@ export const appRoutes: Route[] = [
         "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
+  {
+    path: "stream-management",
+      loadChildren: () =>
+        import(
+          "./features/stream/stream.module"
+        ).then((m) => m.StreamModule),
+    },
   { path: "**", redirectTo: "" },
 ];
 

@@ -142,16 +142,6 @@ describe("AppComponent", () => {
     });
   });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from subscriptions", () => {
-      spyOn(component.loadAppSubscription, "unsubscribe");
-      spyOn(component.currentUserSubscription, "unsubscribe");
-      component.ngOnDestroy();
-      expect(component.loadAppSubscription.unsubscribe).toHaveBeenCalled();
-      expect(component.currentUserSubscription.unsubscribe).toHaveBeenCalled();
-    });
-  });
-
   describe("onSignOut", () => {
     it("should dispatch signOut action", () => {
       spyOn(store, "dispatch");
@@ -192,6 +182,28 @@ describe("AppComponent", () => {
       fixture.detectChanges();
       const baseLayout = fixture.debugElement.query(By.css("base-layout"));
       expect(baseLayout).toBeTruthy();
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should complete the destroy$ subject", () => {
+      spyOn(component["destroy$"], "next").and.callThrough();
+      spyOn(component["destroy$"], "complete").and.callThrough();
+      component.ngOnDestroy();
+      expect(component["destroy$"].next).toHaveBeenCalled();
+      expect(component["destroy$"].complete).toHaveBeenCalled();
+    });
+
+    it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+      let unsubscribed = false;
+      component["destroy$"].subscribe({
+        complete: () => {
+          unsubscribed = true;
+        },
+      });
+      component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
     });
   });
 });

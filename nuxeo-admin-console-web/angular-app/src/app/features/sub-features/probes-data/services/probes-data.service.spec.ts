@@ -39,6 +39,13 @@ describe("ProbeDataService", () => {
     );
   });
 
+  it("should call makeHttpRequest with the correct endpoint and parameters when launchAllProbes is called", () => {
+    service.launchAllProbes();
+    expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
+      REST_END_POINTS.LAUNCH_ALL_PROBES
+    );
+  });
+
   describe("convertTextToTitleCase", () => {
     it("should convert single word to title case", () => {
       const result = service.formatToTitleCase("hello");

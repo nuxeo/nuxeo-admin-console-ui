@@ -4,6 +4,7 @@ export const REST_END_POINTS = {
   ELASTIC_SEARCH_REINDEX_OLD: "ELASTIC_SEARCH_REINDEX_OLD",
   PROBES: "PROBES",
   LAUNCH_PROBE: "LAUNCH_PROBE",
+  LAUNCH_ALL_PROBES: "LAUNCH_ALL_PROBES",
   CURRENT_USER: "CURRENT_USER",
   CAPABILITIES: "CAPABILITIES",
   LOGOUT: "LOGOUT",
@@ -12,6 +13,16 @@ export const REST_END_POINTS = {
   PICTURE_RENDITIONS: "PICTURE_RENDITIONS",
   VIDEO_RENDITIONS_GENERATION: "VIDEO_RENDITIONS_GENERATION",
   FULLTEXT_REINDEX: "FULLTEXT_REINDEX",
+  STREAM: "STREAM",
+  STREAM_CONSUMERS: "STREAM_CONSUMERS",
+  STREAM_RECORDS: "STREAM_RECORDS",
+  START_CONSUMER_THREAD_POOL: "START_CONSUMER_THREAD_POOL",
+  STOP_CONSUMER_THREAD_POOL: "STOP_CONSUMER_THREAD_POOL",
+  INSTANCE_INFO: "INSTANCE_INFO",
+  CHANGE_CONSUMER_POSITION: "CHANGE_CONSUMER_POSITION",
+  FETCH_CONSUMER_POSITION: "FETCH_CONSUMER_POSITION",
+  GET_SCALING_ANALYSIS: "GET_SCALING_ANALYSIS",
+  GET_STREAM_PROCESSOR_INFO: "GET_STREAM_PROCESSOR_INFO",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -39,6 +50,10 @@ export const REST_END_POINT_CONFIG: Record<
   },
   LAUNCH_PROBE: {
     endpoint: "/management/probes/{probeName}",
+    method: "POST",
+  },
+  LAUNCH_ALL_PROBES: {
+    endpoint: "/management/probes",
     method: "POST",
   },
   CAPABILITIES: {
@@ -71,6 +86,50 @@ export const REST_END_POINT_CONFIG: Record<
   },
   FULLTEXT_REINDEX: {
     endpoint: "/management/fulltext/extract",
-    method: "POST"
-  }
+    method: "POST",
+  },
+  STREAM: {
+    endpoint: "/management/stream/streams",
+    method: "GET",
+  },
+  STREAM_CONSUMERS: {
+    endpoint: "/management/stream/consumers",
+    method: "GET",
+  },
+  STREAM_RECORDS: {
+    endpoint: "/management/stream/cat",
+    method: "GET",
+  },
+  START_CONSUMER_THREAD_POOL:{
+    endpoint: "/management/stream/consumer/start",
+    method: "PUT",
+  },
+  STOP_CONSUMER_THREAD_POOL: {
+    endpoint: "/management/stream/consumer/stop",
+    method: "PUT",
+  },
+  INSTANCE_INFO: {
+    endpoint: "/management/connect/status",
+    method: "GET",
+  },
+
+  CHANGE_CONSUMER_POSITION: {
+    endpoint: "/management/stream/consumer/position/{consumerPosition}",
+    method: "PUT",
+  },
+  
+  FETCH_CONSUMER_POSITION: {
+    endpoint: "/management/stream/consumer/position",
+    method: "GET",
+  },
+
+  GET_SCALING_ANALYSIS: {
+    endpoint: "/management/stream/scale",
+    method: "GET",
+  },
+
+  GET_STREAM_PROCESSOR_INFO: {
+    endpoint: "/management/stream/",
+    method: "GET",
+  },
 };

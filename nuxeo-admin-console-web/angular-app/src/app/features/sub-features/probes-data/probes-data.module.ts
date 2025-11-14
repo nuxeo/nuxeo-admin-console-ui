@@ -5,6 +5,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { ProbesDataComponent } from "./components/probes-data.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {MatTableModule} from '@angular/material/table';
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
-    MatTableModule
+    MatTableModule,
+    MatPaginatorModule
   ],
   exports: [
     ProbesDataComponent,  

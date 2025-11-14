@@ -2,15 +2,28 @@
   class="registration-version registration-version--mdc">
   <mat-card-content class="registration-version__content registration-version__content--first">
     <div class="version-info">
-      {{ REGISTRATION_VERSION_LABELS.VERSION_INFO }}
+      {{ INSTANCE_INFO_LABEL.INSTANCE_INFO_LABEL }}
     </div>
   </mat-card-content>
-  <p class="registration-version__version">
-    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.VERSION_TITLE }}</span>
-    {{ versionInformation?.version }}
-  </p>
-  <p class="registration-version__cluster">
-    <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
-    {{ versionInformation?.clusterEnabled }}
-  </p>
+  <div class="instance-info">
+    <p>
+      <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.VERSION_TITLE }}</span>
+      {{ versionInformation?.version }}
+    </p>
+    <p>
+      <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
+      {{ versionInformation?.clusterEnabled }}
+    </p>
+    <div *ngFor="let item of INSTANCE_INFO_DATA_LABELS">
+      <p class="instance-info__item">
+        <span class="instance-info__label">{{ item.label }}</span>
+        <ng-container *ngIf="item.isDate; else normalValue">
+          {{ instanceInformation?.[item.key] | date: 'medium' }}
+        </ng-container>
+        <ng-template #normalValue>
+          {{ instanceInformation?.[item.key] || 'NA'}}
+        </ng-template>
+      </p>
+    </div>
+  </div>
 </mat-card>

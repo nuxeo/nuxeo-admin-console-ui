@@ -1,5 +1,13 @@
 name: Promote release
 
+permissions:
+  # Required to checkout code, create tags, create releases and push commits
+  contents: write
+  # Required to create pull requests during promotion process
+  pull-requests: write
+  # Required to upload artifacts and publish packages
+  packages: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,9 +26,7 @@ on:
 jobs:
   promote-v23:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    # Job-specific permissions are not needed as they inherit from workflow-level permissions
     outputs:
       version: ${{ env.VERSION }}
       

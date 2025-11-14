@@ -1,0 +1,58 @@
+<ng-container *ngIf="selectedTabIndex !== null"> <!-- To display main heading based on selected tab -->
+    <h1>
+        {{
+        selectedTabIndex === MAIN_TAB_LABELS.STREAM.ID ? STREAM_MAIN_HEADINGS.STREAM_RECORDS :
+        selectedTabIndex === MAIN_TAB_LABELS.CONSUMER.ID ? STREAM_MAIN_HEADINGS.CONSUMER_THREAD_POOL :
+        selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.ID ? STREAM_MAIN_HEADINGS.MANAGE_CONSUMER_POSITIONS :
+        selectedTabIndex === MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID ? STREAM_MAIN_HEADINGS.SCALING_ANALYSIS :
+        selectedTabIndex === MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID ?
+        STREAM_MAIN_HEADINGS.NUXEO_STREAM_PROCESSOR_INFO : ''
+        }}
+    </h1>
+</ng-container>
+
+<mat-tab-group animationDuration="0ms" class="stream-tab-group" [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab label="Stream Records">
+        <div class="stream-container" *ngIf="selectedTabIndex === MAIN_TAB_LABELS.STREAM.ID"> <!-- Load only active tab -->
+            <div class="stream-container__placeholder">
+                <stream-form></stream-form>
+                <div *ngIf="isFetchingRecords || records!.length > 0">
+                    <hr>
+                    <stream-records-status [recordsFetchedStatusText]="recordsFetchedStatusText"
+                        [recordCount]="recordCount" [isFetchingRecords]="isFetchingRecords"></stream-records-status>
+                </div>
+                <div class="result" [hidden]="(!records || records.length === 0) && clearRecordsDisplay">
+                    <stream-records [records]="records"></stream-records>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Consumer Thread Pool">
+        <div class="consumer-thread-pool-container">
+            <div class="consumer-thread-pool-container__placeholder">
+                <app-consumer-thread-pool *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER.ID"></app-consumer-thread-pool>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Consumer Position">
+        <div class="change-consumer-position-container">
+            <div class="change-consumer-position-container__placeholder">
+                <router-outlet *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.ID"></router-outlet>
+            </div>
+        </div>
+    </mat-tab>
+     <mat-tab label="Scaling Analysis">
+        <div class="get-scaling-analysis-container">
+            <div class="get-scaling-analysis-container__placeholder">
+               <app-get-scaling-analysis *ngIf="selectedTabIndex === MAIN_TAB_LABELS.GET_SCALING_ANALYSIS.ID"></app-get-scaling-analysis>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Nuxeo Stream and Processor Info">
+        <div class="nuxeo-stream-info-container">
+            <div class="nuxeo-stream-info-container__placeholder">
+                <app-nuxeo-stream-processor-info *ngIf="selectedTabIndex === MAIN_TAB_LABELS.GET_STREAM_PROCESSOR_INFO.ID"></app-nuxeo-stream-processor-info>
+            </div>
+        </div>
+    </mat-tab>
+</mat-tab-group>

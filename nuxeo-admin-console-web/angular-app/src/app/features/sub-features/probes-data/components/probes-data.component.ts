@@ -1,29 +1,30 @@
 import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Observable, Subject, takeUntil, withLatestFrom } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
 import * as ProbeActions from "../store/actions";
 import { ProbeDataService } from "../services/probes-data.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-
+import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
 @Component({
   selector: "probes-data",
   templateUrl: "./probes-data.component.html",
   styleUrls: ["./probes-data.component.scss"],
 })
-export class ProbesDataComponent implements OnInit, OnDestroy {
+export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() summary = false;
-  probesData: ProbesInfo[] = [];
-  fetchProbesSubscription = new Subscription();
+  probesData: MatTableDataSource<ProbesInfo> =
+    new MatTableDataSource<ProbesInfo>([]);
   fetchProbes$: Observable<ProbesInfo[]>;
   PROBES_LABELS = PROBES_LABELS;
   columnsToDisplay: string[] = [];
   selectedRowIndex = -1;
-
+  private destroy$: Subject<void> = new Subject<void>();
   defaultColumns = [
     { propertyName: "probe", label: "Probe", summaryOnly: true },
     { propertyName: "success", label: "Success", summaryOnly: true },
@@ -49,12 +50,11 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     { propertyName: "actions", label: "Actions", summaryOnly: false },
   ];
   hideTitle = true;
-  probeLaunchedSuccessSubscription = new Subscription();
-  probeLaunchedErrorSubscription = new Subscription();
   probeLaunchedSuccess$: Observable<ProbesInfo[]>;
   probeLaunchedError$: Observable<HttpErrorResponse | null>;
   probeLaunched: ProbesInfo = {} as ProbesInfo;
-
+  @ViewChild("paginator") paginator!: MatPaginator;
+  isLaunchAllProbeSuccess$: Observable<boolean | undefined>;
   constructor(
     private store: Store<{ probes: ProbeState }>,
     private probeService: ProbeDataService,
@@ -70,6 +70,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
     this.probeLaunchedError$ = this.store.pipe(
       select((state) => state.probes?.error)
     );
+    this.isLaunchAllProbeSuccess$ = this.store.pipe(
+      select((state) => state.probes?.showLaunchAllSuccessSnackbar)
+    );
   }
   ngOnInit(): void {
     this.columnsToDisplay = this.defaultColumns
@@ -79,22 +82,27 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
       (col) => col.summaryOnly && this.summary
     );
 
-    this.fetchProbesSubscription = this.fetchProbes$.subscribe(
-      (data: ProbesInfo[]) => {
+    this.fetchProbes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: ProbesInfo[]) => {
         if (data?.length !== 0) {
-          this.probesData = data;
+          this.probesData.data = data;
         } else {
           this.store.dispatch(ProbeActions.loadProbesData());
         }
-      }
-    );
+      });
 
-    this.probeLaunchedSuccessSubscription =
-      this.probeLaunchedSuccess$.subscribe((data) => {
+    this.probeLaunchedSuccess$
+      .pipe(
+        withLatestFrom(this.isLaunchAllProbeSuccess$), //get latest value of isLaunchAllProbeSuccess$
+        takeUntil(this.destroy$)
+      )
+      .subscribe(([data, showLaunchAllSuccessSnackbar]) => {
         if (
           data &&
           data?.length > 0 &&
-          Object.entries(this.probeLaunched).length > 0
+          Object.entries(this.probeLaunched).length &&
+          !showLaunchAllSuccessSnackbar /* Ensure the individual probe launch success snackbar is not shown when the 'Launch All Probes' success snackbar is triggered */
         ) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
@@ -110,8 +118,9 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.probeLaunchedErrorSubscription = this.probeLaunchedError$.subscribe(
-      (error) => {
+    this.probeLaunchedError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((error) => {
         if (error) {
           this._snackBar.openFromComponent(CustomSnackBarComponent, {
             data: {
@@ -125,8 +134,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
             panelClass: ["error-snack"],
           });
         }
-      }
-    );
+      });
   }
 
   deriveProbeDisplayName(probeName: string): string {
@@ -165,8 +173,11 @@ export class ProbesDataComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.fetchProbesSubscription?.unsubscribe();
-    this.probeLaunchedSuccessSubscription?.unsubscribe();
-    this.probeLaunchedErrorSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  ngAfterViewInit() {
+    this.probesData.paginator = this.paginator;
   }
 }

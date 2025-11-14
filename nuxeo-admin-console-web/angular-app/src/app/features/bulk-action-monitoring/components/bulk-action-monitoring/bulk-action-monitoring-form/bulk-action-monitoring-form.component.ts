@@ -19,7 +19,7 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringState } from "../../../store/reducers";
@@ -36,9 +36,6 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
     new EventEmitter<BulkActionMonitoringInfo | null>();
   bulkActionMonitoringForm: FormGroup;
   bulkActionError$: Observable<HttpErrorResponse | null>;
-  bulkActionErrorSubscription = new Subscription();
-  bulkActionLaunchedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
   bulkActionMonitoringLaunched$: Observable<BulkActionMonitoringInfo>;
@@ -47,6 +44,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   userInput = "";
   GENERIC_LABELS = GENERIC_LABELS;
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
+  private destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     private commonService: CommonService,
@@ -78,8 +76,9 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.bulkActionLaunchedSubscription =
-      this.bulkActionMonitoringLaunched$.subscribe((data) => {
+    this.bulkActionMonitoringLaunched$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
         if (data?.commandId) {
           this.bulkActionResponse = data;
           this.setBulkActionResponse.emit(this.bulkActionResponse);
@@ -90,7 +89,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.bulkActionErrorSubscription = this.bulkActionError$.subscribe(
+    this.bulkActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error && error.error) {
           this.setBulkActionResponse.emit(null);
@@ -119,9 +118,10 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
         error,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe(() => {
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.onBulkActionModalClose();
       });
   }
@@ -157,11 +157,10 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.store.dispatch(
       BulkActionMonitoringActions.resetBulkActionMonitorState()
     );
-    this.bulkActionLaunchedSubscription?.unsubscribe();
-    this.bulkActionErrorSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
   }
 }

@@ -52,7 +52,7 @@ export const GENERIC_LABELS = {
 
 export const MODAL_DIMENSIONS = {
   HEIGHT: "320px",
-  WIDTH: "550px",
+  WIDTH: "560px",
 };
 
 export const ERROR_TYPES = {

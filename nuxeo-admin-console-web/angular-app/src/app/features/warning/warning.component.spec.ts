@@ -103,4 +103,26 @@ describe("WarningComponent", () => {
       expect(component.dialogService.closeAll).toHaveBeenCalled();
     });
   });
+
+  describe("ngOnDestroy", () => {
+    it('should unsubscribe from observables on destroy', () => {
+      spyOn((component as any).destroy$, 'next');
+      spyOn((component as any).destroy$, 'complete');
+      component.ngOnDestroy();
+      expect((component as any).destroy$.next).toHaveBeenCalled();
+      expect((component as any).destroy$.complete).toHaveBeenCalled();
+    });
+
+    it("should unsubscribe from all subscriptions", (done) => {
+      let unsubscribed = false;
+      (component as any).destroy$.subscribe({
+        complete: () => {
+          unsubscribed = true;
+        },
+      });
+      component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
+    });
+  });
 });
