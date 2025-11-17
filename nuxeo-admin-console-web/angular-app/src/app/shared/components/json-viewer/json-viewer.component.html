@@ -75,7 +75,9 @@
       <span class="loading-text">{{ JSON_VIEWER_LABELS.LOADING_RESULTS }}</span>
     </div>
 
-    <section *ngFor="let segment of segments" class="segment" [class.segment-type-number]="segment.type === 'number'"
+    <section *ngFor="let segment of segments" class="segment" 
+      [attr.data-segment-key]="segment.key"
+      [class.segment-type-number]="segment.type === 'number'"
       [class.segment-type-string]="segment.type === 'string'" [class.segment-type-boolean]="segment.type === 'boolean'"
       [class.segment-type-object]="segment.type === 'object'" [class.segment-type-array]="segment.type === 'array'"
       [class.segment-type-null]="segment.type === 'null'" [class.segment-type-undefined]="segment.type === 'undefined'">

@@ -12,4 +12,5 @@ import {
 
 export class StreamRecordsComponent {
   @Input() records: { type?: string }[] = [];
+  @Input() clearSearch = false;
 }
