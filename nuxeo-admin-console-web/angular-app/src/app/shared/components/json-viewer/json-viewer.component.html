@@ -9,7 +9,7 @@
           tabindex="0">
 
         <!-- Search Button (visual indicator only when no search term) -->
-        <button *ngIf="!searchTerm" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
+        <button class="search-btn" *ngIf="!searchTerm" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
           aria-label="Search icon" tabindex="-1">
           <mat-icon>{{ JSON_VIEWER_LABELS.MAT_SEARCH_BTN_NAME }}</mat-icon>
         </button>
@@ -44,7 +44,7 @@
 
     <div class="controls-right">
       <!-- Copy Button -->
-      <button mat-icon-button disableRipple (click)="copyToClipboard()"
+      <button mat-icon-button disableRipple (click)="copyToClipboard()" class="copy-btn"
         [matTooltip]="JSON_VIEWER_LABELS.COPY_JSON_TOOLTIP" aria-label="Copy JSON to clipboard" tabindex="0">
         <mat-icon>{{ JSON_VIEWER_LABELS.MAT_COPY_ICON_NAME }}</mat-icon>
       </button>
