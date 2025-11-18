@@ -21,4 +21,23 @@ describe('StreamRecordsComponent', () => {
     it('should create the component', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should have default clearSearch value as false', () => {
+        expect(component.clearSearch).toBe(false);
+    });
+
+    it('should accept clearSearch input property', () => {
+        component.clearSearch = true;
+        fixture.detectChanges();
+        expect(component.clearSearch).toBe(true);
+    });
+
+    it('should render json viewer with clearSearch binding', () => {
+        component.records = [{ type: 'record' }];
+        component.clearSearch = true;
+        fixture.detectChanges();
+        
+        const jsonViewer = fixture.debugElement.nativeElement.querySelector('custom-nuxeo-json-viewer');
+        expect(jsonViewer).toBeTruthy();
+    });
 });

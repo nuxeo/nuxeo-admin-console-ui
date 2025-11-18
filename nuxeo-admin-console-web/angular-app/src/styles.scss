@@ -747,3 +747,9 @@ json-table-view {
   transform: translateX(-50%) !important;
   z-index: 1000 !important;
 }
+
+.search-btn .mdc-icon-button__ripple,
+.copy-btn .mdc-icon-button__ripple {
+  display: none !important;
+  opacity: 0 !important;
+}

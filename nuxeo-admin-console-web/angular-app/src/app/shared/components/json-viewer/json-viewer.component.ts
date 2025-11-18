@@ -42,6 +42,7 @@ export class JsonViewerComponent
   @Input() currentDepth = 0;
   @Input() expandAll = false;
   @Input() isSearchActiveInput = false;
+  @Input() clearSearchInput = false;
   @ViewChild("searchInput") searchInputRef!: ElementRef<HTMLInputElement>;
   segments: Segment[] = [];
   searchTerm = "";
@@ -58,6 +59,8 @@ export class JsonViewerComponent
   private searchInput$ = new Subject<string>();
   private currentSearchRequestId = 0;
   private inputEventListener: ((event: Event) => void) | null = null;
+  private navigationInProgress = false; // Lock to prevent overlapping navigation
+  private highlightsInSync = false; // Track if DOM highlights match current search state
   readonly JSON_VIEWER_LABELS = JSON_VIEWER_LABELS;
 
   constructor(
@@ -142,6 +145,11 @@ export class JsonViewerComponent
   }
 
   ngOnChanges() {
+    // Handle clearSearchInput flag
+    if (this.clearSearchInput && this.currentDepth === 0) {
+      this.clearSearch();
+    }
+
     this.segments = [];
     this.cachedJsonString = null;
     this.cachedFormattedJsonString = null;
@@ -420,6 +428,8 @@ export class JsonViewerComponent
     this.currentMatchIndex = -1;
     this.isSearchLoading = false;
     this._isSearchActive = false;
+    this.navigationInProgress = false; // Reset navigation lock
+    this.highlightsInSync = false; // Reset sync flag
 
     if (this.searchInputRef?.nativeElement) {
       this.searchInputRef.nativeElement.value = "";
@@ -451,67 +461,129 @@ export class JsonViewerComponent
   }
 
   /**
-   * Navigates to the next search match with circular wraparound.
-   * Expands JSON sections as needed and scrolls match into view.
+   * Navigates to the next search match - Optimized for large data
    */
   async goToNextMatch(): Promise<void> {
-    if (this.totalMatches === 0) return;
+    if (this.totalMatches === 0 || this.navigationInProgress) return;
+
+    this.navigationInProgress = true;
     this.currentMatchIndex = (this.currentMatchIndex + 1) % this.totalMatches;
-    await this.ensureDataExpandedForNavigation();
-    // Wait a bit more to ensure all highlighting is complete
-    await this.executeAfterRender(async () => {
-      await this.scrollToCurrentMatch();
-    });
+    this.cdr.detectChanges();
+
+    await this.fastNavigateToCurrentMatch();
+    this.navigationInProgress = false;
   }
 
   /**
-   * Navigates to the previous search match with circular wraparound.
-   * Expands JSON sections as needed and scrolls match into view.
+   * Navigates to the previous search match - Optimized for large data
    */
   async goToPreviousMatch(): Promise<void> {
-    if (this.totalMatches === 0) return;
+    if (this.totalMatches === 0 || this.navigationInProgress) return;
+
+    this.navigationInProgress = true;
     this.currentMatchIndex =
       this.currentMatchIndex <= 0
         ? this.totalMatches - 1
         : this.currentMatchIndex - 1;
-    await this.ensureDataExpandedForNavigation();
-    // Wait a bit more to ensure all highlighting is complete
-    await this.executeAfterRender(async () => {
-      await this.scrollToCurrentMatch();
-    });
+    this.cdr.detectChanges();
+
+    await this.fastNavigateToCurrentMatch();
+    this.navigationInProgress = false;
   }
 
-  // Ensures all JSON data is expanded when navigating between matches
-  private async ensureDataExpandedForNavigation(): Promise<void> {
+  /**
+   * Fast navigation that only updates current match highlight without re-processing all matches
+   */
+  private async fastNavigateToCurrentMatch(): Promise<void> {
+    // Check if highlights are in sync with DOM, if not fallback to full re-highlighting
+    if (!this.highlightsInSync) {
+      await this.reHighlightAndNavigate();
+      return;
+    }
+    const matches = document.querySelectorAll("mark.search-match");
+    if (
+      matches.length !== this.totalMatches ||
+      this.currentMatchIndex >= matches.length
+    ) {
+      // DOM is out of sync, fallback to full re-highlighting
+      this.highlightsInSync = false;
+      await this.reHighlightAndNavigate();
+      return;
+    }
+    // Fast path: Simply update the current match class
+    matches.forEach((m) => m.classList.remove("current-match"));
+    const currentMatch = matches[this.currentMatchIndex];
+    if (currentMatch) {
+      // Check if match is visible (not in a collapsed section)
+      const isVisible = this.isElementVisible(currentMatch);
+
+      if (!isVisible) {
+        // If not visible, we need to expand - fallback to full navigation
+        this.highlightsInSync = false;
+        await this.reHighlightAndNavigate();
+        return;
+      }
+      currentMatch.classList.add("current-match");
+      // Scroll to the match with smooth animation
+      currentMatch.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest",
+      });
+    }
+  }
+
+  /**
+   * Check if an element is visible (not hidden by collapsed parent)
+   */
+  private isElementVisible(element: Element): boolean {
+    let parent = element.parentElement;
+    while (parent && parent !== document.body) {
+      const computedStyle = window.getComputedStyle(parent);
+      if (
+        computedStyle.display === "none" ||
+        computedStyle.visibility === "hidden"
+      ) {
+        return false;
+      }
+      parent = parent.parentElement;
+    }
+    return true;
+  }
+
+  /**
+   * Efficiently re-highlights and navigates using existing framework
+   */
+  private async reHighlightAndNavigate(): Promise<void> {
     this.expandAll = true;
     this.setAllSegmentsExpanded(true);
     this.cdr.markForCheck();
 
-    // Wait for DOM updates, then re-apply all highlighting
     await this.executeAfterRender(async () => {
-      // Clear old highlights first
       this.clearTextHighlightFromDOM();
-      
-      // Apply template highlights
       this.highlightTemplateSegments();
       this.cdr.detectChanges();
-      
-      // Wait for template changes to render, then apply DOM highlights
+
       await this.executeAfterRender(async () => {
         await this.highlightTextInDOM();
-        
-        // Wait for DOM highlights to be fully applied
-        await this.executeAfterRender(() => {
-          // Update match count after re-highlighting
-          this.totalMatches = this.countMatchesInRawData(this.searchTerm?.trim() || "");
-          
-          // Ensure current match index is valid
-          if (this.currentMatchIndex >= this.totalMatches) {
-            this.currentMatchIndex = Math.max(0, this.totalMatches - 1);
-          }
-        });
+        this.scrollToMatch();
       });
     });
+  }
+
+  private scrollToMatch(): void {
+    const matches = document.querySelectorAll("mark.search-match");
+    if (matches.length === 0) return;
+
+    // Clear previous current match
+    matches.forEach((m) => m.classList.remove("current-match"));
+
+    // Highlight current match
+    const currentMatch = matches[this.currentMatchIndex];
+    if (currentMatch) {
+      currentMatch.classList.add("current-match");
+      currentMatch.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   }
 
   private async scrollToCurrentMatch(): Promise<void> {
@@ -616,7 +688,10 @@ export class JsonViewerComponent
 
   private async highlightTextInDOM(): Promise<void> {
     const searchTerm = this.searchTerm?.trim();
-    if (!searchTerm) return;
+    if (!searchTerm) {
+      this.highlightsInSync = false;
+      return;
+    }
 
     try {
       this.clearTextHighlightFromDOM();
@@ -624,6 +699,7 @@ export class JsonViewerComponent
       const ngxContainer = document.querySelector(".ngx-json-viewer");
       if (!ngxContainer) {
         console.warn("JSON viewer container not found for highlighting");
+        this.highlightsInSync = false;
         return;
       }
 
@@ -634,16 +710,19 @@ export class JsonViewerComponent
           if (typeof requestIdleCallback !== "undefined") {
             requestIdleCallback(() => {
               this.applyMarkTagsToText(textNodes, searchTerm);
+              this.highlightsInSync = true;
               resolve();
             });
           } else {
             this.applyMarkTagsToText(textNodes, searchTerm);
+            this.highlightsInSync = true;
             resolve();
           }
         });
       });
     } catch (error) {
       console.error("Error in DOM highlighting:", error);
+      this.highlightsInSync = false;
       this.clearSearch();
     }
   }
