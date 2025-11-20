@@ -5,10 +5,21 @@
   margin: 0px;
   padding: 10px 0px 0px 10px;
   #requiredField {
-    font-size: 12px;
-    color: #da1500;
-    font-weight: 400;
+    font-size: 14px;
+    color: rgb(218, 21, 0);
     font-family: "Open Sans";
+    line-height: 1;
+  }
+  .required-indicator {
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans", sans-serif;
+    padding-left: 2px;
+  }
+  #label {
+    line-height: 1;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: 400;
   }
   &__button {
     border-radius: 4px !important;
@@ -18,10 +29,10 @@
     left: 20px;
     font-size: 16px;
     bottom: 3px;
+    font-family: "Open Sans", sans-serif;
+    background-color: #0a60ce !important;
+    font-weight: 550;
+    letter-spacing: normal;
+    color: #fff;
   }
-}
-mat-form-field.hy-form-field {
-  margin-top: 10px;
-  max-width: 350px;
-  width: 80%;
 }

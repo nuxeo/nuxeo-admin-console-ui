@@ -11,9 +11,17 @@ $selected-line-bg-color: #0c6bd4;
     margin-bottom: 5px;
     cursor: pointer;
 
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: $sidenav-list-item-selected-bg-color;
+
+      .menu-bar__line {
+        background-color: $selected-line-bg-color;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $selected-line-bg-color;
+      outline-offset: -2px; 
       .menu-bar__line {
         background-color: $selected-line-bg-color;
       }

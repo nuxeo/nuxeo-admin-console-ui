@@ -33,4 +33,10 @@ export class ProbeDataService {
       ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
       ?.join(" ");
   }
+
+  launchAllProbes(): Observable<ProbesResponse> {
+    return this.networkService.makeHttpRequest<ProbesResponse>(
+      REST_END_POINTS.LAUNCH_ALL_PROBES
+    );
+  }
 }

@@ -7,9 +7,8 @@ import { HomeComponent } from "./components/home.component";
 import { ProbesSummaryComponent } from "./components/probes-summary/probes-summary.component";
 import { RegistrationVersionComponent } from "./components/registration-version/registration-version.component";
 import { HomeRoutingModule } from "./home-routing.module";
-import { HyContentListModule } from "@hyland/ui/content-list";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module";
+import { MatDividerModule } from "@angular/material/divider";
 
 @NgModule({
   declarations: [
@@ -22,10 +21,9 @@ import { ProbesDataModule } from "../sub-features/probes-data/probes-data.module
     MatCardModule,
     MatButtonModule,
     HomeRoutingModule,
-    HyContentListModule,
     MatProgressSpinnerModule,
-    MatTooltipModule,
     ProbesDataModule,
+    MatDividerModule
   ],
 })
 export class HomeModule {}

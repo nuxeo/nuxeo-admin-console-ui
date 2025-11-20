@@ -1,5 +1,11 @@
 name: Hotfix
 
+permissions:
+  # Required to checkout repository and read git history
+  contents: read
+  # Required to create PR.
+  pull-requests: write
+  
 on:
   push:
     branches:
@@ -19,73 +25,104 @@ jobs:
             with:
               fetch-depth: 0  # Fetch all history for all branches and tags
         
-    
           - name: Authenticate GitHub CLI
             run: |
               echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
-    
     
           - name: Get the branch name of the last merged PR
             id: get-branch
             run: |
               last_pr_merge_commit=$(git log -1 --pretty=format:"%H")
-              echo "Last PR merge commit: $last_pr_merge_commit"
               merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
               echo "Merge message: $merge_message"
-              full_branch_name=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
-              echo "Full branch name: $full_branch_name"
-              branch_name=$(echo "$full_branch_name" | awk -F'/' '{print $2}')
-              echo "The branch name is $branch_name & full name is $full_branch_name"
-              echo "::set-output name=last_pr_branch::$(echo $branch_name | xargs)"
+              
+              # Try to extract branch name from different message formats
+              if [[ "$merge_message" =~ Merge[[:space:]]([^[:space:]]+)[[:space:]]into ]]; then
+                # Format: "Merge dev into main"
+                branch_name="${BASH_REMATCH[1]}"
+              elif [[ "$merge_message" =~ from[[:space:]]+([^/]+)/([^[:space:]]+) ]]; then
+                # Format: "... from username/branch-name"
+                branch_name="${BASH_REMATCH[2]}"
+              else
+                branch_name="dev"  # fallback value
+              fi
+              
+              echo "Branch name: $branch_name"
+              echo "::set-output name=last_pr_branch::$branch_name"
 
     hotfix-merge:
         needs: get-branch-name
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Code
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
           uses: actions/checkout@v4
 
         - name: Setup Git config
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
           run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
 
         - name: Authenticate GitHub CLI
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
           run: |
                 echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
         
         - name: Debug Output
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
           run: |
                 echo "Branch name: ${{ needs.get-branch-name.outputs.last_pr_branch }}"
 
-        - name: Get latest beta tag
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        - name: Get latest beta tags for v23 and v25
           run: |
-            git fetch  origin --tags
-            latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
-            echo "Latest beta tag: $latest_beta_tag"
+            echo "========= Fetching Latest Beta Tags ========="
+            git fetch origin --tags
+            
+            # Get latest v23 beta tag
+            latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//' || echo "")
+            if [ -z "$latest_beta_tag" ]; then
+              echo "No v23 beta tag found, will use 23.0.0-beta.0 as base"
+              latest_beta_tag="23.0.0-beta.0"
+            fi
+            echo "Latest v23 beta tag: $latest_beta_tag"
             echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
+            
+            # Get latest v25 beta tag (use v23 pattern and replace 23 with 25)
+            v23_pattern=$(echo "$latest_beta_tag" | sed 's/-beta\.[0-9]*$//')
+            v25_pattern="${v23_pattern/23/25}"
+            
+            latest_beta_tag_v25=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E "^v$v25_pattern-beta\.[0-9]+$" | head -n 1 | sed 's/^v//' || echo "")
+            if [ -z "$latest_beta_tag_v25" ]; then
+              echo "No v25 beta tag found, will derive from v23 tag"
+              latest_beta_tag_v25="${latest_beta_tag/23/25}"
+            fi
+            echo "Latest v25 beta tag: $latest_beta_tag_v25"
+            echo "LATEST_BETA_TAG_V25=$latest_beta_tag_v25" >> $GITHUB_ENV
 
-        - name: Update beta version
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        - name: Update beta versions
           run: |
-                # Increment beta.x to x+1 while preserving the correct format
+                echo "========= Generating New Beta Versions ========="
+                
+                # Update v23 beta version
                 BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
                 BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
                 NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
                 NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
-                echo "New beta tag: $NEW_BETA_TAG"
+                echo "New v23 beta tag: $NEW_BETA_TAG"
                 echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
+                
+                # Update v25 beta version by replacing 23 with 25
+                NEW_BETA_TAG_V25="${NEW_BETA_TAG/23/25}"
+                echo "New v25 beta tag: $NEW_BETA_TAG_V25"
+                echo "NEW_BETA_TAG_V25=$NEW_BETA_TAG_V25" >> $GITHUB_ENV
 
-        - name: Store Beta Release Version as a Secret
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
-          id: get-hotfix-beta-version
+        - name: Store Beta Release Versions as Secrets
           run: |
+            echo "Storing v23 beta version: ${{ env.NEW_BETA_TAG }}"
             gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+            
+            echo "Storing v25 beta version: ${{ env.NEW_BETA_TAG_V25 }}"
+            gh secret set BETA_RELEASE_VERSION_V25 --body ${{ env.NEW_BETA_TAG_V25 }}
 
         - name: Create Pull Request
-          if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
           run: |
-            gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
+            gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch.
+            
+            **v23 Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})
+            **v25 Beta Release:** [v${{ env.NEW_BETA_TAG_V25 }}](https://github.com/nuxeo/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG_V25 }})"

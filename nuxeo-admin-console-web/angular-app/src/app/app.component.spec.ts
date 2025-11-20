@@ -6,21 +6,21 @@ import { PersistenceService } from "./shared/services/persistence.service";
 import { WarningComponent } from "./features/warning/warning.component";
 import { CommonService } from "./shared/services/common.service";
 import { EventEmitter } from "@angular/core";
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { AuthStateInterface } from './auth/types/authState.interface';
-import { UserInterface } from './shared/types/user.interface';
-import { APP_CONSTANTS } from './app.constants';
-import { By } from '@angular/platform-browser';
-import { authActions } from './auth/store/actions';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { provideMockStore, MockStore } from "@ngrx/store/testing";
+import { AuthStateInterface } from "./auth/types/authState.interface";
+import { UserInterface } from "./shared/types/user.interface";
+import { APP_CONSTANTS } from "./app.constants";
+import { By } from "@angular/platform-browser";
+import { authActions } from "./auth/store/actions";
+import { ActivatedRoute, RouterModule } from "@angular/router";
 import { BaseLayoutModule } from "./layouts/base-layout/base-layout.module";
-import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component"
-import { HyMaterialIconModule } from "@hyland/ui";
+import { BaseLayoutComponent } from "./layouts/base-layout/components/base-layout.component";
 import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from "@angular/material/list";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatIconModule } from "@angular/material/icon";
 
 describe("AppComponent", () => {
   let component: AppComponent;
@@ -28,26 +28,26 @@ describe("AppComponent", () => {
   const mockActivatedRoute = {
     snapshot: {
       paramMap: {
-        get: () => 'Administrator'
-      }
-    }
+        get: () => "Administrator",
+      },
+    },
   };
 
   let store: MockStore<{ auth: AuthStateInterface }>;
   const initialAuthState: AuthStateInterface = {
     isSubmitting: false,
     currentUser: {
-      id: 'Administrator',
+      id: "Administrator",
       isAdministrator: true,
       properties: {
         firstName: "nco",
         lastName: "admin",
         email: "nco-admin@nuxeo.com",
-        username: "Administrator"
-      }
+        username: "Administrator",
+      },
     } as UserInterface,
     isLoading: false,
-    validationErrors: null
+    validationErrors: null,
   };
 
   class persistenceServiceStub {
@@ -64,11 +64,24 @@ describe("AppComponent", () => {
     loadApp = new EventEmitter<boolean>();
   }
 
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, BaseLayoutComponent, HeaderBarComponent, MenuBarComponent],
-      imports: [CommonModule, MatDialogModule, BaseLayoutModule, HyMaterialIconModule, RouterModule, MatToolbarModule, MatListModule, MatSidenavModule],
+      declarations: [
+        AppComponent,
+        BaseLayoutComponent,
+        HeaderBarComponent,
+        MenuBarComponent,
+      ],
+      imports: [
+        CommonModule,
+        MatDialogModule,
+        BaseLayoutModule,
+        RouterModule,
+        MatToolbarModule,
+        MatListModule,
+        MatSidenavModule,
+        MatIconModule,
+      ],
       providers: [
         { provide: PersistenceService, useClass: persistenceServiceStub },
         { provide: CommonService, useClass: commonServiceStub },
@@ -80,6 +93,7 @@ describe("AppComponent", () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    spyOn(component["nuxeoJsClientService"], "connect").and.stub();
   });
 
   it("should test if component is created", () => {
@@ -88,10 +102,12 @@ describe("AppComponent", () => {
 
   describe("ngOnInit", () => {
     it("should initiate JS client and subscribe to currentUser$", () => {
-      spyOn(component['nuxeoJsClientService'], 'initiateJSClient');
-      spyOn(component.currentUser$, 'subscribe').and.callThrough();
+      spyOn(component["nuxeoJsClientService"], "initiateJSClient");
+      spyOn(component.currentUser$, "subscribe").and.callThrough();
       component.ngOnInit();
-      expect(component['nuxeoJsClientService'].initiateJSClient).toHaveBeenCalledWith(component.baseUrl);
+      expect(
+        component["nuxeoJsClientService"].initiateJSClient
+      ).toHaveBeenCalledWith(component.baseUrl);
       expect(component.currentUser$.subscribe).toHaveBeenCalled();
     });
 
@@ -100,7 +116,10 @@ describe("AppComponent", () => {
       spyOn(component.persistenceService, "get").and.returnValue(null);
       component.ngOnInit();
       expect(component.persistenceService.get).toHaveBeenCalled();
-      expect(component.dialogService.open).toHaveBeenCalledWith(WarningComponent, { disableClose: true });
+      expect(component.dialogService.open).toHaveBeenCalledWith(
+        WarningComponent,
+        { disableClose: true, hasBackdrop: true }
+      );
     });
 
     it("should not open the warning dialog if warning preference is set", () => {
@@ -123,16 +142,6 @@ describe("AppComponent", () => {
     });
   });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from subscriptions", () => {
-      spyOn(component.loadAppSubscription, "unsubscribe");
-      spyOn(component.currentUserSubscription, "unsubscribe");
-      component.ngOnDestroy();
-      expect(component.loadAppSubscription.unsubscribe).toHaveBeenCalled();
-      expect(component.currentUserSubscription.unsubscribe).toHaveBeenCalled();
-    });
-  });
-
   describe("onSignOut", () => {
     it("should dispatch signOut action", () => {
       spyOn(store, "dispatch");
@@ -140,33 +149,61 @@ describe("AppComponent", () => {
       expect(store.dispatch).toHaveBeenCalledWith(authActions.signOut());
     });
   });
-  
 
   describe("DOM", () => {
     it("should display unauthorized message if currentUser is not administrator", () => {
       store.setState({
         auth: {
-          ...initialAuthState, currentUser: {
-            id: 'Administrator', isAdministrator: false, properties: {
+          ...initialAuthState,
+          currentUser: {
+            id: "Administrator",
+            isAdministrator: false,
+            properties: {
               firstName: "nco",
               lastName: "admin",
               email: "nco-admin@nuxeo.com",
-              username: "Administrator"
-            }
-          }
-        }
+              username: "Administrator",
+            },
+          },
+        },
       });
       fixture.detectChanges();
-      const unauthorizedMessage = fixture.debugElement.query(By.css('.unauthorized'));
+      const unauthorizedMessage = fixture.debugElement.query(
+        By.css(".unauthorized")
+      );
       expect(unauthorizedMessage).toBeTruthy();
-      expect(unauthorizedMessage.nativeElement.textContent).toContain(APP_CONSTANTS.UNAUTHORIZED_MESSAGE);
+      expect(unauthorizedMessage.nativeElement.textContent).toContain(
+        APP_CONSTANTS.UNAUTHORIZED_MESSAGE
+      );
     });
 
     it("should display base-layout if loadApp is true and currentUser is administrator", () => {
       component.loadApp = true;
       fixture.detectChanges();
-      const baseLayout = fixture.debugElement.query(By.css('base-layout'));
+      const baseLayout = fixture.debugElement.query(By.css("base-layout"));
       expect(baseLayout).toBeTruthy();
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should complete the destroy$ subject", () => {
+      spyOn(component["destroy$"], "next").and.callThrough();
+      spyOn(component["destroy$"], "complete").and.callThrough();
+      component.ngOnDestroy();
+      expect(component["destroy$"].next).toHaveBeenCalled();
+      expect(component["destroy$"].complete).toHaveBeenCalled();
+    });
+
+    it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+      let unsubscribed = false;
+      component["destroy$"].subscribe({
+        complete: () => {
+          unsubscribed = true;
+        },
+      });
+      component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
     });
   });
 });

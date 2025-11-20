@@ -1,4 +1,5 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { GenericMultiFeatureUtilitiesService } from "./../../services/generic-multi-feature-utilities.service";
 import { NuxeoJSClientService } from "./../../../../../shared/services/nuxeo-js-client.service";
@@ -20,7 +21,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -51,12 +52,6 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;
   documentActionLaunched$: Observable<ActionInfo>;
   documentActionError$: Observable<HttpErrorResponse | null>;
-  documentActionLaunchedSubscription = new Subscription();
-  documentActionErrorSubscription = new Subscription();
-  actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
-  launchedDialogClosedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -72,7 +67,9 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   activeFeature: FeaturesKey = {} as FeaturesKey;
   requestQuery = "";
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
+  FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   FEATURES = FEATURES;
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -82,6 +79,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
+      force: [false],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.documentActionLaunched$ = this.store.pipe(
@@ -113,19 +111,24 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
         );
         this.inputForm.addControl(
           VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
-          new FormControl("true")
+          new FormControl("false")
+        );
+      }
+      if (this.isFeatureFullTextReindex()) {
+        this.inputForm.addControl(
+          FULLTEXT_REINDEX_LABELS.FORCE,
+          new FormControl("false")
         );
       }
     }
 
-    this.documentActionLaunchedSubscription =
-      this.documentActionLaunched$.subscribe((data) => {
-        if (data?.commandId) {
-          this.showActionLaunchedModal(data?.commandId);
-        }
-      });
+    this.documentActionLaunched$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      if (data?.commandId) {
+        this.showActionLaunchedModal(data?.commandId);
+      }
+    });
 
-    this.documentActionErrorSubscription = this.documentActionError$.subscribe(
+    this.documentActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -140,16 +143,30 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   showActionErrorModal(error: ErrorDetails): void {
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
         error,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe(() => {
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.onActionErrorModalClose();
+      });
+
+    this.errorDialogRef
+      .afterOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
       });
   }
 
@@ -161,6 +178,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   showActionLaunchedModal(commandId: string | null): void {
     this.launchedDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -171,19 +189,36 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.launchedDialogClosedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onActionLaunchedModalClose();
+      });
+
+    this.launchedDialogRef
+      .afterOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
       });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
+    if (this.isFeatureFullTextReindex()) {
+      this.inputForm?.get("force")?.reset();
+    }
+
     document.getElementById("inputIdentifier")?.focus();
   }
 
@@ -294,12 +329,16 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
     );
   }
 
+  isFeatureFullTextReindex(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.FULLTEXT_REINDEX as FeaturesKey)
+    );
+  }
+
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetDocumentActionState());
-    this.documentActionLaunchedSubscription?.unsubscribe();
-    this.documentActionErrorSubscription?.unsubscribe();
-    this.actionDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogClosedSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

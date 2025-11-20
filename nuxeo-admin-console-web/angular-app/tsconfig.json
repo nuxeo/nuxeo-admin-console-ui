@@ -1,8 +1,8 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
-  "extends": "./node_modules/@hylandsoftware/hy-ui-standards/angular/tsconfig.json",
   "compileOnSave": false,
   "compilerOptions": {
+    "noUnusedLocals": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -28,7 +28,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "include": ["src/main.ts", "src/polyfills.ts"],
-  "files": ["src/polyfills.ts"],
   "styles": ["src/styles.scss"]
 }

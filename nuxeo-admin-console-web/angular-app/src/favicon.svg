@@ -1,0 +1,30 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    #hyland-logo-outline {
+      fill: #006334;
+    }
+
+    #hyland-logo-h {
+      fill: white;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #hyland-logo-outline {
+        fill: white;
+      }
+
+      #hyland-logo-h {
+        fill: #006334;
+      }
+    }
+  </style>
+<g clip-path="url(#clip0_1_4)">
+<path id="hyland-logo-outline" d="M14 0H2C0.89543 0 0 0.89543 0 2V14C0 15.1046 0.89543 16 2 16H14C15.1046 16 16 15.1046 16 14V2C16 0.89543 15.1046 0 14 0Z"/>
+<path id="hyland-logo-h" d="M10.1 6.78001H5.90001V2.46001H3.42001V13.54H5.90001V9.09001H10.1V13.54H12.58V2.46001H10.1V6.78001Z"/>
+</g>
+<defs>
+<clipPath id="clip0_1_4">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>

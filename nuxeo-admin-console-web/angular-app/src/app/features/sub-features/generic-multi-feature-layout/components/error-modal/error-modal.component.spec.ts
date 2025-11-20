@@ -1,12 +1,12 @@
 import { ErrorModalComponent } from '../error-modal/error-modal.component';
-import { HyDialogBoxModule } from "@hyland/ui";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { CommonModule } from "@angular/common";
 import { ErrorDetails } from '../../generic-multi-feature-layout.interface';
 import { ERROR_MESSAGES, ERROR_TYPES } from '../../generic-multi-feature-layout.constants';
 import { ErrorModalData } from '../../../../../shared/types/common.interface';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 describe("ErrorModalComponent", () => {
   let component: ErrorModalComponent;
   let fixture: ComponentFixture<ErrorModalComponent>;
@@ -44,11 +44,12 @@ describe("ErrorModalComponent", () => {
     const dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
     TestBed.configureTestingModule({
       declarations: [ErrorModalComponent],
-      imports: [CommonModule, HyDialogBoxModule],
+      imports: [CommonModule, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
+       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ErrorModalComponent);
@@ -56,6 +57,11 @@ describe("ErrorModalComponent", () => {
     dialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<
       MatDialogRef<ErrorModalComponent>
     >;
+  });
+
+  afterEach(() => {
+    const dialog = TestBed.inject(MatDialog);
+    dialog.closeAll();
   });
 
   it("should create", () => {

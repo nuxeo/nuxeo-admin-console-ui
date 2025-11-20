@@ -11,37 +11,19 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@hylandsoftware/hy-ui-devkit:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/admin_console_ui",
             "index": "src/index.jsp",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/assets",
-              {
-                "glob": "**/*",
-                "input": "./node_modules/@hyland/ui/assets/public",
-                "output": "./"
-              }
+              "src/favicon.svg",
+              "src/assets"
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "i18nPaths": [
-              "src/app"
-            ],
-            "i18nModules": [
-              "@hyland/ui",
-              "@hyland/ui-shell"
-            ],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "node_modules"
-              ]
-            }
+            "styles": ["node_modules/@angular/material/prebuilt-themes/indigo-pink.css","src/styles.scss"],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -63,8 +45,7 @@
                   "maximumError": "5mb"
                 }
               ],
-              "outputHashing": "all",
-              "silentRefresh": true
+              "outputHashing": "all"
             },
             "development": {
               "buildOptimizer": false,
@@ -83,14 +64,13 @@
                   "replace": "src/devtools/ngrx-devtools.ts",
                   "with": "src/devtools/ngrx-devtools.development.ts"
                 }
-              ],
-              "silentRefresh": true
+              ]
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@hylandsoftware/hy-ui-devkit:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "browserTarget": "admin_console_ui:build:production"
@@ -110,34 +90,17 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "src/polyfills.ts",
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "node_modules"
-              ]
-            }
+            "assets": ["src/favicon.svg", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

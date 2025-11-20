@@ -1,0 +1,18 @@
+.success-icon {
+  color: green;
+}
+
+.error-icon {
+  color: red;
+}
+
+.icon-text-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  button {
+    background: none;
+    border: none;
+    margin-top: 5px;
+  }
+}

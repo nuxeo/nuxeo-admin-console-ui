@@ -2,7 +2,7 @@ import { NuxeoJSClientService } from './shared/services/nuxeo-js-client.service'
 import { Component, OnDestroy, OnInit, ElementRef } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "./shared/services/persistence.service";
-import { Subscription, Observable } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { CommonService } from "./shared/services/common.service";
 import { WarningComponent } from "./features/warning/warning.component";
 import { Store, select } from "@ngrx/store";
@@ -18,14 +18,12 @@ import { APP_CONSTANTS } from './app.constants';
 })
 export class AppComponent implements OnInit, OnDestroy {
   loadApp = false;
-  loadAppSubscription = new Subscription();
   currentUser$: Observable<UserInterface | null | undefined>;
-  currentUserSubscription: Subscription = new Subscription();
   currentUser: UserInterface | null | undefined = undefined;
   baseUrl: string | null = null;
   readonly UNAUTHORIZED_MESSAGE = APP_CONSTANTS.UNAUTHORIZED_MESSAGE;
   readonly LOGIN_WITH_DIFFERENT_ACCOUNT = APP_CONSTANTS.LOGIN_WITH_DIFFERENT_ACCOUNT;
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     public persistenceService: PersistenceService,
@@ -40,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.nuxeoJsClientService.initiateJSClient(this.baseUrl);
-    this.currentUserSubscription = this.currentUser$.subscribe(user => {
+    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser?.isAdministrator) {
         const preferenceKey = `doNotWarn-${this.currentUser.id}`;
@@ -48,8 +46,9 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!doNotWarn) {
           this.dialogService.open(WarningComponent, {
             disableClose: true,
+            hasBackdrop: true
           });
-          this.loadAppSubscription = this.commonService.loadApp.subscribe(load => {
+          this.commonService.loadApp.pipe(takeUntil(this.destroy$)).subscribe((load) => {
             this.loadApp = load;
           });
         } else {
@@ -66,7 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loadAppSubscription.unsubscribe();
-    this.currentUserSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

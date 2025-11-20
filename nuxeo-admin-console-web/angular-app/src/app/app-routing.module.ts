@@ -55,9 +55,19 @@ export const appRoutes: Route[] = [
       ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
   {
-    path: "auth",
-    loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
+  path: "fulltext-reindex",
+    loadChildren: () =>
+      import(
+        "./features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.module"
+      ).then((m) => m.GenericMultiFeatureLayoutModule),
   },
+  {
+    path: "stream-management",
+      loadChildren: () =>
+        import(
+          "./features/stream/stream.module"
+        ).then((m) => m.StreamModule),
+    },
   { path: "**", redirectTo: "" },
 ];
 

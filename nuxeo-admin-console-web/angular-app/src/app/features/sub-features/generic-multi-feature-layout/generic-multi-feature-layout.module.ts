@@ -4,6 +4,7 @@ import { NXQLTabComponent } from "./components/nxql-tab/nxql-tab.component";
 import { FolderTabComponent } from "./components/folder-tab/folder-tab.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTabsModule } from "@angular/material/tabs";
 import { NgModule } from "@angular/core";
@@ -11,12 +12,9 @@ import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
 import { RouterModule } from "@angular/router";
-import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
 import { ReactiveFormsModule } from "@angular/forms";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -28,16 +26,16 @@ import { ReactiveFormsModule } from "@angular/forms";
   imports: [
     CommonModule,
     MatTabsModule,
-    HyMaterialModule,
-    HyFormContainerModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    HyMaterialTabsModule,
     MatProgressSpinnerModule,
     RouterModule,
     genericMultiFeatureLayoutRoutingModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatCheckboxModule
   ],
   exports: [GenericMultiFeatureLayoutComponent],
 })

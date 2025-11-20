@@ -2,8 +2,7 @@ import { GenericModalComponent } from './generic-modal.component';
 import { GENERIC_LABELS } from './../../generic-multi-feature-layout.constants';
 import { GenericModalData } from './../../generic-multi-feature-layout.interface';
 import { CommonService } from './../../../../../shared/services/common.service';
-import { HyDialogBoxModule } from "@hyland/ui";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
@@ -53,7 +52,7 @@ describe("GenericModalComponent", () => {
       declarations: [GenericModalComponent],
       imports: [
         CommonModule,
-        HyDialogBoxModule,
+        MatDialogModule,
         StoreModule.forRoot(provideMockStore),
       ],
       providers: [
@@ -99,10 +98,13 @@ describe("GenericModalComponent", () => {
   });
 
   it("should display a JavaScript alert indicating action ID has been copied to clipboard", async () => {
-    const clipboardWriteTextSpy = spyOn(
-      navigator.clipboard,
-      "writeText"
-    ).and.returnValue(Promise.resolve());
+    const clipboardWriteTextSpy = jasmine
+      .createSpy("writeText")
+      .and.returnValue(Promise.resolve());
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboardWriteTextSpy },
+      writable: true,
+    });
     const alertSpy = spyOn(window, "alert");
 
     await component.copyActionId();
@@ -123,5 +125,12 @@ describe("GenericModalComponent", () => {
       component.data.commandId
     );
     expect(closeDialogSpy).toHaveBeenCalled(); 
+  });
+
+  it("should emit continue: true & commandId when user chooses to continue", () => {
+    component.continueConsumerThreadPoolOperation();
+    expect(dialogRef.close).toHaveBeenCalledWith({
+      continue: true,
+    });
   });
 });

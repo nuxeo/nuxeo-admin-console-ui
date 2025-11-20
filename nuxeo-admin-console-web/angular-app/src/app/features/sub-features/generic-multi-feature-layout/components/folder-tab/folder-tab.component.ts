@@ -1,11 +1,17 @@
 import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generation/video-renditions-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { Store, select } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil} from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -44,18 +50,11 @@ import {
 })
 export class FolderTabComponent implements OnInit, OnDestroy {
   spinnerVisible = false;
-  spinnerStatusSubscription: Subscription = new Subscription();
   userInput = "";
   decodedUserInput = "";
   inputForm: FormGroup;
   folderActionLaunched$: Observable<ActionInfo>;
   folderActionError$: Observable<HttpErrorResponse | null>;
-  folderActionLaunchedSubscription = new Subscription();
-  folderActionErrorSubscription = new Subscription();
-  actionDialogClosedSubscription = new Subscription();
-  confirmDialogClosedSubscription = new Subscription();
-  launchedDialogClosedSubscription = new Subscription();
-  errorDialogClosedSubscription = new Subscription();
   launchedDialogRef: MatDialogRef<
     GenericModalComponent,
     GenericModalClosedInfo
@@ -68,13 +67,14 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   > = {} as MatDialogRef<GenericModalComponent, GenericModalClosedInfo>;
   GENERIC_LABELS = GENERIC_LABELS;
   VIDEO_RENDITIONS_LABELS = VIDEO_RENDITIONS_LABELS;
+  FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS
   nuxeo: Nuxeo;
   isSubmitBtnDisabled = false;
   templateConfigData: FeatureData = {} as FeatureData;
   templateLabels: labelsList = {} as labelsList;
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
-
+  private destroy$: Subject<void> = new Subject<void>();
   constructor(
     public dialogService: MatDialog,
     private fb: FormBuilder,
@@ -84,6 +84,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   ) {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
+      force: [false],
     });
     this.nuxeo = this.nuxeoJSClientService.getNuxeoInstance();
     this.folderActionLaunched$ = this.store.pipe(
@@ -92,12 +93,11 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     this.folderActionError$ = this.store.pipe(
       select((state) => state.folderAction?.error)
     );
-    this.spinnerStatusSubscription =
-      this.genericMultiFeatureUtilitiesService.spinnerStatus.subscribe(
-        (status) => {
-          this.spinnerVisible = status;
-        }
-      );
+    this.genericMultiFeatureUtilitiesService.spinnerStatus
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((status) => {
+        this.spinnerVisible = status;
+      });
   }
 
   ngOnInit(): void {
@@ -115,7 +115,12 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         this.templateLabels.pageTitle
       );
     }
-
+    if(this.isFeatureFullTextReindex()) {
+      this.inputForm.addControl(
+        FULLTEXT_REINDEX_LABELS.FORCE,
+        new FormControl("false")
+      );
+    }
     if (this.isFeatureVideoRenditions()) {
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
@@ -123,18 +128,19 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       );
       this.inputForm.addControl(
         VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
-        new FormControl("true")
+        new FormControl("false")
       );
     }
 
-    this.folderActionLaunchedSubscription =
-      this.folderActionLaunched$.subscribe((data) => {
+    this.folderActionLaunched$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
         if (data?.commandId) {
           this.showActionLaunchedModal(data?.commandId);
         }
       });
 
-    this.folderActionErrorSubscription = this.folderActionError$.subscribe(
+    this.folderActionError$.pipe(takeUntil(this.destroy$)).subscribe(
       (error) => {
         if (error) {
           this.showActionErrorModal({
@@ -150,6 +156,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     this.genericMultiFeatureUtilitiesService.spinnerStatus.next(false);
     this.errorDialogRef = this.dialogService.open(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -157,10 +164,23 @@ export class FolderTabComponent implements OnInit, OnDestroy {
         userInput: this.userInput,
       },
     });
-    this.errorDialogClosedSubscription = this.errorDialogRef
+    this.errorDialogRef
       ?.afterClosed()
-      ?.subscribe(() => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.onActionErrorModalClose();
+      });
+
+    this.errorDialogRef
+      .afterOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
       });
   }
 
@@ -173,6 +193,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   showActionLaunchedModal(commandId: string | null): void {
     this.launchedDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -183,18 +204,31 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.launchedDialogClosedSubscription = this.launchedDialogRef
+    this.launchedDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onActionLaunchedModalClose();
+      });
+
+    this.launchedDialogRef
+      .afterOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
       });
   }
 
   onActionLaunchedModalClose(): void {
     this.isSubmitBtnDisabled = false;
-    this.inputForm?.get('inputIdentifier')?.reset();
+    this.inputForm?.get("inputIdentifier")?.reset();
     if (this.isFeatureVideoRenditions()) {
-      this.inputForm?.get('conversionNames')?.reset();
+      this.inputForm?.get("conversionNames")?.reset();
     }
     document.getElementById("inputIdentifier")?.focus();
   }
@@ -349,6 +383,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   showConfirmationModal(documentCount: number): void {
     this.confirmDialogRef = this.dialogService.open(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -362,10 +397,23 @@ export class FolderTabComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.confirmDialogClosedSubscription = this.confirmDialogRef
+    this.confirmDialogRef
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.onConfirmationModalClose(data);
+      });
+
+    this.confirmDialogRef
+      .afterOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const dialogElement = document.querySelector(
+          ".cdk-dialog-container"
+        ) as HTMLElement;
+        if (dialogElement) {
+          dialogElement.focus();
+        }
       });
   }
 
@@ -412,13 +460,16 @@ export class FolderTabComponent implements OnInit, OnDestroy {
     );
   }
 
+  isFeatureFullTextReindex(): boolean {
+    return (
+      this.activeFeature ===
+      (FEATURES.FULLTEXT_REINDEX as FeaturesKey)
+    );
+  }
+
   ngOnDestroy(): void {
     this.store.dispatch(FeatureActions.resetFolderActionState());
-    this.folderActionLaunchedSubscription?.unsubscribe();
-    this.folderActionErrorSubscription?.unsubscribe();
-    this.confirmDialogClosedSubscription?.unsubscribe();
-    this.launchedDialogClosedSubscription?.unsubscribe();
-    this.errorDialogClosedSubscription?.unsubscribe();
-    this.spinnerStatusSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

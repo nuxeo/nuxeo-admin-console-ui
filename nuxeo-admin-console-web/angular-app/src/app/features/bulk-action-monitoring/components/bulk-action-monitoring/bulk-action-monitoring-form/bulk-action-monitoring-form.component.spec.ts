@@ -134,6 +134,7 @@ describe("BulkActionMonitoringFormComponent", () => {
       component.showBulkActionErrorModal(error);
       expect(mockDialog.open).toHaveBeenCalledWith(ErrorModalComponent, {
         disableClose: true,
+        hasBackdrop: true,
         height: MODAL_DIMENSIONS.HEIGHT,
         width: MODAL_DIMENSIONS.WIDTH,
         data: { error },
@@ -176,24 +177,27 @@ describe("BulkActionMonitoringFormComponent", () => {
   });
 
   describe("ngOnDestroy", () => {
-    it("should unsubscribe from all subscriptions", () => {
-      spyOn(component.bulkActionLaunchedSubscription, "unsubscribe");
-      spyOn(component.bulkActionErrorSubscription, "unsubscribe");
-      spyOn(component.errorDialogClosedSubscription, "unsubscribe");
+    it("should complete destroy$ subject and dispatch resetBulkActionMonitorState", () => {
+      spyOn(component["destroy$"], "next").and.callThrough();
+      spyOn(component["destroy$"], "complete").and.callThrough();
       spyOn(store, "dispatch");
       component.ngOnDestroy();
-      expect(
-        component.bulkActionLaunchedSubscription.unsubscribe
-      ).toHaveBeenCalled();
-      expect(
-        component.bulkActionErrorSubscription.unsubscribe
-      ).toHaveBeenCalled();
-      expect(
-        component.errorDialogClosedSubscription.unsubscribe
-      ).toHaveBeenCalled();
+      expect(component["destroy$"].next).toHaveBeenCalled();
+      expect(component["destroy$"].complete).toHaveBeenCalled();
       expect(store.dispatch).toHaveBeenCalledWith(
         BulkActionMonitoringActions.resetBulkActionMonitorState()
       );
     });
+  });
+  it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+    let unsubscribed = false;
+    component["destroy$"].subscribe({
+      complete: () => {
+        unsubscribed = true;
+      },
+    });
+    component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
   });
 });

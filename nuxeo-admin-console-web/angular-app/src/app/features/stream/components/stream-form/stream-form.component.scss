@@ -1,0 +1,247 @@
+.stream-form-container {
+  padding: 10px 0px 0px 10px;
+
+  .required-indicator {
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans", sans-serif;
+    padding-left: 2px;
+  }
+
+  #requiredField {
+    font-size: 14px;
+    color: rgb(218, 21, 0);
+    font-family: "Open Sans";
+    line-height: 1;
+  }
+
+  .label {
+    line-height: 1;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: "Open Sans", sans-serif;
+  }
+
+  .label.form-param {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  &--stream-container {
+    margin-top: 20px;
+  }
+
+  &--position-container {
+    display: flex;
+    flex-direction: column;
+
+    #position {
+      margin-top: 20px;
+      margin-left: -5px;
+
+      mat-form-field.input-field.stream-field {
+        width: 300px;
+        max-width: 300px;
+      }
+    }
+
+    .radio-group-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 35px;
+      justify-content: flex-start;
+
+      mat-radio-button {
+        display: flex;
+        align-items: center;
+        min-width: 130px;
+        height: 40px;
+      }
+
+      mat-radio-button:not(.complex-radio) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 40px;
+      }
+
+      mat-radio-button.complex-radio {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 40px;
+      }
+
+      .input-field.stream-field {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        max-height: 40px;
+        min-width: 120px;
+      }
+
+      .offset-partition-field {
+        width: 80px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        display: flex;
+        align-items: center;
+
+        .mat-mdc-text-field-wrapper {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+          display: flex;
+          align-items: center;
+        }
+
+        .mat-mdc-form-field-infix {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+        }
+
+        input {
+          width: 80px !important;
+          height: 40px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 700px) {
+        flex-direction: column;
+      }
+    }
+
+    .complex-radio {
+      display: flex;
+      align-items: center;
+
+      .radio-content {
+        display: flex;
+        gap: 12px;
+      }
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .offset-partition-field {
+        width: 80px !important;
+        height: 40px !important;
+
+        .mat-mdc-text-field-wrapper,
+        .mat-mdc-form-field-infix {
+          height: 40px !important;
+          min-height: 40px !important;
+          padding: 0 !important;
+          display: flex;
+          align-items: center;
+        }
+
+        input {
+          width: 80px !important;
+          height: 40px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  &--actions {
+    margin-top: 120px;
+    margin-left: -20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  &__button {
+    border-radius: 4px !important;
+    width: 140px;
+    height: 45px;
+    position: relative;
+    left: 20px;
+    font-size: 16px;
+    bottom: 30px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 550;
+    letter-spacing: normal;
+    background-color: #0a60ce;
+    color: #fff;
+  }
+
+  &__consumer-thread-pool-button {
+    @extend .stream-form-container__button;
+    width: max-content !important; // Override width for this button
+  }
+
+  .stream-form-container--config-container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 70px;
+    margin-left: 5px;
+
+    .config-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 140px;
+    }
+
+    .label {
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .config-group {
+        flex-direction: column;
+        gap: 12px;
+
+        .field-group {
+          margin-bottom: 35px;
+          margin-left: 12px;
+        }
+      }
+    }
+  }
+}
+
+.mat-mdc-unelevated-button[disabled],
+.mat-mdc-unelevated-button.mat-mdc-button-disabled {
+  cursor: default;
+  pointer-events: none;
+  color: var(--mdc-filled-button-disabled-label-text-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent));
+  background-color: var(--mdc-filled-button-disabled-container-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent));
+}
+
+.mat-mdc-radio-button.mat-accent {
+  --mdc-radio-selected-focus-icon-color: #3f51b5;
+  --mdc-radio-selected-hover-icon-color: #3f51b5;
+  --mdc-radio-selected-icon-color: #3f51b5;
+  --mdc-radio-selected-pressed-icon-color: #3f51b5;
+  --mat-radio-checked-ripple-color: #3f51b5;
+}

@@ -52,7 +52,7 @@ export const GENERIC_LABELS = {
 
 export const MODAL_DIMENSIONS = {
   HEIGHT: "320px",
-  WIDTH: "550px",
+  WIDTH: "560px",
 };
 
 export const ERROR_TYPES = {
@@ -71,7 +71,7 @@ export const ERROR_MESSAGES = {
     "Invalid document ID or path. Please enter a valid ID or path.",
   INVALID_DOC_ID_MESSAGE: "Invalid document ID. Please enter a valid ID.",
   INVALID_QUERY_MESSAGE: "Invalid query. Please enter a valid query.",
-  NO_DOCUMENT_ID_FOUND_MESSAGE: "Document with ID <documentID> was not found.",
+  NO_DOCUMENT_ID_FOUND_MESSAGE: "No documents were found to be processed.",
   NO_MATCHING_QUERY_MESSAGE:
     "No document matches that query. Please try again with a different query.",
   UNKNOWN_ERROR_MESSAGE: "An unknown error occured.",

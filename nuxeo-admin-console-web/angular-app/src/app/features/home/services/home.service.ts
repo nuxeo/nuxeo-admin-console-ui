@@ -1,19 +1,17 @@
 import { CapabilitiesResponse } from "./../../../shared/types/capabilities.interface";
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { NuxeoJSClientService } from "../../../shared/services/nuxeo-js-client.service";
 import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
 import { NetworkService } from "../../../shared/services/network.service";
+import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
 
 @Injectable({
   providedIn: "root",
 })
 export class HomeService {
+
   constructor(
-    private http: HttpClient,
-    private nuxeoJsClientService: NuxeoJSClientService,
-    private networkService: NetworkService
+    private networkService: NetworkService,
   ) {}
 
   getVersionInfo(): Observable<CapabilitiesResponse> {
@@ -22,4 +20,9 @@ export class HomeService {
     );
   }
 
+  getInstanceInfo(): Observable<InstanceInfo> {
+    return this.networkService.makeHttpRequest<InstanceInfo>(
+      REST_END_POINTS.INSTANCE_INFO
+    );
+  }
 }

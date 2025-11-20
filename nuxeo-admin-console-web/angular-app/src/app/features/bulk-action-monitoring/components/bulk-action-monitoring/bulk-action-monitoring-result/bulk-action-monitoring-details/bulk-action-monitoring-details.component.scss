@@ -29,26 +29,16 @@
 
   &__additional-info {
     margin-left: 10px;
-    width: 74%;
+    width: 75%;
     height: 220px;
-  }
 
-  .mat-mdc-card-content {
-    width: 100%;
-    height: 100%;
-    padding: 0;
+    .title {
+      margin-top: -17px;
+    }
   }
 }
 
-::ng-deep .hy-content-list__custom-cell {
-  max-height: none !important;
-  height: auto;
-}
-::ng-deep .hy-content-list__virtual-scroll-viewport {
-  height: 90% !important;
-}
-
-@media (max-width: 962px) {
+@media (max-width: 1024px) {
   .bulk-action-details {
     flex-direction: column;
     align-items: center;

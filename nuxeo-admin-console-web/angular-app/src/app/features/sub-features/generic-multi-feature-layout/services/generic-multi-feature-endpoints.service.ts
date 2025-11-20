@@ -20,10 +20,14 @@ export class GenericMultiFeatureEndpointsService {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
       /*
-        No params for queryParam since, the only param, i.e. 'query' is appended to the url
+        Only include query param when requestUrl is not null
        & no request url for bodyParam, since endpoint is already sent as the 1st parameter here, and query is part of body params
       */
-      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
+      { 
+        queryParam: requestUrl ? { query: requestUrl } : {}, 
+        bodyParam: requestParams, 
+        requestHeaders 
+      }
     );
   }
 
@@ -36,10 +40,14 @@ export class GenericMultiFeatureEndpointsService {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
       /*
-        No params for queryParam since, the only param, i.e. 'query' is appended to the url
+        Only include query param when requestUrl is not null
        & no request url for bodyParam, since endpoint is already sent as the 1st parameter here, and query is part of body params
       */
-      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
+      { 
+        queryParam: requestUrl ? { query: requestUrl } : {}, 
+        bodyParam: requestParams, 
+        requestHeaders 
+      }
     );
   }
 
@@ -51,7 +59,11 @@ export class GenericMultiFeatureEndpointsService {
   ): Observable<ActionInfo> {
     return this.networkService.makeHttpRequest<ActionInfo>(
       REST_END_POINTS[featureEndpoint as keyof typeof REST_END_POINTS],
-      { queryParam: { requestUrl }, bodyParam: requestParams, requestHeaders }
+      { 
+        queryParam: requestUrl ? { query: requestUrl } : {}, 
+        bodyParam: requestParams, 
+        requestHeaders 
+      }
     );
   }
 }

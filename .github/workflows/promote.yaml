@@ -1,5 +1,13 @@
 name: Promote release
 
+permissions:
+  # Required to checkout code, create tags, create releases and push commits
+  contents: write
+  # Required to create pull requests during promotion process
+  pull-requests: write
+  # Required to upload artifacts and publish packages
+  packages: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,11 +24,11 @@ on:
         required: true
 
 jobs:
-  promote:
+  promote-v23:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    # Job-specific permissions are not needed as they inherit from workflow-level permissions
+    outputs:
+      version: ${{ env.VERSION }}
       
     steps:
       - uses: actions/setup-node@v4
@@ -143,36 +151,6 @@ jobs:
                 exit 0
             fi  
 
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GIT_TOKEN }}
-          ref: dev
-
-      - name: New Version (Always Minor)
-        run: echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
-
-
-      - name: Align dev branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          pushd nuxeo-admin-console-web/angular-app
-          echo "OLD_SNAPSHOT=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV
-          popd
-          # bump version to next SNAPSHOT 
-          NEW_SNAPSHOT=$NEW_VERSION-SNAPSHOT
-          pushd nuxeo-admin-console-web/angular-app
-          npm version $NEW_SNAPSHOT --no-git-tag-version
-          popd
-      - run: |
-          NEW_SNAPSHOT="$NEW_VERSION-SNAPSHOT"
-          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\|xml\)" -exec sed -i 's/'"$OLD_SNAPSHOT"'/'"$NEW_SNAPSHOT"'/g' {} \;
-          # commit and push
-          git commit -a -m "Update $OLD_SNAPSHOT to $NEW_SNAPSHOT"
-
-      - if: ${{ github.event.inputs.dryRun == 'false' }}
-        run: git push origin dev
-
       - name: Output Release Details in Markdown Summary
         if: ${{ github.event.inputs.dryRun == 'false' }}
         run: |
@@ -193,6 +171,201 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "### Note" >> $GITHUB_STEP_SUMMARY
-          echo "The release process is completed. Please wait for the new snapshot to be generated." >> $GITHUB_STEP_SUMMARY
-          echo "New snapshot: **${{ env.NEW_VERSION }}-SNAPSHOT**" >> $GITHUB_STEP_SUMMARY
-          echo "If there are any hotfix changes in the **main** branch, merge those changes into the **dev** branch once the new snapshot is generated." >> $GITHUB_STEP_SUMMARY
+        
+
+  promote-v25:
+    needs: [promote-v23]
+    runs-on: ubuntu-latest
+    steps:
+      # Keep same setup steps
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+        with:
+          # Convert v23 input to v25
+          ref: v${{ github.event.inputs.version }}
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Install semver
+        run: npm install -g semver
+
+      - name: Convert to v25 version and set versions
+        id: convert-v25
+        run: |
+          # Get input and convert to v25
+          INPUT_VERSION='${{ github.event.inputs.version }}'
+          echo "Input version received: $INPUT_VERSION"
+          
+          # Convert to v25
+          V25_VERSION=$(echo "$INPUT_VERSION" | sed 's/^23/25/')
+          echo "Converting $INPUT_VERSION to $V25_VERSION"
+          echo "V25_VERSION=$V25_VERSION" >> $GITHUB_ENV
+          
+          # Verify conversion
+          if [[ ! "$V25_VERSION" =~ ^25\. ]]; then
+            echo "❌ Version conversion failed"
+            exit 1
+          fi
+          echo "✅ Version successfully converted to: $V25_VERSION"
+          
+          # Set final version without beta
+          VERSION=$(echo "$V25_VERSION" | sed -e 's/-beta.[0-9]*//')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # Debug all version variables
+          echo "Input version: $INPUT_VERSION"
+          echo "V25_VERSION: $V25_VERSION"
+          echo "Final VERSION: $VERSION"
+
+      - name: Update Nuxeo Admin Console UI version to ${{ env.VERSION }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Debug version environment variables
+          echo "env.VERSION: ${{ env.VERSION }}"
+          echo "env.V25_VERSION: ${{ env.V25_VERSION }}"
+          
+          # Rest of update steps
+          pushd nuxeo-admin-console-web/angular-app
+          OLD_VERSION=$(npx -c 'echo "$npm_package_version"')
+          echo "OLD_VERSION: $OLD_VERSION"
+          npm version ${{ env.VERSION }} --no-git-tag-version
+          popd
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\|xml\)" -exec sed -i 's/'"$OLD_VERSION"'/'"$VERSION"'/g' {} \;
+          # Update to 2023.0  instead of 2025.0 parent version
+          sed -i -e '/<parent>/,/<\/parent>/ s/<version>.*<\/version>/<version>2023.0<\/version>/g' pom.xml
+
+      - name: Perform git release of Nuxeo Admin Console UI ${{ env.VERSION }}
+        run: |
+          git commit -a -m "Release $VERSION"
+          git tag -a v$VERSION -m "Release $VERSION"
+
+      - name: Push git release
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: |
+          git push https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/nuxeo/nuxeo-admin-console-ui.git v$VERSION
+
+      - name: Create Github release v${{ env.VERSION }}
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }} (LTS 2025)
+          
+      - name: Promote Admin Console UI to PreProd and Prod
+        run: |
+          PACKAGE="nuxeo-admin-console-${{ env.VERSION }}"
+          # Use V25_VERSION instead of github.event.inputs.version
+          PADDED=$(printf '%03d' $(echo ${{ env.V25_VERSION }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-beta\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{ env.V25_VERSION }} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-beta\.)[0-9]+/\\1$PADDED/g")
+
+          # Download from PreProd using v25 padded version
+          curl -o $PACKAGE.zip -L -u "${{ secrets.CONNECT_PREPROD_AUTH }}" "https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/marketplace/package/nuxeo-admin-console/download?version=$PADDED_VERSION"
+          
+          # Process package
+          unzip -d $PACKAGE $PACKAGE.zip && rm $PACKAGE.zip
+          pushd $PACKAGE
+          if [ "${{ github.event.inputs.isMinorRelease }}" != "true" ]; then
+            sed -i "s/$PADDED_VERSION/${{ env.VERSION }}/g" package.xml
+          else
+            sed -i 's/-beta.[0-9]*//' package.xml
+          fi
+          
+          # Update JAR versions
+          for f in install/bundles/*.jar; do 
+            if [ "${{ github.event.inputs.isMinorRelease }}" != "true" ]; then
+              mv $f $(echo $f | sed -e "s/$PADDED_VERSION/${{ env.VERSION }}/")
+            else
+              mv $f $(echo $f | sed -e 's/-beta.[0-9]*//')
+            fi
+          done
+          zip -r ../$PACKAGE.zip .
+          popd
+
+      - name: Push to Connect PreProd and Prod
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: |
+          PACKAGE="nuxeo-admin-console-${{env.VERSION}}.zip"
+          
+          # Push to PreProd
+          echo "Publishing to PreProd..."
+          STATUS_CODE=$(curl -i -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/marketplace/upload?batch=true" -w "%{http_code}" -o response.txt)
+          cat response.txt
+          if [[ "$STATUS_CODE" != "200" ]]; then
+            echo "PreProd upload failed"
+            exit 1
+          fi
+          
+          # Push to Prod
+          echo "Publishing to Prod..."
+          STATUS_CODE=$(curl -i -u "${{ secrets.CONNECT_AUTH }}" -F package=@$PACKAGE "https://connect.nuxeo.com/nuxeo/site/marketplace/upload?batch=true" -w "%{http_code}" -o response.txt)
+          cat response.txt
+          if [[ "$STATUS_CODE" != "200" ]]; then
+            echo "Prod upload failed"
+            exit 1
+          fi
+
+      - name: Output v25 Release Details in Markdown Summary
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: |
+          echo "## 🚀 Nuxeo Admin Console v25 Release Successful" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### LTS 2025 Release Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release Version:** ${{env.VERSION}}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pre-Release Version:** ${{ env.V25_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verification" >> $GITHUB_STEP_SUMMARY
+          echo "Please verify that the v25 package is available in the marketplace:" >> $GITHUB_STEP_SUMMARY
+          echo "[Nuxeo Admin Console Package on Marketplace](https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-admin-console)" >> $GITHUB_STEP_SUMMARY
+
+  update-dev-version:
+    needs: [promote-v23, promote-v25]
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.dryRun == 'false' }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          ref: dev
+
+      - run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
+
+      - name: Install semver
+        run: npm install -g semver
+
+      - name: Calculate New Version
+        run: |
+          VERSION=${{ needs.promote-v23.outputs.version }}
+          echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
+
+      - name: Update dev branch to next SNAPSHOT version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          OLD_VERSION=${{ needs.promote-v23.outputs.version }}
+          OLD_SNAPSHOT="${OLD_VERSION}-SNAPSHOT"
+          NEW_SNAPSHOT="${NEW_VERSION}-SNAPSHOT"
+          
+          pushd nuxeo-admin-console-web/angular-app
+          npm version $NEW_SNAPSHOT --no-git-tag-version
+          popd
+          
+          find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\|xml\)" -exec sed -i 's/'"$OLD_SNAPSHOT"'/'"$NEW_SNAPSHOT"'/g' {} \;
+          git commit -a -m "Update $OLD_SNAPSHOT to $NEW_SNAPSHOT"
+          git push origin dev
+
+      - name: Output Version Update Summary
+        run: |
+          echo "## 📦 Dev Branch Version Update" >> $GITHUB_STEP_SUMMARY
+          echo "Successfully updated dev branch to next SNAPSHOT version" >> $GITHUB_STEP_SUMMARY
+          echo "- **New Version:** ${{ env.NEW_VERSION }}-SNAPSHOT" >> $GITHUB_STEP_SUMMARY

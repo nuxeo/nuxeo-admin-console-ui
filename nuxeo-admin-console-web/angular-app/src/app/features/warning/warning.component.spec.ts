@@ -1,5 +1,4 @@
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { HyDialogBoxModule } from "@hyland/ui";
 import { MatDialogModule } from "@angular/material/dialog";
 import { WarningComponent } from "./warning.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -44,7 +43,6 @@ describe("WarningComponent", () => {
       imports: [
         CommonModule,
         MatDialogModule,
-        HyDialogBoxModule,
         MatCheckboxModule,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -103,6 +101,28 @@ describe("WarningComponent", () => {
       component.onConfirm();
       expect(commonServiceLoadAppEmitSpy).toHaveBeenCalledWith(true);
       expect(component.dialogService.closeAll).toHaveBeenCalled();
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it('should unsubscribe from observables on destroy', () => {
+      spyOn((component as any).destroy$, 'next');
+      spyOn((component as any).destroy$, 'complete');
+      component.ngOnDestroy();
+      expect((component as any).destroy$.next).toHaveBeenCalled();
+      expect((component as any).destroy$.complete).toHaveBeenCalled();
+    });
+
+    it("should unsubscribe from all subscriptions", (done) => {
+      let unsubscribed = false;
+      (component as any).destroy$.subscribe({
+        complete: () => {
+          unsubscribed = true;
+        },
+      });
+      component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
     });
   });
 });

@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
+import { APP_CONSTANTS } from "src/app/app.constants";
 import {
   REST_END_POINT_CONFIG,
   REST_END_POINTS,
@@ -16,11 +17,23 @@ export class NetworkService {
   constructor(
     private http: HttpClient,
     private nuxeoJsClientService: NuxeoJSClientService
-  ) {}
+  ) { }
 
   getAPIEndpoint = (name: EndpointName): string => {
-    const config = REST_END_POINT_CONFIG[name];
-    if (name === REST_END_POINTS.LOGOUT) {
+    let endPointName = name;
+    if (endPointName === REST_END_POINTS.ELASTIC_SEARCH_REINDEX) {
+      if (
+        this.nuxeoJsClientService.getPlatformMajorVersion() &&
+        this.nuxeoJsClientService.getPlatformMajorVersion() <
+          APP_CONSTANTS.PLATFORM_VERSIONS.LTS_2025
+      ) {
+        endPointName = REST_END_POINTS.ELASTIC_SEARCH_REINDEX_OLD;
+      }
+    }
+
+    const config = REST_END_POINT_CONFIG[endPointName];
+
+    if (endPointName === REST_END_POINTS.LOGOUT) {
       return `${this.nuxeoJsClientService.getBaseUrl()}${config.endpoint}`;
     }
     return `${this.nuxeoJsClientService.getApiUrl()}${config.endpoint}`;
@@ -43,14 +56,20 @@ export class NetworkService {
       });
       delete data["urlParam"];
     }
-
     if (data?.["queryParam"]) {
-      const queryParam = data["queryParam"] as { requestUrl: string };
-      if (queryParam["requestUrl"] !== "") {
-        url += `?query=${queryParam["requestUrl"]}`;
-        delete data["queryParam"];
+      const queryParams = data["queryParam"] as Record<
+        string,
+        unknown
+      >;
+      const queryString = Object.entries(queryParams)
+        .map(([key, value]) => `${key}=${String(value)}`)
+        .join("&");
+      if (queryString) {
+        url += url.includes("?") ? `&${queryString}` : `?${queryString}`;
       }
+      delete data["queryParam"];
     }
+
 
     switch (method) {
       case "POST":
@@ -59,14 +78,12 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "PUT":
         return this.http.put<T>(url, data || {}, {
           headers: data?.["requestHeaders"]
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "DELETE":
         return this.http.delete<T>(url, {
           body: data,
@@ -74,7 +91,6 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
       case "GET":
         if (data) {
           Object.keys(data).forEach((key) => {
@@ -87,7 +103,7 @@ export class NetworkService {
             ? new HttpHeaders(data?.["requestHeaders"] as Record<string, never>)
             : {},
         });
-        break;
+
       default:
         throw new Error(`Unsupported HTTP method: ${method}`);
     }

@@ -5,11 +5,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
-  HyFormContainerModule,
-  HyMaterialModule,
-  HyMaterialTabsModule,
-} from "@hyland/ui";
-import {
   MatDialog,
   MatDialogRef,
   MatDialogModule,
@@ -18,12 +13,13 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import {  StoreModule } from "@ngrx/store";
-import { BehaviorSubject, of } from "rxjs";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { BehaviorSubject, of, Subject } from "rxjs";
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
 import {
+  ERROR_MESSAGES,
   ERROR_TYPES,
   GENERIC_LABELS,
   MODAL_DIMENSIONS,
@@ -35,6 +31,8 @@ import { ErrorModalComponent } from "../error-modal/error-modal.component";
 import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
+import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
+import { VIDEO_RENDITIONS_LABELS } from "src/app/features/video-renditions-generation/video-renditions-generation.constants";
 
 describe("DocumentTabComponent", () => {
   let component: DocumentTabComponent;
@@ -68,7 +66,15 @@ describe("DocumentTabComponent", () => {
     }
 
     handleErrorJson(): void {
-     return ;
+      return;
+    }
+
+    buildRequestQuery(): void {
+      return;
+    }
+
+    buildRequestParams(): void {
+      return;
     }
   }
 
@@ -83,8 +89,9 @@ describe("DocumentTabComponent", () => {
       },
       error: null,
     };
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
+    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed", "afterOpened"]);
     mockDialogRef.afterClosed.and.returnValue(of({}));
+    mockDialogRef.afterOpened.and.returnValue(of());
 
     dialogService = jasmine.createSpyObj("MatDialog", ["open"]);
     dialogService.open.and.returnValue(mockDialogRef);
@@ -94,13 +101,10 @@ describe("DocumentTabComponent", () => {
         BrowserAnimationsModule,
         CommonModule,
         MatTabsModule,
-        HyMaterialModule,
-        HyFormContainerModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        HyMaterialTabsModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
       ],
@@ -156,6 +160,7 @@ describe("DocumentTabComponent", () => {
     expect(showActionLaunchedModalSpy).toHaveBeenCalledWith(commandId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -217,30 +222,14 @@ describe("DocumentTabComponent", () => {
 
   it("should dispatch resetDocumentActionState and unsubscribe from subscriptions on ngOnDestroy", () => {
     const dispatchSpy = spyOn(store, "dispatch");
-    spyOn(component.documentActionLaunchedSubscription, "unsubscribe");
-    spyOn(component.documentActionErrorSubscription, "unsubscribe");
-    spyOn(component.actionDialogClosedSubscription, "unsubscribe");
-    spyOn(component.launchedDialogClosedSubscription, "unsubscribe");
-    spyOn(component.errorDialogClosedSubscription, "unsubscribe");
+    spyOn((component as any).destroy$, "next");
+    spyOn((component as any).destroy$, "complete");
     component.ngOnDestroy();
+    expect((component as any).destroy$.next).toHaveBeenCalled();
+    expect((component as any).destroy$.complete).toHaveBeenCalled();
     expect(dispatchSpy).toHaveBeenCalledWith(
       FeatureActions.resetDocumentActionState()
     );
-    expect(
-      component.documentActionLaunchedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.documentActionErrorSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.actionDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.launchedDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
-    expect(
-      component.errorDialogClosedSubscription.unsubscribe
-    ).toHaveBeenCalled();
   });
 
 
@@ -284,6 +273,7 @@ describe("DocumentTabComponent", () => {
 
     expect(dialogService.open).toHaveBeenCalledWith(ErrorModalComponent, {
       disableClose: true,
+      hasBackdrop: true,
       height: MODAL_DIMENSIONS.HEIGHT,
       width: MODAL_DIMENSIONS.WIDTH,
       data: {
@@ -308,8 +298,249 @@ describe("DocumentTabComponent", () => {
       const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.DOCUMENT);
       expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_THUMBNAIL_GENERATION_TITLE);
       expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
-      expect(result.data.bodyParam.query).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY);
     });
   });
 
+  describe('FEATURES.FULLTEXT_REINDEX', () => {
+    it('should return correct labels and data for DOCUMENT tabType', () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.DOCUMENT);
+      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.DOCUMENT_REINDEX_TITLE);
+      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
+    });
+  });
+
+  describe("ngOnInit", () => {
+    let addControlSpy: jasmine.Spy;
+    beforeEach(() => {
+      spyOn(component, "showActionLaunchedModal");
+      spyOn(component, "showActionErrorModal");
+      addControlSpy = spyOn(
+        component.inputForm,
+        "addControl"
+      ).and.callThrough();
+      spyOn(
+        genericMultiFeatureUtilitiesService,
+        "getActiveFeature"
+      ).and.returnValue("elasticsearch-reindex" as any);
+    });
+
+    it("should call showActionLaunchedModal when documentActionLaunched$ emits with commandId", () => {
+      const commandId = "mockCommandId";
+      (component as any).documentActionLaunched$ = of({ commandId });
+      (component as any).documentActionError$ = of(null);
+      component.ngOnInit();
+      expect(component.showActionLaunchedModal).toHaveBeenCalledWith(commandId);
+    });
+
+    it("should call showActionErrorModal when documentActionError$ emits with error", () => {
+      const error = { status: 500, message: "Server error" };
+      (component as any).documentActionLaunched$ = of(null);
+      (component as any).documentActionError$ = of(error);
+      component.ngOnInit();
+      expect(component.showActionErrorModal).toHaveBeenCalledWith({
+        type: ERROR_TYPES.SERVER_ERROR,
+        details: { status: error.status, message: error.message },
+      });
+    });
+
+    it("should not call showActionLaunchedModal if documentActionLaunched$ emits without commandId", () => {
+      (component as any).documentActionLaunched$ = of({});
+      (component as any).documentActionError$ = of(null);
+      component.ngOnInit();
+      expect(component.showActionLaunchedModal).not.toHaveBeenCalled();
+    });
+
+    it("should not call showActionErrorModal if documentActionError$ emits null", () => {
+      (component as any).documentActionLaunched$ = of(null);
+      (component as any).documentActionError$ = of(null);
+      component.ngOnInit();
+      expect(component.showActionErrorModal).not.toHaveBeenCalled();
+    });
+
+
+    it("should add force control if feature is FULLTEXT_REINDEX", () => {
+      spyOn(component, "isFeatureFullTextReindex").and.returnValue(true);
+      component.ngOnInit();
+      expect(addControlSpy).toHaveBeenCalledWith(
+        FULLTEXT_REINDEX_LABELS.FORCE,
+        jasmine.any(FormControl)
+      );
+    });
+
+    it("should add video renditions controls if feature is VIDEO_RENDITIONS_GENERATION", () => {
+      spyOn(component, "isFeatureFullTextReindex").and.returnValue(false);
+      spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+      component.activeFeature = FEATURES.VIDEO_RENDITIONS_GENERATION as any;
+      component.ngOnInit();
+      expect(addControlSpy).toHaveBeenCalledWith(
+        VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
+        jasmine.any(FormControl)
+      );
+      expect(addControlSpy).toHaveBeenCalledWith(
+        VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
+        jasmine.any(FormControl)
+      );
+    });
+  });
+
+  it("should call focus on .cdk-dialog-container when showActionErrorModal dialog is opened", () => {
+    const mockDialogElement = document.createElement("div");
+    mockDialogElement.classList.add("cdk-dialog-container");
+    const focusSpy = spyOn(mockDialogElement, "focus");
+    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const afterOpened$ = new Subject<void>();
+    const afterClosed$ = new Subject<void>();
+    const mockDialogRef = {
+      afterOpened: () => afterOpened$.asObservable(),
+      afterClosed: () => afterClosed$.asObservable(),
+    } as MatDialogRef<ErrorModalComponent>;
+    dialogService.open.and.returnValue(mockDialogRef);
+    const mockError: ErrorDetails = { message: "Test", code: "Error" } as any;
+    component.showActionErrorModal(mockError);
+    afterOpened$.next();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("should call focus on .cdk-dialog-container when showActionLaunchedModal dialog is opened", () => {
+    const mockDialogElement = document.createElement("div");
+    mockDialogElement.classList.add("cdk-dialog-container");
+    const focusSpy = spyOn(mockDialogElement, "focus");
+    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const afterOpened$ = new Subject<void>();
+    const afterClosed$ = new Subject<void>();
+    const mockDialogRef = {
+      afterOpened: () => afterOpened$.asObservable(),
+      afterClosed: () => afterClosed$.asObservable(),
+    } as MatDialogRef<ErrorModalComponent>;
+    dialogService.open.and.returnValue(mockDialogRef);
+    const commandId = "mockCommandId";
+    component.showActionLaunchedModal(commandId);
+    afterOpened$.next();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("should reset conversionNames, force, form controls", () => {
+    spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+    spyOn(component, "isFeatureFullTextReindex").and.returnValue(true);
+    const control = new FormControl("");
+    const resetSpy = spyOn(control, "reset");
+    component.inputForm = new FormGroup({
+      conversionNames: control,
+      force: control,
+    });
+    component.onActionLaunchedModalClose();
+    expect(resetSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("should unsubscribe from all subscriptions", (done) => {
+    let unsubscribed = false;
+    (component as any).destroy$.subscribe({
+      complete: () => {
+        unsubscribed = true;
+      },
+    });
+    component.ngOnDestroy();
+      expect(unsubscribed).toBeTrue();
+      done();
+  });
+
+  it("should show error modal if decodeURIComponent throws", () => {
+    component.inputForm = new FormBuilder().group({
+      inputIdentifier: ["mock%input", Validators.required],
+    });
+    component.isSubmitBtnDisabled = false;
+    spyOn(component, "triggerAction");
+    spyOn(component, "showActionErrorModal");
+    fixture.detectChanges();
+    spyOn(window, "decodeURIComponent").and.throwError("Mock Error");
+    fixture.detectChanges();
+    component.onFormSubmit();
+    expect(component.triggerAction).not.toHaveBeenCalled();
+    expect(component.showActionErrorModal).toHaveBeenCalledWith({
+      type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+      details: { message: ERROR_MESSAGES.INVALID_DOC_ID_OR_PATH_MESSAGE },
+    });
+  });
+
+  describe("triggerAction", () => {
+    let fetchSpy: jasmine.Spy;
+    let buildRequestQuerySpy: jasmine.Spy;
+    let buildRequestParamsSpy: jasmine.Spy;
+    let storeDispatchSpy: jasmine.Spy;
+    let decodeAndReplaceSingleQuotesSpy: jasmine.Spy;
+    let showActionErrorModalSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      fetchSpy = jasmine
+        .createSpy()
+        .and.returnValue(Promise.resolve({ path: "/mock/path" }));
+      component.nuxeo = {
+        repository: jasmine.createSpy().and.returnValue({ fetch: fetchSpy }),
+      } as any;
+      buildRequestQuerySpy = spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestQuery"
+      ).and.returnValue("query");
+      buildRequestParamsSpy = spyOn(
+        genericMultiFeatureUtilitiesService,
+        "buildRequestParams"
+      ).and.returnValue({
+        requestUrl: "url",
+        requestParams: "",
+        requestHeaders: {},
+      });
+      storeDispatchSpy = spyOn(store, "dispatch");
+      decodeAndReplaceSingleQuotesSpy = spyOn(
+        genericMultiFeatureUtilitiesService,
+        "decodeAndReplaceSingleQuotes"
+      );
+      showActionErrorModalSpy = spyOn(component, "showActionErrorModal");
+      component.activeFeature = FEATURES.FULLTEXT_REINDEX as any;
+      component.templateConfigData = { data: {} } as any;
+      component.inputForm = new FormGroup({
+        inputIdentifier: new FormControl(""),
+      });
+    });
+
+    it("should build request and dispatch action for valid document", async () => {
+      await component.triggerAction("mock/path");
+      expect(component.nuxeo.repository).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith("mock/path");
+      expect(buildRequestQuerySpy).toHaveBeenCalled();
+      expect(buildRequestParamsSpy).toHaveBeenCalled();
+      expect(storeDispatchSpy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          type: FeatureActions.performDocumentAction.type,
+        })
+      );
+    });
+
+    it("should show error modal if buildRequestQuery throws", async () => {
+      buildRequestQuerySpy.and.throwError("error");
+      await component.triggerAction("/mock/path");
+      expect(showActionErrorModalSpy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+        })
+      );
+    });
+
+    it("should show error modal if decodeAndReplaceSingleQuotes throws", async () => {
+      fetchSpy.and.returnValue(Promise.resolve({ path: "/default-domain's" }));
+      decodeAndReplaceSingleQuotesSpy.and.throwError("mock error");
+      await component.triggerAction("/default-domain's");
+      expect(showActionErrorModalSpy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
+        })
+      );
+    });
+
+    it("should not call buildRequestQuery if document is not object or missing path", async () => {
+      fetchSpy.and.returnValue(Promise.resolve(null));
+      await component.triggerAction("mock/path/document");
+      expect(buildRequestQuerySpy).not.toHaveBeenCalled();
+      expect(storeDispatchSpy).not.toHaveBeenCalled();
+    });
+  });
 });

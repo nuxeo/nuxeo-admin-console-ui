@@ -22,14 +22,6 @@ Once you have it, just add the following lines to your Maven settings.xml :
    </servers>
 </settings>
 ```
-And those lines to your NPM .npmrc :
-```bash
-@hylandsoftware:registry=https://npm.pkg.github.com
-@nuxeo:registry=https://packages.nuxeo.com/repository/npm-public
-registry=https://registry.npmjs.org/
-//npm.pkg.github.com/:_authToken=GITHUB_TOKEN
-```
-
 
 ## Naviagte to Working Directory
 ```bash

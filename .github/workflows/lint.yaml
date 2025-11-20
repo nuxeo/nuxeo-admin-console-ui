@@ -1,5 +1,9 @@
 name: Lint
 
+permissions:
+  # Only read access needed for code checkout and linting operations
+  contents: read
+  
 on:
   pull_request:
     branches:
@@ -45,12 +49,6 @@ jobs:
             node -v
             npm -v
   
-
-      - name: Configure Additional Registries
-        run: |
-            npm config set @hylandsoftware:registry https://npm.pkg.github.com --global
-            npm config set //npm.pkg.github.com/:_authToken=${{ secrets.GIT_TOKEN }} --global
-            npm config set registry https://registry.npmjs.org/ --global
 
       - name: Cache node modules
         id: cache-npm

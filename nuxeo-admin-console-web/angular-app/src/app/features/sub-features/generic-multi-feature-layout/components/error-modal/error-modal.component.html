@@ -1,26 +1,20 @@
-<hy-dialog-box class="hy-dialog-box">
-  <hy-dialog-box-header class="hy-dialog-box__header">
-    <hy-dialog-box-title class="hy-dialog-box__title">
-      {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }}
-    </hy-dialog-box-title>
-  </hy-dialog-box-header>
-
-  <hy-dialog-box-content class="hy-dialog-box__content">
-    <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
-      <p>{{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}</p>
-      <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
-      <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
-    </div>
-    <ng-template #customErrorMessage>
-      <p>{{getCustomErrorMessage()}}</p>
-    </ng-template>
-  </hy-dialog-box-content>
-
-  <hy-dialog-box-footer class="hy-dialog-box__footer">
-    <ng-container>
-      <button mat-flat-button color="primary" (click)="close()">
-        {{ GENERIC_LABELS.CLOSE_LABEL }}
-      </button>
-    </ng-container>
-  </hy-dialog-box-footer>
-</hy-dialog-box>
+<h2> {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }} </h2>
+<hr class="separator">
+<mat-dialog-content class="mat-typography error-modal">
+  <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
+    <p *ngIf="data.error.details.message !== CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG">
+      {{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}
+    </p> <!-- Hide generic error message for consumer thread pool operation -->
+    <p *ngIf="data.error.details.status">{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+    <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
+  </div>
+  <ng-template #customErrorMessage>
+    <p>{{getCustomErrorMessage()}}</p>
+  </ng-template>
+</mat-dialog-content>
+<hr class="separator">
+<mat-dialog-actions>
+  <button mat-flat-button color="primary" (click)="close()">
+    {{ GENERIC_LABELS.CLOSE_LABEL }}
+  </button>
+</mat-dialog-actions>

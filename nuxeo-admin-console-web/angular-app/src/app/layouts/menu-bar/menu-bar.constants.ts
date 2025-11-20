@@ -39,10 +39,17 @@ export const ADMIN_MENU: Menu[] = [
   },
   {
     id: 6,
+    name: "Fulltext Reindex",
+    path: "fulltext-reindex",
+    isSelected: false,
+  },
+  {
+    id: 7,
     name: "Bulk Action Monitoring",
     path: "bulk-action-monitoring",
     isSelected: false,
   },
+  { id: 8, name: "Stream Management", path: "stream-management", isSelected: false },
 ];
 
 export const ROUTES_TITLE = {
