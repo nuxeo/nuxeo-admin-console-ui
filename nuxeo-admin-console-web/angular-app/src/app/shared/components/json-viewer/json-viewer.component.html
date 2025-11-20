@@ -9,7 +9,7 @@
           tabindex="0">
 
         <!-- Search Button (visual indicator only when no search term) -->
-        <button *ngIf="!searchTerm" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
+        <button class="search-btn" *ngIf="!searchTerm" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
           aria-label="Search icon" tabindex="-1">
           <mat-icon>{{ JSON_VIEWER_LABELS.MAT_SEARCH_BTN_NAME }}</mat-icon>
         </button>
@@ -44,7 +44,7 @@
 
     <div class="controls-right">
       <!-- Copy Button -->
-      <button mat-icon-button disableRipple (click)="copyToClipboard()"
+      <button mat-icon-button disableRipple (click)="copyToClipboard()" class="copy-btn"
         [matTooltip]="JSON_VIEWER_LABELS.COPY_JSON_TOOLTIP" aria-label="Copy JSON to clipboard" tabindex="0">
         <mat-icon>{{ JSON_VIEWER_LABELS.MAT_COPY_ICON_NAME }}</mat-icon>
       </button>
@@ -75,7 +75,9 @@
       <span class="loading-text">{{ JSON_VIEWER_LABELS.LOADING_RESULTS }}</span>
     </div>
 
-    <section *ngFor="let segment of segments" class="segment" [class.segment-type-number]="segment.type === 'number'"
+    <section *ngFor="let segment of segments" class="segment" 
+      [attr.data-segment-key]="segment.key"
+      [class.segment-type-number]="segment.type === 'number'"
       [class.segment-type-string]="segment.type === 'string'" [class.segment-type-boolean]="segment.type === 'boolean'"
       [class.segment-type-object]="segment.type === 'object'" [class.segment-type-array]="segment.type === 'array'"
       [class.segment-type-null]="segment.type === 'null'" [class.segment-type-undefined]="segment.type === 'undefined'">

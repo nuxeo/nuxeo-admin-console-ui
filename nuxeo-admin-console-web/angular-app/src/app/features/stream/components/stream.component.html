@@ -22,7 +22,7 @@
                         [recordCount]="recordCount" [isFetchingRecords]="isFetchingRecords"></stream-records-status>
                 </div>
                 <div class="result" [hidden]="(!records || records.length === 0) && clearRecordsDisplay">
-                    <stream-records [records]="records"></stream-records>
+                    <stream-records [records]="records" [clearSearch]="clearJsonSearch"></stream-records>
                 </div>
             </div>
         </div>

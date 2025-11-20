@@ -31,6 +31,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   fetchRecordsError$!: Observable<HttpErrorResponse | null>;
   recordCount = 0;
   clearRecordsDisplay = false;
+  clearJsonSearch = false;
   recordsFetchedStatusText = "";
   stopFetchSuccess$: Observable<boolean | null>;
   stopFetchError$: Observable<unknown>;
@@ -80,8 +81,12 @@ export class StreamComponent implements OnInit, OnDestroy {
           this.isFetchingRecords = status;
           this.streamService.isViewRecordsDisabled.next(this.isFetchingRecords);
           this.streamService.isStopFetchDisabled.next(!this.isFetchingRecords);
+          
           if (this.isFetchingRecords) {
             this.recordsFetchedStatusText = STREAM_LABELS.FETCHING_RECORDS;
+            this.clearJsonSearch = true;
+            this.cdRef.detectChanges();
+            this.clearJsonSearch = false;
           } else {
             if (this.records?.length === 0) {
               this.recordsFetchedStatusText = "";
@@ -100,6 +105,16 @@ export class StreamComponent implements OnInit, OnDestroy {
             this.clearRecordsDisplay = clearStatus;
           } else {
             this.clearRecordsDisplay = true;
+          }
+        }
+      );
+
+      this.streamService.clearRecordsDisplay.pipe(takeUntil(this.destroy$)).subscribe(
+        (clearStatus) => {
+          if (clearStatus) {
+            this.clearJsonSearch = true;
+            this.cdRef.detectChanges();
+            this.clearJsonSearch = false;
           }
         }
       );

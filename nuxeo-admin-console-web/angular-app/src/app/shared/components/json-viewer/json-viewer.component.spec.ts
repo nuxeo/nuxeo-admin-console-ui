@@ -76,21 +76,32 @@ describe("JsonViewerComponent", () => {
   });
 
   afterEach(() => {
-    component.ngOnDestroy();
-    fixture.destroy();
     const highlights = document.querySelectorAll(
       "mark.search-match, .json-viewer-highlight"
     );
-    highlights.forEach((el) => el.remove());
-    const testContainers = document.querySelectorAll(".ngx-json-viewer");
-    testContainers.forEach((el) => {
-      // Using if-else for safe DOM manipulation - only remove element if parent exists to prevent runtime errors
+    highlights.forEach((el) => {
       if (el.parentNode) {
         el.parentNode.removeChild(el);
       }
     });
+    const testContainers = document.querySelectorAll(".ngx-json-viewer");
+    testContainers.forEach((el) => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    });
+
+    if (component) {
+      component.ngOnDestroy();
+    }
+
+    if (fixture) {
+      fixture.destroy();
+    }
+
     MockMutationObserver.instances = [];
-    // Using if-else for conditional cleanup - only clear timeouts if the array exists to avoid errors
+
+    // Clean up timeouts
     if ((window as any).timeouts) {
       (window as any).timeouts.forEach((id: number) => clearTimeout(id));
       (window as any).timeouts = [];
@@ -207,6 +218,39 @@ describe("JsonViewerComponent", () => {
       component.ngOnChanges();
       expect(component.segments).toBeDefined();
       expect(component.segments.length).toBe(2);
+    });
+
+    it("should call clearSearch when clearSearchInput is true and currentDepth is 0", () => {
+      spyOn(component, "clearSearch");
+      component.clearSearchInput = true;
+      component.currentDepth = 0;
+      component.json = { test: "data" };
+
+      component.ngOnChanges();
+
+      expect(component.clearSearch).toHaveBeenCalled();
+    });
+
+    it("should not call clearSearch when clearSearchInput is true but currentDepth is not 0", () => {
+      spyOn(component, "clearSearch");
+      component.clearSearchInput = true;
+      component.currentDepth = 1;
+      component.json = { test: "data" };
+
+      component.ngOnChanges();
+
+      expect(component.clearSearch).not.toHaveBeenCalled();
+    });
+
+    it("should not call clearSearch when clearSearchInput is false", () => {
+      spyOn(component, "clearSearch");
+      component.clearSearchInput = false;
+      component.currentDepth = 0;
+      component.json = { test: "data" };
+
+      component.ngOnChanges();
+
+      expect(component.clearSearch).not.toHaveBeenCalled();
     });
   });
 
@@ -371,28 +415,90 @@ describe("JsonViewerComponent", () => {
       expect(component.isSearchLoading).toBe(false);
     }));
 
-    it("should navigate between matches", () => {
+    it("should navigate between matches with async navigation", fakeAsync(() => {
       component.totalMatches = 5;
       component.currentMatchIndex = 2;
+      (component as any).navigationInProgress = false;
+
+      const mockMatches = Array.from({ length: 5 }, () => {
+        const mockElement = document.createElement("mark");
+        mockElement.className = "search-match";
+        spyOn(mockElement, "scrollIntoView");
+        return mockElement;
+      });
+      spyOn(document, "querySelectorAll").and.returnValue(mockMatches as any);
+      spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
+        Promise.resolve()
+      );
+
       component.goToNextMatch();
       expect(component.currentMatchIndex).toBe(3);
+      expect((component as any).navigationInProgress).toBe(true);
+
+      tick(100);
+      expect((component as any).navigationInProgress).toBe(false);
       component.currentMatchIndex = 4;
       component.goToNextMatch();
       expect(component.currentMatchIndex).toBe(0);
+
+      tick(100);
+      discardPeriodicTasks();
+    }));
+
+    it("should navigate to previous match with async navigation", fakeAsync(() => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 2;
+      (component as any).navigationInProgress = false;
+      spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
+        Promise.resolve()
+      );
       component.goToPreviousMatch();
-      expect(component.currentMatchIndex).toBe(4);
+      expect(component.currentMatchIndex).toBe(1);
+      expect((component as any).navigationInProgress).toBe(true);
+      tick(100);
+      expect((component as any).navigationInProgress).toBe(false);
       component.currentMatchIndex = 0;
       component.goToPreviousMatch();
       expect(component.currentMatchIndex).toBe(4);
-    });
+
+      tick(100);
+      discardPeriodicTasks();
+    }));
 
     it("should not navigate when no matches", () => {
       component.totalMatches = 0;
       component.currentMatchIndex = -1;
+      (component as any).navigationInProgress = false;
+
       component.goToNextMatch();
       expect(component.currentMatchIndex).toBe(-1);
+      expect((component as any).navigationInProgress).toBe(false);
+
       component.goToPreviousMatch();
       expect(component.currentMatchIndex).toBe(-1);
+      expect((component as any).navigationInProgress).toBe(false);
+    });
+
+    it("should not navigate when navigation is in progress", fakeAsync(() => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 2;
+      (component as any).navigationInProgress = true;
+
+      const initialIndex = component.currentMatchIndex;
+
+      component.goToNextMatch();
+      expect(component.currentMatchIndex).toBe(initialIndex);
+      component.goToPreviousMatch();
+      expect(component.currentMatchIndex).toBe(initialIndex);
+
+      tick(100);
+      discardPeriodicTasks();
+    }));
+
+    it("should reset navigation lock when clearing search", () => {
+      (component as any).navigationInProgress = true;
+      component.clearSearch();
+      expect((component as any).navigationInProgress).toBe(false);
     });
 
     it("should get correct search result text", () => {
@@ -500,6 +606,97 @@ describe("JsonViewerComponent", () => {
         expect((component as any).searchInput$.next).toHaveBeenCalledWith(
           "testvalue"
         );
+      });
+    });
+
+    describe("Navigation Methods", () => {
+      describe("reHighlightAndNavigate", () => {
+        beforeEach(() => {
+          component.json = { test: "data", find: "me" };
+          component.ngOnChanges();
+          component.searchTerm = "find";
+        });
+
+        it("should expand all data and re-highlight", fakeAsync(() => {
+          spyOn(component as any, "executeAfterRender").and.callFake(
+            (callback: any) => {
+              return Promise.resolve(callback());
+            }
+          );
+          spyOn(component as any, "clearTextHighlightFromDOM");
+          spyOn(component as any, "highlightTemplateSegments");
+          spyOn(component as any, "highlightTextInDOM").and.returnValue(
+            Promise.resolve()
+          );
+          spyOn(component as any, "scrollToMatch");
+
+          component.expandAll = false;
+          (component as any).reHighlightAndNavigate();
+
+          tick(100);
+
+          expect(component.expandAll).toBe(true);
+          expect(
+            (component as any).clearTextHighlightFromDOM
+          ).toHaveBeenCalled();
+          expect(
+            (component as any).highlightTemplateSegments
+          ).toHaveBeenCalled();
+          expect((component as any).highlightTextInDOM).toHaveBeenCalled();
+          expect((component as any).scrollToMatch).toHaveBeenCalled();
+
+          discardPeriodicTasks();
+        }));
+      });
+
+      describe("scrollToMatch", () => {
+        it("should scroll to current match and update highlighting", () => {
+          const mockMatches = Array.from({ length: 3 }, (_, index) => {
+            const mockElement = document.createElement("mark");
+            mockElement.className = "search-match";
+            if (index === 1) {
+              mockElement.classList.add("current-match");
+            }
+            spyOn(mockElement, "scrollIntoView");
+            return mockElement;
+          });
+          spyOn(document, "querySelectorAll").and.returnValue(
+            mockMatches as any
+          );
+          component.currentMatchIndex = 1;
+          (component as any).scrollToMatch();
+          mockMatches.forEach((match, index) => {
+            if (index === 1) {
+              expect(match.classList.contains("current-match")).toBe(true);
+            } else {
+              expect(match.classList.contains("current-match")).toBe(false);
+            }
+          });
+          expect(mockMatches[1].scrollIntoView).toHaveBeenCalledWith({
+            behavior: "smooth",
+            block: "center",
+          });
+        });
+
+        it("should handle no matches gracefully", () => {
+          spyOn(document, "querySelectorAll").and.returnValue([] as any);
+          expect(() => (component as any).scrollToMatch()).not.toThrow();
+        });
+
+        it("should handle invalid current match index", () => {
+          const mockMatches = [document.createElement("mark")];
+          mockMatches[0].className = "search-match";
+          spyOn(mockMatches[0], "scrollIntoView");
+          spyOn(document, "querySelectorAll").and.returnValue(
+            mockMatches as any
+          );
+          component.currentMatchIndex = 5;
+          (component as any).scrollToMatch();
+          expect(mockMatches[0].classList.contains("current-match")).toBe(
+            false
+          );
+          expect(mockMatches[0].scrollIntoView).not.toHaveBeenCalled();
+        });
       });
     });
   });
@@ -673,7 +870,7 @@ describe("JsonViewerComponent", () => {
       spyOn(component as any, "showErrorSnackbarMsg");
       await component.copyToClipboard();
       expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
-          JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
+        JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
       );
     });
 
@@ -861,14 +1058,6 @@ describe("JsonViewerComponent", () => {
       (component as any).scrollToCurrentMatch();
       tick();
       expect(component.currentMatchIndex).toBe(-1);
-    }));
-
-    it("should handle ensureDataExpandedForNavigation", fakeAsync(() => {
-      component.json = { nested: { value: "test" } };
-      component.ngOnChanges();
-      (component as any).ensureDataExpandedForNavigation();
-      tick();
-      expect(component.expandAll).toBe(true);
     }));
 
     it("should handle search input clear in ngAfterViewInit", () => {
@@ -1084,16 +1273,6 @@ describe("JsonViewerComponent", () => {
       discardPeriodicTasks();
     }));
 
-    it("should handle ensureDataExpandedForNavigation", fakeAsync(() => {
-      component.json = { nested: { deep: "value" } };
-      component.ngOnChanges();
-      component.expandAll = false;
-      (component as any).ensureDataExpandedForNavigation();
-      tick(150);
-      expect(component.expandAll).toBe(true);
-      discardPeriodicTasks();
-    }));
-
     it("should handle decycle with circular references", () => {
       const obj: any = { name: "test" };
       obj.circular = obj;
@@ -1172,9 +1351,12 @@ describe("JsonViewerComponent", () => {
         [new Date(), "date"],
         [[], "array"],
         [{}, "object"],
-        [function (): void {
-          // Test function for type detection
-        }, "function"],
+        [
+          function (): void {
+            // Test function for type detection
+          },
+          "function",
+        ],
       ];
       testCases.forEach(([value, expectedType]) => {
         const result = (component as any).parseKeyValue("test", value);
@@ -1341,5 +1523,289 @@ describe("JsonViewerComponent", () => {
       expect(component.currentMatchIndex).toBe(0);
       discardPeriodicTasks();
     }));
+  });
+
+  describe("Performance Optimizations", () => {
+    describe("isElementVisible", () => {
+      it("should return true for visible elements", () => {
+        const mockElement = document.createElement("span");
+        document.body.appendChild(mockElement);
+        const result = (component as any).isElementVisible(mockElement);
+        expect(result).toBe(true);
+        document.body.removeChild(mockElement);
+      });
+
+      it("should return false for elements with hidden parent", () => {
+        const hiddenParent = document.createElement("div");
+        hiddenParent.style.display = "none";
+        const mockElement = document.createElement("span");
+        hiddenParent.appendChild(mockElement);
+        document.body.appendChild(hiddenParent);
+        const result = (component as any).isElementVisible(mockElement);
+        expect(result).toBe(false);
+        document.body.removeChild(hiddenParent);
+      });
+
+      it("should return false for elements with visibility hidden parent", () => {
+        const hiddenParent = document.createElement("div");
+        hiddenParent.style.visibility = "hidden";
+        const mockElement = document.createElement("span");
+        hiddenParent.appendChild(mockElement);
+        document.body.appendChild(hiddenParent);
+        const result = (component as any).isElementVisible(mockElement);
+        expect(result).toBe(false);
+        document.body.removeChild(hiddenParent);
+      });
+
+      it("should return true for elements when parent is document.body", () => {
+        const mockElement = document.createElement("span");
+        document.body.appendChild(mockElement);
+        const result = (component as any).isElementVisible(mockElement);
+        expect(result).toBe(true);
+        document.body.removeChild(mockElement);
+      });
+    });
+
+    describe("fastNavigateToCurrentMatch", () => {
+      beforeEach(() => {
+        component.json = { test: "search", nested: { value: "search" } };
+        component.ngOnChanges();
+        fixture.detectChanges();
+      });
+
+      it("should use fast navigation when highlights are in sync", fakeAsync(() => {
+        const mockMatch1 = document.createElement("mark");
+        mockMatch1.className = "search-match";
+        const mockMatch2 = document.createElement("mark");
+        mockMatch2.className = "search-match current-match";
+        document.body.appendChild(mockMatch1);
+        document.body.appendChild(mockMatch2);
+
+        spyOn(document, "querySelectorAll").and.returnValue([
+          mockMatch1,
+          mockMatch2,
+        ] as any);
+        spyOn(component as any, "isElementVisible").and.returnValue(true);
+        spyOn(mockMatch2, "scrollIntoView");
+
+        (component as any).highlightsInSync = true;
+        component.totalMatches = 2;
+        component.currentMatchIndex = 1;
+
+        (component as any).fastNavigateToCurrentMatch();
+        tick();
+
+        expect(mockMatch1.classList.contains("current-match")).toBe(false);
+        expect(mockMatch2.classList.contains("current-match")).toBe(true);
+        expect(mockMatch2.scrollIntoView).toHaveBeenCalledWith({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+
+        document.body.removeChild(mockMatch1);
+        document.body.removeChild(mockMatch2);
+        discardPeriodicTasks();
+      }));
+
+      it("should fallback to full navigation when highlights are out of sync", fakeAsync(() => {
+        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
+          Promise.resolve()
+        );
+        (component as any).highlightsInSync = false;
+        component.totalMatches = 2;
+        component.currentMatchIndex = 1;
+        (component as any).fastNavigateToCurrentMatch();
+        tick();
+        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
+        discardPeriodicTasks();
+      }));
+
+      it("should fallback to full navigation when DOM matches don't match totalMatches", fakeAsync(() => {
+        const mockMatch = document.createElement("mark");
+        mockMatch.className = "search-match";
+        document.body.appendChild(mockMatch);
+
+        spyOn(document, "querySelectorAll").and.returnValue([mockMatch] as any);
+        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
+          Promise.resolve()
+        );
+
+        (component as any).highlightsInSync = true;
+        component.totalMatches = 3;
+        component.currentMatchIndex = 1;
+
+        (component as any).fastNavigateToCurrentMatch();
+        tick();
+
+        expect((component as any).highlightsInSync).toBe(false);
+        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
+
+        document.body.removeChild(mockMatch);
+        discardPeriodicTasks();
+      }));
+
+      it("should fallback to full navigation when current match is not visible", fakeAsync(() => {
+        const mockMatch = document.createElement("mark");
+        mockMatch.className = "search-match";
+        document.body.appendChild(mockMatch);
+        spyOn(document, "querySelectorAll").and.returnValue([mockMatch] as any);
+        spyOn(component as any, "isElementVisible").and.returnValue(false); // Not visible
+        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
+          Promise.resolve()
+        );
+        (component as any).highlightsInSync = true;
+        component.totalMatches = 1;
+        component.currentMatchIndex = 0;
+        (component as any).fastNavigateToCurrentMatch();
+        tick();
+        expect((component as any).highlightsInSync).toBe(false);
+        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
+        document.body.removeChild(mockMatch);
+        discardPeriodicTasks();
+      }));
+    });
+
+    describe("reHighlightAndNavigate", () => {
+      beforeEach(() => {
+        component.json = { test: "search content" };
+        component.ngOnChanges();
+        fixture.detectChanges();
+      });
+
+      it("should expand all segments and re-highlight", fakeAsync(() => {
+        spyOn(component as any, "setAllSegmentsExpanded");
+        spyOn(component as any, "clearTextHighlightFromDOM");
+        spyOn(component as any, "highlightTemplateSegments");
+        spyOn(component as any, "highlightTextInDOM").and.returnValue(
+          Promise.resolve()
+        );
+        spyOn(component as any, "scrollToMatch");
+        spyOn(component as any, "executeAfterRender").and.callFake(
+          (callback: () => void) => {
+            callback();
+            return Promise.resolve();
+          }
+        );
+
+        (component as any).reHighlightAndNavigate();
+        tick();
+        expect(component.expandAll).toBe(true);
+        expect((component as any).setAllSegmentsExpanded).toHaveBeenCalledWith(
+          true
+        );
+        expect((component as any).clearTextHighlightFromDOM).toHaveBeenCalled();
+        expect((component as any).highlightTemplateSegments).toHaveBeenCalled();
+        expect((component as any).highlightTextInDOM).toHaveBeenCalled();
+        expect((component as any).scrollToMatch).toHaveBeenCalled();
+        discardPeriodicTasks();
+      }));
+    });
+
+    describe("highlightsInSync flag", () => {
+      it("should be reset in clearSearch", () => {
+        (component as any).highlightsInSync = true;
+        component.clearSearch();
+        expect((component as any).highlightsInSync).toBe(false);
+      });
+
+      it("should be set to true after successful highlightTextInDOM", fakeAsync(() => {
+        component.json = { test: "search" };
+        component.ngOnChanges();
+        component.searchTerm = "search";
+        const mockContainer = document.createElement("div");
+        mockContainer.className = "ngx-json-viewer";
+        document.body.appendChild(mockContainer);
+        spyOn(document, "querySelector").and.returnValue(mockContainer);
+        spyOn(component as any, "findTextNodesWithMatch").and.returnValue([]);
+        spyOn(component as any, "applyMarkTagsToText");
+        (component as any).highlightTextInDOM();
+        tick();
+        expect((component as any).highlightsInSync).toBe(true);
+        document.body.removeChild(mockContainer);
+        discardPeriodicTasks();
+      }));
+
+      it("should be set to false when DOM container is not found", fakeAsync(() => {
+        component.searchTerm = "search";
+        spyOn(document, "querySelector").and.returnValue(null);
+        spyOn(console, "warn");
+        (component as any).highlightTextInDOM();
+        tick();
+        expect((component as any).highlightsInSync).toBe(false);
+        expect(console.warn).toHaveBeenCalledWith(
+          "JSON viewer container not found for highlighting"
+        );
+        discardPeriodicTasks();
+      }));
+
+      it("should be set to false when searchTerm is empty", fakeAsync(() => {
+        component.searchTerm = "";
+        (component as any).highlightTextInDOM();
+        tick();
+        expect((component as any).highlightsInSync).toBe(false);
+        discardPeriodicTasks();
+      }));
+    });
+
+    describe("navigationInProgress flag", () => {
+      it("should prevent concurrent navigation in goToNextMatch", fakeAsync(() => {
+        component.totalMatches = 5;
+        component.currentMatchIndex = 0;
+        (component as any).navigationInProgress = true;
+        spyOn(component as any, "fastNavigateToCurrentMatch");
+        component.goToNextMatch();
+        tick();
+        expect(
+          (component as any).fastNavigateToCurrentMatch
+        ).not.toHaveBeenCalled();
+        expect(component.currentMatchIndex).toBe(0);
+        discardPeriodicTasks();
+      }));
+
+      it("should prevent concurrent navigation in goToPreviousMatch", fakeAsync(() => {
+        component.totalMatches = 5;
+        component.currentMatchIndex = 2;
+        (component as any).navigationInProgress = true;
+        spyOn(component as any, "fastNavigateToCurrentMatch");
+        component.goToPreviousMatch();
+        tick();
+        expect(
+          (component as any).fastNavigateToCurrentMatch
+        ).not.toHaveBeenCalled();
+        expect(component.currentMatchIndex).toBe(2);
+        discardPeriodicTasks();
+      }));
+
+      it("should be properly managed in goToNextMatch lifecycle", fakeAsync(() => {
+        component.totalMatches = 3;
+        component.currentMatchIndex = 0;
+        (component as any).navigationInProgress = false;
+        spyOn(component as any, "fastNavigateToCurrentMatch").and.returnValue(
+          Promise.resolve()
+        );
+        component.goToNextMatch();
+        expect((component as any).navigationInProgress).toBe(true);
+        tick();
+        expect((component as any).navigationInProgress).toBe(false);
+        expect(component.currentMatchIndex).toBe(1);
+        discardPeriodicTasks();
+      }));
+
+      it("should be properly managed in goToPreviousMatch lifecycle", fakeAsync(() => {
+        component.totalMatches = 3;
+        component.currentMatchIndex = 2;
+        (component as any).navigationInProgress = false;
+        spyOn(component as any, "fastNavigateToCurrentMatch").and.returnValue(
+          Promise.resolve()
+        );
+        component.goToPreviousMatch();
+        expect((component as any).navigationInProgress).toBe(true);
+        tick();
+        expect((component as any).navigationInProgress).toBe(false);
+        expect(component.currentMatchIndex).toBe(1);
+        discardPeriodicTasks();
+      }));
+    });
   });
 });

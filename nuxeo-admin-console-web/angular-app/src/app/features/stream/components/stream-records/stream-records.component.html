@@ -2,7 +2,7 @@
   <mat-card class="stream-records__data" role="region" tabindex="0" aria-label="Stream content">
     <mat-card-content>
       <custom-nuxeo-json-viewer [hidden]="!records || records.length === 0" [json]="records"
-        [expanded]="false"></custom-nuxeo-json-viewer>
+        [expanded]="false" [clearSearchInput]="clearSearch"></custom-nuxeo-json-viewer>
     </mat-card-content>
   </mat-card>
 </div>
