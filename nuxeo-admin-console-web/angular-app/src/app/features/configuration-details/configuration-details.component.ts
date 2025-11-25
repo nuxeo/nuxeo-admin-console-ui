@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { CONFIGURATION_DETAILS_CONSTANTS } from "./configuration-details.constants";
 import { CommonService } from "./../../.././app/shared/services/common.service";
-import { SharedMethodsService } from "src/app/shared/services/shared-methods.service";
+import { SharedMethodsService } from "../../shared/services/shared-methods.service";
 import { takeUntil } from "rxjs/internal/operators/takeUntil";
 import { HttpErrorResponse } from "@angular/common/http";
 import { delay, Subject } from "rxjs";
