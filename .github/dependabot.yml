@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Enable version updates for npm (Angular app)
+  - package-ecosystem: "npm"
+    directory: "/nuxeo-admin-console-web/angular-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 60
+    groups:
+      angular:
+        patterns:
+          - "@angular*"
+          - "@angular-devkit*"
+      ngrx:
+        patterns:
+          - "@ngrx*"
+      development-dependencies:
+        dependency-type: "development"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 60
