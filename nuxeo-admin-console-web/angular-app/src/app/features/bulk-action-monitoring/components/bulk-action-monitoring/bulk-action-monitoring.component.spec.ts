@@ -5,6 +5,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
@@ -28,6 +29,7 @@ describe("BulkActionMonitoringComponent", () => {
       ],
       imports: [
         NoopAnimationsModule,
+        HttpClientTestingModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
         MatFormFieldModule,

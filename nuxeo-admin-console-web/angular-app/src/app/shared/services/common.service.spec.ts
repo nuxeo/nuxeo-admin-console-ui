@@ -1,5 +1,6 @@
 import { CommonService } from "./common.service";
 import { TestBed } from "@angular/core/testing";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
 
@@ -8,7 +9,10 @@ describe("CommonService", () => {
   let router: Router;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [CommonService] });
+    TestBed.configureTestingModule({ 
+      imports: [ HttpClientTestingModule ],
+      providers: [CommonService] 
+    });
     service = TestBed.inject(CommonService);
     router = TestBed.inject(Router);
   });

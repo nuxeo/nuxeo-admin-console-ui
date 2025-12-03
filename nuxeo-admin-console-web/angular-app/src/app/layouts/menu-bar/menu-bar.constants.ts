@@ -49,7 +49,18 @@ export const ADMIN_MENU: Menu[] = [
     path: "bulk-action-monitoring",
     isSelected: false,
   },
-  { id: 8, name: "Stream Management", path: "stream-management", isSelected: false },
+  {
+    id: 8,
+    name: "Stream Management",
+    path: "stream-management",
+    isSelected: false,
+  },
+  {
+    id: 9,
+    name: "Configuration Properties",
+    path: "configuration-properties",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
@@ -59,4 +70,6 @@ export const ROUTES_TITLE = {
   PROBES: "Probes",
   THUMBNAIL_GENERATION: "Thumbnail Generation",
   PICTURE_RENDITIONS: "Picture Renditions",
+  STREAM_MANAGEMENT: "Stream Management",
+  CONFIGURATION_DETAILS: "Configuration Properties",
 };
