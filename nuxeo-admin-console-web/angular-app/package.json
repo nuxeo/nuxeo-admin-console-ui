@@ -28,7 +28,7 @@
     "@ngrx/router-store": "^16.0.0",
     "@ngrx/store": "^16.0.0",
     "@ngrx/store-devtools": "^16.0.0",
-    "angular-oauth2-oidc": "^15.0.1",
+    "angular-oauth2-oidc": "^20.0.2",
     "material-icons": "^1.13.14",
     "material-symbols": "^0.26.0",
     "moment": "^2.30.1",
