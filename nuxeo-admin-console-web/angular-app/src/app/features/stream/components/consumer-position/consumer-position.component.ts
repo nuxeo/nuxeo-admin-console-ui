@@ -22,7 +22,7 @@ export class ConsumerPositionComponent implements OnInit, OnDestroy {
       this.router.navigate(
         [
           MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS
-            .CHANGE_CONSUMER_POSITION.ROUTE_LABEL,
+            .GET_CONSUMER_POSITION.ROUTE_LABEL,
         ],
         {
           relativeTo: this.route,

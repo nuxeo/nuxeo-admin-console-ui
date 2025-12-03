@@ -24,7 +24,7 @@ export const StreamRoutes: Route[] = [
           {
             path: "",
             pathMatch: "full",
-            redirectTo: "change-consumer-position",
+            redirectTo: "get-consumer-position",
           },
           {
             path: "change-consumer-position",
