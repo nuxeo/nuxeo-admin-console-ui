@@ -43,7 +43,7 @@ jobs:
           registry-url: ${{ env.NEXUS_URL }}
           scope: '@nuxeo'
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -196,7 +196,7 @@ jobs:
           registry-url: ${{ env.NEXUS_URL }}
           scope: '@nuxeo'
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
