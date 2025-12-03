@@ -39,7 +39,7 @@ jobs:
           if [ -f .npmrc ]; then
             rm .npmrc
           fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           registry-url: 'https://packages.nuxeo.com/repository/npm-public/'
           node-version: 20

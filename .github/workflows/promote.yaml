@@ -31,7 +31,7 @@ jobs:
       version: ${{ env.VERSION }}
       
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Keep same setup steps
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -329,7 +329,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.dryRun == 'false' }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
 
