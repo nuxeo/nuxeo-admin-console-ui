@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Enable version updates for npm (Angular app)
+  - package-ecosystem: "npm"
+    directory: "/nuxeo-admin-console-web/angular-app"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 60
+    # Target dev branch for active development updates instead of main (default branch)
+    # This allows testing dependency updates in dev before promoting to production (main)
+    target-branch: "dev"
+    groups:
+      angular:
+        patterns:
+          - "@angular*"
+          - "@angular-devkit*"
+      ngrx:
+        patterns:
+          - "@ngrx*"
+      development-dependencies:
+        dependency-type: "development"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 60
+    # Target dev branch to test workflow updates before production deployment
+    target-branch: "dev"
