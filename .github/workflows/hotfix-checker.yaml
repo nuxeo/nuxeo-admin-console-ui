@@ -21,7 +21,7 @@ jobs:
           last_pr_branch: ${{ steps.get-branch.outputs.last_pr_branch }}
         steps:
           - name: Checkout Code
-            uses: actions/checkout@v4
+            uses: actions/checkout@v6
             with:
               fetch-depth: 0  # Fetch all history for all branches and tags
         
@@ -56,7 +56,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Code
-          uses: actions/checkout@v4
+          uses: actions/checkout@v6
 
         - name: Setup Git config
           run: git config user.name "nuxeo-webui-jx-bot" && git config user.email "webui@hyland.com"
