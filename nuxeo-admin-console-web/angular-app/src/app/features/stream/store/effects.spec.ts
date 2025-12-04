@@ -1,13 +1,13 @@
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { Action } from "@ngrx/store";
 import { StreamService } from "../services/stream.service";
 import * as StreamActions from "../store/actions";
 import { loadFetchStreamsEffect, loadFetchConsumersEffect, triggerRecordsSSEStream$, stopRecordsSSEStream$, startConsumerThreadPool$, stopConsumerThreadPool$ } from "./effects";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("StreamEffects", () => {
   let actions$: Observable<Action>;
@@ -41,11 +41,13 @@ describe("StreamEffects", () => {
       }
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         provideMockActions(() => actions$),
         provideMockStore(),
         { provide: StreamService, useClass: streamServiceStub },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
     streamService = TestBed.inject(StreamService) as jasmine.SpyObj<StreamService>;

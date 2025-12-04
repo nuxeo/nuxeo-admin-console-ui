@@ -10,7 +10,11 @@ import { RouterModule } from "@angular/router";
 import { StoreModule } from "@ngrx/store";
 import { StoreRouterConnectingModule, routerReducer } from "@ngrx/router-store";
 import { EffectsModule } from "@ngrx/effects";
-import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -29,7 +33,10 @@ import { HeaderBarComponent } from "./layouts/header-bar/header-bar.component";
 import { MenuBarComponent } from "./layouts/menu-bar/menu-bar.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
-import { homeReducer, instanceInfoReducer } from "./features/home/store/reducers";
+import {
+  homeReducer,
+  instanceInfoReducer,
+} from "./features/home/store/reducers";
 import { ProbeDataReducer } from "./features/sub-features/probes-data/store/reducers";
 import * as HomeEffects from "./features/home/store/effects";
 import * as ProbesEffects from "./features/sub-features/probes-data/store/effects";
@@ -53,8 +60,14 @@ import { CustomSnackBarComponent } from "./shared/components/custom-snack-bar/cu
 import { JsonViewerModule } from "./shared/components/json-viewer/json-viewer.module";
 import { AuthInterceptorService } from "./auth/services/auth-interceptor.service";
 import { StreamModule } from "./features/stream/stream.module";
-import { consumerThreadPoolReducer, streamsReducer } from "./features/stream/store/reducers";
-import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./features/stream/components/consumer-position/store/reducers";
+import {
+  consumerThreadPoolReducer,
+  streamsReducer,
+} from "./features/stream/store/reducers";
+import {
+  changeConsumerPositionReducer,
+  fetchConsumerPositionReducer,
+} from "./features/stream/components/consumer-position/store/reducers";
 
 @NgModule({
   declarations: [
@@ -67,10 +80,10 @@ import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./f
     ErrorModalComponent,
     CustomSnackBarComponent,
   ],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     RouterModule,
     CommonModule,
     AppRoutingModule,
@@ -126,7 +139,7 @@ import { changeConsumerPositionReducer, fetchConsumerPositionReducer } from "./f
     },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } },
     ngrxDevtools,
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

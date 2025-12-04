@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { of, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NuxeoStreamProcessorInfoComponent } from './nuxeo-stream-processor-info.component';
 import { StreamService } from '../../services/stream.service';
 import { SharedMethodsService } from '../../../../shared/services/shared-methods.service';
@@ -18,22 +18,27 @@ describe('NuxeoStreamProcessorInfoComponent', () => {
   let mockSharedService: jasmine.SpyObj<SharedMethodsService>;
 
   beforeEach(() => {
-    mockStreamService = jasmine.createSpyObj('StreamService', ['getStreamProcessorInfo']);
-    mockSharedService = jasmine.createSpyObj('SharedMethodsService', ['showActionErrorModal']);
+    mockStreamService = jasmine.createSpyObj("StreamService", [
+      "getStreamProcessorInfo",
+    ]);
+    mockSharedService = jasmine.createSpyObj("SharedMethodsService", [
+      "showActionErrorModal",
+    ]);
 
     TestBed.configureTestingModule({
       declarations: [NuxeoStreamProcessorInfoComponent],
       imports: [
-        HttpClientTestingModule,
         MatSnackBarModule,
         MatDialogModule,
         CommonModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
       ],
       providers: [
         { provide: StreamService, useValue: mockStreamService },
-        { provide: SharedMethodsService, useValue: mockSharedService }
-      ]
+        { provide: SharedMethodsService, useValue: mockSharedService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
     fixture = TestBed.createComponent(NuxeoStreamProcessorInfoComponent);
     component = fixture.componentInstance;

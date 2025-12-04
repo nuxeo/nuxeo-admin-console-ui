@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProbesSummaryComponent } from './probes-summary.component';
 import {  StoreModule } from '@ngrx/store';
 import { ProbeDataReducer } from '../../../sub-features/probes-data/store/reducers';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,7 @@ import { ProbesDataComponent } from '../../../sub-features/probes-data/component
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ProbesSummaryComponent', () => {
   let component: ProbesSummaryComponent;
@@ -18,16 +19,19 @@ describe('ProbesSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProbesSummaryComponent, ProbesDataComponent], 
+      declarations: [ProbesSummaryComponent, ProbesDataComponent],
       imports: [
-        StoreModule.forRoot({ probes: ProbeDataReducer }), 
-        HttpClientTestingModule,
+        StoreModule.forRoot({ probes: ProbeDataReducer }),
         CommonModule,
         MatCardModule,
         MatSnackBarModule,
         MatTableModule,
         BrowserAnimationsModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+      ],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

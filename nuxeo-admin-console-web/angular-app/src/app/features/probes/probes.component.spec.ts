@@ -5,7 +5,7 @@ import {
   ProbeDataReducer,
   ProbeState,
 } from "../sub-features/probes-data/store/reducers";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
@@ -17,7 +17,7 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { Subscription } from "rxjs";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { initialState } from "../home/store/reducers";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { SharedMethodsService } from "../../shared/services/shared-methods.service";
 import { PROBES_LABELS } from "../sub-features/probes-data/probes-data.constants";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -37,14 +37,8 @@ describe("ProbesComponent", () => {
     ]);
     await TestBed.configureTestingModule({
       declarations: [ProbesComponent, ProbesDataComponent],
-      providers: [
-        { provide: MatSnackBar, useValue: snackBar },
-        provideMockStore({ initialState: { probes: initialState } }),
-        { provide: SharedMethodsService, useValue: sharedMethodsService },
-      ],
       imports: [
         StoreModule.forRoot({ probes: ProbeDataReducer }),
-        HttpClientTestingModule,
         CommonModule,
         MatCardModule,
         MatSnackBarModule,
@@ -52,6 +46,13 @@ describe("ProbesComponent", () => {
         BrowserAnimationsModule,
         MatPaginatorModule,
         MatTooltipModule,
+      ],
+      providers: [
+        { provide: MatSnackBar, useValue: snackBar },
+        provideMockStore({ initialState: { probes: initialState } }),
+        { provide: SharedMethodsService, useValue: sharedMethodsService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

@@ -1,5 +1,4 @@
 import { TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { HttpClient } from "@angular/common/http";
 import { NetworkService } from "./network.service";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
@@ -22,7 +21,7 @@ describe("NetworkService", () => {
     ]);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         NetworkService,
         { provide: HttpClient, useValue: httpSpy },
@@ -31,10 +30,8 @@ describe("NetworkService", () => {
     });
 
     service = TestBed.inject(NetworkService);
-    httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
-    nuxeoJsClientServiceSpy = TestBed.inject(
-      NuxeoJSClientService
-    ) as jasmine.SpyObj<NuxeoJSClientService>;
+    httpClientSpy = httpSpy;
+    nuxeoJsClientServiceSpy = nuxeoSpy;
   });
 
   it("should return the correct API endpoint for LTS2023", () => {

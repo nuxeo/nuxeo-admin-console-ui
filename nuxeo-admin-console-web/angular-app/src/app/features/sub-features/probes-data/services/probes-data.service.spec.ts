@@ -1,8 +1,9 @@
 import { TestBed } from "@angular/core/testing";
 import { ProbeDataService } from "./probes-data.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { NetworkService } from "../../../../shared/services/network.service";
 import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("ProbeDataService", () => {
   let service: ProbeDataService;
@@ -11,8 +12,13 @@ describe("ProbeDataService", () => {
   beforeEach(() => {
     const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ProbeDataService, { provide: NetworkService, useValue: spy }],
+      imports: [],
+      providers: [
+        ProbeDataService,
+        { provide: NetworkService, useValue: spy },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
     service = TestBed.inject(ProbeDataService);
     networkService = TestBed.inject(

@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 
 import { GetScalingAnalysisComponent } from "./get-scaling-analysis.component";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
 import { StreamService } from "../../services/stream.service";
 import { of, throwError } from "rxjs";
 import { ERROR_TYPES } from "../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -29,7 +29,6 @@ describe("GetScalingAnalysisComponent", () => {
     TestBed.configureTestingModule({
       declarations: [GetScalingAnalysisComponent],
       imports: [
-        HttpClientTestingModule,
         MatSnackBarModule,
         MatDialogModule,
         CommonModule,
@@ -38,6 +37,8 @@ describe("GetScalingAnalysisComponent", () => {
       providers: [
         { provide: SharedMethodsService, useValue: mockSharedService },
         { provide: StreamService, useValue: mockStreamService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
     fixture = TestBed.createComponent(GetScalingAnalysisComponent);

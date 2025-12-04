@@ -14,7 +14,7 @@ import {
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { Store, StoreModule } from "@ngrx/store";
 import { of } from "rxjs";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import * as fromReducer from "../../../store/reducers";
 import * as BulkActionMonitoringActions from "../../../store/actions";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
@@ -22,6 +22,7 @@ import { ActivatedRoute } from "@angular/router";
 import { GenericMultiFeatureUtilitiesService } from "../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service";
 import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
 import { MODAL_DIMENSIONS } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("BulkActionMonitoringFormComponent", () => {
   let component: BulkActionMonitoringFormComponent;
@@ -72,7 +73,6 @@ describe("BulkActionMonitoringFormComponent", () => {
     await TestBed.configureTestingModule({
       declarations: [BulkActionMonitoringFormComponent],
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
@@ -98,6 +98,8 @@ describe("BulkActionMonitoringFormComponent", () => {
             }),
           },
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
   });

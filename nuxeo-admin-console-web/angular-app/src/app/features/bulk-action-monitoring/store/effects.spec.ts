@@ -1,10 +1,10 @@
 import { loadPerformBulkActionMonitoringEffect } from "./effects";
 import { TestBed } from "@angular/core/testing";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { of, throwError } from "rxjs";
 import * as BulkActionMonitoringActions from "./actions";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { BulkActionMonitoringService } from "../services/bulk-action-monitoring.service";
 
 describe("ElasticSearch Reindex Effects", () => {
@@ -14,13 +14,15 @@ describe("ElasticSearch Reindex Effects", () => {
   );
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         provideMockStore(),
         {
           provide: BulkActionMonitoringService,
           useValue: bulkActionMonitoringServiceSpy,
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
   });
