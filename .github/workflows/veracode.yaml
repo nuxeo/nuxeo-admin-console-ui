@@ -83,7 +83,7 @@ jobs:
         run: zip -r nuxeo-admin-console-ui.zip *
 
       - name: Upload ZIP as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: nuxeo-admin-console-ui
           path: nuxeo-admin-console-web/angular-app/nuxeo-admin-console-ui.zip

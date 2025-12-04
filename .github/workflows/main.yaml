@@ -139,7 +139,7 @@ jobs:
           step: save
 
       - name: Archive Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: packages-v23
           path: |
@@ -283,7 +283,7 @@ jobs:
           step: save
 
       - name: Archive Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: packages-v25
           path: |
