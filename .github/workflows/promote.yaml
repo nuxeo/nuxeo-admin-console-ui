@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: v${{ github.event.inputs.version }}
           token: ${{ secrets.GIT_TOKEN }}
@@ -182,7 +182,7 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Convert v23 input to v25
           ref: v${{ github.event.inputs.version }}
@@ -333,7 +333,7 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.GIT_TOKEN }}
           ref: dev
