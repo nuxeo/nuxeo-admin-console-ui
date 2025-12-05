@@ -1,27 +1,37 @@
 <div class="configuration-container">
-    <h5 *ngIf="isDataLoaded && !isError && isValidData(configurationDetails)">{{CONFIGURATION_DETAILS_CONSTANTS.TITLE}}
-    </h5>
-    <!-- Loading State -->
-    <div class="loading-container" *ngIf="!isDataLoaded && !isError">
-        <mat-spinner [diameter]="50"></mat-spinner>
-        <p>{{ CONFIGURATION_DETAILS_CONSTANTS.LOADING_MSG }}</p>
+  @if (isDataLoaded && !isError && isValidData(configurationDetails)) {
+  <h5>{{CONFIGURATION_DETAILS_CONSTANTS.TITLE}}
+  </h5>
+  }
+  <!-- Loading State -->
+  @if (!isDataLoaded && !isError) {
+  <div class="loading-container">
+    <mat-spinner [diameter]="50"></mat-spinner>
+    <p>{{ CONFIGURATION_DETAILS_CONSTANTS.LOADING_MSG }}</p>
+  </div>
+  }
+  <!-- Error State -->
+  @if (isError) {
+  <div class="error-container">
+    <h3>
+      {{ CONFIGURATION_DETAILS_CONSTANTS.API_FAILURE_MESSAGE }}
+    </h3>
+    <button mat-raised-button color="primary" (click)="getConfigurationDetails()">
+      {{ CONFIGURATION_DETAILS_CONSTANTS.RETRY_BTN_LABEL }}
+    </button>
+  </div>
+  }
+  <!-- No Data State -->
+  @if (isDataLoaded && !isError && !isValidData(configurationDetails)) {
+  <div class="no-data-container">
+    <h3>{{ CONFIGURATION_DETAILS_CONSTANTS.NO_DATA_MSG }}</h3>
+  </div>
+  }
+  <!-- Data Available State -->
+  @if (isDataLoaded && !isError && isValidData(configurationDetails)) {
+  <div class="main-flex-container">
+    <div class="configuration-data-container">
+      <custom-nuxeo-json-viewer [json]="configurationDetails" [expanded]="false"></custom-nuxeo-json-viewer>
     </div>
-    <!-- Error State -->
-    <div class="error-container" *ngIf="isError">
-        <h3>
-            {{ CONFIGURATION_DETAILS_CONSTANTS.API_FAILURE_MESSAGE }}
-        </h3>
-        <button mat-raised-button color="primary" (click)="getConfigurationDetails()">
-            {{ CONFIGURATION_DETAILS_CONSTANTS.RETRY_BTN_LABEL }}
-        </button>
-    </div>
-    <!-- No Data State -->
-    <div class="no-data-container" *ngIf="isDataLoaded && !isError && !isValidData(configurationDetails)">
-        <h3>{{ CONFIGURATION_DETAILS_CONSTANTS.NO_DATA_MSG }}</h3>
-    </div>
-    <!-- Data Available State -->
-    <div class="main-flex-container" *ngIf="isDataLoaded && !isError && isValidData(configurationDetails)">
-        <div class="configuration-data-container">
-            <custom-nuxeo-json-viewer [json]="configurationDetails" [expanded]="false"></custom-nuxeo-json-viewer>
-        </div>
-    </div>
+  </div>
+  }

@@ -14,16 +14,17 @@
       <span class="registration-version__label">{{ REGISTRATION_VERSION_LABELS.CLUSTER_ENABLED }}</span>
       {{ versionInformation?.clusterEnabled }}
     </p>
-    <div *ngFor="let item of INSTANCE_INFO_DATA_LABELS">
+    @for (item of INSTANCE_INFO_DATA_LABELS; track item) {
+    <div>
       <p class="instance-info__item">
         <span class="instance-info__label">{{ item.label }}</span>
-        <ng-container *ngIf="item.isDate; else normalValue">
-          {{ instanceInformation?.[item.key] | date: 'medium' }}
-        </ng-container>
-        <ng-template #normalValue>
-          {{ instanceInformation?.[item.key] || 'NA'}}
-        </ng-template>
+        @if (item.isDate) {
+        {{ instanceInformation?.[item.key] | date: 'medium' }}
+        } @else {
+        {{ instanceInformation?.[item.key] || 'NA'}}
+        }
       </p>
     </div>
+    }
   </div>
 </mat-card>

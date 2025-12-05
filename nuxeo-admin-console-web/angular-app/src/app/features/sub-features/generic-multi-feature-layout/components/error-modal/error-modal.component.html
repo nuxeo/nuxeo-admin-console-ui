@@ -1,16 +1,21 @@
 <h2> {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }} </h2>
 <hr class="separator">
 <mat-dialog-content class="mat-typography error-modal">
-  <div *ngIf="data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR else customErrorMessage;">
-    <p *ngIf="data.error.details.message !== CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG">
+  @if (data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR) {
+  <div>
+    @if (data.error.details.message !== CONSUMER_THREAD_POOL_LABELS.CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG) {
+    <p>
       {{ERROR_MODAL_LABELS.ERROR_SUBHEADING}}
-    </p> <!-- Hide generic error message for consumer thread pool operation -->
-    <p *ngIf="data.error.details.status">{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+    </p>
+    } <!-- Hide generic error message for consumer thread pool operation -->
+    @if (data.error.details.status) {
+    <p>{{ERROR_MODAL_LABELS.ERROR_STATUS}} {{data.error.details.status}}</p>
+    }
     <p>{{ERROR_MODAL_LABELS.ERROR_DETAILS}} {{data.error.details.message}}</p>
   </div>
-  <ng-template #customErrorMessage>
-    <p>{{getCustomErrorMessage()}}</p>
-  </ng-template>
+  } @else {
+  <p>{{getCustomErrorMessage()}}</p>
+  }
 </mat-dialog-content>
 <hr class="separator">
 <mat-dialog-actions>

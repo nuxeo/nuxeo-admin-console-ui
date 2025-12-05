@@ -1,120 +1,134 @@
 <div class="stream-form-container">
-    <form [formGroup]="streamForm" (ngSubmit)="onStreamFormSubmit()">
-        <div class="stream-form-container--stream-container">
-            <p id="requiredField"> {{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
-            <p class="label form-param">{{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span></p>
-            <mat-form-field appearance="outline" class="input-field stream-field">
-                <mat-select #focusMatSelect matNativeControl formControlName="stream" id="stream"
-                    (selectionChange)="onStreamChange($event.value)">
-                    <mat-option *ngFor="let stream of streams" [value]="stream?.name">
-                        {{ stream?.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <hr>
-        <div class="stream-form-container--position-container">
-            <p class="label form-param">
-                {{ STREAM_LABELS.POSITION }}<span class="required-indicator">*</span>
-            </p>
-            <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
-                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.BEGINNING.LABEL }}</p>
-                </mat-radio-button>
-                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.TAIL.LABEL }}</p>
-                </mat-radio-button>
-                <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.CONSUMER.VALUE" class="complex-radio">
-                    <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER.LABEL }}</p>
-                    <mat-form-field appearance="outline" class="input-field stream-field">
-                      <mat-select id="consumer" formControlName="selectedConsumer" 
-                        (selectionChange)="onConsumerOptionChange($event.value)">
-                        <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
-                          {{ consumer?.consumer }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </mat-radio-button>
-                  
+  <form [formGroup]="streamForm" (ngSubmit)="onStreamFormSubmit()">
+    <div class="stream-form-container--stream-container">
+      <p id="requiredField">{{ GENERIC_LABELS.REQUIRED_FIELD_INDICATOR }}</p>
+      <p class="label form-param">
+        {{ STREAM_LABELS.STREAMS }}<span class="required-indicator">*</span>
+      </p>
+      <mat-form-field appearance="outline" class="input-field stream-field">
+        <mat-select #focusMatSelect matNativeControl formControlName="stream" id="stream"
+          (selectionChange)="onStreamChange($event.value)">
+          @for (stream of streams; track stream) {
+          <mat-option [value]="stream?.name">
+            {{ stream?.name }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <hr />
+    <div class="stream-form-container--position-container">
+      <p class="label form-param">
+        {{ STREAM_LABELS.POSITION }}<span class="required-indicator">*</span>
+      </p>
+      <mat-radio-group class="radio-group-container" matNativeControl formControlName="position" id="position">
+        <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE">
+          <p class="label">
+            {{ STREAM_LABELS.POSITION_OPTIONS.BEGINNING.LABEL }}
+          </p>
+        </mat-radio-button>
+        <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.TAIL.VALUE">
+          <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.TAIL.LABEL }}</p>
+        </mat-radio-button>
+        <mat-radio-button [value]="STREAM_LABELS.POSITION_OPTIONS.CONSUMER.VALUE" class="complex-radio">
+          <p class="label">
+            {{ STREAM_LABELS.POSITION_OPTIONS.CONSUMER.LABEL }}
+          </p>
+          <mat-form-field appearance="outline" class="input-field stream-field">
+            <mat-select id="consumer" formControlName="selectedConsumer"
+              (selectionChange)="onConsumerOptionChange($event.value)">
+              @for (consumer of consumers; track consumer) {
+              <mat-option [value]="consumer?.consumer">
+                {{ consumer?.consumer }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </mat-radio-button>
 
-                <mat-radio-button class="complex-radio" [value]="STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE">
-                    <div class="radio-content">
-                        <div class="field-group">
-                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.OFFSET.LABEL }}</p>
-                            <mat-form-field appearance="outline" class="offset-partition-field">
-                                <input type="number" id="offset" name="offset" matNativeControl
-                                    formControlName="offset" />
-                            </mat-form-field>
-                        </div>
-
-                        <div class="field-group">
-                            <p class="label">{{ STREAM_LABELS.POSITION_OPTIONS.PARTITITON.LABEL }}</p>
-                            <mat-form-field appearance="outline" class="offset-partition-field">
-                                <input type="number" id="partition" name="partition" matNativeControl
-                                    formControlName="partition" />
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </mat-radio-button>
-
-            </mat-radio-group>
-        </div>
-
-        <div class="stream-form-container--config-container">
-            <div class="config-group">
-                <div class="field-group">
-                    <p class="label form-param">{{ STREAM_LABELS.REWIND }}</p>
-                    <mat-form-field appearance="outline">
-                        <mat-select matNativeControl formControlName="rewind" id="rewind"
-                            (selectionChange)="onRewindValSelect($event.value)" [value]="selectedRewindValue">
-                            <mat-option *ngFor="let val of rewindValues" [value]="val">
-                                {{ val }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-
-                <div class="field-group">
-                    <p class="label form-param">{{ STREAM_LABELS.LIMIT }}</p>
-                    <mat-form-field appearance="outline">
-                        <mat-select matNativeControl formControlName="limit" id="limit"
-                            (selectionChange)="onLimitValSelect($event.value)" [value]="selectedLimitValue">
-                            <mat-option *ngFor="let val of limitValues" [value]="val">
-                                {{ val }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-
-                <div class="field-group">
-                    <p class="label form-param">{{ STREAM_LABELS.TIMEOUT }}</p>
-                    <mat-form-field appearance="outline">
-                        <mat-select matNativeControl formControlName="timeout" id="timeout"
-                            (selectionChange)="onTimeoutValSelect($event.value)" [value]="selectedTimeoutValue">
-                            <mat-option *ngFor="let val of timeoutValues" [value]="val">
-                                {{ val }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+        <mat-radio-button class="complex-radio" [value]="STREAM_LABELS.POSITION_OPTIONS.OFFSET.VALUE">
+          <div class="radio-content">
+            <div class="field-group">
+              <p class="label">
+                {{ STREAM_LABELS.POSITION_OPTIONS.OFFSET.LABEL }}
+              </p>
+              <mat-form-field appearance="outline" class="offset-partition-field">
+                <input type="number" id="offset" name="offset" matNativeControl formControlName="offset" />
+              </mat-form-field>
             </div>
+
+            <div class="field-group">
+              <p class="label">
+                {{ STREAM_LABELS.POSITION_OPTIONS.PARTITITON.LABEL }}
+              </p>
+              <mat-form-field appearance="outline" class="offset-partition-field">
+                <input type="number" id="partition" name="partition" matNativeControl formControlName="partition" />
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="stream-form-container--config-container">
+      <div class="config-group">
+        <div class="field-group">
+          <p class="label form-param">{{ STREAM_LABELS.REWIND }}</p>
+          <mat-form-field appearance="outline">
+            <mat-select matNativeControl formControlName="rewind" id="rewind"
+              (selectionChange)="onRewindValSelect($event.value)" [value]="selectedRewindValue">
+              @for (val of rewindValues; track val) {
+              <mat-option [value]="val">
+                {{ val }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
 
-
-        <div class="stream-form-container--actions">
-            <button mat-flat-button color="primary" type="submit" class="stream-form-container__button"
-                [disabled]="isSubmitBtnDisabled">
-                {{ STREAM_LABELS.VIEW_RECORDS }}
-            </button>
-            <button mat-flat-button color="primary" type="button" class="stream-form-container__button"
-                [disabled]="isStopFetchBtnDisabled" (click)="onStopFetch()">
-                {{ STREAM_LABELS.STOP_FETCH }}
-            </button>
-            <button mat-flat-button color="primary" type="button" class="stream-form-container__button"
-                [disabled]="isClearBtnDisabled" (click)="onClearRecords()">
-                {{ STREAM_LABELS.CLEAR_RECORDS }}
-            </button>
+        <div class="field-group">
+          <p class="label form-param">{{ STREAM_LABELS.LIMIT }}</p>
+          <mat-form-field appearance="outline">
+            <mat-select matNativeControl formControlName="limit" id="limit"
+              (selectionChange)="onLimitValSelect($event.value)" [value]="selectedLimitValue">
+              @for (val of limitValues; track val) {
+              <mat-option [value]="val">
+                {{ val }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
 
-    </form>
+        <div class="field-group">
+          <p class="label form-param">{{ STREAM_LABELS.TIMEOUT }}</p>
+          <mat-form-field appearance="outline">
+            <mat-select matNativeControl formControlName="timeout" id="timeout"
+              (selectionChange)="onTimeoutValSelect($event.value)" [value]="selectedTimeoutValue">
+              @for (val of timeoutValues; track val) {
+              <mat-option [value]="val">
+                {{ val }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="stream-form-container--actions">
+      <button mat-flat-button color="primary" type="submit" class="stream-form-container__button"
+        [disabled]="isSubmitBtnDisabled">
+        {{ STREAM_LABELS.VIEW_RECORDS }}
+      </button>
+      <button mat-flat-button color="primary" type="button" class="stream-form-container__button"
+        [disabled]="isStopFetchBtnDisabled" (click)="onStopFetch()">
+        {{ STREAM_LABELS.STOP_FETCH }}
+      </button>
+      <button mat-flat-button color="primary" type="button" class="stream-form-container__button"
+        [disabled]="isClearBtnDisabled" (click)="onClearRecords()">
+        {{ STREAM_LABELS.CLEAR_RECORDS }}
+      </button>
+    </div>
+  </form>
 </div>

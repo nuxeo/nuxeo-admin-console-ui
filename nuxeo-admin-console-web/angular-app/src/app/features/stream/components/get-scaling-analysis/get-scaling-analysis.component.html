@@ -1,11 +1,14 @@
 <div class="scaling-analysis-container">
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="!isDataLoaded && !isError">
+  @if (!isDataLoaded && !isError) {
+  <div class="loading-container">
     <mat-spinner [diameter]="50"></mat-spinner>
     <p>Loading data...</p>
   </div>
+  }
   <!-- Error State -->
-  <div class="error-container" *ngIf="isError">
+  @if (isError) {
+  <div class="error-container">
     <h3>
       {{ GENERIC_API_LABELS.API_FAILURE_MESSAGE }}
     </h3>
@@ -13,13 +16,18 @@
       {{ GENERIC_API_LABELS.RETRY_BTN_LABEL }}
     </button>
   </div>
+  }
   <!-- No Data State -->
-  <div class="no-data-container" *ngIf="isDataLoaded && !isError && !isValidData(scalingAnalysisData)">
+  @if (isDataLoaded && !isError && !isValidData(scalingAnalysisData)) {
+  <div class="no-data-container">
     <h3>{{ GET_SCALING_ANALYSIS_LABELS.NO_DATA_MSG }}</h3>
   </div>
+  }
   <!-- Data Available State -->
-  <div class="main-flex-container" *ngIf="isDataLoaded && !isError && isValidData(scalingAnalysisData)">
+  @if (isDataLoaded && !isError && isValidData(scalingAnalysisData)) {
+  <div class="main-flex-container">
     <div class="scaling-analysis-data-container">
       <custom-nuxeo-json-viewer [json]="scalingAnalysisData" [expanded]="false"></custom-nuxeo-json-viewer>
     </div>
-</div>
+  </div>
+  }

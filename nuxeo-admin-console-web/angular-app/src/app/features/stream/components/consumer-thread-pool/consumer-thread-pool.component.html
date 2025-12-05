@@ -16,9 +16,11 @@
             id="stream"
             (selectionChange)="onStreamChange($event.value)"
           >
-            <mat-option *ngFor="let stream of streams" [value]="stream?.name">
+            @for (stream of streams; track stream) {
+            <mat-option [value]="stream?.name">
               {{ stream?.name }}
             </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -29,12 +31,11 @@
         </p>
         <mat-form-field appearance="outline" class="input-field consumer-field">
           <mat-select id="consumer" formControlName="consumer">
-            <mat-option
-              *ngFor="let consumer of consumers"
-              [value]="consumer?.consumer"
-            >
+            @for (consumer of consumers; track consumer) {
+            <mat-option [value]="consumer?.consumer">
               {{ consumer?.consumer }}
             </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
