@@ -17,6 +17,7 @@ import { Title } from "@angular/platform-browser";
   selector: "generic-multi-feature-layout",
   templateUrl: "./generic-multi-feature-layout.component.html",
   styleUrls: ["./generic-multi-feature-layout.component.scss"],
+  standalone: false
 })
 export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
   searchTabs: TabInfo[] = TAB_INFO;

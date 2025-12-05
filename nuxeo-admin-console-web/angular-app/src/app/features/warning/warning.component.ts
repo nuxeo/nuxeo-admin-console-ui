@@ -12,6 +12,7 @@ import { WARNING_DIALOG_CONSTANTS } from './warning.constants';
   selector: "warning",
   templateUrl: "./warning.component.html",
   styleUrls: ["./warning.component.scss"],
+  standalone: false
 })
 export class WarningComponent implements OnInit, OnDestroy {
   public doNotWarn = false;

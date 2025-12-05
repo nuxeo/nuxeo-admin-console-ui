@@ -30,6 +30,7 @@ import * as ConsumerPositionSelectors from "../store/selectors";
   selector: "fetch-consumer-position",
   templateUrl: "./fetch-consumer-position.component.html",
   styleUrls: ["./fetch-consumer-position.component.scss"],
+  standalone: false
 })
 export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
   fetchConsumerForm!: FormGroup<any>;

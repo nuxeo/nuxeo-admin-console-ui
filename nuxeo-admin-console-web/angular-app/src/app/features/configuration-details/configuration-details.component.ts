@@ -11,6 +11,7 @@ import { ERROR_TYPES } from "../sub-features/generic-multi-feature-layout/generi
   selector: "app-configuration-details",
   templateUrl: "./configuration-details.component.html",
   styleUrls: ["./configuration-details.component.scss"],
+  standalone: false
 })
 export class ConfigurationDetailsComponent implements OnInit, OnDestroy {
   CONFIGURATION_DETAILS_CONSTANTS = CONFIGURATION_DETAILS_CONSTANTS;

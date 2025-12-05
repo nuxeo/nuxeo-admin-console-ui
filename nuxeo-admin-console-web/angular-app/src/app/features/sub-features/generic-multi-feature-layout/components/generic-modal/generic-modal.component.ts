@@ -9,6 +9,7 @@ import { CHANGE_CONSUMER_POSITION_LABELS, CONSUMER_THREAD_POOL_LABELS } from "..
   selector: "generic-modal",
   templateUrl: "./generic-modal.component.html",
   styleUrls: ["./generic-modal.component.scss"],
+  standalone: false
 })
 export class GenericModalComponent  {
   GENERIC_LABELS = GENERIC_LABELS;

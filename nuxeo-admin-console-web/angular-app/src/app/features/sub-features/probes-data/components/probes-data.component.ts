@@ -15,6 +15,7 @@ import { MatTableDataSource } from "@angular/material/table";
   selector: "probes-data",
   templateUrl: "./probes-data.component.html",
   styleUrls: ["./probes-data.component.scss"],
+  standalone: false
 })
 export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() summary = false;

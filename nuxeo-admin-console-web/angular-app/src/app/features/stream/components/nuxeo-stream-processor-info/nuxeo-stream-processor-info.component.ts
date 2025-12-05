@@ -13,6 +13,7 @@ import {
   selector: "app-nuxeo-stream-processor-info",
   templateUrl: "./nuxeo-stream-processor-info.component.html",
   styleUrls: ["./nuxeo-stream-processor-info.component.scss"],
+  standalone: false
 })
 export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
   destroy$: Subject<void> = new Subject<void>();

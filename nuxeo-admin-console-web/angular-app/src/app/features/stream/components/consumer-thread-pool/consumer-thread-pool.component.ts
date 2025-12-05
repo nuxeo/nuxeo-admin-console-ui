@@ -30,6 +30,7 @@ import { StreamService } from "../../services/stream.service";
   selector: "app-consumer-thread-pool",
   templateUrl: "./consumer-thread-pool.component.html",
   styleUrls: ["./consumer-thread-pool.component.scss"],
+  standalone: false
 })
 export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   GENERIC_LABELS = GENERIC_LABELS;

@@ -14,6 +14,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   selector: "app-get-scaling-analysis",
   templateUrl: "./get-scaling-analysis.component.html",
   styleUrls: ["./get-scaling-analysis.component.scss"],
+  standalone: false
 })
 export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
   scalingAnalysisData: any;

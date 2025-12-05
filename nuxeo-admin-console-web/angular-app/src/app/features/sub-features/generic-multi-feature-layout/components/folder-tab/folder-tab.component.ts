@@ -47,6 +47,7 @@ import {
   selector: "folder-tab",
   templateUrl: "./folder-tab.component.html",
   styleUrls: ["./folder-tab.component.scss"],
+  standalone: false
 })
 export class FolderTabComponent implements OnInit, OnDestroy {
   spinnerVisible = false;

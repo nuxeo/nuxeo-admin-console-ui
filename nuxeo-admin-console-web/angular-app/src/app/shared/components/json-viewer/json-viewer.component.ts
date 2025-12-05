@@ -32,6 +32,7 @@ export interface Segment {
   templateUrl: "json-viewer.component.html",
   styleUrls: ["json-viewer.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class JsonViewerComponent
   implements OnChanges, OnDestroy, AfterViewInit

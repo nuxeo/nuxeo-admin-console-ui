@@ -30,6 +30,7 @@ import { ErrorDetails } from "../../../../sub-features/generic-multi-feature-lay
   selector: "bulk-action-monitoring-form",
   templateUrl: "./bulk-action-monitoring-form.component.html",
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
+  standalone: false
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   @Output() setBulkActionResponse =

@@ -12,6 +12,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   templateUrl: "./bulk-action-monitoring-summary.component.html",
   styleUrls: ["./bulk-action-monitoring-summary.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BulkActionMonitoringSummaryComponent implements OnChanges {
   @Input() bulkActionSummary: BulkActionInfoSummary =

@@ -6,6 +6,7 @@ import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
   selector: "bulk-action-monitoring",
   templateUrl: "./bulk-action-monitoring.component.html",
   styleUrls: ["./bulk-action-monitoring.component.scss"],
+  standalone: false
 })
 export class BulkActionMonitoringComponent {
   bulkActionResponse: BulkActionMonitoringInfo | null = {} as BulkActionMonitoringInfo;

@@ -4,6 +4,7 @@ import { Component, ViewEncapsulation } from "@angular/core";
   templateUrl: "./probes-summary.component.html",
   styleUrls: ["./probes-summary.component.scss"],
   encapsulation: ViewEncapsulation.None ,
+  standalone: false
 })
 export class ProbesSummaryComponent {
 }

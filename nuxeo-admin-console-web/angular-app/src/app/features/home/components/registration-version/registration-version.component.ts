@@ -14,6 +14,7 @@ import { SharedMethodsService } from "../../../../shared/services/shared-methods
   selector: "registration-version",
   templateUrl: "./registration-version.component.html",
   styleUrls: ["./registration-version.component.scss"],
+  standalone: false
 })
 export class RegistrationVersionComponent implements OnInit, OnDestroy {
   versionInfo$: Observable<versionInfo>;

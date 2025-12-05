@@ -8,6 +8,7 @@ import { MAIN_TAB_LABELS } from "../../stream.constants";
   selector: "consumer-position",
   templateUrl: "./consumer-position.component.html",
   styleUrls: ["./consumer-position.component.css"],
+  standalone: false
 })
 export class ConsumerPositionComponent implements OnInit, OnDestroy {
   selectedTabIndex = 0;

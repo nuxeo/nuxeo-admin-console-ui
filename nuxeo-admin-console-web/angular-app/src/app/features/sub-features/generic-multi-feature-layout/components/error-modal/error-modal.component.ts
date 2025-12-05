@@ -8,6 +8,7 @@ import { CONSUMER_THREAD_POOL_LABELS } from '../../../../stream/stream.constants
   selector: "error-modal",
   templateUrl: "./error-modal.component.html",
   styleUrls: ["./error-modal.component.scss"],
+  standalone: false
 })
 export class ErrorModalComponent {
   ERROR_TYPES = ERROR_TYPES;

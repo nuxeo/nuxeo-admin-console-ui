@@ -10,6 +10,7 @@ import { SnackBarData } from "../../types/common.interface";
   selector: "custom-snack-bar",
   templateUrl: "./custom-snack-bar.component.html",
   styleUrls: ["./custom-snack-bar.component.scss"],
+  standalone: false
 })
 export class CustomSnackBarComponent {
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;

@@ -20,6 +20,7 @@ import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
   selector: "stream",
   templateUrl: "./stream.component.html",
   styleUrls: ["./stream.component.scss"],
+  standalone: false
 })
 export class StreamComponent implements OnInit, OnDestroy {
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;

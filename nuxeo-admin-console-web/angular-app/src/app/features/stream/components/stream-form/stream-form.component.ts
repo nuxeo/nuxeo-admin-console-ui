@@ -23,7 +23,8 @@ import { MatSelect } from "@angular/material/select";
 @Component({
   selector: "stream-form",
   templateUrl: "./stream-form.component.html",
-  styleUrls: ["./stream-form.component.scss"]
+  styleUrls: ["./stream-form.component.scss"],
+  standalone: false
 })
 
 export class StreamFormComponent implements OnInit, OnDestroy {

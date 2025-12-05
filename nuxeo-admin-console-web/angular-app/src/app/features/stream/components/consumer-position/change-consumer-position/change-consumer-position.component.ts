@@ -33,6 +33,7 @@ import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interfa
   selector: "change-consumer-position",
   templateUrl: "./change-consumer-position.component.html",
   styleUrls: ["./change-consumer-position.component.scss"],
+  standalone: false
 })
 export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
   consumerPositionForm: FormGroup;

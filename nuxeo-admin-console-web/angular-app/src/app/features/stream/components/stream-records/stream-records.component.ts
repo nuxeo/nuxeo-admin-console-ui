@@ -8,6 +8,7 @@ import {
   templateUrl: "./stream-records.component.html",
   styleUrls: ["./stream-records.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 
 export class StreamRecordsComponent {

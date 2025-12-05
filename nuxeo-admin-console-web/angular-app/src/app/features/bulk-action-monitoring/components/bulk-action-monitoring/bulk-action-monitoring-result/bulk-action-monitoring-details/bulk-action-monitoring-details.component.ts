@@ -7,6 +7,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/c
   templateUrl: "./bulk-action-monitoring-details.component.html",
   styleUrls: ["./bulk-action-monitoring-details.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BulkActionMonitoringDetailsComponent implements OnChanges {
   @Input() bulkActionDetails: BulkActionInfoDetails =

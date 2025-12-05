@@ -48,6 +48,7 @@ import {
   selector: "nxql-tab",
   templateUrl: "./nxql-tab.component.html",
   styleUrls: ["./nxql-tab.component.scss"],
+  standalone: false
 })
 export class NXQLTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;

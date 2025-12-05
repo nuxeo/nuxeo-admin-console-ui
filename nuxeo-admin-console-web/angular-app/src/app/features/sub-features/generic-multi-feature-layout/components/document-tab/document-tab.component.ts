@@ -47,6 +47,7 @@ type ActionsImportFunction = () => Promise<unknown>;
   selector: "document-tab",
   templateUrl: "./document-tab.component.html",
   styleUrls: ["./document-tab.component.scss"],
+  standalone: false
 })
 export class DocumentTabComponent implements OnInit, OnDestroy {
   inputForm: FormGroup;

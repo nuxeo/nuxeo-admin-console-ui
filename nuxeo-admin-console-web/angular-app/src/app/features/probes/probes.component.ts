@@ -16,6 +16,7 @@ import * as ProbeActions from "../sub-features/probes-data/store/actions";
   selector: "probes",
   templateUrl: "./probes.component.html",
   styleUrls: ["./probes.component.scss"],
+  standalone: false
 })
 export class ProbesComponent {
   PROBES_LABELS = PROBES_LABELS;

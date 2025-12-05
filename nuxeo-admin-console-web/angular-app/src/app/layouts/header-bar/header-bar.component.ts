@@ -10,6 +10,7 @@ import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
   selector: "header-bar",
   templateUrl: "./header-bar.component.html",
   styleUrls: ["./header-bar.component.scss"],
+  standalone: false
 })
 export class HeaderBarComponent implements OnInit, OnDestroy {
   currentUser$: Observable<UserInterface | null | undefined>;
