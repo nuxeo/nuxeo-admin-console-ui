@@ -7,7 +7,7 @@ import { MAIN_TAB_LABELS } from "../../stream.constants";
 @Component({
   selector: "consumer-position",
   templateUrl: "./consumer-position.component.html",
-  styleUrls: ["./consumer-position.component.css"],
+  styleUrls: ["./consumer-position.component.scss"],
   standalone: false
 })
 export class ConsumerPositionComponent implements OnInit, OnDestroy {
