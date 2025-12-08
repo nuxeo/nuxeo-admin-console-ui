@@ -27,7 +27,7 @@
       id="inputIdentifier"
       required
     />
-    @if (inputForm?.get('inputIdentifier')?.invalid) {
+    @if (inputForm.get('inputIdentifier')?.invalid) {
     <mat-error>
       {{ getErrorMessage() }}
     </mat-error>

@@ -4,8 +4,8 @@
       <span class="action-name">
         {{ bulkActionSummary.action }}
       </span>
-      @if (bulkActionSummary?.state !== BULK_ACTION_LABELS.RUNNING_STATE &&
-      bulkActionSummary?.state !== BULK_ACTION_LABELS.SCROLLING_RUNNING_STATE) {
+      @if (bulkActionSummary.state !== BULK_ACTION_LABELS.RUNNING_STATE &&
+      bulkActionSummary.state !== BULK_ACTION_LABELS.SCROLLING_RUNNING_STATE) {
       <span class="action-status">{{ nonRunningText }}</span>
       } @else {
       <span class="action-status">{{ getRunningStatusText() }}</span>

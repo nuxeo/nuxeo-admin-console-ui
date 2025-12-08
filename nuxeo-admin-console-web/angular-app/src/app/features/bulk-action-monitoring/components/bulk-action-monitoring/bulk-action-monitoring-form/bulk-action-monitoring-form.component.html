@@ -8,7 +8,7 @@
     <mat-form-field appearance="outline" class="input-field">
       <input matInput placeholder="{{ BULK_ACTION_LABELS.BULK_ACTION_ID }}" type="text" formControlName="bulkActionId"
         id="bulkActionId" required />
-      @if (bulkActionMonitoringForm?.get('bulkActionId')?.invalid) {
+      @if (bulkActionMonitoringForm.get('bulkActionId')?.invalid) {
       <mat-error> {{ getErrorMessage() }}</mat-error>
       }
     </mat-form-field>

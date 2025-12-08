@@ -6,7 +6,7 @@
   }
   <div class="bulk-action-container__placeholder">
     <bulk-action-monitoring-form (setBulkActionResponse)="setBulkActionResponse($event)"></bulk-action-monitoring-form>
-    @if (bulkActionResponse && bulkActionResponse?.commandId) {
+    @if (bulkActionResponse && bulkActionResponse.commandId) {
     <div class="result">
       <hr>
       <bulk-action-monitoring-result [resultData]="bulkActionResponse"></bulk-action-monitoring-result>

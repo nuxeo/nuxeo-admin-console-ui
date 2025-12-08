@@ -5,7 +5,7 @@
   <mat-form-field appearance="outline" class="input-field">
     <input matInput placeholder="{{ GENERIC_LABELS.DOCUMENT_ID_OR_PATH }}" type="text" formControlName="inputIdentifier"
       id="inputIdentifier" required />
-    @if (inputForm?.get('inputIdentifier')?.invalid) {
+    @if (inputForm.get('inputIdentifier')?.invalid) {
     <mat-error>
       {{ getErrorMessage() }}
     </mat-error>
