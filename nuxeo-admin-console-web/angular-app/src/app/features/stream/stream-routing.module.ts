@@ -12,10 +12,12 @@ export const StreamRoutes: Route[] = [
   {
     path: "",
     component: StreamComponent,
+    title: "Stream Records",
     children: [
       {
         path: "consumer",
         component: ConsumerThreadPoolComponent,
+        title: "Consumer Thread Pool",
       },
       {
         path: "consumer-position",
@@ -29,20 +31,24 @@ export const StreamRoutes: Route[] = [
           {
             path: "change-consumer-position",
             component: ChangeConsumerPositionComponent,
+            title: "Change Consumer Position"
           },
           {
             path: "get-consumer-position",
             component: FetchConsumerPositionComponent,
+            title: "Get Consumer Position"
           },
         ],
       },
       {
         path: 'get-scaling-analysis',
-        component:GetScalingAnalysisComponent
+        component:GetScalingAnalysisComponent,
+        title: 'Scaling Analysis'
       },
       {
         path: "nuxeo-stream-processor-info",
-        component: NuxeoStreamProcessorInfoComponent
+        component: NuxeoStreamProcessorInfoComponent,
+        title: "Nuxeo Stream Processor Info",
       }
     ],
   },
