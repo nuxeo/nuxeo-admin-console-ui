@@ -1,5 +1,5 @@
 <h2> {{ data.title }}</h2>
-<hr class="separator">
+<mat-divider class="separator"></mat-divider>
 <mat-dialog-content class="mat-typography generic-modal">
   @if (data.type === GENERIC_LABELS.MODAL_TYPE.confirm) {
   <div>
@@ -35,11 +35,8 @@
   </div>
   }
   }
-
-
-
 </mat-dialog-content>
-<hr class="separator">
+<mat-divider class="separator"></mat-divider>
 <mat-dialog-actions>
   @if (data.type === GENERIC_LABELS.MODAL_TYPE.confirm) {
   <div>

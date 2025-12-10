@@ -1,5 +1,5 @@
 <h2> {{ ERROR_MODAL_LABELS.ERROR_MODAL_TITLE }} </h2>
-<hr class="separator">
+<mat-divider class="separator"></mat-divider>
 <mat-dialog-content class="mat-typography error-modal">
   @if (data.error.type === ERROR_MODAL_LABELS.SERVER_ERROR) {
   <div>
@@ -17,7 +17,7 @@
   <p>{{getCustomErrorMessage()}}</p>
   }
 </mat-dialog-content>
-<hr class="separator">
+<mat-divider class="separator"></mat-divider>
 <mat-dialog-actions>
   <button mat-flat-button color="primary" (click)="close()">
     {{ GENERIC_LABELS.CLOSE_LABEL }}
