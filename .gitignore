@@ -7,7 +7,6 @@ target
 .tmp
 .project
 npm-debug.log
-package-lock.json
 .settings/
 .DS_Store
 .screenshots/
