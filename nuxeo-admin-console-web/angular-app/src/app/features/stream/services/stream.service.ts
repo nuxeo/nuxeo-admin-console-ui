@@ -122,14 +122,14 @@ export class StreamService {
     );
   }
 
- getScalingAnalysis(): Observable<any> {
-    return this.networkService.makeHttpRequest<any>(
+ getScalingAnalysis(): Observable<unknown> {
+    return this.networkService.makeHttpRequest<unknown>(
       REST_END_POINTS.GET_SCALING_ANALYSIS
     );
   }
 
-  getStreamProcessorInfo(): Observable<any> {
-    return this.networkService.makeHttpRequest<any>(
+  getStreamProcessorInfo(): Observable<unknown> {
+    return this.networkService.makeHttpRequest<unknown>(
       REST_END_POINTS.GET_STREAM_PROCESSOR_INFO
     );
   }

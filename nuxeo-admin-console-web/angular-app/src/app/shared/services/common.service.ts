@@ -19,8 +19,8 @@ export class CommonService {
     this.router.navigate(["/probes"]);
   }
 
-  getConfigurationDetails(): Observable<any> {
-    return this.networkService.makeHttpRequest<any>(
+  getConfigurationDetails(): Observable<unknown> {
+    return this.networkService.makeHttpRequest<unknown>(
       REST_END_POINTS.GET_CONFIGURATION_DETAILS
     );
   }

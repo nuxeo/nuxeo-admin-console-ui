@@ -142,20 +142,15 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isChangeConsumerPositionDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -181,20 +176,15 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isChangeConsumerPositionDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -281,6 +271,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
   }
 
   changePosition() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let params: any = {
       consumer:
         this.consumerPositionForm.controls[
@@ -330,7 +321,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     );
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     //display consumer position data container if data is available else hide.
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;

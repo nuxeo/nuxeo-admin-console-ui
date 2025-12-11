@@ -74,7 +74,7 @@ export class StreamComponent implements OnInit, OnDestroy {
         filter((event) => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
-      .subscribe((event: any) => {
+      .subscribe((event) => {
         this.updateActiveTab(event.urlAfterRedirects || event.url);
       }); // Update active tab on navigation end
       this.streamService.isFetchingRecords.pipe(takeUntil(this.destroy$)).subscribe(

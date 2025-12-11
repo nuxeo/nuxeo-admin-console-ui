@@ -17,7 +17,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   standalone: false
 })
 export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
-  scalingAnalysisData: any;
+  scalingAnalysisData: unknown;
   destroy$: Subject<void> = new Subject<void>();
   readonly GET_SCALING_ANALYSIS_LABELS = GET_SCALING_ANALYSIS_LABELS;
   readonly MAIN_TAB_LABELS = MAIN_TAB_LABELS;
@@ -58,7 +58,7 @@ export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
       });
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

@@ -9,7 +9,7 @@ export const onChangeConsumerPosition = createAction(
 
 export const onChangeConsumerPositionSuccess = createAction(
   "[Change Consumer Position] Change Consumer Position Success",
-  (data: any) => ({ data })
+  (data) => ({ data })
 );
 
 export const onChangeConsumerPositionFailure = createAction(

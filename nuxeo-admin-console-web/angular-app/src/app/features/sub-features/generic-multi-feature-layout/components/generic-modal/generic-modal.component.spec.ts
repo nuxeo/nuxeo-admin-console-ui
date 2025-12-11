@@ -13,6 +13,7 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
 import { Router } from "@angular/router"; 
+import { MatDividerModule } from '@angular/material/divider';
 
 describe("GenericModalComponent", () => {
   let component: GenericModalComponent;
@@ -54,6 +55,7 @@ describe("GenericModalComponent", () => {
         CommonModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
+        MatDividerModule
       ],
       providers: [
         { provide: ComponentFixtureAutoDetect, useValue: true },

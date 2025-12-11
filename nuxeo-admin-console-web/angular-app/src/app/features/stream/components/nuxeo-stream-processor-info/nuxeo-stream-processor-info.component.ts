@@ -17,7 +17,7 @@ import {
 })
 export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
   destroy$: Subject<void> = new Subject<void>();
-  streamProcessorJsonData: any;
+  streamProcessorJsonData: unknown;
   isDataLoaded = false; // This flag is used to display a loader while fetching data and to show a 'no data found' (if data is empty) message only after the fetch is complete
   isError = false; // This flag is used to show/hide the error message and retry button in case of an error
   readonly NUXEO_STREAM_PROCESSOR_INFO_LABELS =
@@ -61,7 +61,7 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

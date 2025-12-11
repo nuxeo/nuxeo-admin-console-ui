@@ -37,7 +37,7 @@ export class ConfigurationDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { "entity-type": _, ...updatedData } = data; // Remove 'entity-type' key
+          const { "entity-type": _, ...updatedData } = data as Record<string, unknown>; // Remove 'entity-type' key
           this.configurationDetails = updatedData;
           this.isDataLoaded = true;
         },

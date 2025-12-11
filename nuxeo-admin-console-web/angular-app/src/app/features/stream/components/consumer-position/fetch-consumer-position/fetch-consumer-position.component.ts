@@ -33,7 +33,7 @@ import * as ConsumerPositionSelectors from "../store/selectors";
   standalone: false
 })
 export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
-  fetchConsumerForm!: FormGroup<any>;
+  fetchConsumerForm!: FormGroup;
   fetchStreamsSuccess$!: Observable<Stream[]>;
   fetchStreamsError$!: Observable<HttpErrorResponse | null>;
   fetchConsumersSuccess$!: Observable<{ stream: string; consumer: string }[]>;
@@ -123,20 +123,15 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isFetchConsumerPositionBtnDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status ,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -162,20 +157,15 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isFetchConsumerPositionBtnDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -201,7 +191,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
               },
             })
             .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
+            .subscribe(() => {
               if (this.focusMatSelect) {
                 this.focusMatSelect.focus();
               }
@@ -233,7 +223,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
     this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

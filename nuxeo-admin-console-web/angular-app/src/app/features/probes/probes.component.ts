@@ -1,5 +1,5 @@
 import { PROBES_LABELS } from "../sub-features/probes-data/probes-data.constants";
-import { Component } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable, Subject, Subscription, takeUntil } from "rxjs";
 import {
@@ -18,7 +18,7 @@ import * as ProbeActions from "../sub-features/probes-data/store/actions";
   styleUrls: ["./probes.component.scss"],
   standalone: false
 })
-export class ProbesComponent {
+export class ProbesComponent implements OnInit, OnDestroy {
   PROBES_LABELS = PROBES_LABELS;
   fetchProbesSubscription = new Subscription();
   launchAllProbesError$: Observable<HttpErrorResponse | null>;

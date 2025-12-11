@@ -19,7 +19,7 @@
       <p class="instance-info__item">
         <span class="instance-info__label">{{ item.label }}</span>
         @if (item.isDate) {
-        {{ instanceInformation?.[item.key] | date: 'medium' }}
+        {{ $any(instanceInformation?.[item.key]) | date: 'medium' }}
         } @else {
         {{ instanceInformation?.[item.key] || 'NA'}}
         }
