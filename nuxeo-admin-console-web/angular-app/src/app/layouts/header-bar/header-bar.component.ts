@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { Store, select } from "@ngrx/store";
 import { authActions } from "../../auth/store/actions";
 import { Observable, Subject, takeUntil } from "rxjs";
@@ -13,16 +13,19 @@ import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
   standalone: false
 })
 export class HeaderBarComponent implements OnInit, OnDestroy {
+  private store = inject<
+    Store<{
+      auth: AuthStateInterface;
+    }>
+  >(Store);
+  private router = inject(Router);
   currentUser$: Observable<UserInterface | null | undefined>;
   currentUser: UserInterface | null | undefined = undefined;
   displayName: string | undefined;
   readonly BRAND_TITLE = HEADER_BAR_CONSTANTS.BRAND_TITLE
   readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    private store: Store<{ auth: AuthStateInterface }>,
-    private router: Router
-  ) {
+  constructor() {
     this.currentUser$ = this.store.pipe(
       select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser)
     );

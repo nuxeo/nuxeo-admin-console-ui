@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
@@ -20,18 +20,15 @@ import { Title } from "@angular/platform-browser";
   standalone: false
 })
 export class GenericMultiFeatureLayoutComponent implements OnInit, OnDestroy {
+  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private cdRef = inject(ChangeDetectorRef);
+  private titleService = inject(Title);
   searchTabs: TabInfo[] = TAB_INFO;
   activeTab: TabInfo = this.searchTabs[0];
   pageTitle = "";
   private activeSubscription = new Subject<void>();
-
-  constructor(
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdRef: ChangeDetectorRef,
-    private titleService: Title
-  ) {}
 
   ngOnInit(): void {
     const featureRoute = this.router?.routerState?.snapshot?.url?.split("/")[1];

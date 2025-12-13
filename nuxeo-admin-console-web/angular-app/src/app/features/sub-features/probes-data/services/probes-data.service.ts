@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import {
   Probe,
@@ -11,7 +11,7 @@ import { NetworkService } from "../../../../shared/services/network.service";
   providedIn: "root",
 })
 export class ProbeDataService {
-  constructor(private networkService: NetworkService) {}
+  private networkService = inject(NetworkService);
 
   getProbesInfo(): Observable<ProbesResponse> {
     return this.networkService.makeHttpRequest<ProbesResponse>(

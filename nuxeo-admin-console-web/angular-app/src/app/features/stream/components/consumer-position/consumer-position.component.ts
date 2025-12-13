@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { filter, takeUntil } from "rxjs/operators";
@@ -11,11 +11,11 @@ import { MAIN_TAB_LABELS } from "../../stream.constants";
   standalone: false
 })
 export class ConsumerPositionComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   selectedTabIndex = 0;
   readonly MAIN_TAB_LABELS = MAIN_TAB_LABELS;
   destroy$: Subject<void> = new Subject<void>();
-
-  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     // If user lands on /consumer-position (no child) redirect to default

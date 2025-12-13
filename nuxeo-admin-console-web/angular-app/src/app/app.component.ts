@@ -1,5 +1,5 @@
 import { NuxeoJSClientService } from './shared/services/nuxeo-js-client.service';
-import { Component, OnDestroy, OnInit, ElementRef } from "@angular/core";
+import { Component, OnDestroy, OnInit, ElementRef, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "./shared/services/persistence.service";
 import { Observable, Subject, takeUntil } from "rxjs";
@@ -18,6 +18,17 @@ import { APP_CONSTANTS } from './app.constants';
   standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
+  dialogService = inject(MatDialog);
+  persistenceService = inject(PersistenceService);
+  commonService = inject(CommonService);
+  private nuxeoJsClientService = inject(NuxeoJSClientService);
+  private store = inject<
+    Store<{
+      auth: AuthStateInterface;
+    }>
+  >(Store);
+  private elementRef = inject(ElementRef);
+
   loadApp = false;
   currentUser$: Observable<UserInterface | null | undefined>;
   currentUser: UserInterface | null | undefined = undefined;
@@ -25,14 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly UNAUTHORIZED_MESSAGE = APP_CONSTANTS.UNAUTHORIZED_MESSAGE;
   readonly LOGIN_WITH_DIFFERENT_ACCOUNT = APP_CONSTANTS.LOGIN_WITH_DIFFERENT_ACCOUNT;
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    public dialogService: MatDialog,
-    public persistenceService: PersistenceService,
-    public commonService: CommonService,
-    private nuxeoJsClientService: NuxeoJSClientService,
-    private store: Store<{ auth: AuthStateInterface }>,
-    private elementRef: ElementRef
-  ) {
+  constructor() {
     this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
     this.baseUrl = this.elementRef.nativeElement.getAttribute('baseUrl');
   }

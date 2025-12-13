@@ -3,7 +3,7 @@ import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fullt
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -50,6 +50,15 @@ import {
   standalone: false
 })
 export class FolderTabComponent implements OnInit, OnDestroy {
+  dialogService = inject(MatDialog);
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      folderAction: FolderActionState;
+    }>
+  >(Store);
+  private nuxeoJSClientService = inject(NuxeoJSClientService);
+  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
   spinnerVisible = false;
   userInput = "";
   decodedUserInput = "";
@@ -76,13 +85,7 @@ export class FolderTabComponent implements OnInit, OnDestroy {
   requestQuery = "";
   activeFeature: FeaturesKey = {} as FeaturesKey;
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    public dialogService: MatDialog,
-    private fb: FormBuilder,
-    private store: Store<{ folderAction: FolderActionState }>,
-    private nuxeoJSClientService: NuxeoJSClientService,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
-  ) {
+  constructor() {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
       force: [false],

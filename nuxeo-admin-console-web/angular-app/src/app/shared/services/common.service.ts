@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Injectable, inject } from "@angular/core";
 import { Router } from '@angular/router';
 import { Observable } from "rxjs";
 import { REST_END_POINTS } from "../constants/rest-end-ponts.constants";
@@ -8,8 +8,9 @@ import { NetworkService } from "./network.service";
   providedIn: "root",
 })
 export class CommonService {
+  private router = inject(Router);
+  private networkService = inject(NetworkService);
   loadApp = new EventEmitter<boolean>();
-  constructor(private router: Router, private networkService: NetworkService) {}
 
   redirectToBulkActionMonitoring(commandId: string): void {
     this.router.navigate(["/bulk-action-monitoring", commandId]);

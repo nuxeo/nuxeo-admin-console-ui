@@ -1,5 +1,5 @@
 import { NetworkService } from "./../../../../shared/services/network.service";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import {
   ActionInfo,
@@ -10,7 +10,8 @@ import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.con
   providedIn: "root",
 })
 export class GenericMultiFeatureEndpointsService {
-  constructor(private networkService: NetworkService) {}
+  private networkService = inject(NetworkService);
+
   performDocumentAction(
     requestUrl: string | null,
     requestParams: unknown,

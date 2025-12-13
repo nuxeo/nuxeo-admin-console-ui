@@ -1,10 +1,4 @@
-import {
-  Component,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, NgZone, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { STREAM_LABELS } from "../../stream.constants";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import * as StreamActions from "../../store/actions";
@@ -28,6 +22,15 @@ import { MatSelect } from "@angular/material/select";
 })
 
 export class StreamFormComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      streams: StreamsState;
+    }>
+  >(Store);
+  private streamService = inject(StreamService);
+  dialogService = inject(MatDialog);
+  private ngZone = inject(NgZone);
   STREAM_LABELS = STREAM_LABELS;
   GENERIC_LABELS = GENERIC_LABELS;
   streamForm: FormGroup;
@@ -55,13 +58,7 @@ export class StreamFormComponent implements OnInit, OnDestroy {
   isEventStreamDisconnected = false;
   @ViewChild('focusMatSelect') focusMatSelect!: MatSelect;
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    private fb: FormBuilder,
-    private store: Store<{ streams: StreamsState }>,
-    private streamService: StreamService,
-    public dialogService: MatDialog,
-    private ngZone: NgZone
-  ) {
+  constructor() {
     this.streamForm = this.fb.group({
       stream: ["", Validators.required],
       position: [STREAM_LABELS.POSITION_OPTIONS.BEGINNING.VALUE, Validators.required],

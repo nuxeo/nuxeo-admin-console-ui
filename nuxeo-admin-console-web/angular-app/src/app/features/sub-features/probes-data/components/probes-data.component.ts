@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { CommonService } from "../../../../shared/services/common.service";
 import { PROBES, PROBES_LABELS } from "../probes-data.constants";
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { Observable, Subject, takeUntil, withLatestFrom } from "rxjs";
 import { Store, select } from "@ngrx/store";
 import { ProbeState, ProbesInfo } from "../store/reducers";
@@ -15,9 +15,17 @@ import { MatTableDataSource } from "@angular/material/table";
   selector: "probes-data",
   templateUrl: "./probes-data.component.html",
   styleUrls: ["./probes-data.component.scss"],
-  standalone: false
+  standalone: false,
 })
 export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
+  private store = inject<
+    Store<{
+      probes: ProbeState;
+    }>
+  >(Store);
+  private probeService = inject(ProbeDataService);
+  private commonService = inject(CommonService);
+  private _snackBar = inject(MatSnackBar);
   @Input() summary = false;
   probesData: MatTableDataSource<ProbesInfo> =
     new MatTableDataSource<ProbesInfo>([]);
@@ -56,12 +64,7 @@ export class ProbesDataComponent implements OnInit, OnDestroy, AfterViewInit {
   probeLaunched: ProbesInfo = {} as ProbesInfo;
   @ViewChild("paginator") paginator!: MatPaginator;
   isLaunchAllProbeSuccess$: Observable<boolean | undefined>;
-  constructor(
-    private store: Store<{ probes: ProbeState }>,
-    private probeService: ProbeDataService,
-    private commonService: CommonService,
-    private _snackBar: MatSnackBar
-  ) {
+  constructor() {
     this.fetchProbes$ = this.store.pipe(
       select((state) => state.probes?.probesInfo)
     );

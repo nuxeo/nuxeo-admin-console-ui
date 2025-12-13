@@ -1,7 +1,7 @@
 import { CustomSnackBarComponent } from "./../../../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { BULK_ACTION_LABELS } from "./../../../../bulk-action-monitoring.constants";
 import { BulkActionInfoSummary } from "./../../../../bulk-action-monitoring.interface";
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import * as BulkActionMonitoringActions from "../../../../store/actions";
 import { Store } from "@ngrx/store";
 import { BulkActionMonitoringState } from "../../../../store/reducers";
@@ -15,16 +15,18 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   standalone: false
 })
 export class BulkActionMonitoringSummaryComponent implements OnChanges {
+  private store = inject<
+    Store<{
+      bulkActionMonitoring: BulkActionMonitoringState;
+    }>
+  >(Store);
+  private _snackBar = inject(MatSnackBar);
+
   @Input() bulkActionSummary: BulkActionInfoSummary =
     {} as BulkActionInfoSummary;
   statusText = "";
   nonRunningText = "";
   BULK_ACTION_LABELS = BULK_ACTION_LABELS;
-
-  constructor(
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
-    private _snackBar: MatSnackBar
-  ) {}
 
   ngOnChanges(): void {
     if (this.bulkActionSummary) {

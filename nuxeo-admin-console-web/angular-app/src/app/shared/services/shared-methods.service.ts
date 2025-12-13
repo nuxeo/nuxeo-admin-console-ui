@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CustomSnackBarComponent } from "../components/custom-snack-bar/custom-snack-bar.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -13,10 +13,10 @@ import { ErrorModalClosedInfo, ErrorDetails } from "../types/common.interface";
   providedIn: "root",
 })
 export class SharedMethodsService {
+  private snackBar = inject(MatSnackBar);
+  dialogService = inject(MatDialog);
   errorDialogRef: MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo> =
     {} as MatDialogRef<ErrorModalComponent, ErrorModalClosedInfo>;
-
-  constructor(private snackBar: MatSnackBar, public dialogService: MatDialog) {}
 
   showSuccessSnackBar(message: string, duration = 5000) {
     this.snackBar.openFromComponent(CustomSnackBarComponent, {

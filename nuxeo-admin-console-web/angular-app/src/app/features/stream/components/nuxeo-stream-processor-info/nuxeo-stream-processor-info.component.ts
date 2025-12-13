@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { StreamService } from "../../services/stream.service";
 import { Subject, takeUntil } from "rxjs";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
@@ -16,6 +16,8 @@ import {
   standalone: false
 })
 export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
+  private streamService = inject(StreamService);
+  private sharedService = inject(SharedMethodsService);
   destroy$: Subject<void> = new Subject<void>();
   streamProcessorJsonData: unknown;
   isDataLoaded = false; // This flag is used to display a loader while fetching data and to show a 'no data found' (if data is empty) message only after the fetch is complete
@@ -23,10 +25,6 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
   readonly NUXEO_STREAM_PROCESSOR_INFO_LABELS =
     NUXEO_STREAM_PROCESSOR_INFO_LABELS;
   readonly GENERIC_API_LABELS = GENERIC_API_LABELS;
-  constructor(
-    private streamService: StreamService,
-    private sharedService: SharedMethodsService
-  ) {}
 
   ngOnInit(): void {
     this.loadJsonData();

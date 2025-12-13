@@ -1,5 +1,5 @@
 import { PROBES_LABELS } from "../sub-features/probes-data/probes-data.constants";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable, Subject, Subscription, takeUntil } from "rxjs";
 import {
@@ -16,9 +16,12 @@ import * as ProbeActions from "../sub-features/probes-data/store/actions";
   selector: "probes",
   templateUrl: "./probes.component.html",
   styleUrls: ["./probes.component.scss"],
-  standalone: false
+  standalone: false,
 })
 export class ProbesComponent implements OnInit, OnDestroy {
+  private store = inject<Store<{ probes: ProbeState }>>(Store);
+  private sharedMethodsService = inject(SharedMethodsService);
+  private actions$ = inject(Actions);
   PROBES_LABELS = PROBES_LABELS;
   fetchProbesSubscription = new Subscription();
   launchAllProbesError$: Observable<HttpErrorResponse | null>;
@@ -26,11 +29,7 @@ export class ProbesComponent implements OnInit, OnDestroy {
   destroy$: Subject<void> = new Subject<void>();
   isCheckAllProbesBtnDisabled!: boolean;
   probesData$: Observable<ProbesInfo[] | null>;
-  constructor(
-    private store: Store<{ probes: ProbeState }>,
-    private sharedMethodsService: SharedMethodsService,
-    private actions$: Actions
-  ) {
+  constructor() {
     this.launchAllProbesError$ = this.store.select(
       (state) => state.probes?.launchAllProbeError
     );

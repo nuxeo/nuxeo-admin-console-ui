@@ -1,5 +1,5 @@
 import { REST_END_POINTS } from "./../../../shared/constants/rest-end-ponts.constants";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { NetworkService } from "../../../shared/services/network.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { RecordsPayload, Stream } from "../stream.interface";
@@ -11,6 +11,8 @@ import { ChangeConsumerPosition, ConsumerPositionDetails } from "../components/c
   providedIn: "root",
 })
 export class StreamService {
+  private networkService = inject(NetworkService);
+  private _snackBar = inject(MatSnackBar);
   isFetchingRecords: BehaviorSubject<boolean> = new BehaviorSubject(false);
   isClearRecordsDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
   isStopFetchDisabled: BehaviorSubject<boolean> = new BehaviorSubject(true);
@@ -20,11 +22,6 @@ export class StreamService {
   private streamDisconnectedSubject = new BehaviorSubject<boolean>(false);
   streamDisconnected$ = this.streamDisconnectedSubject.asObservable();
   private eventSource?: EventSource;
-
-  constructor(
-    private networkService: NetworkService,
-    private _snackBar: MatSnackBar
-  ) {}
 
   getStreams(): Observable<Stream[]> {
     return this.networkService.makeHttpRequest<Stream[]>(

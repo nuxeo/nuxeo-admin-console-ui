@@ -1,15 +1,4 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  NgZone,
-} from "@angular/core";
+import { Component, Input, OnChanges, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, NgZone, inject } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { Subject } from "rxjs";
 import { debounceTime, takeUntil } from "rxjs/operators";
@@ -37,6 +26,10 @@ export interface Segment {
 export class JsonViewerComponent
   implements OnChanges, OnDestroy, AfterViewInit
 {
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
+  private readonly sharedMethodsService = inject(SharedMethodsService);
   @Input() json: unknown;
   @Input() expanded = true;
   @Input() depth = -1;
@@ -64,12 +57,7 @@ export class JsonViewerComponent
   private highlightsInSync = false; // Track if DOM highlights match current search state
   readonly JSON_VIEWER_LABELS = JSON_VIEWER_LABELS;
 
-  constructor(
-    private readonly sanitizer: DomSanitizer,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly ngZone: NgZone,
-    private readonly sharedMethodsService: SharedMethodsService
-  ) {
+  constructor() {
     this.searchInput$
       .pipe(
         debounceTime(JsonViewerComponent.SEARCH_DEBOUNCE_MS),

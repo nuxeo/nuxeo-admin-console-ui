@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { GENERIC_LABELS } from "../../generic-multi-feature-layout.constants";
 import { CommonService } from "../../../../../shared/services/common.service";
@@ -12,14 +12,12 @@ import { CHANGE_CONSUMER_POSITION_LABELS, CONSUMER_THREAD_POOL_LABELS } from "..
   standalone: false
 })
 export class GenericModalComponent  {
+  private dialogRef = inject<MatDialogRef<GenericModalComponent>>(MatDialogRef);
+  commonService = inject(CommonService);
+  data = inject<GenericModalData>(MAT_DIALOG_DATA);
   GENERIC_LABELS = GENERIC_LABELS;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
   CHANGE_CONSUMER_POSITION_LABELS = CHANGE_CONSUMER_POSITION_LABELS;
-  constructor(
-    private dialogRef: MatDialogRef<GenericModalComponent>,
-    public commonService: CommonService,
-    @Inject(MAT_DIALOG_DATA) public data: GenericModalData
-  ) {}
   continue(): void {
     this.dialogRef.close({
       continue: true,

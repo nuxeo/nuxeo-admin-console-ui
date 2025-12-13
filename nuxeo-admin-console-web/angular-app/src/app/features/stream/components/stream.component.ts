@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import {
   CHANGE_CONSUMER_POSITION_LABELS,
   CONSUMER_THREAD_POOL_LABELS,
@@ -23,6 +23,12 @@ import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
   standalone: false
 })
 export class StreamComponent implements OnInit, OnDestroy {
+  private store = inject<Store<{ streams: StreamsState }>>(Store);
+  private cdRef = inject(ChangeDetectorRef);
+  private streamService = inject(StreamService);
+  private _snackBar = inject(MatSnackBar);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   pageTitle = STREAM_LABELS.STREAM_PAGE_TITLE;
   CONSUMER_THREAD_POOL_LABELS = CONSUMER_THREAD_POOL_LABELS;
   CHANGE_CONSUMER_POSITION_LABELS = CHANGE_CONSUMER_POSITION_LABELS;
@@ -41,12 +47,7 @@ export class StreamComponent implements OnInit, OnDestroy {
   selectedTabIndex = 0;
   private destroy$: Subject<void> = new Subject<void>();
   readonly STREAM_MAIN_HEADINGS = STREAM_MAIN_HEADINGS;
-  constructor(private store: Store<{ streams: StreamsState }>,
-    private cdRef: ChangeDetectorRef,
-    private streamService: StreamService,
-    private _snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private router: Router) {
+  constructor() {
 
     this.fetchRecordsSuccess$ = this.store.pipe(
       select((state) => state?.streams?.records)

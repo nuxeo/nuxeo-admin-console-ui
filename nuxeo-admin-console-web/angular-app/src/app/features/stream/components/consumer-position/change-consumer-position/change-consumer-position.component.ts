@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ERROR_TYPES,
@@ -36,6 +36,15 @@ import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interfa
   standalone: false
 })
 export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      streams: StreamsState;
+      consumerPosition: ChangeConsumerPositionState;
+    }>
+  >(Store);
+  dialogService = inject(MatDialog);
+  private sharedMethodService = inject(SharedMethodsService);
   consumerPositionForm: FormGroup;
   GENERIC_LABELS = GENERIC_LABELS;
   STREAM_LABELS = STREAM_LABELS;
@@ -61,15 +70,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     | undefined = undefined;
   @ViewChild("focusMatSelect")
   focusMatSelect!: MatSelect;
-  constructor(
-    private fb: FormBuilder,
-    private store: Store<{
-      streams: StreamsState;
-      consumerPosition: ChangeConsumerPositionState;
-    }>,
-    public dialogService: MatDialog,
-    private sharedMethodService: SharedMethodsService
-  ) {
+  constructor() {
     this.consumerPositionForm = this.fb.group({
       stream: ["", Validators.required],
       consumer: ["", Validators.required],

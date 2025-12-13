@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { PersistenceService } from "../../shared/services/persistence.service";
 import { CommonService } from "../../shared/services/common.service";
@@ -15,17 +15,20 @@ import { WARNING_DIALOG_CONSTANTS } from './warning.constants';
   standalone: false
 })
 export class WarningComponent implements OnInit, OnDestroy {
+  dialogService = inject(MatDialog);
+  persistenceService = inject(PersistenceService);
+  commonService = inject(CommonService);
+  private store = inject<
+    Store<{
+      auth: AuthStateInterface;
+    }>
+  >(Store);
   public doNotWarn = false;
   public currentUser$: Observable<UserInterface | null | undefined>;
   public currentUser: UserInterface | null | undefined = undefined;
   public WARNING_LABELS = WARNING_DIALOG_CONSTANTS;
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    public dialogService: MatDialog,
-    public persistenceService: PersistenceService,
-    public commonService: CommonService,
-    private store: Store<{ auth: AuthStateInterface }>
-  ) {
+  constructor() {
     this.currentUser$ = this.store.pipe(select((state: { auth: AuthStateInterface }) => state?.auth?.currentUser));
   }
 

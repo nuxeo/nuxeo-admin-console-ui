@@ -13,7 +13,7 @@ import {
 } from "../../generic-multi-feature-layout.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ActionInfo } from "../../generic-multi-feature-layout.interface";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -50,6 +50,15 @@ type ActionsImportFunction = () => Promise<unknown>;
   standalone: false
 })
 export class DocumentTabComponent implements OnInit, OnDestroy {
+  dialogService = inject(MatDialog);
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      documentAction: DocumentActionState;
+    }>
+  >(Store);
+  private nuxeoJSClientService = inject(NuxeoJSClientService);
+  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
   inputForm: FormGroup;
   documentActionLaunched$: Observable<ActionInfo>;
   documentActionError$: Observable<HttpErrorResponse | null>;
@@ -71,13 +80,7 @@ export class DocumentTabComponent implements OnInit, OnDestroy {
   FULLTEXT_REINDEX_LABELS = FULLTEXT_REINDEX_LABELS;
   FEATURES = FEATURES;
   private destroy$: Subject<void> = new Subject<void>();
-  constructor(
-    public dialogService: MatDialog,
-    private fb: FormBuilder,
-    private store: Store<{ documentAction: DocumentActionState }>,
-    private nuxeoJSClientService: NuxeoJSClientService,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
-  ) {
+  constructor() {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
       force: [false],
