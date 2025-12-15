@@ -220,12 +220,6 @@ Follow conventional commits format:
 <type>(NAC-XXX): <description>
 ```
 
-**Examples**:
-- `feat(NAC-439): Upgrade Angular from v16 to v21`
-- `fix(NAC-448): Resolve Karma test configuration issues`
-- `chore(NAC-123): Update dependencies to latest versions`
-- `refactor(NAC-456): Simplify authentication service logic`
-
 **Types**: 
 - `feat` - New features
 - `fix` - Bug fixes
@@ -235,6 +229,12 @@ Follow conventional commits format:
 - `test` - Adding or updating tests
 - `docs` - Documentation updates
 - `perf` - Performance improvements
+
+**Examples**:
+- `feat(NAC-439): Upgrade Angular from v16 to v21`
+- `fix(NAC-448): Resolve Karma test configuration issues`
+- `chore(NAC-123): Update dependencies to latest versions`
+- `refactor(NAC-456): Simplify authentication service logic`
 
 ---
 
