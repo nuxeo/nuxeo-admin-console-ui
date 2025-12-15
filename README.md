@@ -171,6 +171,43 @@ This will build the `nuxeo-admin-console-package/target/nuxeo-admin-console-pack
 2. Bundles all assets with base href `/nuxeo/nuxeoadmin/`
 3. Packages everything into a Nuxeo-compatible marketplace `.zip` file
 
+### Understanding the Build Chain
+
+The project uses a **Maven-managed frontend build**:
+
+```
+GitHub Actions/CI → mvn package → frontend-maven-plugin → npm run build → Angular CLI → dist/
+```
+
+**What happens during `mvn package`:**
+
+1. **Maven** reads `nuxeo-admin-console-web/pom.xml`
+2. **frontend-maven-plugin** executes:
+   - Installs Node.js v20.12.2 (if not present)
+   - Runs `npm install` to install dependencies
+   - Runs `npm run build` to build the Angular app
+3. **Angular CLI** (`ng build`):
+   - Compiles TypeScript → JavaScript
+   - Bundles with Vite/esbuild (Angular 21)
+   - Optimizes (tree-shaking, minification, code splitting)
+   - Outputs to `angular-app/dist/admin_console_ui/`
+4. **Maven** copies build artifacts to `target/classes/web/nuxeo.war/nuxeoadmin/`
+5. **Maven** packages everything into marketplace `.zip`
+
+**Build Locally (Angular only - faster for testing):**
+```bash
+cd nuxeo-admin-console-web/angular-app
+npm run build
+# Output: angular-app/dist/admin_console_ui/
+```
+
+**Full Maven Build (complete package):**
+```bash
+cd nuxeo-admin-console-ui  # Root directory
+mvn clean package
+# Output: nuxeo-admin-console-package/target/*.zip
+```
+
 ## 👥 Contributing
 
 ### Code Quality Standards
