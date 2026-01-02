@@ -1,10 +1,11 @@
 import { TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { NetworkService } from "../../../../shared/services/network.service";
 import { GenericMultiFeatureEndpointsService } from "./generic-multi-feature-endpoints.service";
 import { of } from "rxjs";
 import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
 import { ActionInfo } from "../generic-multi-feature-layout.interface";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("GenericMultiFeatureEndpointsService", () => {
   let service: GenericMultiFeatureEndpointsService;
@@ -16,10 +17,12 @@ describe("GenericMultiFeatureEndpointsService", () => {
     ]);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         GenericMultiFeatureEndpointsService,
         { provide: NetworkService, useValue: networkServiceSpy },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
 

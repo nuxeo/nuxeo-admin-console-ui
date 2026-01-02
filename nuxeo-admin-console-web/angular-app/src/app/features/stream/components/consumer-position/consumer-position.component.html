@@ -2,12 +2,14 @@
   <mat-tab-group class="consumer-position-sub-tabs" [selectedIndex]="selectedTabIndex"
     (selectedIndexChange)="onSubTabChange($event)" animationDuration="0ms">
     <mat-tab label="Get Consumer Position">
-      <fetch-consumer-position
-        *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.GET_CONSUMER_POSITION.ID"></fetch-consumer-position>
+      @if (selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.GET_CONSUMER_POSITION.ID) {
+      <fetch-consumer-position></fetch-consumer-position>
+      }
     </mat-tab>
-     <mat-tab label="Change Consumer Position">
-      <change-consumer-position
-        *ngIf="selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.CHANGE_CONSUMER_POSITION.ID"></change-consumer-position>
+    <mat-tab label="Change Consumer Position">
+      @if (selectedTabIndex === MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.CHANGE_CONSUMER_POSITION.ID) {
+      <change-consumer-position></change-consumer-position>
+      }
     </mat-tab>
   </mat-tab-group>
 </div>

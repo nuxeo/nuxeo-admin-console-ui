@@ -1,17 +1,22 @@
 import { CommonService } from "./common.service";
 import { TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("CommonService", () => {
   let service: CommonService;
   let router: Router;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ 
-      imports: [ HttpClientTestingModule ],
-      providers: [CommonService] 
+    TestBed.configureTestingModule({
+      imports: [],
+      providers: [
+        CommonService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
     service = TestBed.inject(CommonService);
     router = TestBed.inject(Router);

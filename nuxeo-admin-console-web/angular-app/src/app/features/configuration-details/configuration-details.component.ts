@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { CONFIGURATION_DETAILS_CONSTANTS } from "./configuration-details.constants";
 import { CommonService } from "./../../.././app/shared/services/common.service";
 import { SharedMethodsService } from "../../shared/services/shared-methods.service";
@@ -11,17 +11,16 @@ import { ERROR_TYPES } from "../sub-features/generic-multi-feature-layout/generi
   selector: "app-configuration-details",
   templateUrl: "./configuration-details.component.html",
   styleUrls: ["./configuration-details.component.scss"],
+  standalone: false
 })
 export class ConfigurationDetailsComponent implements OnInit, OnDestroy {
+  private commonService = inject(CommonService);
+  private sharedService = inject(SharedMethodsService);
   CONFIGURATION_DETAILS_CONSTANTS = CONFIGURATION_DETAILS_CONSTANTS;
   configurationDetails: unknown;
   destroy$: Subject<void> = new Subject<void>();
   isDataLoaded = false;
   isError = false;
-  constructor(
-    private commonService: CommonService,
-    private sharedService: SharedMethodsService
-  ) {}
 
   ngOnInit(): void {
     this.getConfigurationDetails();
@@ -36,7 +35,7 @@ export class ConfigurationDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { "entity-type": _, ...updatedData } = data; // Remove 'entity-type' key
+          const { "entity-type": _, ...updatedData } = data as Record<string, unknown>; // Remove 'entity-type' key
           this.configurationDetails = updatedData;
           this.isDataLoaded = true;
         },

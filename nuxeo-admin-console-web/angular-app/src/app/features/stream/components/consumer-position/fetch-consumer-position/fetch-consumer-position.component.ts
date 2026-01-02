@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import {
   CHANGE_CONSUMER_POSITION_LABELS,
   CONSUMER_THREAD_POOL_LABELS,
@@ -30,9 +30,19 @@ import * as ConsumerPositionSelectors from "../store/selectors";
   selector: "fetch-consumer-position",
   templateUrl: "./fetch-consumer-position.component.html",
   styleUrls: ["./fetch-consumer-position.component.scss"],
+  standalone: false
 })
 export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
-  fetchConsumerForm!: FormGroup<any>;
+  private store = inject<
+    Store<{
+      streams: StreamsState;
+      consumerPosition: ChangeConsumerPositionState;
+    }>
+  >(Store);
+  dialogService = inject(MatDialog);
+  private sharedMethodService = inject(SharedMethodsService);
+  private fb = inject(FormBuilder);
+  fetchConsumerForm!: FormGroup;
   fetchStreamsSuccess$!: Observable<Stream[]>;
   fetchStreamsError$!: Observable<HttpErrorResponse | null>;
   fetchConsumersSuccess$!: Observable<{ stream: string; consumer: string }[]>;
@@ -52,15 +62,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
   getConsumerPositionSuccess$!: Observable<ConsumerPositionDetails[]>;
   getConsumerPositionError$!: Observable<HttpErrorResponse | null>;
   getConsumerPositionData: ConsumerPositionDetails[] | null = null;
-  constructor(
-    private store: Store<{
-      streams: StreamsState;
-      consumerPosition: ChangeConsumerPositionState;
-    }>,
-    public dialogService: MatDialog,
-    private sharedMethodService: SharedMethodsService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.fetchStreamsSuccess$ = this.store.pipe(
       select((state) => state.streams?.streams)
     );
@@ -122,20 +124,15 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isFetchConsumerPositionBtnDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status ,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -161,20 +158,15 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isFetchConsumerPositionBtnDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -200,7 +192,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
               },
             })
             .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
+            .subscribe(() => {
               if (this.focusMatSelect) {
                 this.focusMatSelect.focus();
               }
@@ -232,7 +224,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
     this.store.dispatch(StreamActions.fetchConsumers({ params }));
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

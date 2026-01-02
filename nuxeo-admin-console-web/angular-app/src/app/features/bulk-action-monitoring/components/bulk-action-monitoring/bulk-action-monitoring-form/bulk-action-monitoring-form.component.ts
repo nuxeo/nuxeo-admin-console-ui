@@ -10,13 +10,7 @@ import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feat
 import { ErrorModalClosedInfo } from "./../../../../../shared/types/common.interface";
 import { BulkActionMonitoringInfo } from "./../../../bulk-action-monitoring.interface";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, EventEmitter, OnDestroy, OnInit, Output, inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subject, takeUntil } from "rxjs";
@@ -30,8 +24,22 @@ import { ErrorDetails } from "../../../../sub-features/generic-multi-feature-lay
   selector: "bulk-action-monitoring-form",
   templateUrl: "./bulk-action-monitoring-form.component.html",
   styleUrls: ["./bulk-action-monitoring-form.component.scss"],
+  standalone: false
 })
 export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
+  private commonService = inject(CommonService);
+  dialogService = inject(MatDialog);
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      bulkActionMonitoring: BulkActionMonitoringState;
+    }>
+  >(Store);
+  private route = inject(ActivatedRoute);
+  private genericMultiFeatureUtilitiesService = inject(
+    GenericMultiFeatureUtilitiesService
+  );
+
   @Output() setBulkActionResponse =
     new EventEmitter<BulkActionMonitoringInfo | null>();
   bulkActionMonitoringForm: FormGroup;
@@ -46,14 +54,7 @@ export class BulkActionMonitoringFormComponent implements OnInit, OnDestroy {
   bulkActionResponse: BulkActionMonitoringInfo = {} as BulkActionMonitoringInfo;
   private destroy$: Subject<void> = new Subject<void>();
 
-  constructor(
-    private commonService: CommonService,
-    public dialogService: MatDialog,
-    private fb: FormBuilder,
-    private store: Store<{ bulkActionMonitoring: BulkActionMonitoringState }>,
-    private route: ActivatedRoute,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService
-  ) {
+  constructor() {
     this.bulkActionMonitoringForm = this.fb.group({
       bulkActionId: ["", Validators.required],
     });

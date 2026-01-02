@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
 import { APP_CONSTANTS } from "src/app/app.constants";
@@ -14,10 +14,8 @@ type EndpointName = keyof typeof REST_END_POINTS;
   providedIn: "root",
 })
 export class NetworkService {
-  constructor(
-    private http: HttpClient,
-    private nuxeoJsClientService: NuxeoJSClientService
-  ) { }
+  private http = inject(HttpClient);
+  private nuxeoJsClientService = inject(NuxeoJSClientService);
 
   getAPIEndpoint = (name: EndpointName): string => {
     let endPointName = name;

@@ -14,9 +14,11 @@
             <mat-form-field appearance="outline" class="input-field change-consumer-field">
               <mat-select #focusMatSelect formControlName="stream" id="stream"
                 (selectionChange)="onStreamChange($event.value)">
-                <mat-option *ngFor="let stream of streams" [value]="stream?.name">
+                @for (stream of streams; track stream) {
+                <mat-option [value]="stream?.name">
                   {{ stream?.name }}
                 </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
@@ -27,9 +29,11 @@
             </p>
             <mat-form-field appearance="outline" class="input-field change-consumer-field">
               <mat-select id="consumer" formControlName="consumer">
-                <mat-option *ngFor="let consumer of consumers" [value]="consumer?.consumer">
+                @for (consumer of consumers; track consumer) {
+                <mat-option [value]="consumer?.consumer">
                   {{ consumer?.consumer }}
                 </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
@@ -48,7 +52,9 @@
       </div>
     </form>
   </div>
-  <div *ngIf="isValidData(getConsumerPositionData)" class="consumer-data-container">
-      <custom-nuxeo-json-viewer [json]="getConsumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
+  @if (isValidData(getConsumerPositionData)) {
+  <div class="consumer-data-container">
+    <custom-nuxeo-json-viewer [json]="getConsumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
   </div>
+  }
 </div>

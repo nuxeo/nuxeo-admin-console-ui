@@ -41,21 +41,6 @@
   color: #fff;
 }
 
-/* styles for disabled state */
-.consumer-thread-pool-btn-container__button:disabled,
-.consumer-thread-pool-btn-container__button[disabled] {
-  cursor: not-allowed;
-  pointer-events: none;
-  color: var(
-    --mdc-filled-button-disabled-label-text-color,
-    color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent)
-  );
-  background-color: var(
-    --mdc-filled-button-disabled-container-color,
-    color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
-  );
-}
-
 .consumer-thread-pool-btn-container {
   margin-top: 100px;
   margin-left: -20px;

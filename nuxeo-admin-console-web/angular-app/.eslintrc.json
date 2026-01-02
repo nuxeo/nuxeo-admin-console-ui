@@ -30,7 +30,18 @@
               "prefix": "",
               "style": "kebab-case"
             }
-          ]
+          ],
+          "@angular-eslint/prefer-standalone": "off"
+        }
+      },
+      {
+        "files": [
+          "*.spec.ts" //Applies to test files only
+        ],
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "off",
+          "@typescript-eslint/no-unused-vars": "off",
+          "@typescript-eslint/no-empty-function": "off"
         }
       },
       {

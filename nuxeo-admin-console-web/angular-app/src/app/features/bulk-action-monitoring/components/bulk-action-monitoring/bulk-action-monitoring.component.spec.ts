@@ -5,7 +5,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
@@ -15,6 +15,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
 import { of } from "rxjs";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("BulkActionMonitoringComponent", () => {
   let component: BulkActionMonitoringComponent;
@@ -29,7 +30,6 @@ describe("BulkActionMonitoringComponent", () => {
       ],
       imports: [
         NoopAnimationsModule,
-        HttpClientTestingModule,
         MatDialogModule,
         StoreModule.forRoot(provideMockStore),
         MatFormFieldModule,
@@ -37,14 +37,18 @@ describe("BulkActionMonitoringComponent", () => {
         MatInputModule,
         MatButtonModule,
       ],
-      providers: [ {
-        provide: ActivatedRoute,
-        useValue: {
-          paramMap: of({
-            get: (key: string) => (key === 'bulkActionId' ? '123' : null)
-          })
-        }
-      }]
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({
+              get: (key: string) => (key === "bulkActionId" ? "123" : null),
+            }),
+          },
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringComponent);

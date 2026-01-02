@@ -7,6 +7,7 @@ import { ErrorDetails } from '../../generic-multi-feature-layout.interface';
 import { ERROR_MESSAGES, ERROR_TYPES } from '../../generic-multi-feature-layout.constants';
 import { ErrorModalData } from '../../../../../shared/types/common.interface';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { MatDividerModule } from '@angular/material/divider';
 describe("ErrorModalComponent", () => {
   let component: ErrorModalComponent;
   let fixture: ComponentFixture<ErrorModalComponent>;
@@ -44,7 +45,7 @@ describe("ErrorModalComponent", () => {
     const dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
     TestBed.configureTestingModule({
       declarations: [ErrorModalComponent],
-      imports: [CommonModule, MatDialogModule],
+      imports: [CommonModule, MatDialogModule, MatDividerModule],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },

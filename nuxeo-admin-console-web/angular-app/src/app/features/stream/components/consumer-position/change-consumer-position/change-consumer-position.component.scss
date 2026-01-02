@@ -116,19 +116,6 @@
   }
 }
 
-.change-consumer-position-btn__button:disabled,
-.change-consumer-position-btn__button[disabled] {
-  cursor: not-allowed;
-  pointer-events: none;
-  color: var(
-    --mdc-filled-button-disabled-label-text-color,
-    color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent)
-  );
-  background-color: var(
-    --mdc-filled-button-disabled-container-color,
-    color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
-  );
-}
 
 .mat-mdc-radio-button.mat-accent {
   --mdc-radio-selected-focus-icon-color: #3f51b5;

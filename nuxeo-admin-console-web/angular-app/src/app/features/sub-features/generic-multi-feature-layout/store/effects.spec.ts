@@ -1,10 +1,10 @@
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { Observable, of, throwError } from "rxjs";
 import { GenericMultiFeatureEndpointsService } from "../services/generic-multi-feature-endpoints.service";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { Action } from "@ngrx/store";
 import * as FeatureActions from "./actions";
 import {
@@ -28,11 +28,16 @@ describe("GenericMultiFeatureEffects", () => {
     ]);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         provideMockActions(() => actions$),
         provideMockStore(),
-        { provide: GenericMultiFeatureEndpointsService, useValue: genericServiceSpy },
+        {
+          provide: GenericMultiFeatureEndpointsService,
+          useValue: genericServiceSpy,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
 

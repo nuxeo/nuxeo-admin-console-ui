@@ -8,7 +8,8 @@ import {
   selector: "stream-records-status",
   templateUrl: "./stream-records-status.component.html",
   styleUrls: ["./stream-records-status.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 
 export class StreamRecordsStatusComponent {

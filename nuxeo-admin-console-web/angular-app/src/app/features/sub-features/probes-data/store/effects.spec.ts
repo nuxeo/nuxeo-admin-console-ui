@@ -1,13 +1,13 @@
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { Observable, of, throwError } from "rxjs";
 import { ProbeDataService } from "../services/probes-data.service";
 import { launchAllProbesEffect, launchProbeEffect, loadProbesDataEffect } from "./effects";
 import * as ProbeActions from "./actions";
 import { Action } from "@ngrx/store";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 describe("ProbeEffects", () => {
   let actions$: Observable<Action>;
@@ -23,11 +23,13 @@ describe("ProbeEffects", () => {
       "launchAllProbes"
     ]);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         provideMockActions(() => actions$),
         provideMockStore(),
         { provide: ProbeDataService, useValue: probeServiceSpy },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
     probeService = TestBed.inject(ProbeDataService) as jasmine.SpyObj<ProbeDataService>;
