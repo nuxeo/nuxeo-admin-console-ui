@@ -28,7 +28,7 @@
     "@ngrx/store": "^21.0.0-beta.0",
     "@ngrx/store-devtools": "^21.0.0-beta.0",
     "material-icons": "^1.13.14",
-    "material-symbols": "^0.26.0",
+    "material-symbols": "^0.40.2",
     "moment": "^2.30.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
