@@ -70,6 +70,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     | undefined = undefined;
   @ViewChild("focusMatSelect")
   focusMatSelect!: MatSelect;
+  clearSearchInput = false;
   constructor() {
     this.consumerPositionForm = this.fb.group({
       stream: ["", Validators.required],
@@ -194,6 +195,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.consumerPositionData = [];
+          this.clearSearchInput = false;
           this.sharedMethodService
             .showActionErrorModal({
               type: ERROR_TYPES.SERVER_ERROR,
@@ -215,6 +217,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if (this.isValidData(data)) {
+          this.clearSearchInput = false;
           this.consumerPositionData = data;
           this.sharedMethodService.showSuccessSnackBar(
             CHANGE_CONSUMER_POSITION_LABELS.SUCCESS_SNACKBAR_MESSAGE
@@ -378,6 +381,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if (data?.continue) {
+          this.clearSearchInput = true;
           this.changePosition();
         }
         if (this.focusMatSelect) {

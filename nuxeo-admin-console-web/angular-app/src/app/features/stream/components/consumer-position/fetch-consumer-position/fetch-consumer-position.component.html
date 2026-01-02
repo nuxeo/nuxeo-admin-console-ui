@@ -54,7 +54,7 @@
   </div>
   @if (isValidData(getConsumerPositionData)) {
   <div class="consumer-data-container">
-    <custom-nuxeo-json-viewer [json]="getConsumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
+    <custom-nuxeo-json-viewer [clearSearchInput]="clearSearchInput" [json]="getConsumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
   </div>
   }
 </div>
