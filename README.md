@@ -22,9 +22,10 @@ A modern web application for Nuxeo administrators, built with Angular 21 and Mat
 - **Zone.js**: 0.15.1
 
 ### Testing
-- **Karma**: 6.4.0
-- **Jasmine**: 4.6.0
-- **Code Coverage**: Enabled with Istanbul
+- **Vitest**: 4.0.16
+- **@vitest/ui**: 4.0.16
+- **jsdom**: 25.0.1
+- **Code Coverage**: Enabled with V8
 
 ### Build & Development Tools
 - **Angular CLI**: 21.0.2
@@ -97,7 +98,9 @@ The application will be available at **http://localhost:4200/**
 | `npm start`     | Start development server on http://localhost:4200           |
 | `npm run build` | Build production bundle with base href `/nuxeo/nuxeoadmin/` |
 | `npm run watch` | Build in watch mode for development                         |
-| `npm test`      | Run unit tests with code coverage                           |
+| `npm test`      | Run unit tests with Vitest and generate coverage report     |
+| `npm run test:ui` | Run tests with Vitest UI (interactive browser interface)  |
+| `npm run test:watch` | Run tests in watch mode for development                |
 | `npm run lint`  | Run ESLint to check code quality                            |
 | `npm run clean` | Clear npm cache                                             |
 
@@ -131,6 +134,8 @@ This is useful when:
 
 ## 🧪 Testing
 
+The project uses **Vitest** as its testing framework, providing a fast and modern testing experience with excellent TypeScript support and native ESM compatibility.
+
 ### Run Unit Tests
 
 ```bash
@@ -138,21 +143,61 @@ npm test
 ```
 
 This command will:
-- Execute all unit tests using Karma and Jasmine
-- Generate code coverage reports
-- Run tests in headless Chrome
+- Execute all unit tests using Vitest
+- Generate code coverage reports with V8
+- Run tests in jsdom environment
 - Exit after completion (watch mode disabled)
+
+### Interactive Testing with UI
+
+```bash
+npm run test:ui
+```
+
+Vitest UI provides an interactive browser-based interface for:
+- Running and debugging individual tests
+- Viewing test results in real-time
+- Filtering tests by file, suite, or name
+- Inspecting test coverage visually
+- Accessing at **http://localhost:51204/__vitest__/**
+
+### Watch Mode for Development
+
+```bash
+npm run test:watch
+```
+
+Automatically re-runs tests when source files change, ideal for test-driven development (TDD).
+
+### Test Specific Files
+
+Run tests for specific components or patterns:
+
+```bash
+npm test -- json-viewer.component.spec
+npm test -- configuration-details
+```
 
 ### Test Coverage
 
 Coverage reports are automatically generated in the `coverage/` directory:
-- **HTML Report**: Open `coverage/index.html` in your browser for interactive coverage visualization
-- **LCOV Report**: Used for CI/CD integration and coverage tracking
+- **HTML Report**: Open `coverage/admin_console_ui/index.html` in your browser for interactive coverage visualization
+- **LCOV Report**: Used for CI/CD integration and coverage tracking tools
 - **Console Summary**: Displays coverage percentages in the terminal
 
 ### Code Coverage Thresholds
 
-The project enforces minimum code coverage requirements. Builds will fail if coverage drops below configured thresholds.
+The project enforces strict code coverage requirements:
+
+| Metric       | Threshold | Purpose                                    |
+|--------------|-----------|-------------------------------------------|
+| Statements   | 80%       | Ensures most code paths are tested        |
+| Branches     | 80%       | Validates conditional logic coverage      |
+| Functions    | 80%       | Confirms all functions are exercised      |
+| Lines        | 80%       | Guarantees overall code coverage          |
+
+**Builds will fail if coverage drops below these thresholds.**
+
 
 ## 🏗️ Production Build
 
@@ -269,9 +314,10 @@ Follow conventional commits format:
 
 **Examples**:
 - `feat(NAC-439): Upgrade Angular from v16 to v21`
-- `fix(NAC-448): Resolve Karma test configuration issues`
+- `fix(NAC-448): Migrate testing framework from Karma to Vitest`
 - `chore(NAC-123): Update dependencies to latest versions`
 - `refactor(NAC-456): Simplify authentication service logic`
+- `test(NAC-789): Add comprehensive tests for json-viewer component`
 
 ---
 
