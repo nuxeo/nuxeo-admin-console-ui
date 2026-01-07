@@ -1,11 +1,18 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { GenericMultiFeatureUtilitiesService } from "./generic-multi-feature-utilities.service";
 import { FeaturesKey } from "../generic-multi-feature-layout.mapping";
-import { ERROR_MODAL_LABELS, GENERIC_LABELS } from "../generic-multi-feature-layout.constants";
+import {
+  ERROR_MODAL_LABELS,
+  GENERIC_LABELS,
+} from "../generic-multi-feature-layout.constants";
 import { FormControl, FormGroup } from "@angular/forms";
 import { RequestParamType } from "../generic-multi-feature-layout.interface";
-
 describe("GenericMultiFeatureUtilitiesService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: GenericMultiFeatureUtilitiesService;
 
   beforeEach(() => {
@@ -202,18 +209,16 @@ describe("GenericMultiFeatureUtilitiesService", () => {
       });
     });
   });
-  
+
   describe("handleError", () => {
     it("should call response.json() and resolve when error has response.json", async () => {
       const jsonResult = { message: "error details" };
       const err = {
         response: {
-          json: jasmine
-            .createSpy("json")
-            .and.returnValue(Promise.resolve(jsonResult)),
+          json: vi.fn().mockReturnValue(Promise.resolve(jsonResult)),
         },
       };
-      spyOn(service, "checkIfResponseHasError").and.returnValue(true);
+      vi.spyOn(service, "checkIfResponseHasError").mockReturnValue(true);
       const result = await service.handleError(err);
       expect(service.checkIfResponseHasError).toHaveBeenCalledWith(err);
       expect(err.response.json).toHaveBeenCalled();
@@ -222,11 +227,11 @@ describe("GenericMultiFeatureUtilitiesService", () => {
 
     it("should reject with UNEXPECTED_ERROR when error does not have response.json", async () => {
       const err = new Error("Mock error");
-      spyOn(service, "checkIfResponseHasError").and.returnValue(false);
+      vi.spyOn(service, "checkIfResponseHasError").mockReturnValue(false);
 
       try {
         await service.handleError(err);
-        fail("Promise should have been rejected");
+        throw new Error("Promise should have been rejected");
       } catch (e) {
         expect(e).toBeDefined();
         expect(e).toBeTruthy();

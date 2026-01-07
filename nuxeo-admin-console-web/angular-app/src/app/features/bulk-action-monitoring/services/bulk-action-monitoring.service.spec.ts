@@ -1,14 +1,26 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringService } from "./bulk-action-monitoring.service";
 import { NetworkService } from "./../../../shared/services/network.service";
 import { REST_END_POINTS } from "./../../../shared/constants/rest-end-ponts.constants";
-
 describe("BulkActionMonitoringService", () => {
+  initializeTestBed();
+
   let service: BulkActionMonitoringService;
-  let networkService: jasmine.SpyObj<NetworkService>;
+  let networkService: MockedObject<NetworkService>;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
+    const spy = {
+      makeHttpRequest: vi.fn().mockName("NetworkService.makeHttpRequest"),
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -20,7 +32,7 @@ describe("BulkActionMonitoringService", () => {
     service = TestBed.inject(BulkActionMonitoringService);
     networkService = TestBed.inject(
       NetworkService
-    ) as jasmine.SpyObj<NetworkService>;
+    ) as MockedObject<NetworkService>;
   });
 
   it("should be created", () => {
