@@ -1,11 +1,18 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CommonService } from "./common.service";
 import { TestBed } from "@angular/core/testing";
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 describe("CommonService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: CommonService;
   let router: Router;
 
@@ -30,10 +37,8 @@ describe("CommonService", () => {
     expect(service.loadApp).toBeInstanceOf(EventEmitter<boolean>);
   });
 
- 
-
   it("should navigate to /bulk-action-monitoring with the correct commandId", () => {
-    spyOn(router, "navigate");
+    vi.spyOn(router, "navigate");
     const commandId = "12345";
     service.redirectToBulkActionMonitoring(commandId);
     expect(router.navigate).toHaveBeenCalledWith([
@@ -43,7 +48,7 @@ describe("CommonService", () => {
   });
 
   it("should navigate to /probes", () => {
-    spyOn(router, "navigate");
+    vi.spyOn(router, "navigate");
     service.redirectToProbesDetails();
     expect(router.navigate).toHaveBeenCalledWith(["/probes"]);
   });
