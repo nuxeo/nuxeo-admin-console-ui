@@ -25,7 +25,6 @@ export default defineConfig({
 
     // Explicitly exclude these directories from test discovery
     // Prevents scanning unnecessary folders and speeds up test file detection
-    exclude: ["node_modules", "dist"],
 
     // Enable CSS processing in tests (Angular components use SCSS/CSS)
     // Without this, component styles would cause import errors
@@ -102,11 +101,9 @@ export default defineConfig({
     // Maximum time a single test can run before being marked as timeout
     // Prevents hanging tests from blocking CI/CD pipelines
     // 30s is generous for unit tests (typically <100ms), needed for slow integration tests
-    testTimeout: 30000,
 
     // Maximum time beforeEach/afterEach hooks can run
     // Prevents setup/teardown from hanging indefinitely
-    hookTimeout: 30000,
   },
 
   resolve: {
