@@ -65,7 +65,7 @@ export default defineConfig({
 
       // Output directory for coverage reports
       // Matches Karma's output directory to maintain compatibility with existing tools/scripts
-      reportsDirectory: "./coverage/nuxeoadmin",
+      reportsDirectory: "./coverage/admin_console_ui",
 
       // Enforce minimum coverage thresholds - build fails if not met
       // Prevents code quality degradation over time
