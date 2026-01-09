@@ -1,8 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import * as ProbeActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ProbesInfo } from "./reducers";
-
 describe("ProbeActions", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   it("should create loadProbesData action", () => {
     const action = ProbeActions.loadProbesData();
     expect(action.type).toEqual("[Admin] Load Probes Data");
@@ -51,33 +55,32 @@ describe("ProbeActions", () => {
   });
 
   it("should create launchProbe action", () => {
-    const action = ProbeActions.launchProbe({ probeName: 'runtime'});
+    const action = ProbeActions.launchProbe({ probeName: "runtime" });
     expect(action.type).toEqual("[Admin] Launch Probe");
   });
 
   it("should create launchProbeSuccess action", () => {
-    const payload: ProbesInfo = 
-      {
-        name: "ldapDirectories",
-        status: {
-          neverExecuted: true,
-          success: false,
-          infos: {
-            info: "[unavailable]",
-          },
+    const payload: ProbesInfo = {
+      name: "ldapDirectories",
+      status: {
+        neverExecuted: true,
+        success: false,
+        infos: {
+          info: "[unavailable]",
         },
-        history: {
-          lastRun: null,
-          lastSuccess: "1970-01-01T00:00:00.000Z",
-          lastFail: "1970-01-01T00:00:00.000Z",
-        },
-        counts: {
-          run: 0,
-          success: 0,
-          failure: 0,
-        },
-        time: 0,
-      };
+      },
+      history: {
+        lastRun: null,
+        lastSuccess: "1970-01-01T00:00:00.000Z",
+        lastFail: "1970-01-01T00:00:00.000Z",
+      },
+      counts: {
+        run: 0,
+        success: 0,
+        failure: 0,
+      },
+      time: 0,
+    };
     const action = ProbeActions.launchProbeSuccess({
       probeInfo: payload,
     });

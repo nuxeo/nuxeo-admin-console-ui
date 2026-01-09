@@ -1,3 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { Observable, of, throwError, ReplaySubject } from "rxjs";
@@ -8,15 +17,19 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { ChangeConsumerPosition } from "./reducers";
 import { fetchConsumerPositionDataEffect } from "./effects";
 import { ConsumerPositionDetails } from "./reducers";
-
 describe("loadFetchStreamsEffect", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let actions$: ReplaySubject<any>;
-  let streamService: jasmine.SpyObj<StreamService>;
+  let streamService: MockedObject<StreamService>;
 
   beforeEach(() => {
-    streamService = jasmine.createSpyObj("StreamService", [
-      "changeConsumerPosition",
-    ]);
+    streamService = {
+      changeConsumerPosition: vi
+        .fn()
+        .mockName("StreamService.changeConsumerPosition"),
+    } as MockedObject<StreamService>;
     actions$ = new ReplaySubject(1);
     TestBed.configureTestingModule({
       providers: [
@@ -26,7 +39,7 @@ describe("loadFetchStreamsEffect", () => {
     });
   });
 
-  it("should dispatch onChangeConsumerPositionSuccess on success", (done) => {
+  it("should dispatch onChangeConsumerPositionSuccess on success", async () => {
     const consumerPosition = "mock-segment";
     const params = { key: "value" };
     const data: ChangeConsumerPosition[] = [
@@ -59,30 +72,32 @@ describe("loadFetchStreamsEffect", () => {
         },
       },
     ];
-    streamService.changeConsumerPosition.and.returnValue(of(data));
+    streamService.changeConsumerPosition.mockReturnValue(of(data));
     const effect = loadFetchStreamsEffect(
       actions$ as Observable<any>,
       streamService
     );
     actions$.next(
-      ConsumerPositionActions.onChangeConsumerPosition({ consumerPosition, params })
+      ConsumerPositionActions.onChangeConsumerPosition({
+        consumerPosition,
+        params,
+      })
     );
     effect.subscribe((action) => {
       expect(action).toEqual(
         ConsumerPositionActions.onChangeConsumerPositionSuccess(data)
       );
-      done();
     });
   });
 
-  it("should dispatch onChangeConsumerPositionFailure on error", (done) => {
+  it("should dispatch onChangeConsumerPositionFailure on error", async () => {
     const consumerPosition = "mock-segment";
     const params = { key: "value" };
     const mockError = new HttpErrorResponse({
       error: "mock-error",
       status: 500,
     });
-    streamService.changeConsumerPosition.and.returnValue(
+    streamService.changeConsumerPosition.mockReturnValue(
       throwError(() => mockError)
     );
     const effect = loadFetchStreamsEffect(
@@ -90,24 +105,28 @@ describe("loadFetchStreamsEffect", () => {
       streamService
     );
     actions$.next(
-      ConsumerPositionActions.onChangeConsumerPosition({ consumerPosition, params })
+      ConsumerPositionActions.onChangeConsumerPosition({
+        consumerPosition,
+        params,
+      })
     );
     effect.subscribe((action) => {
       expect(action).toEqual(
         ConsumerPositionActions.onChangeConsumerPositionFailure(mockError)
       );
-      done();
     });
   });
 
   describe("fetchConsumerPositionDataEffect", () => {
     let actions$: ReplaySubject<any>;
-    let streamService: jasmine.SpyObj<StreamService>;
+    let streamService: MockedObject<StreamService>;
 
     beforeEach(() => {
-      streamService = jasmine.createSpyObj("StreamService", [
-        "fetchConsumerPosition",
-      ]);
+      streamService = {
+        fetchConsumerPosition: vi
+          .fn()
+          .mockName("StreamService.fetchConsumerPosition"),
+      } as MockedObject<StreamService>;
       actions$ = new ReplaySubject(1);
       TestBed.configureTestingModule({
         providers: [
@@ -117,7 +136,7 @@ describe("loadFetchStreamsEffect", () => {
       });
     });
 
-    it("should dispatch onFetchConsumerPositionSuccess on success", (done) => {
+    it("should dispatch onFetchConsumerPositionSuccess on success", async () => {
       const params = { key: "value" };
       const data: ConsumerPositionDetails[] = [
         {
@@ -134,7 +153,7 @@ describe("loadFetchStreamsEffect", () => {
           ],
         },
       ];
-      streamService.fetchConsumerPosition.and.returnValue(of(data));
+      streamService.fetchConsumerPosition.mockReturnValue(of(data));
       const effect = fetchConsumerPositionDataEffect(
         actions$ as Observable<any>,
         streamService
@@ -146,17 +165,16 @@ describe("loadFetchStreamsEffect", () => {
         expect(action).toEqual(
           ConsumerPositionActions.onFetchConsumerPositionSuccess(data)
         );
-        done();
       });
     });
 
-    it("should dispatch onFetchConsumerPositionFailure on error", (done) => {
+    it("should dispatch onFetchConsumerPositionFailure on error", async () => {
       const params = { key: "value" };
       const mockError = new HttpErrorResponse({
         error: "mock-error",
         status: 500,
       });
-      streamService.fetchConsumerPosition.and.returnValue(
+      streamService.fetchConsumerPosition.mockReturnValue(
         throwError(() => mockError)
       );
       const effect = fetchConsumerPositionDataEffect(
@@ -170,7 +188,6 @@ describe("loadFetchStreamsEffect", () => {
         expect(action).toEqual(
           ConsumerPositionActions.onFetchConsumerPositionFailure(mockError)
         );
-        done();
       });
     });
   });
