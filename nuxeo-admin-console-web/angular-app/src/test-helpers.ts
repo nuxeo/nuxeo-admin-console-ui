@@ -1,10 +1,7 @@
 import "@angular/compiler";
 import { beforeAll, beforeEach } from "vitest";
 import { getTestBed } from "@angular/core/testing";
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from "@angular/platform-browser-dynamic/testing";
+import { BrowserTestingModule, platformBrowserTesting } from "@angular/platform-browser/testing";
 
 /**
  * Initializes Angular TestBed environment for Vitest component tests.
@@ -29,8 +26,8 @@ export function initializeTestBed() {
   beforeAll(() => {
     try {
       getTestBed().initTestEnvironment(
-        BrowserDynamicTestingModule,
-        platformBrowserDynamicTesting()
+        BrowserTestingModule,
+        platformBrowserTesting(),
       );
     } catch (e) {
       // Already initialized - ignore
