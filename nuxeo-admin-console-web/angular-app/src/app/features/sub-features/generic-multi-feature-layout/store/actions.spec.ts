@@ -1,17 +1,26 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ActionInfo } from "../generic-multi-feature-layout.interface";
 import * as DocumentActions from "./actions";
-
 describe("DocumentActions", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   const requestUrl =
     "SELECT * FROM DOCUMENT WHERE ecm:path='805c8feb-308c-48df-b74f-d09b4758f778'";
   const featureEndpoint = "/document";
 
   const requestParams = {};
   const requestHeaders = {};
-  
+
   it("should create performDocumentAction action", () => {
-    const action = DocumentActions.performDocumentAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
+    const action = DocumentActions.performDocumentAction({
+      requestUrl,
+      requestParams,
+      featureEndpoint,
+      requestHeaders,
+    });
     expect(action.type).toEqual("[Admin] Perform Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);
@@ -50,7 +59,12 @@ describe("FolderActions", () => {
   const requestHeaders = {};
 
   it("should create performFolderAction action", () => {
-    const action = DocumentActions.performFolderAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
+    const action = DocumentActions.performFolderAction({
+      requestUrl,
+      requestParams,
+      featureEndpoint,
+      requestHeaders,
+    });
     expect(action.type).toEqual("[Admin] Perform Folder Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);
@@ -82,13 +96,19 @@ describe("FolderActions", () => {
 });
 
 describe("NxqlActions", () => {
-  const requestUrl = "SELECT * FROM NXQL WHERE ecm:path='f77b67b3-308c-48df-b74f'";
+  const requestUrl =
+    "SELECT * FROM NXQL WHERE ecm:path='f77b67b3-308c-48df-b74f'";
   const featureEndpoint = "/nxql";
   const requestParams = {};
   const requestHeaders = {};
 
   it("should create performNxqlAction action", () => {
-    const action = DocumentActions.performNxqlAction({ requestUrl, requestParams, featureEndpoint, requestHeaders });
+    const action = DocumentActions.performNxqlAction({
+      requestUrl,
+      requestParams,
+      featureEndpoint,
+      requestHeaders,
+    });
     expect(action.type).toEqual("[Admin] Perform NXQL Action");
     expect(action.requestUrl).toEqual(requestUrl);
     expect(action.requestParams).toEqual(requestParams);

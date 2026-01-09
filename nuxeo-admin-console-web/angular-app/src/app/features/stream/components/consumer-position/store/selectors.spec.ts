@@ -1,11 +1,15 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import {
   selectChangeConsumerPositionState,
   selectConsumerPositionSuccess,
   selectConsumerPositionError,
 } from "./selectors";
 import { ChangeConsumerPositionState } from "./reducers";
-
 describe("ChangeConsumerPosition Selectors", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   const initialState: ChangeConsumerPositionState = {
     consumerData: [
       {
