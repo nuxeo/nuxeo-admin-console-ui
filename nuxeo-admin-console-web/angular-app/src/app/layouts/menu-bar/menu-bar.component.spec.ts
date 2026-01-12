@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
 import { MatListModule } from "@angular/material/list";
 import { MenuBarComponent } from "./menu-bar.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -7,8 +9,10 @@ import {
   TestBed,
 } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
-
 describe("MenuBarComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: MenuBarComponent;
   let fixture: ComponentFixture<MenuBarComponent>;
 

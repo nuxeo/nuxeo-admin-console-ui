@@ -1,3 +1,11 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CustomSnackBarComponent } from "./custom-snack-bar.component";
 import {
@@ -7,15 +15,22 @@ import {
 import { BULK_ACTION_LABELS } from "./../../../features/bulk-action-monitoring/bulk-action-monitoring.constants";
 import { SnackBarData } from "../../types/common.interface";
 import { MatIconModule } from "@angular/material/icon";
-
 describe("CustomSnackBarComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: CustomSnackBarComponent;
   let fixture: ComponentFixture<CustomSnackBarComponent>;
-  let mockSnackBarRef: jasmine.SpyObj<MatSnackBarRef<CustomSnackBarComponent>>;
-  const mockData: SnackBarData = { message: "Test message", panelClass: 'success-snack' }; 
+  let mockSnackBarRef: Partial<MatSnackBarRef<CustomSnackBarComponent>>;
+  const mockData: SnackBarData = {
+    message: "Test message",
+    panelClass: "success-snack",
+  };
 
   beforeEach(async () => {
-    mockSnackBarRef = jasmine.createSpyObj("MatSnackBarRef", ["dismiss"]);
+    mockSnackBarRef = {
+      dismiss: vi.fn().mockName("MatSnackBarRef.dismiss"),
+    };
 
     await TestBed.configureTestingModule({
       declarations: [CustomSnackBarComponent],
