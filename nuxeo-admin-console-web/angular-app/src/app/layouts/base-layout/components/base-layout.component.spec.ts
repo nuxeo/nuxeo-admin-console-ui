@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -15,8 +17,10 @@ import {
   TestBed,
 } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
-
 describe("BaseLayoutComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BaseLayoutComponent;
   let fixture: ComponentFixture<BaseLayoutComponent>;
 
