@@ -1,3 +1,13 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { BULK_ACTION_LABELS } from "./../../../bulk-action-monitoring.constants";
 import { CommonService } from "./../../../../../shared/services/common.service";
 import { MatButtonModule } from "@angular/material/button";
@@ -22,16 +32,22 @@ import { ActivatedRoute } from "@angular/router";
 import { GenericMultiFeatureUtilitiesService } from "../../../../sub-features/generic-multi-feature-layout/services/generic-multi-feature-utilities.service";
 import { ErrorModalComponent } from "../../../../sub-features/generic-multi-feature-layout/components/error-modal/error-modal.component";
 import { MODAL_DIMENSIONS } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("BulkActionMonitoringFormComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BulkActionMonitoringFormComponent;
   let fixture: ComponentFixture<BulkActionMonitoringFormComponent>;
-  let mockStore: jasmine.SpyObj<Store>;
-  let mockCommonService: jasmine.SpyObj<CommonService>;
-  let genericMultiFeatureUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
-  let mockDialog: jasmine.SpyObj<MatDialog>;
-  let mockDialogRef: jasmine.SpyObj<MatDialogRef<ErrorModalComponent>>;
+  let mockStore: MockedObject<Store>;
+  let mockCommonService: MockedObject<CommonService>;
+  let genericMultiFeatureUtilitiesService: MockedObject<GenericMultiFeatureUtilitiesService>;
+  let mockDialog: MockedObject<MatDialog>;
+  let mockDialogRef: MockedObject<MatDialogRef<ErrorModalComponent>>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
   class genericMultiFeatureUtilitiesServiceStub {
     removeLeadingCharacters() {
@@ -62,13 +78,24 @@ describe("BulkActionMonitoringFormComponent", () => {
   };
 
   beforeEach(async () => {
-    mockStore = jasmine.createSpyObj("Store", ["pipe", "dispatch"]);
-    mockCommonService = jasmine.createSpyObj("CommonService", [
-      "removeLeadingCharacters",
-      "redirectToBulkActionMonitoring",
-    ]);
-    mockDialog = jasmine.createSpyObj("MatDialog", ["open"]);
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed"]);
+    mockStore = {
+      pipe: vi.fn().mockName("Store.pipe"),
+      dispatch: vi.fn().mockName("Store.dispatch"),
+    } as unknown as MockedObject<Store>;
+    mockCommonService = {
+      removeLeadingCharacters: vi
+        .fn()
+        .mockName("CommonService.removeLeadingCharacters"),
+      redirectToBulkActionMonitoring: vi
+        .fn()
+        .mockName("CommonService.redirectToBulkActionMonitoring"),
+    } as unknown as MockedObject<CommonService>;
+    mockDialog = {
+      open: vi.fn().mockName("MatDialog.open"),
+    } as unknown as MockedObject<MatDialog>;
+    mockDialogRef = {
+      afterClosed: vi.fn().mockName("MatDialogRef.afterClosed"),
+    } as unknown as MockedObject<MatDialogRef<ErrorModalComponent>>;
 
     await TestBed.configureTestingModule({
       declarations: [BulkActionMonitoringFormComponent],
@@ -107,20 +134,20 @@ describe("BulkActionMonitoringFormComponent", () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BulkActionMonitoringFormComponent);
     component = fixture.componentInstance;
-    mockStore.pipe.and.returnValue(of(null));
-    mockDialog.open.and.returnValue(mockDialogRef);
-    mockDialogRef.afterClosed.and.returnValue(of({}));
+    mockStore.pipe.mockReturnValue(of(null));
+    mockDialog.open.mockReturnValue(mockDialogRef);
+    mockDialogRef.afterClosed.mockReturnValue(of({}));
     store = TestBed.inject(MockStore);
     genericMultiFeatureUtilitiesService = TestBed.inject(
       GenericMultiFeatureUtilitiesService
-    ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
-    spyOn(genericMultiFeatureUtilitiesService, 'removeLeadingCharacters');
+    ) as MockedObject<GenericMultiFeatureUtilitiesService>;
+    vi.spyOn(genericMultiFeatureUtilitiesService, "removeLeadingCharacters");
     fixture.detectChanges();
   });
 
   afterEach(() => {
-    mockStore.dispatch.calls.reset();
-    genericMultiFeatureUtilitiesService.removeLeadingCharacters.calls.reset();
+    mockStore.dispatch.mockClear();
+    genericMultiFeatureUtilitiesService.removeLeadingCharacters.mockClear();
   });
 
   it("should create", () => {
@@ -163,15 +190,17 @@ describe("BulkActionMonitoringFormComponent", () => {
   describe("onBulkActionFormSubmit", () => {
     it("should handle valid form submission", () => {
       component.isBulkActionBtnDisabled = false;
-      genericMultiFeatureUtilitiesService.removeLeadingCharacters.and.returnValue("123");
+      genericMultiFeatureUtilitiesService.removeLeadingCharacters.mockReturnValue(
+        "123"
+      );
       component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(
         "123"
       );
-      spyOn(store, "dispatch");
+      vi.spyOn(store, "dispatch");
       component.onBulkActionFormSubmit();
-      expect(genericMultiFeatureUtilitiesService.removeLeadingCharacters).toHaveBeenCalledWith(
-        "123"
-      );
+      expect(
+        genericMultiFeatureUtilitiesService.removeLeadingCharacters
+      ).toHaveBeenCalledWith("123");
       expect(store.dispatch).toHaveBeenCalledWith(
         BulkActionMonitoringActions.performBulkActionMonitor({ id: "123" })
       );
@@ -180,9 +209,9 @@ describe("BulkActionMonitoringFormComponent", () => {
 
   describe("ngOnDestroy", () => {
     it("should complete destroy$ subject and dispatch resetBulkActionMonitorState", () => {
-      spyOn(component["destroy$"], "next").and.callThrough();
-      spyOn(component["destroy$"], "complete").and.callThrough();
-      spyOn(store, "dispatch");
+      vi.spyOn(component["destroy$"], "next");
+      vi.spyOn(component["destroy$"], "complete");
+      vi.spyOn(store, "dispatch");
       component.ngOnDestroy();
       expect(component["destroy$"].next).toHaveBeenCalled();
       expect(component["destroy$"].complete).toHaveBeenCalled();
@@ -191,7 +220,7 @@ describe("BulkActionMonitoringFormComponent", () => {
       );
     });
   });
-  it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+  it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", async () => {
     let unsubscribed = false;
     component["destroy$"].subscribe({
       complete: () => {
@@ -199,7 +228,6 @@ describe("BulkActionMonitoringFormComponent", () => {
       },
     });
     component.ngOnDestroy();
-      expect(unsubscribed).toBeTrue();
-      done();
+    expect(unsubscribed).toBe(true);
   });
 });

@@ -1,3 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { HomeService } from "./home.service";
 import { NetworkService } from "../../../shared/services/network.service";
@@ -5,93 +14,90 @@ import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.consta
 import { of, throwError } from "rxjs";
 import { CapabilitiesResponse } from "../../../shared/types/capabilities.interface";
 import { InstanceInfo } from "../../../shared/types/instanceInfo.interface";
-
 describe("HomeService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: HomeService;
-  let networkServiceSpy: jasmine.SpyObj<NetworkService>;
+  let networkServiceSpy: MockedObject<NetworkService>;
   beforeEach(() => {
-    const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
+    const spy = {
+      makeHttpRequest: vi.fn().mockName("NetworkService.makeHttpRequest"),
+    };
     TestBed.configureTestingModule({
       providers: [HomeService, { provide: NetworkService, useValue: spy }],
     });
     service = TestBed.inject(HomeService);
     networkServiceSpy = TestBed.inject(
       NetworkService
-    ) as jasmine.SpyObj<NetworkService>;
+    ) as MockedObject<NetworkService>;
   });
-  
+
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  it("should call networkService.makeHttpRequest with REST_END_POINTS.CAPABILITIES and return its result", (done) => {
+  it("should call networkService.makeHttpRequest with REST_END_POINTS.CAPABILITIES and return its result", async () => {
     const mockResponse: CapabilitiesResponse = {} as CapabilitiesResponse;
-    networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+    networkServiceSpy.makeHttpRequest.mockReturnValue(of(mockResponse));
     service.getVersionInfo().subscribe((response) => {
       expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
         REST_END_POINTS.CAPABILITIES
       );
       expect(response).toBe(mockResponse);
-      done();
     });
   });
 
-  it("should propagate error when networkService.makeHttpRequest fails", (done) => {
+  it("should propagate error when networkService.makeHttpRequest fails", async () => {
     const mockError = new Error("Network error");
-    networkServiceSpy.makeHttpRequest.and.returnValue(
+    networkServiceSpy.makeHttpRequest.mockReturnValue(
       throwError(() => mockError)
     );
     service.getVersionInfo().subscribe({
       next: () => {
-        fail("Expected error, but got success response");
-        done();
+        throw new Error("Expected error, but got success response");
       },
       error: (error) => {
         expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
           REST_END_POINTS.CAPABILITIES
         );
         expect(error).toBe(mockError);
-        done();
       },
     });
   });
 
-  it("should call makeHttpRequest only once per getVersionInfo call", (done) => {
+  it("should call makeHttpRequest only once per getVersionInfo call", async () => {
     const mockResponse: CapabilitiesResponse = {} as CapabilitiesResponse;
-    networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+    networkServiceSpy.makeHttpRequest.mockReturnValue(of(mockResponse));
     service.getVersionInfo().subscribe(() => {
       expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledTimes(1);
-      done();
     });
   });
 
   describe("getInstanceInfo", () => {
-    it("should call networkService.makeHttpRequest with correct URL", (done) => {
+    it("should call networkService.makeHttpRequest with correct URL", async () => {
       const mockResponse: InstanceInfo = {} as InstanceInfo;
-      networkServiceSpy.makeHttpRequest.and.returnValue(of(mockResponse));
+      networkServiceSpy.makeHttpRequest.mockReturnValue(of(mockResponse));
       service.getInstanceInfo().subscribe();
       expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
         REST_END_POINTS.INSTANCE_INFO
       );
-      done();
     });
 
-    it("should propagate instance info error when networkService.makeHttpRequest fails", (done) => {
+    it("should propagate instance info error when networkService.makeHttpRequest fails", async () => {
       const mockError = new Error("Network error");
-      networkServiceSpy.makeHttpRequest.and.returnValue(
+      networkServiceSpy.makeHttpRequest.mockReturnValue(
         throwError(() => mockError)
       );
       service.getInstanceInfo().subscribe({
         next: () => {
-          fail("Expected error, but got success response");
-          done();
+          throw new Error("Expected error, but got success response");
         },
         error: (error) => {
           expect(networkServiceSpy.makeHttpRequest).toHaveBeenCalledWith(
             REST_END_POINTS.INSTANCE_INFO
           );
           expect(error).toBe(mockError);
-          done();
         },
       });
     });

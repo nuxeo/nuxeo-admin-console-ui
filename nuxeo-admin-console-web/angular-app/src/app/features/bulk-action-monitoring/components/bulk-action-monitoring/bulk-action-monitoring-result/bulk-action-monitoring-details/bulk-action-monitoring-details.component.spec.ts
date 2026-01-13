@@ -1,11 +1,15 @@
-import { BulkActionInfoDetails } from './../../../../bulk-action-monitoring.interface';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
+import { BulkActionInfoDetails } from "./../../../../bulk-action-monitoring.interface";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { MatCardModule } from "@angular/material/card";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-details.component";
-import { MatTableModule } from '@angular/material/table';
-
+import { MatTableModule } from "@angular/material/table";
 describe("BulkActionMonitoringDetailsComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BulkActionMonitoringDetailsComponent;
   let fixture: ComponentFixture<BulkActionMonitoringDetailsComponent>;
 

@@ -1,4 +1,10 @@
-import { BulkActionMonitoringInfo, BulkActionInfoSummary, BulkActionInfoDetails } from './../../../bulk-action-monitoring.interface';
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+  BulkActionMonitoringInfo,
+  BulkActionInfoSummary,
+  BulkActionInfoDetails,
+} from "./../../../bulk-action-monitoring.interface";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { MatCardModule } from "@angular/material/card";
 import { BulkActionMonitoringSummaryComponent } from "./bulk-action-monitoring-summary/bulk-action-monitoring-summary.component";
@@ -6,12 +12,14 @@ import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-d
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { BulkActionMonitoringResultComponent } from "./bulk-action-monitoring-result.component";
 import { provideMockStore } from "@ngrx/store/testing";
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule } from '@angular/material/table';
-
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatTableModule } from "@angular/material/table";
 describe("BulkActionMonitoringResultComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BulkActionMonitoringResultComponent;
   let fixture: ComponentFixture<BulkActionMonitoringResultComponent>;
   const initialState = {
@@ -52,9 +60,7 @@ describe("BulkActionMonitoringResultComponent", () => {
         MatTableModule,
         NoopAnimationsModule,
       ],
-      providers: [
-        provideMockStore({ initialState }),
-      ],
+      providers: [provideMockStore({ initialState })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BulkActionMonitoringResultComponent);

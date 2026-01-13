@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
 import { BulkActionMonitoringDetailsComponent } from "./bulk-action-monitoring-result/bulk-action-monitoring-details/bulk-action-monitoring-details.component";
 import { BulkActionMonitoringFormComponent } from "./bulk-action-monitoring-form/bulk-action-monitoring-form.component";
 import { MatButtonModule } from "@angular/material/button";
@@ -5,7 +7,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BulkActionMonitoringComponent } from "./bulk-action-monitoring.component";
 import { BULK_ACTION_LABELS } from "../../bulk-action-monitoring.constants";
 import { BulkActionMonitoringInfo } from "../../bulk-action-monitoring.interface";
@@ -13,14 +15,21 @@ import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { of } from "rxjs";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
+import { vi } from "vitest";
 
 describe("BulkActionMonitoringComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BulkActionMonitoringComponent;
   let fixture: ComponentFixture<BulkActionMonitoringComponent>;
-  
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
@@ -44,6 +53,17 @@ describe("BulkActionMonitoringComponent", () => {
             paramMap: of({
               get: (key: string) => (key === "bulkActionId" ? "123" : null),
             }),
+          },
+        },
+        {
+          provide: Router,
+          useValue: {
+            navigate: vi.fn(),
+            navigateByUrl: vi.fn(),
+            createUrlTree: vi.fn(),
+            serializeUrl: vi.fn(),
+            url: "/bulk-action-monitoring/123",
+            events: of(),
           },
         },
         provideHttpClient(withInterceptorsFromDi()),
