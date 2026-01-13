@@ -74,7 +74,7 @@ jobs:
         run: npm install
 
       - name: Install Chrome and Chromedriver
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: 120
           install-chromedriver: true
