@@ -99,7 +99,7 @@
   </div>
   @if (isValidData(consumerPositionData)) {
   <div class="consumer-data-container">
-    <custom-nuxeo-json-viewer [json]="consumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
+    <custom-nuxeo-json-viewer [clearSearchInput]="clearSearchInput" [json]="consumerPositionData" [expanded]="false"></custom-nuxeo-json-viewer>
   </div>
   }
 </div>

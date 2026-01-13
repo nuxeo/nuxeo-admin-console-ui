@@ -62,6 +62,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
   getConsumerPositionSuccess$!: Observable<ConsumerPositionDetails[]>;
   getConsumerPositionError$!: Observable<HttpErrorResponse | null>;
   getConsumerPositionData: ConsumerPositionDetails[] | null = null;
+  clearSearchInput = false;
   constructor() {
     this.fetchStreamsSuccess$ = this.store.pipe(
       select((state) => state.streams?.streams)
@@ -174,6 +175,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: ConsumerPositionDetails[]) => {
         if (this.isValidData(data)) {
+          this.clearSearchInput = false;
           this.getConsumerPositionData = data;
         }
       });
@@ -202,6 +204,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
   }
 
   fetchConsumerPositionDetails() {
+    this.clearSearchInput = true;
     const params = {
       stream: this.fetchConsumerForm.controls[STREAM_LABELS.STREAM_ID]?.value,
       consumer:
@@ -232,6 +235,7 @@ export class FetchConsumerPositionComponent implements OnInit, OnDestroy {
 
   clearRecords() {
     this.getConsumerPositionData = [];
+    this.clearSearchInput = false;
     this.store.dispatch(
       ConsumerPositionActions.resetFetchConsumerPositionData()
     );
