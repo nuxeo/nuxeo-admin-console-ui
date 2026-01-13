@@ -1,3 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { CustomSnackBarComponent } from "./../../../../../../shared/components/custom-snack-bar/custom-snack-bar.component";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -11,15 +20,17 @@ import * as BulkActionMonitoringActions from "../../../../store/actions";
 import * as fromReducer from "../../../../store/reducers";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
-
 describe("BulkActionMonitoringSummaryComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: BulkActionMonitoringSummaryComponent;
   let fixture: ComponentFixture<BulkActionMonitoringSummaryComponent>;
   let store: MockStore<fromReducer.BulkActionMonitoringState>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
-  const snackBarSpy = jasmine.createSpyObj("MatSnackBar", [
-    "openFromComponent",
-  ]);
+  let snackBar: MockedObject<MatSnackBar>;
+  const snackBarSpy = {
+    openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent"),
+  };
   const initialState = {
     bulkActionMonitoringInfo: {
       "entity-type": null,
@@ -62,7 +73,7 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     fixture = TestBed.createComponent(BulkActionMonitoringSummaryComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
+    snackBar = TestBed.inject(MatSnackBar) as MockedObject<MatSnackBar>;
     fixture.detectChanges();
   });
 
@@ -135,7 +146,7 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     component.bulkActionSummary = {
       commandId: "12345",
     } as BulkActionInfoSummary;
-    spyOn(store, "dispatch");
+    vi.spyOn(store, "dispatch");
     component.onRefresh();
     expect(snackBar.openFromComponent).toHaveBeenCalledWith(
       CustomSnackBarComponent,

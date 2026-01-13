@@ -73,16 +73,6 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
-      - name: Install Chrome and Chromedriver
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 120
-          install-chromedriver: true
-
-      - name: Verify Chrome installation
-        run: google-chrome --version
-
-      - name: Unit tests
+      - name: Unit tests with Vitest
         working-directory: nuxeo-admin-console-web/angular-app
-        run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm test
+        run: npm test
