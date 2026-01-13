@@ -230,4 +230,196 @@ describe("BulkActionMonitoringFormComponent", () => {
     component.ngOnDestroy();
     expect(unsubscribed).toBe(true);
   });
+
+  describe("ngOnInit - bulkActionMonitoringLaunched$ subscription", () => {
+    it("should handle successful bulk action response with commandId", () => {
+      const mockBulkActionData = {
+        "entity-type": "bulkStatus",
+        commandId: "test-command-id-123",
+        state: "COMPLETED",
+        processed: 10,
+        skipCount: 0,
+        error: false,
+        errorCount: 0,
+        total: 10,
+        action: "testAction",
+        username: "testUser",
+        submitted: "2026-01-13T10:00:00",
+        scrollStart: "2026-01-13T10:00:00",
+        scrollEnd: "2026-01-13T10:05:00",
+        processingStart: "2026-01-13T10:00:00",
+        processingEnd: "2026-01-13T10:10:00",
+        completed: "2026-01-13T10:10:00",
+        processingMillis: 600000,
+      };
+
+      component.bulkActionMonitoringLaunched$ = of(mockBulkActionData);
+      component.bulkActionError$ = of(null);
+
+      vi.spyOn(component.setBulkActionResponse, "emit");
+      vi.spyOn(component.bulkActionMonitoringForm, "reset");
+
+      component.ngOnInit();
+
+      expect(component.bulkActionResponse).toEqual(mockBulkActionData);
+      expect(component.setBulkActionResponse.emit).toHaveBeenCalledWith(
+        mockBulkActionData
+      );
+      expect(component.isBulkActionBtnDisabled).toBe(false);
+      expect(component.bulkActionMonitoringForm.reset).toHaveBeenCalled();
+    });
+
+    it("should handle bulk action response without commandId", () => {
+      const mockBulkActionData = {
+        "entity-type": null,
+        commandId: null,
+        state: null,
+        processed: -1,
+        skipCount: -1,
+        error: false,
+        errorCount: -1,
+        total: -1,
+        action: null,
+        username: null,
+        submitted: null,
+        scrollStart: null,
+        scrollEnd: null,
+        processingStart: null,
+        processingEnd: null,
+        completed: null,
+        processingMillis: -1,
+      };
+
+      component.bulkActionMonitoringLaunched$ = of(mockBulkActionData);
+      component.bulkActionError$ = of(null);
+
+      component.ngOnInit();
+
+      expect(component.bulkActionResponse).toEqual({} as any);
+    });
+  });
+
+  describe("ngOnInit - bulkActionError$ subscription", () => {
+    it("should handle error response and show error modal", () => {
+      const mockError = {
+        error: {
+          status: 500,
+          message: "Internal Server Error",
+        },
+      };
+
+      component.bulkActionMonitoringLaunched$ = of(null as any);
+      component.bulkActionError$ = of(mockError as any);
+
+      vi.spyOn(component.setBulkActionResponse, "emit");
+      vi.spyOn(component, "showBulkActionErrorModal");
+
+      component.ngOnInit();
+
+      expect(component.setBulkActionResponse.emit).toHaveBeenCalledWith(null);
+      expect(component.showBulkActionErrorModal).toHaveBeenCalledWith({
+        type: "serverError",
+        details: {
+          status: 500,
+          message: "Internal Server Error",
+        },
+      });
+    });
+
+    it("should not show error modal when error is null", () => {
+      component.bulkActionMonitoringLaunched$ = of(null as any);
+      component.bulkActionError$ = of(null);
+
+      vi.spyOn(component, "showBulkActionErrorModal");
+
+      component.ngOnInit();
+
+      expect(component.showBulkActionErrorModal).not.toHaveBeenCalled();
+    });
+
+    it("should not show error modal when error.error is undefined", () => {
+      const mockError = {
+        status: 500,
+      };
+
+      component.bulkActionMonitoringLaunched$ = of(null as any);
+      component.bulkActionError$ = of(mockError as any);
+
+      vi.spyOn(component, "showBulkActionErrorModal");
+
+      component.ngOnInit();
+
+      expect(component.showBulkActionErrorModal).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("onBulkActionModalClose", () => {
+    it("should reset button state", () => {
+      component.isBulkActionBtnDisabled = true;
+      component.onBulkActionModalClose();
+
+      expect(component.isBulkActionBtnDisabled).toBe(false);
+    });
+  });
+
+  describe("showBulkActionErrorModal - afterClosed callback", () => {
+    it("should call onBulkActionModalClose when dialog is closed", () => {
+      vi.spyOn(component, "onBulkActionModalClose");
+
+      const error = {
+        type: "Server Error",
+        details: { status: 500, message: "Error" },
+      };
+
+      component.showBulkActionErrorModal(error);
+
+      expect(mockDialogRef.afterClosed).toHaveBeenCalled();
+      expect(component.onBulkActionModalClose).toHaveBeenCalled();
+    });
+  });
+
+  describe("onBulkActionFormSubmit - edge cases", () => {
+    it("should not submit when form is invalid", () => {
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue("");
+      component.bulkActionMonitoringForm.markAsDirty();
+      component.isBulkActionBtnDisabled = false;
+      vi.spyOn(store, "dispatch");
+
+      component.onBulkActionFormSubmit();
+
+      expect(store.dispatch).not.toHaveBeenCalled();
+    });
+
+    it("should not submit when button is already disabled", () => {
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(
+        "123"
+      );
+      component.isBulkActionBtnDisabled = true;
+      vi.spyOn(store, "dispatch");
+
+      component.onBulkActionFormSubmit();
+
+      expect(store.dispatch).not.toHaveBeenCalled();
+    });
+
+    it("should trim whitespace from bulkActionId", () => {
+      component.isBulkActionBtnDisabled = false;
+      genericMultiFeatureUtilitiesService.removeLeadingCharacters.mockReturnValue(
+        "456"
+      );
+      component.bulkActionMonitoringForm.controls["bulkActionId"].setValue(
+        "  456  "
+      );
+      vi.spyOn(store, "dispatch");
+
+      component.onBulkActionFormSubmit();
+
+      expect(
+        genericMultiFeatureUtilitiesService.removeLeadingCharacters
+      ).toHaveBeenCalledWith("456");
+      expect(store.dispatch).toHaveBeenCalledWith(
+        BulkActionMonitoringActions.performBulkActionMonitor({ id: "456" })
+      );
+    });
+  });
 });

@@ -9,6 +9,8 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { Observable } from "rxjs";
+
 describe("CommonService", () => {
   // Initialize TestBed for component testing
   initializeTestBed();
@@ -51,5 +53,43 @@ describe("CommonService", () => {
     vi.spyOn(router, "navigate");
     service.redirectToProbesDetails();
     expect(router.navigate).toHaveBeenCalledWith(["/probes"]);
+  });
+
+  it("should call networkService.makeHttpRequest with GET_CONFIGURATION_DETAILS endpoint", async () => {
+    const mockResponse = {
+      serverVersion: "2025.0",
+      environment: "production",
+    };
+
+    vi.spyOn(service["networkService"], "makeHttpRequest").mockReturnValue(
+      new Observable((subscriber) => {
+        subscriber.next(mockResponse);
+        subscriber.complete();
+      })
+    );
+
+    return new Promise<void>((resolve) => {
+      service.getConfigurationDetails().subscribe({
+        next: (response) => {
+          expect(
+            service["networkService"].makeHttpRequest
+          ).toHaveBeenCalledWith("GET_CONFIGURATION_DETAILS");
+          expect(response).toEqual(mockResponse);
+          resolve();
+        },
+      });
+    });
+  });
+
+  it("should return an observable from getConfigurationDetails", () => {
+    vi.spyOn(service["networkService"], "makeHttpRequest").mockReturnValue(
+      new Observable((subscriber) => {
+        subscriber.next({});
+        subscriber.complete();
+      })
+    );
+
+    const result = service.getConfigurationDetails();
+    expect(result).toBeInstanceOf(Observable);
   });
 });
