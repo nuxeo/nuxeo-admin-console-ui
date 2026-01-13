@@ -54,7 +54,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchversionInfo());
             loadVersionInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
 
@@ -69,7 +68,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchversionInfo());
             loadVersionInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
     });
@@ -87,7 +85,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchversionInfo());
             loadVersionInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
 
@@ -102,7 +99,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchversionInfo());
             loadVersionInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
     });
@@ -120,7 +116,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchInstanceInfo());
             loadInstanceInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
 
@@ -135,7 +130,6 @@ describe("HomeEffects", () => {
             const actionsMock$ = of(HomeActions.fetchInstanceInfo());
             loadInstanceInfo(actionsMock$, homeService).subscribe((result: Action) => {
                 expect(result).toEqual(outcome);
-                ;
             });
         });
     });
