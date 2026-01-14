@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { FetchConsumerPositionComponent } from "./fetch-consumer-position.component";
@@ -11,8 +13,10 @@ import { CommonModule } from "@angular/common";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatSelectModule } from "@angular/material/select";
 import * as StreamActions from "../../../store/actions";
-
 describe("FetchConsumerPositionComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: FetchConsumerPositionComponent;
   let fixture: ComponentFixture<FetchConsumerPositionComponent>;
   let storeSpy: any;
@@ -21,13 +25,13 @@ describe("FetchConsumerPositionComponent", () => {
 
   beforeEach(() => {
     storeSpy = {
-      pipe: jasmine.createSpy().and.returnValue(of([])),
-      select: jasmine.createSpy().and.returnValue(of(true)),
-      dispatch: jasmine.createSpy(),
+      pipe: vi.fn().mockReturnValue(of([])),
+      select: vi.fn().mockReturnValue(of(true)),
+      dispatch: vi.fn(),
     };
     dialogSpy = {};
     sharedMethodsSpy = {
-      showActionErrorModal: jasmine.createSpy().and.returnValue(of({})),
+      showActionErrorModal: vi.fn().mockReturnValue(of({})),
     };
 
     TestBed.configureTestingModule({
@@ -56,8 +60,8 @@ describe("FetchConsumerPositionComponent", () => {
   });
 
   it("should initialize fetchConsumerForm with required controls", () => {
-    expect(component.fetchConsumerForm.contains("stream")).toBeTrue();
-    expect(component.fetchConsumerForm.contains("consumer")).toBeTrue();
+    expect(component.fetchConsumerForm.contains("stream")).toBe(true);
+    expect(component.fetchConsumerForm.contains("consumer")).toBe(true);
     expect(component.fetchConsumerForm.get("stream")?.validator).toBeTruthy();
     expect(component.fetchConsumerForm.get("consumer")?.validator).toBeTruthy();
   });
@@ -89,21 +93,21 @@ describe("FetchConsumerPositionComponent", () => {
   });
 
   it("isValidData should return false for null or empty object", () => {
-    expect(component.isValidData(null)).toBeFalse();
-    expect(component.isValidData({})).toBeFalse();
+    expect(component.isValidData(null)).toBe(false);
+    expect(component.isValidData({})).toBe(false);
   });
 
   it("isValidData should return true for non-empty object", () => {
-    expect(component.isValidData({ a: 1 })).toBeTrue();
+    expect(component.isValidData({ a: 1 })).toBe(true);
   });
 
   it("should set isFetchConsumerPositionBtnDisabled to true if fetchStreamsError$ emits error", () => {
-    storeSpy.pipe.and.callFake((...args: any[]) => {
+    storeSpy.pipe.mockImplementation((...args: any[]) => {
       if (args[0].name === "select") return of(new Error("error"));
       return of([]);
     });
     component.ngOnInit();
-    expect(component.isFetchConsumerPositionBtnDisabled).toBeTrue();
+    expect(component.isFetchConsumerPositionBtnDisabled).toBe(true);
   });
 
   it("should handle fetchStreamsSuccess with data", () => {
@@ -122,8 +126,8 @@ describe("FetchConsumerPositionComponent", () => {
   });
 
   it("should dispatch fetchStreams action when streams data is not loaded", () => {
-    storeSpy.select.and.returnValue(of(false));
-    storeSpy.pipe.and.returnValue(of(false));
+    storeSpy.select.mockReturnValue(of(false));
+    storeSpy.pipe.mockReturnValue(of(false));
     component.ngOnInit();
     expect(storeSpy.dispatch).toHaveBeenCalledWith(
       StreamActions.fetchStreams()
@@ -131,8 +135,8 @@ describe("FetchConsumerPositionComponent", () => {
   });
 
   it("should not dispatch fetchStreams action when streams data is already loaded", () => {
-    storeSpy.select.and.returnValue(of(true));
-    storeSpy.pipe.and.returnValue(of(true));
+    storeSpy.select.mockReturnValue(of(true));
+    storeSpy.pipe.mockReturnValue(of(true));
     component.ngOnInit();
     expect(storeSpy.dispatch).not.toHaveBeenCalledWith(
       StreamActions.fetchStreams()
