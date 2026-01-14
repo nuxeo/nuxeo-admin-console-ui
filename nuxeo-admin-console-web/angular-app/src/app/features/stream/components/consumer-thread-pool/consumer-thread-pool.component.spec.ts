@@ -1,3 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
@@ -26,37 +35,56 @@ import {
   STREAM_LABELS,
 } from "../../stream.constants";
 import { StreamService } from "../../services/stream.service";
-
 describe("ConsumerThreadPoolComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: ConsumerThreadPoolComponent;
   let fixture: ComponentFixture<ConsumerThreadPoolComponent>;
-  let storeSpy: jasmine.SpyObj<
+  let storeSpy: MockedObject<
     Store<{
       streams: StreamsState;
       consumerThreadPool: ConsumerThreadPoolState;
     }>
   >;
-  let matDialogSpy: jasmine.SpyObj<MatDialog>;
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
-  let matSnackBarSpy: jasmine.SpyObj<MatSnackBar>;
-  let streamServiceSpy: jasmine.SpyObj<StreamService>;
+  let matDialogSpy: MockedObject<MatDialog>;
+  let httpClientSpy: MockedObject<HttpClient>;
+  let matSnackBarSpy: MockedObject<MatSnackBar>;
+  let streamServiceSpy: MockedObject<StreamService>;
 
   beforeEach(() => {
-    storeSpy = jasmine.createSpyObj("Store", ["dispatch", "pipe", "select"]);
-    storeSpy.select.and.returnValue(of({ streamDataLoaded: true }));
-    storeSpy.pipe.and.returnValue(of([]));
-    streamServiceSpy = jasmine.createSpyObj("StreamService", [
-      "showSuccessMessage",
-    ]);
+    storeSpy = {
+      dispatch: vi.fn().mockName("Store.dispatch"),
+      pipe: vi.fn().mockName("Store.pipe"),
+      select: vi.fn().mockName("Store.select"),
+    } as any;
+    storeSpy.select.mockReturnValue(of({ streamDataLoaded: true }));
+    storeSpy.pipe.mockReturnValue(of([]));
+    streamServiceSpy = {
+      showSuccessMessage: vi.fn().mockName("StreamService.showSuccessMessage"),
+    } as MockedObject<StreamService>;
 
-    matDialogSpy = jasmine.createSpyObj("MatDialog", ["open", "closeAll"]);
-    httpClientSpy = jasmine.createSpyObj("HttpClient", [
-      "get",
-      "post",
-      "put",
-      "delete",
-    ]);
-    matSnackBarSpy = jasmine.createSpyObj("MatSnackBar", ["open", "dismiss"]);
+    const mockDialogRef = {
+      afterClosed: vi
+        .fn()
+        .mockName("MatDialogRef.afterClosed")
+        .mockReturnValue(of({ continue: false })),
+    };
+
+    matDialogSpy = {
+      open: vi.fn().mockName("MatDialog.open").mockReturnValue(mockDialogRef),
+      closeAll: vi.fn().mockName("MatDialog.closeAll"),
+    } as MockedObject<MatDialog>;
+    httpClientSpy = {
+      get: vi.fn().mockName("HttpClient.get"),
+      post: vi.fn().mockName("HttpClient.post"),
+      put: vi.fn().mockName("HttpClient.put"),
+      delete: vi.fn().mockName("HttpClient.delete"),
+    } as MockedObject<HttpClient>;
+    matSnackBarSpy = {
+      open: vi.fn().mockName("MatSnackBar.open"),
+      dismiss: vi.fn().mockName("MatSnackBar.dismiss"),
+    } as MockedObject<MatSnackBar>;
 
     TestBed.configureTestingModule({
       declarations: [ConsumerThreadPoolComponent],
@@ -97,7 +125,7 @@ describe("ConsumerThreadPoolComponent", () => {
         component.CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL
       );
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.onStartConsumerThreadPoolLaunch.type,
           params: { consumer: consumerValue },
         })
@@ -111,7 +139,7 @@ describe("ConsumerThreadPoolComponent", () => {
         component.CONSUMER_THREAD_POOL_LABELS.STOP_CONSUMER_THREAD_POOL
       );
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.onStopConsumerThreadPoolLaunch.type,
           params: { consumer: consumerValue },
         })
@@ -126,7 +154,7 @@ describe("ConsumerThreadPoolComponent", () => {
       component.onStreamChange(streamValue);
       expect(component.streamForm.get("stream")?.value).toBe(streamValue);
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: streamValue },
         })
@@ -138,7 +166,7 @@ describe("ConsumerThreadPoolComponent", () => {
       component.streamForm.patchValue({ stream: streamName });
       component.onStreamChange(streamName);
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: streamName },
         })
@@ -149,7 +177,7 @@ describe("ConsumerThreadPoolComponent", () => {
       component.streamForm.removeControl(component.STREAM_LABELS.STREAM_ID);
       expect(() => component.onStreamChange("mock-stream")).not.toThrow();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: undefined },
         })
@@ -163,12 +191,12 @@ describe("ConsumerThreadPoolComponent", () => {
         .get(component.CONSUMER_THREAD_POOL_LABELS.CONSUMER_LABEL)
         ?.setValue("consumer/urn");
       component.isStartOrStopConsumerThreadInProgress = false;
-      matDialogSpy.open.and.returnValue({
+      matDialogSpy.open.mockReturnValue({
         afterClosed: () => of({ continue: true }),
       } as any);
-      spyOn(component, "onStartStopConsumerThreadPool");
-      spyOn(component, "showActionErrorModal");
-      component.focusMatSelect = { focus: jasmine.createSpy("focus") } as any;
+      vi.spyOn(component, "onStartStopConsumerThreadPool");
+      vi.spyOn(component, "showActionErrorModal");
+      component.focusMatSelect = { focus: vi.fn() } as any;
     });
 
     it("should open confirmation modal and call onStartStopConsumerThreadPool for START", () => {
@@ -176,13 +204,13 @@ describe("ConsumerThreadPoolComponent", () => {
         component.CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL
       );
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType:
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
-            message: jasmine.stringMatching(/start/),
+            message: expect.stringMatching(/start/),
             title: "Start Consumer Thread Pools",
           }),
         })
@@ -198,13 +226,13 @@ describe("ConsumerThreadPoolComponent", () => {
         component.CONSUMER_THREAD_POOL_LABELS.STOP_CONSUMER_THREAD_POOL
       );
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType:
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION,
-            message: jasmine.stringMatching(/stop/),
+            message: expect.stringMatching(/stop/),
             title: "Stop Consumer Thread Pools",
           }),
         })
@@ -216,7 +244,7 @@ describe("ConsumerThreadPoolComponent", () => {
     });
 
     it("should not call onStartStopConsumerThreadPool if continue is false", () => {
-      matDialogSpy.open.and.returnValue({
+      matDialogSpy.open.mockReturnValue({
         afterClosed: () => of({ continue: false }),
       } as any);
       component.showConfirmationModal(
@@ -232,9 +260,9 @@ describe("ConsumerThreadPoolComponent", () => {
         component.CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL
       );
       expect(component.showActionErrorModal).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: ERROR_TYPES.SERVER_ERROR,
-          details: jasmine.objectContaining({
+          details: expect.objectContaining({
             message:
               component.CONSUMER_THREAD_POOL_LABELS
                 .CONSUMER_THREAD_POOL_OPERATION_IN_PROGRESS_MSG,
@@ -251,8 +279,12 @@ describe("ConsumerThreadPoolComponent", () => {
       component.showConfirmationModal(
         component.CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_THREAD_POOL
       );
-      const call = matDialogSpy.open.calls.mostRecent();
-      const dialogArgs = call.args[1] as { data?: { message?: string } };
+      const lastCall = matDialogSpy.open.mock.lastCall;
+      const dialogArgs = lastCall?.[1] as {
+        data?: {
+          message?: string;
+        };
+      };
       expect(dialogArgs?.data?.message).toContain("stream-consumer");
     });
   });
@@ -267,8 +299,8 @@ describe("ConsumerThreadPoolComponent", () => {
           message: "Internal Server Error",
         },
       };
-      component.focusMatSelect = { focus: jasmine.createSpy("focus") } as any;
-      matDialogSpy.open.and.returnValue({
+      component.focusMatSelect = { focus: vi.fn() } as any;
+      matDialogSpy.open.mockReturnValue({
         afterClosed: () => of({}),
       } as any);
     });
@@ -277,7 +309,7 @@ describe("ConsumerThreadPoolComponent", () => {
       component.showActionErrorModal(errorDetails);
       expect(matDialogSpy.open).toHaveBeenCalledWith(
         ErrorModalComponent,
-        jasmine.objectContaining({
+        expect.objectContaining({
           data: { error: errorDetails },
           disableClose: true,
           hasBackdrop: true,
@@ -301,12 +333,12 @@ describe("ConsumerThreadPoolComponent", () => {
 
   describe("Stream data loaded subscription", () => {
     beforeEach(() => {
-      spyOn(component, "showActionErrorModal");
+      vi.spyOn(component, "showActionErrorModal");
     });
 
     it("should dispatch fetchStreams action when streams data is not loaded", () => {
-      storeSpy.select.and.returnValue(of(false));
-      storeSpy.pipe.and.returnValue(of(false));
+      storeSpy.select.mockReturnValue(of(false));
+      storeSpy.pipe.mockReturnValue(of(false));
       component.ngOnInit();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
         StreamActions.fetchStreams()
@@ -314,8 +346,8 @@ describe("ConsumerThreadPoolComponent", () => {
     });
 
     it("should not dispatch fetchStreams action when streams data is already loaded", () => {
-      storeSpy.select.and.returnValue(of(true));
-      storeSpy.pipe.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
+      storeSpy.pipe.mockReturnValue(of(true));
       component.ngOnInit();
       expect(storeSpy.dispatch).not.toHaveBeenCalledWith(
         StreamActions.fetchStreams()
@@ -328,7 +360,7 @@ describe("ConsumerThreadPoolComponent", () => {
         { name: "mock-stream-2", id: "mock-id-2" },
       ];
       component.fetchStreamsSuccess$ = of(mockStreams);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.streams).toEqual(mockStreams);
       expect(component.streamForm.get("stream")?.value).toBe("mock-stream-1");
@@ -344,22 +376,22 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should not process when streams data is empty", () => {
       component.fetchStreamsSuccess$ = of([]);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.streams).toEqual([]);
       expect(storeSpy.dispatch).not.toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          type: jasmine.stringMatching(/fetchConsumers/),
+        expect.objectContaining({
+          type: expect.stringMatching(/fetchConsumers/),
         })
       );
     });
 
     it("should handle streams fetch error when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        error: { status: 500, message: "mock-error" }
+        error: { status: 500, message: "mock-error" },
       });
       component.fetchStreamsError$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
@@ -373,10 +405,11 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle streams fetch error when error object not is present", () => {
       const mockError = new HttpErrorResponse({
-       status: 500, statusText: "mock-error"
+        status: 500,
+        statusText: "mock-error",
       });
       component.fetchStreamsError$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
@@ -390,18 +423,57 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle successful consumers fetch with empty data", () => {
       component.fetchConsumersSuccess$ = of([]);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.consumers).toEqual([]);
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
     });
 
+    it("should handle successful consumers fetch with data", () => {
+      const mockConsumers = [
+        { stream: "stream1", consumer: "consumer1" },
+        { stream: "stream1", consumer: "consumer2" },
+      ];
+
+      // Create a fresh component without calling ngOnInit via detectChanges
+      const freshFixture = TestBed.createComponent(ConsumerThreadPoolComponent);
+      const freshComponent = freshFixture.componentInstance;
+
+      // Override ALL observables to prevent interference
+      freshComponent.fetchStreamsSuccess$ = of([]);
+      freshComponent.fetchStreamsError$ = of(null);
+      freshComponent.fetchConsumersSuccess$ = of(mockConsumers);
+      freshComponent.fetchConsumersError$ = of(null);
+      freshComponent.isStartConsumerThreadPoolSuccess$ = of(null as any);
+      freshComponent.isStartConsumerThreadPoolFailure$ = of(null);
+      freshComponent.isStopConsumerThreadPoolSuccess$ = of(null as any);
+      freshComponent.isStopConsumerThreadPoolFailure$ = of(null);
+
+      storeSpy.select.mockReturnValue(of(true));
+
+      freshComponent.ngOnInit();
+
+      expect(freshComponent.consumers).toEqual(mockConsumers);
+      expect(freshComponent.selectedConsumer).toBe("consumer1");
+      expect(freshComponent.streamForm.value.consumer).toBe("consumer1");
+      // The button should be enabled (disabled = false) when a valid consumer is selected
+      expect(freshComponent.isStartStopConsumerThreadBtnDisabled).toBe(false);
+    });
+
+    it("should handle consumers data where consumers array exists but is falsy", () => {
+      const mockConsumers = [{ stream: "stream1", consumer: "" }];
+      component.fetchConsumersSuccess$ = of(mockConsumers);
+      storeSpy.select.mockReturnValue(of(true));
+      component.ngOnInit();
+      expect(component.selectedConsumer).toBe("");
+    });
+
     it("should handle consumers fetch error when error object is present", () => {
       const mockError = new HttpErrorResponse({
-        error: { status: 500, message: "mock-error" }
+        error: { status: 500, message: "mock-error" },
       });
       component.fetchConsumersError$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
@@ -415,10 +487,11 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle consumers fetch error when error object is not present", () => {
       const mockError = new HttpErrorResponse({
-       status: 500, statusText: "mock-error"
+        status: 500,
+        statusText: "mock-error",
       });
       component.fetchConsumersError$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.isStartStopConsumerThreadBtnDisabled).toBe(true);
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
@@ -439,17 +512,50 @@ describe("ConsumerThreadPoolComponent", () => {
         isStopConsumerStoppedError: null,
       };
       component.isStartConsumerThreadPoolSuccess$ = of(mockState);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(streamServiceSpy.showSuccessMessage).not.toHaveBeenCalled();
     });
 
+    it("should show success message when start process is completed", () => {
+      const mockState: ConsumerThreadPoolState = {
+        isStartStopConsumerPoolProcessRunning: false,
+        isStartProcessCompleted: true,
+        isStopProcessCompleted: false,
+        isStartConsumerStoppedError: null,
+        isStopConsumerStoppedError: null,
+      };
+
+      // Create a fresh component without calling ngOnInit via detectChanges
+      const freshFixture = TestBed.createComponent(ConsumerThreadPoolComponent);
+      const freshComponent = freshFixture.componentInstance;
+
+      // Override ALL observables to prevent interference
+      freshComponent.fetchStreamsSuccess$ = of([]);
+      freshComponent.fetchStreamsError$ = of(null);
+      freshComponent.fetchConsumersSuccess$ = of([]);
+      freshComponent.fetchConsumersError$ = of(null);
+      freshComponent.isStartConsumerThreadPoolSuccess$ = of(mockState);
+      freshComponent.isStartConsumerThreadPoolFailure$ = of(null);
+      freshComponent.isStopConsumerThreadPoolSuccess$ = of(null as any);
+      freshComponent.isStopConsumerThreadPoolFailure$ = of(null);
+
+      storeSpy.select.mockReturnValue(of(true));
+
+      freshComponent.ngOnInit();
+
+      expect(freshComponent.isStartOrStopConsumerThreadInProgress).toBe(false);
+      expect(streamServiceSpy.showSuccessMessage).toHaveBeenCalledWith(
+        CONSUMER_THREAD_POOL_LABELS.START_CONSUMER_SUCCESS_MSG
+      );
+    });
+
     it("should handle start consumer thread pool failure when error object is present", () => {
       const mockError = new HttpErrorResponse({
-       error:{ status: 500, message: "mock-error" }
+        error: { status: 500, message: "mock-error" },
       });
       component.isStartConsumerThreadPoolFailure$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
@@ -462,10 +568,11 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle start consumer thread pool failure when error object is not present", () => {
       const mockError = new HttpErrorResponse({
-       status: 500, statusText: "mock-error"
+        status: 500,
+        statusText: "mock-error",
       });
       component.isStartConsumerThreadPoolFailure$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
@@ -485,7 +592,7 @@ describe("ConsumerThreadPoolComponent", () => {
         isStopConsumerStoppedError: null,
       };
       component.isStopConsumerThreadPoolSuccess$ = of(mockState);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.isStartOrStopConsumerThreadInProgress).toBe(false);
       expect(streamServiceSpy.showSuccessMessage).toHaveBeenCalledWith(
@@ -502,7 +609,7 @@ describe("ConsumerThreadPoolComponent", () => {
         isStopConsumerStoppedError: null,
       };
       component.isStopConsumerThreadPoolSuccess$ = of(mockState);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(streamServiceSpy.showSuccessMessage).not.toHaveBeenCalled();
     });
@@ -512,7 +619,7 @@ describe("ConsumerThreadPoolComponent", () => {
         error: { status: 500, message: "mock-error" },
       });
       component.isStopConsumerThreadPoolFailure$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
@@ -525,10 +632,11 @@ describe("ConsumerThreadPoolComponent", () => {
 
     it("should handle stop consumer thread pool failure when error object is not present", () => {
       const mockError = new HttpErrorResponse({
-        status: 500, statusText: "mock-error"
+        status: 500,
+        statusText: "mock-error",
       });
       component.isStopConsumerThreadPoolFailure$ = of(mockError);
-      storeSpy.select.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
       component.ngOnInit();
       expect(component.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
@@ -537,6 +645,23 @@ describe("ConsumerThreadPoolComponent", () => {
           message: mockError.message,
         },
       });
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should dispatch resetConsumerThreadPoolState action", () => {
+      component.ngOnDestroy();
+      expect(storeSpy.dispatch).toHaveBeenCalledWith(
+        StreamActions.resetConsumerThreadPoolState()
+      );
+    });
+
+    it("should complete destroy$ subject", () => {
+      const nextSpy = vi.spyOn(component["destroy$"], "next");
+      const completeSpy = vi.spyOn(component["destroy$"], "complete");
+      component.ngOnDestroy();
+      expect(nextSpy).toHaveBeenCalled();
+      expect(completeSpy).toHaveBeenCalled();
     });
   });
 });
