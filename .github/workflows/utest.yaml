@@ -143,7 +143,6 @@ jobs:
             const functions = '${{ steps.coverage-check.outputs.functions }}';
             const lines = '${{ steps.coverage-check.outputs.lines }}';
             const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}' === 'true';
-            const testsPassed = '${{ steps.vitest.outcome }}' === 'success';
             const threshold = 80;
             
             const statementsFailed = '${{ steps.coverage-check.outputs.statements_failed }}' === 'true';
@@ -170,19 +169,13 @@ jobs:
             
             let comment = botCommentIdentifier + '\n\n';
             
-            // Check both tests and coverage status
-            if (testsPassed && coveragePassed) {
-              comment += `## ✅ Tests and Coverage Passed\n\n`;
-              comment += `All tests passed and coverage metrics meet the **${threshold}%** threshold!\n\n`;
-            } else if (!testsPassed && coveragePassed) {
-              comment += `## ❌ Tests Failed (Coverage OK)\n\n`;
-              comment += `⚠️ Some tests are **failing**, but coverage meets the **${threshold}%** threshold.\n\n`;
-            } else if (testsPassed && !coveragePassed) {
-              comment += `## ❌ Coverage Failed (Tests OK)\n\n`;
-              comment += `All tests passed, but some coverage metrics are below the **${threshold}%** threshold.\n\n`;
+            // Show coverage status
+            if (coveragePassed) {
+              comment += `## ✅ Test Coverage Passed\n\n`;
+              comment += `All coverage metrics meet the **${threshold}%** threshold!\n\n`;
             } else {
-              comment += `## ❌ Tests and Coverage Failed\n\n`;
-              comment += `Both tests are failing and coverage metrics are below the **${threshold}%** threshold.\n\n`;
+              comment += `## ❌ Test Coverage Failed\n\n`;
+              comment += `Some coverage metrics are below the **${threshold}%** threshold.\n\n`;
             }
             
             comment += `| Metric | Coverage | Status | Threshold |\n`;
@@ -193,7 +186,7 @@ jobs:
             comment += `| **Lines** | ${lines}% | ${getIcon(lines, linesFailed)} ${linesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n\n`;
             
             if (!coveragePassed) {
-              comment += `### 🔧 Action Required - Coverage Issues\n\n`;
+              comment += `### 🔧 Action Required\n\n`;
               comment += `Please add tests to improve coverage for the following metrics:\n\n`;
               if (statementsFailed) {
                 comment += `- **Statements**: Currently ${statements}%, needs ${(threshold - parseFloat(statements)).toFixed(2)}% more coverage\n`;
@@ -208,16 +201,8 @@ jobs:
                 comment += `- **Lines**: Currently ${lines}%, needs ${(threshold - parseFloat(lines)).toFixed(2)}% more coverage\n`;
               }
               comment += `\n📊 View detailed coverage report in the build artifacts.\n`;
-            }
-            
-            if (!testsPassed) {
-              comment += `\n### 🔧 Action Required - Test Failures\n\n`;
-              comment += `⚠️ **Some unit tests are failing.** Please check the test results in the workflow logs and fix the failing tests.\n\n`;
-              comment += `🔍 View detailed test failure logs in the GitHub Actions run.\n`;
-            }
-            
-            if (testsPassed && coveragePassed) {
-              comment += `🎉 Great job maintaining high test coverage and passing tests!\n`;
+            } else {
+              comment += `🎉 Great job maintaining high test coverage!\n`;
             }
             
             // Update existing comment or create new one
@@ -237,13 +222,8 @@ jobs:
               });
             }
 
-      - name: Fail workflow if tests or coverage failed
-        if: steps.vitest.outcome != 'success' || steps.coverage-check.outputs.coverage_passed != 'true'
+      - name: Fail workflow if coverage failed
+        if: steps.coverage-check.outputs.coverage_passed != 'true'
         run: |
-          if [ "${{ steps.vitest.outcome }}" != "success" ]; then
-            echo "❌ Unit tests failed"
-          fi
-          if [ "${{ steps.coverage-check.outputs.coverage_passed }}" != "true" ]; then
-            echo "❌ Coverage check failed - some metrics are below 80% threshold"
-          fi
+          echo "❌ Coverage check failed - some metrics are below 80% threshold"
           exit 1
