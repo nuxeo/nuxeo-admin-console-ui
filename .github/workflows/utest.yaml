@@ -86,16 +86,16 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
           # Check if coverage summary exists
-          if [ ! -f coverage/coverage-summary.json ]; then
+          if [ ! -f coverage/admin_console_ui/coverage-summary.json ]; then
             echo "❌ Coverage report not found"
             exit 1
           fi
           
           # Parse coverage summary
-          STATEMENTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
-          BRANCHES=$(jq '.total.branches.pct' coverage/coverage-summary.json)
-          FUNCTIONS=$(jq '.total.functions.pct' coverage/coverage-summary.json)
-          LINES=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+          STATEMENTS=$(jq '.total.statements.pct' coverage/admin_console_ui/coverage-summary.json)
+          BRANCHES=$(jq '.total.branches.pct' coverage/admin_console_ui/coverage-summary.json)
+          FUNCTIONS=$(jq '.total.functions.pct' coverage/admin_console_ui/coverage-summary.json)
+          LINES=$(jq '.total.lines.pct' coverage/admin_console_ui/coverage-summary.json)
           
           echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
           echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
@@ -143,6 +143,7 @@ jobs:
             const functions = '${{ steps.coverage-check.outputs.functions }}';
             const lines = '${{ steps.coverage-check.outputs.lines }}';
             const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}';
+            const testsPassed = '${{ steps.vitest.outcome }}' === 'success';
             const threshold = 80;
             
             const statementsFailed = '${{ steps.coverage-check.outputs.statements_failed }}' === 'true';
@@ -157,12 +158,19 @@ jobs:
             
             let comment = '';
             
-            if (coveragePassed === 'true') {
-              comment = `## ✅ Test Coverage Passed\n\n`;
-              comment += `All coverage metrics meet the **${threshold}%** threshold!\n\n`;
+            // Check both tests and coverage status
+            if (testsPassed && coveragePassed === 'true') {
+              comment = `## ✅ Tests and Coverage Passed\n\n`;
+              comment += `All tests passed and coverage metrics meet the **${threshold}%** threshold!\n\n`;
+            } else if (!testsPassed && coveragePassed === 'true') {
+              comment = `## ❌ Tests Failed (Coverage OK)\n\n`;
+              comment += `⚠️ Some tests are **failing**, but coverage meets the **${threshold}%** threshold.\n\n`;
+            } else if (testsPassed && coveragePassed !== 'true') {
+              comment = `## ❌ Coverage Failed (Tests OK)\n\n`;
+              comment += `All tests passed, but some coverage metrics are below the **${threshold}%** threshold.\n\n`;
             } else {
-              comment = `## ❌ Test Coverage Failed\n\n`;
-              comment += `Some coverage metrics are below the **${threshold}%** threshold.\n\n`;
+              comment = `## ❌ Tests and Coverage Failed\n\n`;
+              comment += `Both tests are failing and coverage metrics are below the **${threshold}%** threshold.\n\n`;
             }
             
             comment += `| Metric | Coverage | Status | Threshold |\n`;
@@ -173,7 +181,7 @@ jobs:
             comment += `| **Lines** | ${lines}% | ${getIcon(lines, linesFailed)} ${linesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n\n`;
             
             if (coveragePassed !== 'true') {
-              comment += `### 🔧 Action Required\n\n`;
+              comment += `### 🔧 Action Required - Coverage Issues\n\n`;
               comment += `Please add tests to improve coverage for the following metrics:\n\n`;
               if (statementsFailed) {
                 comment += `- **Statements**: Currently ${statements}%, needs ${(threshold - parseFloat(statements)).toFixed(2)}% more coverage\n`;
@@ -188,8 +196,16 @@ jobs:
                 comment += `- **Lines**: Currently ${lines}%, needs ${(threshold - parseFloat(lines)).toFixed(2)}% more coverage\n`;
               }
               comment += `\n📊 View detailed coverage report in the build artifacts.\n`;
-            } else {
-              comment += `🎉 Great job maintaining high test coverage!\n`;
+            }
+            
+            if (!testsPassed) {
+              comment += `\n### 🔧 Action Required - Test Failures\n\n`;
+              comment += `⚠️ **Some unit tests are failing.** Please check the test results in the workflow logs and fix the failing tests.\n\n`;
+              comment += `🔍 View detailed test failure logs in the GitHub Actions run.\n`;
+            }
+            
+            if (testsPassed && coveragePassed === 'true') {
+              comment += `🎉 Great job maintaining high test coverage and passing tests!\n`;
             }
             
             // Post comment
@@ -200,8 +216,13 @@ jobs:
               body: comment
             });
 
-      - name: Fail workflow if coverage is insufficient
-        if: steps.coverage-check.outputs.coverage_passed != 'true'
+      - name: Fail workflow if tests or coverage failed
+        if: steps.vitest.outcome != 'success' || steps.coverage-check.outputs.coverage_passed != 'true'
         run: |
-          echo "❌ Coverage check failed - some metrics are below 80% threshold"
+          if [ "${{ steps.vitest.outcome }}" != "success" ]; then
+            echo "❌ Unit tests failed"
+          fi
+          if [ "${{ steps.coverage-check.outputs.coverage_passed }}" != "true" ]; then
+            echo "❌ Coverage check failed - some metrics are below 80% threshold"
+          fi
           exit 1
