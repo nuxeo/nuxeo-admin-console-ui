@@ -142,7 +142,7 @@ jobs:
             const branches = '${{ steps.coverage-check.outputs.branches }}';
             const functions = '${{ steps.coverage-check.outputs.functions }}';
             const lines = '${{ steps.coverage-check.outputs.lines }}';
-            const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}';
+            const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}' === 'true';
             const testsPassed = '${{ steps.vitest.outcome }}' === 'success';
             const threshold = 80;
             
@@ -156,20 +156,32 @@ jobs:
               return parseFloat(value) >= 90 ? '✅' : '⚠️';
             };
             
-            let comment = '';
+            // Find existing bot comment to update instead of creating new ones
+            const botCommentIdentifier = '<!-- vitest-coverage-report -->';
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes(botCommentIdentifier)
+            );
+            
+            let comment = botCommentIdentifier + '\n\n';
             
             // Check both tests and coverage status
-            if (testsPassed && coveragePassed === 'true') {
-              comment = `## ✅ Tests and Coverage Passed\n\n`;
+            if (testsPassed && coveragePassed) {
+              comment += `## ✅ Tests and Coverage Passed\n\n`;
               comment += `All tests passed and coverage metrics meet the **${threshold}%** threshold!\n\n`;
-            } else if (!testsPassed && coveragePassed === 'true') {
-              comment = `## ❌ Tests Failed (Coverage OK)\n\n`;
+            } else if (!testsPassed && coveragePassed) {
+              comment += `## ❌ Tests Failed (Coverage OK)\n\n`;
               comment += `⚠️ Some tests are **failing**, but coverage meets the **${threshold}%** threshold.\n\n`;
-            } else if (testsPassed && coveragePassed !== 'true') {
-              comment = `## ❌ Coverage Failed (Tests OK)\n\n`;
+            } else if (testsPassed && !coveragePassed) {
+              comment += `## ❌ Coverage Failed (Tests OK)\n\n`;
               comment += `All tests passed, but some coverage metrics are below the **${threshold}%** threshold.\n\n`;
             } else {
-              comment = `## ❌ Tests and Coverage Failed\n\n`;
+              comment += `## ❌ Tests and Coverage Failed\n\n`;
               comment += `Both tests are failing and coverage metrics are below the **${threshold}%** threshold.\n\n`;
             }
             
@@ -180,7 +192,7 @@ jobs:
             comment += `| **Functions** | ${functions}% | ${getIcon(functions, functionsFailed)} ${functionsFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
             comment += `| **Lines** | ${lines}% | ${getIcon(lines, linesFailed)} ${linesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n\n`;
             
-            if (coveragePassed !== 'true') {
+            if (!coveragePassed) {
               comment += `### 🔧 Action Required - Coverage Issues\n\n`;
               comment += `Please add tests to improve coverage for the following metrics:\n\n`;
               if (statementsFailed) {
@@ -204,17 +216,26 @@ jobs:
               comment += `🔍 View detailed test failure logs in the GitHub Actions run.\n`;
             }
             
-            if (testsPassed && coveragePassed === 'true') {
+            if (testsPassed && coveragePassed) {
               comment += `🎉 Great job maintaining high test coverage and passing tests!\n`;
             }
             
-            // Post comment
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: comment
-            });
+            // Update existing comment or create new one
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
 
       - name: Fail workflow if tests or coverage failed
         if: steps.vitest.outcome != 'success' || steps.coverage-check.outputs.coverage_passed != 'true'

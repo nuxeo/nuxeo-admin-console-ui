@@ -61,7 +61,7 @@ export default defineConfig({
       provider: "v8",
 
       // Generate multiple report formats for different use cases:
-      reporter: ["text", "html", "lcov", "text-summary"],
+      reporter: ["text", "html", "lcov", "json-summary", "text-summary"],
 
       // Output directory for coverage reports
       // Matches Karma's output directory to maintain compatibility with existing tools/scripts
