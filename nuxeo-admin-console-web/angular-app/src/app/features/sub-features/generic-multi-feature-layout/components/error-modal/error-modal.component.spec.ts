@@ -121,7 +121,7 @@ describe("ErrorModalComponent", () => {
     });
 
     it("should return default error message if no error data", () => {
-      component.data = defaultErrorData;
+      component.data = undefined as any;
       expect(component.getCustomErrorMessage()).toBe(
         ERROR_MESSAGES.UNKNOWN_ERROR_MESSAGE
       );
