@@ -117,6 +117,31 @@ describe("ConfigurationDetailsComponent", () => {
     });
   });
 
+   it("should handle error and call showActionErrorModal on failed data fetch", async () => {
+    const mockError = ({
+      error: null,
+      status: 500,
+      message: 'Internal Server Error'
+    });
+    vi.spyOn(commonService, "getConfigurationDetails").mockReturnValue(
+      throwError(() => mockError)
+    );
+    const showErrorSpy = vi
+      .spyOn(sharedService, "showActionErrorModal")
+      .mockReturnValue(of(undefined));
+    component.getConfigurationDetails();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(component.isDataLoaded).toBe(true);
+    expect(component.isError).toBe(true);
+    expect(showErrorSpy).toHaveBeenCalledWith({
+      type: ERROR_TYPES.SERVER_ERROR,
+      details: {
+        status: 500,
+        message: 'Internal Server Error',
+      },
+    });
+  });
+
   it("should complete destroy$ subject on ngOnDestroy", () => {
     const nextSpy = vi.spyOn(component.destroy$, "next");
     const completeSpy = vi.spyOn(component.destroy$, "complete");

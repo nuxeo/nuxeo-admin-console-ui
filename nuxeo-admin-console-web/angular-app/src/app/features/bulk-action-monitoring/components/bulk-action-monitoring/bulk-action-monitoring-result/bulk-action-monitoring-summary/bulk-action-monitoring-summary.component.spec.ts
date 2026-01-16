@@ -171,4 +171,91 @@ describe("BulkActionMonitoringSummaryComponent", () => {
     const result = component.getTooltipText();
     expect(result).toBe(BULK_ACTION_LABELS.STATUS_INFO_TEXT.COMPLETED.tooltip);
   });
+
+  it("should use singular error label when errorCount === 1 in nonRunningText", () => {
+    component.bulkActionSummary = {
+      state: "SCHEDULED",
+      errorCount: 1,
+    } as BulkActionInfoSummary;
+    component.replacePlaceholderValues();
+    expect(component.nonRunningText).toContain("1 error");
+    expect(component.nonRunningText).not.toContain("errors");
+  });
+
+  it("should use singular error label when errorCount === 1 in getRunningStatusText", () => {
+    component.bulkActionSummary = {
+      state: "RUNNING",
+      processed: 5,
+      total: 10,
+      errorCount: 1,
+    } as BulkActionInfoSummary;
+    const result = component.getRunningStatusText();
+    expect(result).toContain("1 " + BULK_ACTION_LABELS.ERROR);
+    expect(result).not.toContain(BULK_ACTION_LABELS.ERROR + "s");
+  });
+
+  it("should use singular document label when total === 1 in getRunningStatusText", () => {
+    component.bulkActionSummary = {
+      state: "RUNNING",
+      processed: 1,
+      total: 1,
+      errorCount: 0,
+    } as BulkActionInfoSummary;
+    const result = component.getRunningStatusText();
+    expect(result).toContain("1 " + BULK_ACTION_LABELS.DOCUMENT);
+    expect(result).not.toContain(BULK_ACTION_LABELS.DOCUMENT + "s");
+  });
+
+  it("should handle missing state gracefully in getRunningStatusText", () => {
+    component.bulkActionSummary = {
+      errorCount: 0,
+    } as BulkActionInfoSummary;
+    const result = component.getRunningStatusText();
+    expect(result).toBe("");
+  });
+
+  it("should focus on refresh button if it exists after ngOnChanges", () => {
+    const mockButton = { focus: vi.fn() };
+    const querySelectorSpy = vi
+      .spyOn(document, "querySelector")
+      .mockReturnValue(mockButton as any);
+
+    component.bulkActionSummary = {
+      commandId: "12345",
+      username: "testUser",
+      state: "SCHEDULED",
+      errorCount: 0,
+    } as BulkActionInfoSummary;
+    component.ngOnChanges();
+    expect(mockButton.focus).toHaveBeenCalled();
+    querySelectorSpy.mockRestore();
+  });
+
+  it("should not call replacePlaceholderValues if bulkActionSummary is undefined", () => {
+    component.bulkActionSummary = undefined as any;
+    const replaceSpy = vi.spyOn(component, "replacePlaceholderValues");
+    component.ngOnChanges();
+    expect(replaceSpy).not.toHaveBeenCalled();
+  });
+
+  it("should not throw error when refresh button does not exist", () => {
+    component.bulkActionSummary = {
+      commandId: "12345",
+      username: "testUser",
+      state: "SCHEDULED",
+      errorCount: 0,
+    } as BulkActionInfoSummary;
+    expect(() => component.ngOnChanges()).not.toThrow();
+  });
+
+  it("should not pluralize error when nonRunningText is empty", () => {
+    component.bulkActionSummary = {
+      commandId: "12345",
+      username: "testUser",
+      state: undefined,
+      errorCount: 2,
+    } as unknown as BulkActionInfoSummary;
+    component.ngOnChanges();
+    expect(component.nonRunningText).toBe("");
+  });
 });

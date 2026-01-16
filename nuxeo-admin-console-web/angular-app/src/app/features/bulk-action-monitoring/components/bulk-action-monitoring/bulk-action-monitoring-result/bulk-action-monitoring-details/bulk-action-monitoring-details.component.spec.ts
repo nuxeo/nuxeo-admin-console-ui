@@ -1,5 +1,5 @@
 import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BulkActionInfoDetails } from "./../../../../bulk-action-monitoring.interface";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { MatCardModule } from "@angular/material/card";
@@ -118,5 +118,33 @@ describe("BulkActionMonitoringDetailsComponent", () => {
     component.bulkActionDetails = { skipCount: 2 } as BulkActionInfoDetails;
     component.replacePlaceholderValues();
     expect(component.docsSkippedText).toContain("documents");
+  });
+
+  it("should use singular document label when processed === 1", () => {
+    component.bulkActionDetails = { processed: 1 } as BulkActionInfoDetails;
+    component.replacePlaceholderValues();
+    expect(component.docsProcessedText).toBe("1 document processed");
+    expect(component.docsProcessedText).not.toContain("documents");
+  });
+
+  it("should use singular error label when errorCount === 1", () => {
+    component.bulkActionDetails = { errorCount: 1 } as BulkActionInfoDetails;
+    component.replacePlaceholderValues();
+    expect(component.errorsFoundText).toBe("1 error found");
+    expect(component.errorsFoundText).not.toContain("errors");
+  });
+
+  it("should use singular document label when skipCount === 1", () => {
+    component.bulkActionDetails = { skipCount: 1 } as BulkActionInfoDetails;
+    component.replacePlaceholderValues();
+    expect(component.docsSkippedText).toBe("1 document skipped");
+    expect(component.docsSkippedText).not.toContain("documents");
+  });
+
+  it("should not call replacePlaceholderValues if bulkActionDetails is undefined", () => {
+    component.bulkActionDetails = undefined as any;
+    const replaceSpy = vi.spyOn(component, "replacePlaceholderValues");
+    component.ngOnChanges();
+    expect(replaceSpy).not.toHaveBeenCalled();
   });
 });
