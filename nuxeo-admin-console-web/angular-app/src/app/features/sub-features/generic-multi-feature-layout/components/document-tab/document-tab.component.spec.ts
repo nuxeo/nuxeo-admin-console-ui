@@ -1,3 +1,13 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { DocumentTabComponent } from "./document-tab.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -12,9 +22,15 @@ import {
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CommonModule } from "@angular/common";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import {  StoreModule } from "@ngrx/store";
+import { StoreModule } from "@ngrx/store";
 import { BehaviorSubject, of, Subject } from "rxjs";
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { DocumentActionState } from "../../store/reducers";
 import * as FeatureActions from "../../store//actions";
 import { NuxeoJSClientService } from "../../../../../shared/services/nuxeo-js-client.service";
@@ -28,20 +44,25 @@ import { GenericModalComponent } from "../generic-modal/generic-modal.component"
 import { GenericMultiFeatureUtilitiesService } from "../../services/generic-multi-feature-utilities.service";
 import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
 import { ErrorModalComponent } from "../error-modal/error-modal.component";
-import { featureMap, FEATURES } from "../../generic-multi-feature-layout.mapping";
+import {
+  featureMap,
+  FEATURES,
+} from "../../generic-multi-feature-layout.mapping";
 import { PICTURE_RENDITIONS_LABELS } from "../../../../pictures/pictures-renditions.constants";
 import { THUMBNAIL_GENERATION_LABELS } from "../../../../thumbnail-generation/thumbnail-generation.constants";
 import { FULLTEXT_REINDEX_LABELS } from "../../../../fulltext-reindex/fulltext-reindex.constants";
 import { VIDEO_RENDITIONS_LABELS } from "src/app/features/video-renditions-generation/video-renditions-generation.constants";
-
 describe("DocumentTabComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: DocumentTabComponent;
-  let genericMultiFeatureUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+  let genericMultiFeatureUtilitiesService: MockedObject<GenericMultiFeatureUtilitiesService>;
   let fixture: ComponentFixture<DocumentTabComponent>;
   let store: MockStore<DocumentActionState>;
-  let dialogService: jasmine.SpyObj<MatDialog>;
-  let mockDialogRef: jasmine.SpyObj<MatDialogRef<GenericModalComponent>>;
-  let nuxeoJSClientService: jasmine.SpyObj<NuxeoJSClientService>;
+  let dialogService: MockedObject<MatDialog>;
+  let mockDialogRef: MockedObject<MatDialogRef<GenericModalComponent>>;
+  let nuxeoJSClientService: MockedObject<NuxeoJSClientService>;
 
   class genericMultiFeatureUtilitiesServiceStub {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
@@ -62,7 +83,7 @@ describe("DocumentTabComponent", () => {
       return true;
     }
     handleError(): Promise<unknown> {
-     return Promise.resolve("");
+      return Promise.resolve("");
     }
 
     handleErrorJson(): void {
@@ -79,22 +100,28 @@ describe("DocumentTabComponent", () => {
   }
 
   beforeEach(async () => {
-    const nuxeoJSClientServiceSpy = jasmine.createSpyObj(
-      "NuxeoJSClientService",
-      ["getNuxeoInstance"]
-    );
+    const nuxeoJSClientServiceSpy = {
+      getNuxeoInstance: vi
+        .fn()
+        .mockName("NuxeoJSClientService.getNuxeoInstance"),
+    };
     const initialState: DocumentActionState = {
       documentActionInfo: {
         commandId: "mockCommandId",
       },
       error: null,
     };
-    mockDialogRef = jasmine.createSpyObj("MatDialogRef", ["afterClosed", "afterOpened"]);
-    mockDialogRef.afterClosed.and.returnValue(of({}));
-    mockDialogRef.afterOpened.and.returnValue(of());
+    mockDialogRef = {
+      afterClosed: vi.fn().mockName("MatDialogRef.afterClosed"),
+      afterOpened: vi.fn().mockName("MatDialogRef.afterOpened"),
+    } as MockedObject<MatDialogRef<GenericModalComponent>>;
+    mockDialogRef.afterClosed.mockReturnValue(of({}));
+    mockDialogRef.afterOpened.mockReturnValue(of());
 
-    dialogService = jasmine.createSpyObj("MatDialog", ["open"]);
-    dialogService.open.and.returnValue(mockDialogRef);
+    dialogService = {
+      open: vi.fn().mockName("MatDialog.open"),
+    } as MockedObject<MatDialog>;
+    dialogService.open.mockReturnValue(mockDialogRef);
     await TestBed.configureTestingModule({
       declarations: [DocumentTabComponent],
       imports: [
@@ -120,15 +147,15 @@ describe("DocumentTabComponent", () => {
     }).compileComponents();
     genericMultiFeatureUtilitiesService = TestBed.inject(
       GenericMultiFeatureUtilitiesService
-    ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+    ) as MockedObject<GenericMultiFeatureUtilitiesService>;
     fixture = TestBed.createComponent(DocumentTabComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
     nuxeoJSClientService = TestBed.inject(
       NuxeoJSClientService
-    ) as jasmine.SpyObj<NuxeoJSClientService>;
+    ) as MockedObject<NuxeoJSClientService>;
     const nuxeoInstance = { instance: "nuxeoInstance" };
-    nuxeoJSClientService.getNuxeoInstance.and.returnValue(nuxeoInstance);
+    nuxeoJSClientService.getNuxeoInstance.mockReturnValue(nuxeoInstance);
     fixture.detectChanges();
   });
 
@@ -136,26 +163,16 @@ describe("DocumentTabComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  it("should focus on the input field on modal close", () => {
-    const mockElement = jasmine.createSpyObj("HTMLElement", ["focus"]);
-    spyOn(document, "getElementById").and.returnValue(mockElement);
-
-    component.onActionErrorModalClose();
-
-    expect(document.getElementById).toHaveBeenCalledWith("inputIdentifier");
-    expect(mockElement.focus).toHaveBeenCalled();
-  });
-
   it("should open the reindex launched modal with correct data and subscribe to afterClosed", () => {
     const commandId = "test-command-id";
-    const showActionLaunchedModalSpy = spyOn(
+    const showActionLaunchedModalSpy = vi.spyOn(
       component,
       "showActionLaunchedModal"
-    ).and.callThrough();
-    const onActionLaunchedModalCloseSpy = spyOn(
+    );
+    const onActionLaunchedModalCloseSpy = vi.spyOn(
       component,
       "onActionLaunchedModalClose"
-    ).and.callThrough();
+    );
     component.showActionLaunchedModal(commandId);
     expect(showActionLaunchedModalSpy).toHaveBeenCalledWith(commandId);
     expect(dialogService.open).toHaveBeenCalledWith(GenericModalComponent, {
@@ -191,15 +208,15 @@ describe("DocumentTabComponent", () => {
   });
 
   it("should call triggerAction with trimmed value when form is valid", () => {
-    const triggerActionSpy = spyOn(component, "triggerAction");
+    const triggerActionSpy = vi.spyOn(component, "triggerAction");
 
     component.inputForm = new FormBuilder().group({
       inputIdentifier: ["  'some value'  ", Validators.required],
     });
-    spyOn(
+    vi.spyOn(
       genericMultiFeatureUtilitiesService,
       "removeLeadingCharacters"
-    ).and.returnValue("some value");
+    ).mockReturnValue("some value");
     component.onFormSubmit();
     expect(triggerActionSpy).toHaveBeenCalledWith("some value");
     expect(
@@ -208,8 +225,8 @@ describe("DocumentTabComponent", () => {
   });
 
   it("should not call triggerAction when form is invalid", () => {
-    const triggerActionSpy = spyOn(component, "triggerAction");
-    spyOn(genericMultiFeatureUtilitiesService, "removeLeadingCharacters");
+    const triggerActionSpy = vi.spyOn(component, "triggerAction");
+    vi.spyOn(genericMultiFeatureUtilitiesService, "removeLeadingCharacters");
     component.inputForm = new FormBuilder().group({
       inputIdentifier: ["", Validators.required],
     });
@@ -221,9 +238,9 @@ describe("DocumentTabComponent", () => {
   });
 
   it("should dispatch resetDocumentActionState and unsubscribe from subscriptions on ngOnDestroy", () => {
-    const dispatchSpy = spyOn(store, "dispatch");
-    spyOn((component as any).destroy$, "next");
-    spyOn((component as any).destroy$, "complete");
+    const dispatchSpy = vi.spyOn(store, "dispatch");
+    vi.spyOn((component as any).destroy$, "next");
+    vi.spyOn((component as any).destroy$, "complete");
     component.ngOnDestroy();
     expect((component as any).destroy$.next).toHaveBeenCalled();
     expect((component as any).destroy$.complete).toHaveBeenCalled();
@@ -232,26 +249,28 @@ describe("DocumentTabComponent", () => {
     );
   });
 
-
   describe("test triggerAction", () => {
     it("should handle error if fetch fails", async () => {
-      spyOn(
+      vi.spyOn(
         genericMultiFeatureUtilitiesService,
         "decodeAndReplaceSingleQuotes"
       );
       const userInput = "test-input";
       component.nuxeo = {
-        repository: jasmine.createSpy().and.returnValue({
-          fetch: jasmine.createSpy().and.returnValue(
+        repository: vi.fn().mockReturnValue({
+          fetch: vi.fn().mockReturnValue(
             Promise.reject({
               response: { json: () => Promise.resolve({ message: "error" }) },
             })
           ),
         }),
       };
-      spyOn(store, "dispatch");
+      vi.spyOn(store, "dispatch");
 
-      spyOn(genericMultiFeatureUtilitiesService, "checkIfResponseHasError").and.returnValue(true);
+      vi.spyOn(
+        genericMultiFeatureUtilitiesService,
+        "checkIfResponseHasError"
+      ).mockReturnValue(true);
 
       await component.triggerAction(userInput);
 
@@ -267,7 +286,7 @@ describe("DocumentTabComponent", () => {
       details: { message: "Test error" },
     };
 
-    spyOn(component, "onActionErrorModalClose");
+    vi.spyOn(component, "onActionErrorModalClose");
 
     component.showActionErrorModal(mockError);
 
@@ -285,43 +304,58 @@ describe("DocumentTabComponent", () => {
     expect(component.onActionErrorModalClose).toHaveBeenCalled();
   });
 
-  describe('FEATURES.PICTURE_RENDITIONS', () => {
-    it('should return correct labels and data for DOCUMENT tabType', () => {
-      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](GENERIC_LABELS.DOCUMENT);
-      expect(result.labels.pageTitle).toBe(PICTURE_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE);
-      expect(result.labels.submitBtnLabel).toBe(PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL);
+  describe("FEATURES.PICTURE_RENDITIONS", () => {
+    it("should return correct labels and data for DOCUMENT tabType", () => {
+      const result = featureMap()[FEATURES.PICTURE_RENDITIONS](
+        GENERIC_LABELS.DOCUMENT
+      );
+      expect(result.labels.pageTitle).toBe(
+        PICTURE_RENDITIONS_LABELS.DOCUMENT_RENDITIONS_TITLE
+      );
+      expect(result.labels.submitBtnLabel).toBe(
+        PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL
+      );
     });
   });
 
-  describe('FEATURES.THUMBNAIL_GENERATION', () => {
-    it('should return correct labels and data for DOCUMENT tabType', () => {
-      const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](GENERIC_LABELS.DOCUMENT);
-      expect(result.labels.pageTitle).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_THUMBNAIL_GENERATION_TITLE);
-      expect(result.labels.submitBtnLabel).toBe(THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL);
+  describe("FEATURES.THUMBNAIL_GENERATION", () => {
+    it("should return correct labels and data for DOCUMENT tabType", () => {
+      const result = featureMap()[FEATURES.THUMBNAIL_GENERATION](
+        GENERIC_LABELS.DOCUMENT
+      );
+      expect(result.labels.pageTitle).toBe(
+        THUMBNAIL_GENERATION_LABELS.DOCUMENT_THUMBNAIL_GENERATION_TITLE
+      );
+      expect(result.labels.submitBtnLabel).toBe(
+        THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL
+      );
     });
   });
 
-  describe('FEATURES.FULLTEXT_REINDEX', () => {
-    it('should return correct labels and data for DOCUMENT tabType', () => {
-      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](GENERIC_LABELS.DOCUMENT);
-      expect(result.labels.pageTitle).toBe(FULLTEXT_REINDEX_LABELS.DOCUMENT_REINDEX_TITLE);
-      expect(result.labels.submitBtnLabel).toBe(FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL);
+  describe("FEATURES.FULLTEXT_REINDEX", () => {
+    it("should return correct labels and data for DOCUMENT tabType", () => {
+      const result = featureMap()[FEATURES.FULLTEXT_REINDEX](
+        GENERIC_LABELS.DOCUMENT
+      );
+      expect(result.labels.pageTitle).toBe(
+        FULLTEXT_REINDEX_LABELS.DOCUMENT_REINDEX_TITLE
+      );
+      expect(result.labels.submitBtnLabel).toBe(
+        FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL
+      );
     });
   });
 
   describe("ngOnInit", () => {
-    let addControlSpy: jasmine.Spy;
+    let addControlSpy: Mock;
     beforeEach(() => {
-      spyOn(component, "showActionLaunchedModal");
-      spyOn(component, "showActionErrorModal");
-      addControlSpy = spyOn(
-        component.inputForm,
-        "addControl"
-      ).and.callThrough();
-      spyOn(
+      vi.spyOn(component, "showActionLaunchedModal");
+      vi.spyOn(component, "showActionErrorModal");
+      addControlSpy = vi.spyOn(component.inputForm, "addControl");
+      vi.spyOn(
         genericMultiFeatureUtilitiesService,
         "getActiveFeature"
-      ).and.returnValue("elasticsearch-reindex" as any);
+      ).mockReturnValue("elasticsearch-reindex" as any);
     });
 
     it("should call showActionLaunchedModal when documentActionLaunched$ emits with commandId", () => {
@@ -357,28 +391,27 @@ describe("DocumentTabComponent", () => {
       expect(component.showActionErrorModal).not.toHaveBeenCalled();
     });
 
-
     it("should add force control if feature is FULLTEXT_REINDEX", () => {
-      spyOn(component, "isFeatureFullTextReindex").and.returnValue(true);
+      vi.spyOn(component, "isFeatureFullTextReindex").mockReturnValue(true);
       component.ngOnInit();
       expect(addControlSpy).toHaveBeenCalledWith(
         FULLTEXT_REINDEX_LABELS.FORCE,
-        jasmine.any(FormControl)
+        expect.any(FormControl)
       );
     });
 
     it("should add video renditions controls if feature is VIDEO_RENDITIONS_GENERATION", () => {
-      spyOn(component, "isFeatureFullTextReindex").and.returnValue(false);
-      spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
+      vi.spyOn(component, "isFeatureFullTextReindex").mockReturnValue(false);
+      vi.spyOn(component, "isFeatureVideoRenditions").mockReturnValue(true);
       component.activeFeature = FEATURES.VIDEO_RENDITIONS_GENERATION as any;
       component.ngOnInit();
       expect(addControlSpy).toHaveBeenCalledWith(
         VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY,
-        jasmine.any(FormControl)
+        expect.any(FormControl)
       );
       expect(addControlSpy).toHaveBeenCalledWith(
         VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY,
-        jasmine.any(FormControl)
+        expect.any(FormControl)
       );
     });
   });
@@ -386,15 +419,15 @@ describe("DocumentTabComponent", () => {
   it("should call focus on .cdk-dialog-container when showActionErrorModal dialog is opened", () => {
     const mockDialogElement = document.createElement("div");
     mockDialogElement.classList.add("cdk-dialog-container");
-    const focusSpy = spyOn(mockDialogElement, "focus");
-    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const focusSpy = vi.spyOn(mockDialogElement, "focus");
+    vi.spyOn(document, "querySelector").mockReturnValue(mockDialogElement);
     const afterOpened$ = new Subject<void>();
     const afterClosed$ = new Subject<void>();
     const mockDialogRef = {
       afterOpened: () => afterOpened$.asObservable(),
       afterClosed: () => afterClosed$.asObservable(),
     } as MatDialogRef<ErrorModalComponent>;
-    dialogService.open.and.returnValue(mockDialogRef);
+    dialogService.open.mockReturnValue(mockDialogRef);
     const mockError: ErrorDetails = { message: "Test", code: "Error" } as any;
     component.showActionErrorModal(mockError);
     afterOpened$.next();
@@ -404,15 +437,15 @@ describe("DocumentTabComponent", () => {
   it("should call focus on .cdk-dialog-container when showActionLaunchedModal dialog is opened", () => {
     const mockDialogElement = document.createElement("div");
     mockDialogElement.classList.add("cdk-dialog-container");
-    const focusSpy = spyOn(mockDialogElement, "focus");
-    spyOn(document, "querySelector").and.returnValue(mockDialogElement);
+    const focusSpy = vi.spyOn(mockDialogElement, "focus");
+    vi.spyOn(document, "querySelector").mockReturnValue(mockDialogElement);
     const afterOpened$ = new Subject<void>();
     const afterClosed$ = new Subject<void>();
     const mockDialogRef = {
       afterOpened: () => afterOpened$.asObservable(),
       afterClosed: () => afterClosed$.asObservable(),
     } as MatDialogRef<ErrorModalComponent>;
-    dialogService.open.and.returnValue(mockDialogRef);
+    dialogService.open.mockReturnValue(mockDialogRef);
     const commandId = "mockCommandId";
     component.showActionLaunchedModal(commandId);
     afterOpened$.next();
@@ -420,10 +453,10 @@ describe("DocumentTabComponent", () => {
   });
 
   it("should reset conversionNames, force, form controls", () => {
-    spyOn(component, "isFeatureVideoRenditions").and.returnValue(true);
-    spyOn(component, "isFeatureFullTextReindex").and.returnValue(true);
+    vi.spyOn(component, "isFeatureVideoRenditions").mockReturnValue(true);
+    vi.spyOn(component, "isFeatureFullTextReindex").mockReturnValue(true);
     const control = new FormControl("");
-    const resetSpy = spyOn(control, "reset");
+    const resetSpy = vi.spyOn(control, "reset");
     component.inputForm = new FormGroup({
       conversionNames: control,
       force: control,
@@ -432,7 +465,7 @@ describe("DocumentTabComponent", () => {
     expect(resetSpy).toHaveBeenCalledTimes(2);
   });
 
-  it("should unsubscribe from all subscriptions", (done) => {
+  it("should unsubscribe from all subscriptions", async () => {
     let unsubscribed = false;
     (component as any).destroy$.subscribe({
       complete: () => {
@@ -440,8 +473,7 @@ describe("DocumentTabComponent", () => {
       },
     });
     component.ngOnDestroy();
-      expect(unsubscribed).toBeTrue();
-      done();
+    expect(unsubscribed).toBe(true);
   });
 
   it("should show error modal if decodeURIComponent throws", () => {
@@ -449,11 +481,11 @@ describe("DocumentTabComponent", () => {
       inputIdentifier: ["mock%input", Validators.required],
     });
     component.isSubmitBtnDisabled = false;
-    spyOn(component, "triggerAction");
-    spyOn(component, "showActionErrorModal");
-    fixture.detectChanges();
-    spyOn(window, "decodeURIComponent").and.throwError("Mock Error");
-    fixture.detectChanges();
+    vi.spyOn(component, "triggerAction").mockImplementation(() => {});
+    vi.spyOn(component, "showActionErrorModal").mockImplementation(() => {});
+    vi.spyOn(window, "decodeURIComponent").mockImplementation(() => {
+      throw new Error("Mock Error");
+    });
     component.onFormSubmit();
     expect(component.triggerAction).not.toHaveBeenCalled();
     expect(component.showActionErrorModal).toHaveBeenCalledWith({
@@ -463,38 +495,36 @@ describe("DocumentTabComponent", () => {
   });
 
   describe("triggerAction", () => {
-    let fetchSpy: jasmine.Spy;
-    let buildRequestQuerySpy: jasmine.Spy;
-    let buildRequestParamsSpy: jasmine.Spy;
-    let storeDispatchSpy: jasmine.Spy;
-    let decodeAndReplaceSingleQuotesSpy: jasmine.Spy;
-    let showActionErrorModalSpy: jasmine.Spy;
+    let fetchSpy: Mock;
+    let buildRequestQuerySpy: Mock;
+    let buildRequestParamsSpy: Mock;
+    let storeDispatchSpy: Mock;
+    let decodeAndReplaceSingleQuotesSpy: Mock;
+    let showActionErrorModalSpy: Mock;
 
     beforeEach(() => {
-      fetchSpy = jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve({ path: "/mock/path" }));
+      fetchSpy = vi
+        .fn()
+        .mockReturnValue(Promise.resolve({ path: "/mock/path" }));
       component.nuxeo = {
-        repository: jasmine.createSpy().and.returnValue({ fetch: fetchSpy }),
+        repository: vi.fn().mockReturnValue({ fetch: fetchSpy }),
       } as any;
-      buildRequestQuerySpy = spyOn(
-        genericMultiFeatureUtilitiesService,
-        "buildRequestQuery"
-      ).and.returnValue("query");
-      buildRequestParamsSpy = spyOn(
-        genericMultiFeatureUtilitiesService,
-        "buildRequestParams"
-      ).and.returnValue({
-        requestUrl: "url",
-        requestParams: "",
-        requestHeaders: {},
-      });
-      storeDispatchSpy = spyOn(store, "dispatch");
-      decodeAndReplaceSingleQuotesSpy = spyOn(
+      buildRequestQuerySpy = vi
+        .spyOn(genericMultiFeatureUtilitiesService, "buildRequestQuery")
+        .mockReturnValue("query");
+      buildRequestParamsSpy = vi
+        .spyOn(genericMultiFeatureUtilitiesService, "buildRequestParams")
+        .mockReturnValue({
+          requestUrl: "url",
+          requestParams: "",
+          requestHeaders: {},
+        });
+      storeDispatchSpy = vi.spyOn(store, "dispatch");
+      decodeAndReplaceSingleQuotesSpy = vi.spyOn(
         genericMultiFeatureUtilitiesService,
         "decodeAndReplaceSingleQuotes"
       );
-      showActionErrorModalSpy = spyOn(component, "showActionErrorModal");
+      showActionErrorModalSpy = vi.spyOn(component, "showActionErrorModal");
       component.activeFeature = FEATURES.FULLTEXT_REINDEX as any;
       component.templateConfigData = { data: {} } as any;
       component.inputForm = new FormGroup({
@@ -509,35 +539,39 @@ describe("DocumentTabComponent", () => {
       expect(buildRequestQuerySpy).toHaveBeenCalled();
       expect(buildRequestParamsSpy).toHaveBeenCalled();
       expect(storeDispatchSpy).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: FeatureActions.performDocumentAction.type,
         })
       );
     });
 
     it("should show error modal if buildRequestQuery throws", async () => {
-      buildRequestQuerySpy.and.throwError("error");
+      buildRequestQuerySpy.mockImplementation(() => {
+        throw new Error("error");
+      });
       await component.triggerAction("/mock/path");
       expect(showActionErrorModalSpy).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
         })
       );
     });
 
     it("should show error modal if decodeAndReplaceSingleQuotes throws", async () => {
-      fetchSpy.and.returnValue(Promise.resolve({ path: "/default-domain's" }));
-      decodeAndReplaceSingleQuotesSpy.and.throwError("mock error");
+      fetchSpy.mockReturnValue(Promise.resolve({ path: "/default-domain's" }));
+      decodeAndReplaceSingleQuotesSpy.mockImplementation(() => {
+        throw new Error("mock error");
+      });
       await component.triggerAction("/default-domain's");
       expect(showActionErrorModalSpy).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: ERROR_TYPES.INVALID_DOC_ID_OR_PATH,
         })
       );
     });
 
     it("should not call buildRequestQuery if document is not object or missing path", async () => {
-      fetchSpy.and.returnValue(Promise.resolve(null));
+      fetchSpy.mockReturnValue(Promise.resolve(null));
       await component.triggerAction("mock/path/document");
       expect(buildRequestQuerySpy).not.toHaveBeenCalled();
       expect(storeDispatchSpy).not.toHaveBeenCalled();

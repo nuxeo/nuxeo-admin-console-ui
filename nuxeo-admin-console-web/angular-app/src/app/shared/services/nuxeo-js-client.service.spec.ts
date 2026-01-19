@@ -1,7 +1,11 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { NuxeoJSClientService } from "./nuxeo-js-client.service";
-
 describe("NuxeoJSClientService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: NuxeoJSClientService;
 
   beforeEach(() => {
@@ -10,7 +14,7 @@ describe("NuxeoJSClientService", () => {
     });
     service = TestBed.inject(NuxeoJSClientService);
 
-    spyOn(service, "connect").and.stub();
+    vi.spyOn(service, "connect").mockImplementation(() => {});
 
     service.initiateJSClient("/nuxeo");
   });

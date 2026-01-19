@@ -1,4 +1,13 @@
-import { GenericMultiFeatureLayoutComponent } from './generic-multi-feature-layout.component';
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { GenericMultiFeatureLayoutComponent } from "./generic-multi-feature-layout.component";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -14,13 +23,15 @@ import {
   RouterModule,
 } from "@angular/router";
 import { ChangeDetectorRef } from "@angular/core";
-import { GenericMultiFeatureUtilitiesService } from './services/generic-multi-feature-utilities.service';
-
+import { GenericMultiFeatureUtilitiesService } from "./services/generic-multi-feature-utilities.service";
 describe("GenericMultiFeatureLayoutComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: GenericMultiFeatureLayoutComponent;
   let fixture: ComponentFixture<GenericMultiFeatureLayoutComponent>;
-  let mockCdRef: jasmine.SpyObj<ChangeDetectorRef>;
-  let genericMultiFeatureUtilitiesService: jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
+  let mockCdRef: MockedObject<ChangeDetectorRef>;
+  let genericMultiFeatureUtilitiesService: MockedObject<GenericMultiFeatureUtilitiesService>;
   class genericMultiFeatureUtilitiesServiceStub {
     pageTitle: BehaviorSubject<string> = new BehaviorSubject("");
     spinnerStatus: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -53,29 +64,29 @@ describe("GenericMultiFeatureLayoutComponent", () => {
     params = of({ id: "123" });
   }
 
- const mockRoute = {
-   snapshot: {
-     firstChild: {
-       routeConfig: { path: "tab1" },
-     },
-   },
- };
- const mockRouter = {
-   routerState: {
-     snapshot: {
-       url: "/feature/tab1",
-     },
-   },
-   events: new Subject(),
-   createUrlTree: jasmine.createSpy("mockCreateUrlTree").and.returnValue({}),
-   Serializer: jasmine.createSpy("mockSerializer").and.returnValue({}),
-   serializeUrl: jasmine
-     .createSpy("mockSerializeUrl")
-     .and.returnValue("mockSerializedUrl"),
- };
-	
+  const mockRoute = {
+    snapshot: {
+      firstChild: {
+        routeConfig: { path: "tab1" },
+      },
+    },
+  };
+  const mockRouter = {
+    routerState: {
+      snapshot: {
+        url: "/feature/tab1",
+      },
+    },
+    events: new Subject(),
+    createUrlTree: vi.fn().mockReturnValue({}),
+    Serializer: vi.fn().mockReturnValue({}),
+    serializeUrl: vi.fn().mockReturnValue("mockSerializedUrl"),
+  };
+
   beforeEach(async () => {
-    mockCdRef = jasmine.createSpyObj("ChangeDetectorRef", ["detectChanges"]);
+    mockCdRef = {
+      detectChanges: vi.fn().mockName("ChangeDetectorRef.detectChanges"),
+    } as any;
     await TestBed.configureTestingModule({
       declarations: [GenericMultiFeatureLayoutComponent],
       imports: [
@@ -104,9 +115,9 @@ describe("GenericMultiFeatureLayoutComponent", () => {
     fixture = TestBed.createComponent(GenericMultiFeatureLayoutComponent);
     component = fixture.componentInstance;
     genericMultiFeatureUtilitiesService = TestBed.inject(
-        GenericMultiFeatureUtilitiesService
-      ) as jasmine.SpyObj<GenericMultiFeatureUtilitiesService>;
-    spyOn(genericMultiFeatureUtilitiesService, 'getActiveFeature');
+      GenericMultiFeatureUtilitiesService
+    ) as MockedObject<GenericMultiFeatureUtilitiesService>;
+    vi.spyOn(genericMultiFeatureUtilitiesService, "getActiveFeature");
   });
 
   it("should test if component is created", () => {
@@ -114,8 +125,8 @@ describe("GenericMultiFeatureLayoutComponent", () => {
   });
 
   it("should complete any active subscriptions", () => {
-    spyOn(component["activeSubscription"], "next");
-    spyOn(component["activeSubscription"], "complete");
+    vi.spyOn(component["activeSubscription"], "next");
+    vi.spyOn(component["activeSubscription"], "complete");
     component.ngOnDestroy();
     expect(component["activeSubscription"].next).toHaveBeenCalled();
     expect(component["activeSubscription"].complete).toHaveBeenCalled();
@@ -144,7 +155,7 @@ describe("GenericMultiFeatureLayoutComponent", () => {
   });
 
   it("should set active feature on ngOnInit if featureRoute exists", () => {
-    spyOn(genericMultiFeatureUtilitiesService, "setActiveFeature");
+    vi.spyOn(genericMultiFeatureUtilitiesService, "setActiveFeature");
     component.ngOnInit();
     expect(
       genericMultiFeatureUtilitiesService.setActiveFeature
@@ -152,7 +163,7 @@ describe("GenericMultiFeatureLayoutComponent", () => {
   });
 
   it("should subscribe to router events and call updateActiveTab on NavigationEnd", () => {
-    spyOn(component, "updateActiveTab");
+    vi.spyOn(component, "updateActiveTab");
     component.ngOnInit();
     (mockRouter.events as Subject<any>).next(
       new NavigationEnd(1, "/feature/tab2", "/feature/tab2")

@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import { HttpErrorResponse } from "@angular/common/http";
 import {
   changeConsumerPositionReducer,
@@ -10,8 +12,10 @@ import {
   getConsumerPositionInitialState,
 } from "./reducers";
 import * as ConsumerPositionActions from "./actions";
-
 describe("changeConsumerPositionReducer", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   const sampleData: ChangeConsumerPosition[] = [
     {
       before: {
@@ -55,8 +59,13 @@ describe("changeConsumerPositionReducer", () => {
       consumerError: null,
       consumerData: sampleData,
     };
-    const error = new HttpErrorResponse({ status: 404, statusText: "Not Found" });
-    const action = ConsumerPositionActions.onChangeConsumerPositionFailure({ error });
+    const error = new HttpErrorResponse({
+      status: 404,
+      statusText: "Not Found",
+    });
+    const action = ConsumerPositionActions.onChangeConsumerPositionFailure({
+      error,
+    });
     const state = changeConsumerPositionReducer(prevState, action);
     expect(state.consumerError).toBe(error);
     expect(state.consumerData).toBe(sampleData);
@@ -81,7 +90,7 @@ describe("changeConsumerPositionReducer", () => {
     });
     const state = changeConsumerPositionReducer(frozen, action);
     expect(state).not.toBe(frozen);
-    expect(frozen.consumerData).toEqual([]); 
+    expect(frozen.consumerData).toEqual([]);
   });
 });
 
@@ -106,7 +115,9 @@ describe("fetchConsumerPositionReducer", () => {
       fetchConsumerError: new HttpErrorResponse({ status: 500 }),
       consumerPositionData: sampleData,
     };
-    const action = ConsumerPositionActions.onFetchConsumerPosition({ params: { id: "123" } });
+    const action = ConsumerPositionActions.onFetchConsumerPosition({
+      params: { id: "123" },
+    });
     const state = fetchConsumerPositionReducer(populatedState, action);
     expect(state.consumerPositionData).toEqual([]);
     expect(state.fetchConsumerError).toBeNull();
@@ -118,7 +129,8 @@ describe("fetchConsumerPositionReducer", () => {
       fetchConsumerError: new HttpErrorResponse({ status: 400 }),
       consumerPositionData: [],
     };
-    const action = ConsumerPositionActions.onFetchConsumerPositionSuccess(sampleData);
+    const action =
+      ConsumerPositionActions.onFetchConsumerPositionSuccess(sampleData);
     const state = fetchConsumerPositionReducer(erroredState, action);
     expect(state.consumerPositionData).toEqual(sampleData);
     expect(state.fetchConsumerError).toBeNull();
@@ -130,8 +142,13 @@ describe("fetchConsumerPositionReducer", () => {
       fetchConsumerError: null,
       consumerPositionData: sampleData,
     };
-    const error = new HttpErrorResponse({ status: 404, statusText: "Not Found" });
-    const action = ConsumerPositionActions.onFetchConsumerPositionFailure({ error });
+    const error = new HttpErrorResponse({
+      status: 404,
+      statusText: "Not Found",
+    });
+    const action = ConsumerPositionActions.onFetchConsumerPositionFailure({
+      error,
+    });
     const state = fetchConsumerPositionReducer(prevState, action);
     expect(state.fetchConsumerError).toBe(error);
     expect(state.consumerPositionData).toBe(sampleData);
@@ -151,7 +168,8 @@ describe("fetchConsumerPositionReducer", () => {
 
   it("should not mutate original state objects (structural sharing check)", () => {
     const frozen = Object.freeze({ ...getConsumerPositionInitialState });
-    const action = ConsumerPositionActions.onFetchConsumerPositionSuccess(sampleData);
+    const action =
+      ConsumerPositionActions.onFetchConsumerPositionSuccess(sampleData);
     const state = fetchConsumerPositionReducer(frozen, action);
     expect(state).not.toBe(frozen);
     expect(frozen.consumerPositionData).toEqual([]);

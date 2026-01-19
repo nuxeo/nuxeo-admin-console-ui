@@ -1,16 +1,32 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { ProbeDataService } from "./probes-data.service";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { NetworkService } from "../../../../shared/services/network.service";
 import { REST_END_POINTS } from "../../../../shared/constants/rest-end-ponts.constants";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 describe("ProbeDataService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: ProbeDataService;
-  let networkService: jasmine.SpyObj<NetworkService>;
+  let networkService: MockedObject<NetworkService>;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj("NetworkService", ["makeHttpRequest"]);
+    const spy = {
+      makeHttpRequest: vi.fn().mockName("NetworkService.makeHttpRequest"),
+    };
     TestBed.configureTestingModule({
       imports: [],
       providers: [
@@ -23,7 +39,7 @@ describe("ProbeDataService", () => {
     service = TestBed.inject(ProbeDataService);
     networkService = TestBed.inject(
       NetworkService
-    ) as jasmine.SpyObj<NetworkService>;
+    ) as MockedObject<NetworkService>;
   });
 
   it("should be created", () => {

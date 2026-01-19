@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import {
   bulkActionMonitoringReducer,
   initialBulkActionMonitoringState,
@@ -6,8 +8,10 @@ import {
 import * as BulkActionMonitoringActions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BulkActionMonitoringInfo } from "../bulk-action-monitoring.interface";
-
 describe("bulkActionMonitoringReducer", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   it("should handle performBulkActionMonitor", () => {
     const action = BulkActionMonitoringActions.performBulkActionMonitor({
       id: "123",

@@ -4,7 +4,7 @@ import { CommonService } from "./../../.././app/shared/services/common.service";
 import { SharedMethodsService } from "../../shared/services/shared-methods.service";
 import { takeUntil } from "rxjs/internal/operators/takeUntil";
 import { HttpErrorResponse } from "@angular/common/http";
-import { delay, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { ERROR_TYPES } from "../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 
 @Component({
@@ -31,7 +31,7 @@ export class ConfigurationDetailsComponent implements OnInit, OnDestroy {
     this.isError = false;
     this.commonService
       .getConfigurationDetails()
-      .pipe(takeUntil(this.destroy$), delay(500))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -5,12 +5,12 @@ import { Observable, Subject, takeUntil } from "rxjs";
 import { AuthStateInterface } from "../../auth/types/authState.interface";
 import { UserInterface } from "../../shared/types/user.interface";
 import { Router } from "@angular/router";
-import { HEADER_BAR_CONSTANTS } from "./header-bar.constants"
+import { HEADER_BAR_CONSTANTS } from "./header-bar.constants";
 @Component({
   selector: "header-bar",
   templateUrl: "./header-bar.component.html",
   styleUrls: ["./header-bar.component.scss"],
-  standalone: false
+  standalone: false,
 })
 export class HeaderBarComponent implements OnInit, OnDestroy {
   private store = inject<
@@ -22,8 +22,8 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   currentUser$: Observable<UserInterface | null | undefined>;
   currentUser: UserInterface | null | undefined = undefined;
   displayName: string | undefined;
-  readonly BRAND_TITLE = HEADER_BAR_CONSTANTS.BRAND_TITLE
-  readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT
+  readonly BRAND_TITLE = HEADER_BAR_CONSTANTS.BRAND_TITLE;
+  readonly LOGOUT = HEADER_BAR_CONSTANTS.LOGOUT;
   private destroy$: Subject<void> = new Subject<void>();
   constructor() {
     this.currentUser$ = this.store.pipe(
@@ -32,12 +32,12 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(
-      (currentUser) => {
+    this.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((currentUser) => {
         this.currentUser = currentUser;
         this.setDisplayName();
-      }
-    );
+      });
   }
 
   ngOnDestroy(): void {

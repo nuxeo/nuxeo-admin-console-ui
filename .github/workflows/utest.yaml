@@ -1,9 +1,10 @@
 name: Unit-test
 
 permissions:
-  # Only read access needed for code checkout and test execution
-  # No write permissions required as this workflow only runs tests without modifying the repository
+  # Read access for code checkout and test execution
   contents: read
+  # Write access needed to post PR comments with coverage results
+  pull-requests: write
   
 on:
   pull_request:
@@ -73,16 +74,156 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
-      - name: Install Chrome and Chromedriver
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 120
-          install-chromedriver: true
+      - name: Unit tests with Vitest
+        id: vitest
+        working-directory: nuxeo-admin-console-web/angular-app
+        run: npm test
+        continue-on-error: true
 
-      - name: Verify Chrome installation
-        run: google-chrome --version
-
-      - name: Unit tests
+      - name: Check coverage results
+        id: coverage-check
+        if: always()
         working-directory: nuxeo-admin-console-web/angular-app
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npm test
+          # Check if coverage summary exists
+          if [ ! -f coverage/admin_console_ui/coverage-summary.json ]; then
+            echo "❌ Coverage report not found"
+            exit 1
+          fi
+          
+          # Parse coverage summary
+          STATEMENTS=$(jq '.total.statements.pct' coverage/admin_console_ui/coverage-summary.json)
+          BRANCHES=$(jq '.total.branches.pct' coverage/admin_console_ui/coverage-summary.json)
+          FUNCTIONS=$(jq '.total.functions.pct' coverage/admin_console_ui/coverage-summary.json)
+          LINES=$(jq '.total.lines.pct' coverage/admin_console_ui/coverage-summary.json)
+          
+          echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+          echo "functions=$FUNCTIONS" >> $GITHUB_OUTPUT
+          echo "lines=$LINES" >> $GITHUB_OUTPUT
+          
+          # Check if any coverage is below threshold
+          THRESHOLD=80
+          FAILED=false
+          
+          if (( $(echo "$STATEMENTS < $THRESHOLD" | bc -l) )); then
+            echo "statements_failed=true" >> $GITHUB_OUTPUT
+            FAILED=true
+          fi
+          
+          if (( $(echo "$BRANCHES < $THRESHOLD" | bc -l) )); then
+            echo "branches_failed=true" >> $GITHUB_OUTPUT
+            FAILED=true
+          fi
+          
+          if (( $(echo "$FUNCTIONS < $THRESHOLD" | bc -l) )); then
+            echo "functions_failed=true" >> $GITHUB_OUTPUT
+            FAILED=true
+          fi
+          
+          if (( $(echo "$LINES < $THRESHOLD" | bc -l) )); then
+            echo "lines_failed=true" >> $GITHUB_OUTPUT
+            FAILED=true
+          fi
+          
+          if [ "$FAILED" = true ]; then
+            echo "coverage_passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "coverage_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR with coverage results
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const statements = '${{ steps.coverage-check.outputs.statements }}';
+            const branches = '${{ steps.coverage-check.outputs.branches }}';
+            const functions = '${{ steps.coverage-check.outputs.functions }}';
+            const lines = '${{ steps.coverage-check.outputs.lines }}';
+            const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}' === 'true';
+            const threshold = 80;
+            
+            const statementsFailed = '${{ steps.coverage-check.outputs.statements_failed }}' === 'true';
+            const branchesFailed = '${{ steps.coverage-check.outputs.branches_failed }}' === 'true';
+            const functionsFailed = '${{ steps.coverage-check.outputs.functions_failed }}' === 'true';
+            const linesFailed = '${{ steps.coverage-check.outputs.lines_failed }}' === 'true';
+            
+            const getIcon = (value, failed) => {
+              if (failed) return '❌';
+              return parseFloat(value) >= 90 ? '✅' : '⚠️';
+            };
+            
+            // Find existing bot comment to update instead of creating new ones
+            const botCommentIdentifier = '<!-- vitest-coverage-report -->';
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes(botCommentIdentifier)
+            );
+            
+            let comment = botCommentIdentifier + '\n\n';
+            
+            // Show coverage status
+            if (coveragePassed) {
+              comment += `## ✅ Test Coverage Passed\n\n`;
+              comment += `All coverage metrics meet the **${threshold}%** threshold!\n\n`;
+            } else {
+              comment += `## ❌ Test Coverage Failed\n\n`;
+              comment += `Some coverage metrics are below the **${threshold}%** threshold.\n\n`;
+            }
+            
+            comment += `| Metric | Coverage | Status | Threshold |\n`;
+            comment += `|--------|----------|--------|----------|\n`;
+            comment += `| **Statements** | ${statements}% | ${getIcon(statements, statementsFailed)} ${statementsFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
+            comment += `| **Branches** | ${branches}% | ${getIcon(branches, branchesFailed)} ${branchesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
+            comment += `| **Functions** | ${functions}% | ${getIcon(functions, functionsFailed)} ${functionsFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
+            comment += `| **Lines** | ${lines}% | ${getIcon(lines, linesFailed)} ${linesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n\n`;
+            
+            if (!coveragePassed) {
+              comment += `### 🔧 Action Required\n\n`;
+              comment += `Please add tests to improve coverage for the following metrics:\n\n`;
+              if (statementsFailed) {
+                comment += `- **Statements**: Currently ${statements}%, needs ${(threshold - parseFloat(statements)).toFixed(2)}% more coverage\n`;
+              }
+              if (branchesFailed) {
+                comment += `- **Branches**: Currently ${branches}%, needs ${(threshold - parseFloat(branches)).toFixed(2)}% more coverage\n`;
+              }
+              if (functionsFailed) {
+                comment += `- **Functions**: Currently ${functions}%, needs ${(threshold - parseFloat(functions)).toFixed(2)}% more coverage\n`;
+              }
+              if (linesFailed) {
+                comment += `- **Lines**: Currently ${lines}%, needs ${(threshold - parseFloat(lines)).toFixed(2)}% more coverage\n`;
+              }
+              comment += `\n📊 View detailed coverage report in the build artifacts.\n`;
+            } else {
+              comment += `🎉 Great job maintaining high test coverage!\n`;
+            }
+            
+            // Update existing comment or create new one
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+      - name: Fail workflow if coverage failed
+        if: steps.coverage-check.outputs.coverage_passed != 'true'
+        run: |
+          echo "❌ Coverage check failed - some metrics are below 80% threshold"
+          exit 1

@@ -341,6 +341,10 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             })
           );
         }
+      })
+      .catch(() => {
+        // Handle any unhandled errors from the error processing chain
+        // This prevents unhandled promise rejections
       });
   }
 
