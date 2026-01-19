@@ -5,6 +5,8 @@ permissions:
   contents: write
   # Required to upload artifacts and publish packages
   packages: write
+  # Required for utest.yaml to post PR comments with coverage results
+  pull-requests: write
   
 on:
   workflow_run:
