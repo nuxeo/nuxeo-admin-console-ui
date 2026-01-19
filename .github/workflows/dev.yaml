@@ -5,6 +5,8 @@ permissions:
   contents: write
   # Required to read packages from GitHub package registry
   packages: read
+  # Required for utest.yaml to post PR comments with coverage results
+  pull-requests: write
 
 on:
   push:
