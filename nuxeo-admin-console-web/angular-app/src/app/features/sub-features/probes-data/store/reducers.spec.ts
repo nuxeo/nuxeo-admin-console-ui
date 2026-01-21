@@ -1,9 +1,13 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import { ProbeDataReducer, ProbeState, initialState } from "./reducers";
 import * as ProbeActions from "./actions";
 import { Action } from "@ngrx/store";
 import { HttpErrorResponse } from "@angular/common/http";
-
 describe("Probe Reducer", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   it("should return the initial state", () => {
     const action = {} as Action;
     const state = ProbeDataReducer(undefined, action);
@@ -295,4 +299,3 @@ describe("Probe Reducer", () => {
     expect(state).toEqual(expectedState);
   });
 });
-

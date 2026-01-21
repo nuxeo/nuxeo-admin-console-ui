@@ -1,21 +1,33 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { TestBed } from "@angular/core/testing";
 import { SharedMethodsService } from "./shared-methods.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ERROR_TYPES } from "../../features/sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { ErrorDetails } from "../types/common.interface";
 import { MatDialog } from "@angular/material/dialog";
-
 describe("SharedMethodsService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: SharedMethodsService;
-  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
-  let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockSnackBar: MockedObject<MatSnackBar>;
+  let mockDialog: MockedObject<MatDialog>;
   beforeEach(() => {
-    mockDialog = jasmine.createSpyObj("MatDialog", [
-      "open",
-      "closeAll",
-      "afterClosed",
-    ]);
-    mockSnackBar = jasmine.createSpyObj("MatSnackBar", ["openFromComponent"]);
+    mockDialog = {
+      open: vi.fn().mockName("MatDialog.open"),
+      closeAll: vi.fn().mockName("MatDialog.closeAll"),
+    } as any;
+    mockSnackBar = {
+      openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent"),
+    } as any;
     TestBed.configureTestingModule({
       providers: [
         SharedMethodsService,
@@ -40,7 +52,7 @@ describe("SharedMethodsService", () => {
         },
       };
       const dialogRefMock = { afterClosed: () => ({}) } as any;
-      mockDialog.open.and.returnValue(dialogRefMock);
+      mockDialog.open.mockReturnValue(dialogRefMock);
       service.showActionErrorModal(errorDetails);
       expect(service.errorDialogRef).toBe(dialogRefMock);
     });
@@ -52,8 +64,8 @@ describe("SharedMethodsService", () => {
       const duration = 5000;
       service.showSuccessSnackBar(message);
       expect(mockSnackBar.openFromComponent).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
           data: { message, panelClass: "success-snack" },
           duration: duration,
           panelClass: ["success-snack"],
@@ -66,8 +78,8 @@ describe("SharedMethodsService", () => {
       const duration = 2000;
       service.showSuccessSnackBar(message, duration);
       expect(mockSnackBar.openFromComponent).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
           data: { message, panelClass: "success-snack" },
           duration: duration,
           panelClass: ["success-snack"],
@@ -82,8 +94,8 @@ describe("SharedMethodsService", () => {
       const duration = 5000;
       service.showErrorSnackBar(message);
       expect(mockSnackBar.openFromComponent).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
           data: { message, panelClass: "error-snack" },
           duration: duration,
           panelClass: ["error-snack"],
@@ -96,8 +108,8 @@ describe("SharedMethodsService", () => {
       const duration = 3000;
       service.showErrorSnackBar(message, duration);
       expect(mockSnackBar.openFromComponent).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
           data: { message, panelClass: "error-snack" },
           duration: duration,
           panelClass: ["error-snack"],

@@ -704,11 +704,6 @@ mat-radio-button.complex-radio {
   }
 }
 
-json-table-view {
-  width: 80% !important;
-  display: grid;
-}
-
 .json-viewer-container .mat-mdc-form-field-wrapper {
   padding-bottom: 0 !important;
   align-items: center;
@@ -752,4 +747,25 @@ json-table-view {
 .copy-btn .mdc-icon-button__ripple {
   display: none !important;
   opacity: 0 !important;
+}
+
+.mat-mdc-unelevated-button:disabled,
+//Global style for disabled buttons
+.mat-mdc-unelevated-button[disabled],
+.mat-mdc-raised-button:disabled,
+.mat-mdc-raised-button[disabled] {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: rgba(0, 0, 0, 0.38) !important;
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.mat-mdc-radio-button {
+  --mat-radio-ripple-color: transparent !important;
+
+  &.mat-mdc-radio-checked {
+    .mdc-radio__background::before {
+      display: none; // Remove focus highlight ring after radio button selected
+    }
+  }
 }

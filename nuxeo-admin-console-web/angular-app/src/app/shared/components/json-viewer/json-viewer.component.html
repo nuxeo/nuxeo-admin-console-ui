@@ -1,5 +1,6 @@
 <div class="json-viewer-container">
-  <div class="json-controls sticky-header" *ngIf="currentDepth === 0">
+  @if (currentDepth === 0) {
+  <div class="json-controls sticky-header">
     <div class="controls-left">
       <!-- Search Field - Using plain input with NO Angular event binding for instant response and to improve performance -->
       <div class="search-field-wrapper">
@@ -7,24 +8,26 @@
           aria-label="Search JSON content - searches automatically as you type or when you press Enter"
           [attr.aria-describedby]="totalMatches > 0 ? 'search-results' : null" (keydown.enter)="triggerSearchOnEnter()"
           tabindex="0">
-
         <!-- Search Button (visual indicator only when no search term) -->
-        <button class="search-btn" *ngIf="!searchTerm" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
+        @if (!searchTerm) {
+        <button class="search-btn" mat-icon-button disableRipple [matTooltip]="JSON_VIEWER_LABELS.SEARCH_TOOLTIP"
           aria-label="Search icon" tabindex="-1">
           <mat-icon>{{ JSON_VIEWER_LABELS.MAT_SEARCH_BTN_NAME }}</mat-icon>
         </button>
-
+        }
         <!-- Clear Button -->
-        <button *ngIf="searchTerm" mat-icon-button disableRipple (click)="clearSearch()"
+        @if (searchTerm) {
+        <button mat-icon-button disableRipple (click)="clearSearch()"
           [matTooltip]="JSON_VIEWER_LABELS.CLEAR_SEARCH_TOOLTIP" aria-label="Clear search" tabindex="0">
           <mat-icon>{{ JSON_VIEWER_LABELS.CLEAR }}</mat-icon>
         </button>
+        }
       </div>
     </div>
     <div class="controls-center">
       <!-- Search Navigation -->
-      <div class="search-navigation"
-        *ngIf="totalMatches > 0 || (searchTerm.trim() && totalMatches === 0) || isSearchLoading">
+      @if (totalMatches > 0 || (searchTerm.trim() && totalMatches === 0) || isSearchLoading) {
+      <div class="search-navigation">
         <span class="search-results" id="search-results" aria-live="polite">{{ searchResultText }}</span>
         <button mat-icon-button disableRipple (click)="goToPreviousMatch()"
           [disabled]="totalMatches === 0 || isSearchLoading" [matTooltip]="JSON_VIEWER_LABELS.PREVIOUS_MATCH_TOOLTIP"
@@ -37,11 +40,13 @@
           <mat-icon>{{ JSON_VIEWER_LABELS.MAT_NEXT_ICON_NAME }}</mat-icon>
         </button>
       </div>
-      <span class="search-info-note" *ngIf="totalMatches > 0">
+      }
+      @if (totalMatches > 0) {
+      <span class="search-info-note">
         {{ JSON_VIEWER_LABELS.NOTE_MSG }}
       </span>
+      }
     </div>
-
     <div class="controls-right">
       <!-- Copy Button -->
       <button mat-icon-button disableRipple (click)="copyToClipboard()" class="copy-btn"
@@ -56,32 +61,35 @@
           }}</mat-icon>
       </button>
     </div>
-
   </div>
+  }
 
   <!-- JSON Content with Search Highlighting -->
   <section class="ngx-json-viewer" [class.loading]="isExpandCollapseLoading || isSearchLoading">
 
     <!-- Expand/Collapse Loading Overlay -->
-    <div class="loading-overlay" *ngIf="isExpandCollapseLoading">
+    @if (isExpandCollapseLoading) {
+    <div class="loading-overlay">
       <mat-spinner diameter="40" class="center-spinner"></mat-spinner>
       <span class="loading-text">{{ expandAll ? JSON_VIEWER_LABELS.COLLAPSE_LOADER_MSG :
         JSON_VIEWER_LABELS.EXPAND_LOADER_MSG }}</span>
     </div>
+    }
 
     <!-- Search Loading Overlay -->
-    <div class="loading-overlay" *ngIf="isSearchLoading">
+    @if (isSearchLoading) {
+    <div class="loading-overlay">
       <mat-spinner diameter="40" class="center-spinner"></mat-spinner>
       <span class="loading-text">{{ JSON_VIEWER_LABELS.LOADING_RESULTS }}</span>
     </div>
+    }
 
-    <section *ngFor="let segment of segments" class="segment" 
-      [attr.data-segment-key]="segment.key"
-      [class.segment-type-number]="segment.type === 'number'"
-      [class.segment-type-string]="segment.type === 'string'" [class.segment-type-boolean]="segment.type === 'boolean'"
-      [class.segment-type-object]="segment.type === 'object'" [class.segment-type-array]="segment.type === 'array'"
-      [class.segment-type-null]="segment.type === 'null'" [class.segment-type-undefined]="segment.type === 'undefined'">
-
+    @for (segment of segments; track segment) {
+    <section class="segment" [attr.data-segment-key]="segment.key"
+      [class.segment-type-number]="segment.type === 'number'" [class.segment-type-string]="segment.type === 'string'"
+      [class.segment-type-boolean]="segment.type === 'boolean'" [class.segment-type-object]="segment.type === 'object'"
+      [class.segment-type-array]="segment.type === 'array'" [class.segment-type-null]="segment.type === 'null'"
+      [class.segment-type-undefined]="segment.type === 'undefined'">
       <section (click)="!searchActive && expandOrCollapseIndividualSegment(segment)"
         (keydown.enter)="!searchActive && expandOrCollapseIndividualSegment(segment)"
         (keydown.space)="!searchActive && expandOrCollapseIndividualSegment(segment)"
@@ -95,20 +103,25 @@
         'expanded': segment.expanded,
         'search-disabled': searchActive
       }">
-        <div *ngIf="isExpandable(segment)" class="toggler" [class.disabled]="searchActive"></div>
+        @if (isExpandable(segment)) {
+        <div class="toggler" [class.disabled]="searchActive"></div>
+        }
         <span class="segment-key" [innerHTML]="segment.highlightedKey || segment.key"></span>
         <span class="segment-separator">: </span>
-        <span *ngIf="!segment.expanded || !isExpandable(segment)" class="segment-value"
-          [innerHTML]="segment.highlightedDescription || segment.description"></span>
+        @if (!segment.expanded || !isExpandable(segment)) {
+        <span class="segment-value" [innerHTML]="segment.highlightedDescription || segment.description"></span>
+        }
       </section>
-
-      <section *ngIf="segment.expanded && isExpandable(segment)" class="children">
+      @if (segment.expanded && isExpandable(segment)) {
+      <section class="children">
         <custom-nuxeo-json-viewer [json]="segment.value"
           [expanded]="segment.individuallyExpanded || expandAll || expanded" [depth]="expandAll ? -1 : depth"
           [currentDepth]="currentDepth+1" [expandAll]="expandAll" [isSearchActiveInput]="searchActive">
         </custom-nuxeo-json-viewer>
       </section>
+      }
     </section>
+    }
 
   </section>
 </div>

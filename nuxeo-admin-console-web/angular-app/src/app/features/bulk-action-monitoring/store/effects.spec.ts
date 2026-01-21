@@ -1,31 +1,42 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadPerformBulkActionMonitoringEffect } from "./effects";
 import { TestBed } from "@angular/core/testing";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { of, throwError } from "rxjs";
 import * as BulkActionMonitoringActions from "./actions";
-import { HttpErrorResponse } from "@angular/common/http";
+import {
+  HttpErrorResponse,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 import { BulkActionMonitoringService } from "../services/bulk-action-monitoring.service";
-
 describe("ElasticSearch Reindex Effects", () => {
-  const bulkActionMonitoringServiceSpy = jasmine.createSpyObj(
-    "BulkActionMonitoringService",
-    ["performBulkActionMonitoring"]
-  );
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
+  const bulkActionMonitoringServiceSpy = {
+    performBulkActionMonitoring: vi
+      .fn()
+      .mockName("BulkActionMonitoringService.performBulkActionMonitoring"),
+  } as unknown as BulkActionMonitoringService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         provideMockStore(),
         {
           provide: BulkActionMonitoringService,
           useValue: bulkActionMonitoringServiceSpy,
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
   });
 
-  it("should return onBulkActionMonitorFailure on failure", (done) => {
+  it("should return onBulkActionMonitorFailure on failure", async () => {
     const effect = TestBed.runInInjectionContext(
       () => loadPerformBulkActionMonitoringEffect
     );
@@ -34,7 +45,7 @@ describe("ElasticSearch Reindex Effects", () => {
       status: "404",
       message: "Page not found !",
     };
-    bulkActionMonitoringServiceSpy.performBulkActionMonitoring.and.returnValue(
+    (bulkActionMonitoringServiceSpy.performBulkActionMonitoring as ReturnType<typeof vi.fn>).mockReturnValue(
       throwError(() => new HttpErrorResponse({ error }))
     );
     const outcome = BulkActionMonitoringActions.onBulkActionMonitorFailure({
@@ -46,7 +57,6 @@ describe("ElasticSearch Reindex Effects", () => {
     effect(actionsMock$, bulkActionMonitoringServiceSpy).subscribe(
       (result: unknown) => {
         expect(result).toEqual(outcome);
-        done();
       }
     );
   });

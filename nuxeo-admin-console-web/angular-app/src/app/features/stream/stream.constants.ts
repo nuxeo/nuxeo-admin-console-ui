@@ -60,12 +60,12 @@ export const MAIN_TAB_LABELS = {
     LABEL: "consumer-position",
     SUB_TAB_LABELS: {
       CHANGE_CONSUMER_POSITION: {
-        ID: 0,
+        ID: 1,
         LABEL: "Change Consumer Position",
         ROUTE_LABEL: "change-consumer-position",
       },
       GET_CONSUMER_POSITION: {
-        ID: 1,
+        ID: 0,
         LABEL: "Get Consumer Position",
         ROUTE_LABEL: "get-consumer-position",
       },

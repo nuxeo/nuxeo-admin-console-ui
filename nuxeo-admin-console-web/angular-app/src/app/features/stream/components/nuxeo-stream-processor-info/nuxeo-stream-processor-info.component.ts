@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { StreamService } from "../../services/stream.service";
 import { Subject, takeUntil } from "rxjs";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
@@ -13,19 +13,18 @@ import {
   selector: "app-nuxeo-stream-processor-info",
   templateUrl: "./nuxeo-stream-processor-info.component.html",
   styleUrls: ["./nuxeo-stream-processor-info.component.scss"],
+  standalone: false
 })
 export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
+  private streamService = inject(StreamService);
+  private sharedService = inject(SharedMethodsService);
   destroy$: Subject<void> = new Subject<void>();
-  streamProcessorJsonData: any;
+  streamProcessorJsonData: unknown;
   isDataLoaded = false; // This flag is used to display a loader while fetching data and to show a 'no data found' (if data is empty) message only after the fetch is complete
   isError = false; // This flag is used to show/hide the error message and retry button in case of an error
   readonly NUXEO_STREAM_PROCESSOR_INFO_LABELS =
     NUXEO_STREAM_PROCESSOR_INFO_LABELS;
   readonly GENERIC_API_LABELS = GENERIC_API_LABELS;
-  constructor(
-    private streamService: StreamService,
-    private sharedService: SharedMethodsService
-  ) {}
 
   ngOnInit(): void {
     this.loadJsonData();
@@ -60,7 +59,7 @@ export class NuxeoStreamProcessorInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

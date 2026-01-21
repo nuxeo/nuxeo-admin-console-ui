@@ -1,3 +1,13 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+  afterEach,
+} from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ChangeConsumerPositionComponent } from "../../consumer-position/change-consumer-position/change-consumer-position.component";
 import { Store } from "@ngrx/store";
@@ -29,47 +39,68 @@ import { SharedMethodsService } from "../../../../../shared/services/shared-meth
 import { ERROR_TYPES } from "../../../../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 import { ChangeConsumerPositionState } from "../store/reducers";
 import { MatTabsModule } from "@angular/material/tabs";
-
 interface ErrorModalClosedInfo {
   isClosed: boolean;
   event: any;
 }
 
 describe("ChangeConsumerPositionComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: ChangeConsumerPositionComponent;
   let fixture: ComponentFixture<ChangeConsumerPositionComponent>;
-  let storeSpy: jasmine.SpyObj<
+  let storeSpy: MockedObject<
     Store<{
       streams: StreamsState;
       consumerPosition: ChangeConsumerPositionState;
     }>
   >;
-  let matDialogSpy: jasmine.SpyObj<MatDialog>;
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
-  let matSnackBarSpy: jasmine.SpyObj<MatSnackBar>;
-  let streamServiceSpy: jasmine.SpyObj<StreamService>;
-  let sharedMethodServiceSpy: jasmine.SpyObj<SharedMethodsService>;
+  let matDialogSpy: MockedObject<MatDialog>;
+  let httpClientSpy: MockedObject<HttpClient>;
+  let matSnackBarSpy: MockedObject<MatSnackBar>;
+  let streamServiceSpy: MockedObject<StreamService>;
+  let sharedMethodServiceSpy: MockedObject<SharedMethodsService>;
   beforeEach(() => {
-    storeSpy = jasmine.createSpyObj("Store", ["dispatch", "pipe", "select"]);
-    storeSpy.select.and.returnValue(of({ streamDataLoaded: true }));
-    storeSpy.pipe.and.returnValue(of([]));
-    streamServiceSpy = jasmine.createSpyObj("StreamService", [
-      "showSuccessMessage",
-    ]);
+    // Suppress console errors during tests to reduce noise
+    vi.spyOn(console, "error").mockImplementation(() => {});
 
-    matDialogSpy = jasmine.createSpyObj("MatDialog", ["open", "closeAll"]);
-    httpClientSpy = jasmine.createSpyObj("HttpClient", [
-      "get",
-      "post",
-      "put",
-      "delete",
-    ]);
-    matSnackBarSpy = jasmine.createSpyObj("MatSnackBar", ["open", "dismiss"]);
-    sharedMethodServiceSpy = jasmine.createSpyObj("SharedMethodsService", [
-      "showActionErrorModal",
-      "showSuccessSnackBar",
-      "showErrorSnackBar"
-    ]);
+    storeSpy = {
+      dispatch: vi.fn().mockName("Store.dispatch"),
+      pipe: vi.fn().mockName("Store.pipe"),
+      select: vi.fn().mockName("Store.select"),
+    } as any;
+    storeSpy.select.mockReturnValue(of({ streamDataLoaded: true }));
+    storeSpy.pipe.mockReturnValue(of([]));
+    streamServiceSpy = {
+      showSuccessMessage: vi.fn().mockName("StreamService.showSuccessMessage"),
+    } as any;
+
+    matDialogSpy = {
+      open: vi.fn().mockName("MatDialog.open"),
+      closeAll: vi.fn().mockName("MatDialog.closeAll"),
+    } as any;
+    httpClientSpy = {
+      get: vi.fn().mockName("HttpClient.get"),
+      post: vi.fn().mockName("HttpClient.post"),
+      put: vi.fn().mockName("HttpClient.put"),
+      delete: vi.fn().mockName("HttpClient.delete"),
+    } as any;
+    matSnackBarSpy = {
+      open: vi.fn().mockName("MatSnackBar.open"),
+      dismiss: vi.fn().mockName("MatSnackBar.dismiss"),
+    } as any;
+    sharedMethodServiceSpy = {
+      showActionErrorModal: vi
+        .fn()
+        .mockReturnValue(of({ isClosed: true, event: {} })), // ← FIX: Return Observable
+      showSuccessSnackBar: vi
+        .fn()
+        .mockName("SharedMethodsService.showSuccessSnackBar"),
+      showErrorSnackBar: vi
+        .fn()
+        .mockName("SharedMethodsService.showErrorSnackBar"),
+    } as any;
     TestBed.configureTestingModule({
       declarations: [ChangeConsumerPositionComponent],
       providers: [
@@ -94,12 +125,16 @@ describe("ChangeConsumerPositionComponent", () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatMomentDateModule,
-        MatTabsModule
+        MatTabsModule,
       ],
     });
     fixture = TestBed.createComponent(ChangeConsumerPositionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should create", () => {
@@ -115,7 +150,7 @@ describe("ChangeConsumerPositionComponent", () => {
         streamValue
       );
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: streamValue },
         })
@@ -127,7 +162,7 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm.patchValue({ stream: streamName });
       component.onStreamChange(streamName);
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: streamName },
         })
@@ -140,7 +175,7 @@ describe("ChangeConsumerPositionComponent", () => {
       );
       expect(() => component.onStreamChange("mock-stream")).not.toThrow();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: StreamActions.fetchConsumers.type,
           params: { stream: undefined },
         })
@@ -150,13 +185,13 @@ describe("ChangeConsumerPositionComponent", () => {
 
   describe("onPositionChange", () => {
     it("should enable offset, partition when position is offset", () => {
-       const positionGroup = component.consumerPositionForm.get(
+      const positionGroup = component.consumerPositionForm.get(
         "position"
       ) as FormGroup;
       positionGroup.get("value")?.setValue("offset");
       component.onPositionChange();
-      expect(positionGroup.get("offset")?.enabled).toBeTrue();
-      expect(positionGroup.get("partition")?.enabled).toBeTrue();
+      expect(positionGroup.get("offset")?.enabled).toBe(true);
+      expect(positionGroup.get("partition")?.enabled).toBe(true);
     });
 
     it("should disable offset, partition when position is not offset", () => {
@@ -165,28 +200,28 @@ describe("ChangeConsumerPositionComponent", () => {
       ) as FormGroup;
       positionGroup.get("value")?.setValue("beginning");
       component.onPositionChange();
-  
-      expect(positionGroup.get("offset")?.enabled).toBeFalse();
-      expect(positionGroup.get("partition")?.enabled).toBeFalse();
+
+      expect(positionGroup.get("offset")?.enabled).toBe(false);
+      expect(positionGroup.get("partition")?.enabled).toBe(false);
     });
 
     it("should enable DATE when position is DATE", () => {
-         const positionGroup = component.consumerPositionForm.get(
+      const positionGroup = component.consumerPositionForm.get(
         "position"
       ) as FormGroup;
-       positionGroup.get("value")?.setValue("after");
+      positionGroup.get("value")?.setValue("after");
       component.onPositionChange();
 
-      expect(positionGroup.get("after")?.enabled).toBeTrue();
+      expect(positionGroup.get("after")?.enabled).toBe(true);
     });
 
     it("should disable DATE when position is not DATE", () => {
-       const positionGroup = component.consumerPositionForm.get(
+      const positionGroup = component.consumerPositionForm.get(
         "position"
       ) as FormGroup;
       positionGroup.get("value")?.setValue("beginning");
       component.onPositionChange();
-      expect(positionGroup.get("after")?.enabled).toBeFalse();
+      expect(positionGroup.get("after")?.enabled).toBe(false);
     });
   });
 
@@ -215,8 +250,8 @@ describe("ChangeConsumerPositionComponent", () => {
         ?.setValue(CHANGE_CONSUMER_POSITION_LABELS.POSITION.BEGINNING.VALUE);
       component.changePosition();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          type: jasmine.any(String),
+        expect.objectContaining({
+          type: expect.any(String),
           consumerPosition:
             CHANGE_CONSUMER_POSITION_LABELS.POSITION.BEGINNING.VALUE,
           params: {
@@ -233,8 +268,8 @@ describe("ChangeConsumerPositionComponent", () => {
         ?.setValue(CHANGE_CONSUMER_POSITION_LABELS.POSITION.END.VALUE);
       component.changePosition();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          type: jasmine.any(String),
+        expect.objectContaining({
+          type: expect.any(String),
           consumerPosition: CHANGE_CONSUMER_POSITION_LABELS.POSITION.END.VALUE,
           params: {
             consumer: "test-consumer",
@@ -252,10 +287,10 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm.get("position.partition")?.setValue(2);
       component.changePosition();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           consumerPosition:
             CHANGE_CONSUMER_POSITION_LABELS.POSITION.OFFSET.VALUE,
-          params: jasmine.objectContaining({
+          params: expect.objectContaining({
             consumer: "test-consumer",
             stream: "test-stream",
             offset: 123,
@@ -273,9 +308,9 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm.get("position.after")?.setValue(testDate);
       component.changePosition();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           consumerPosition: CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE,
-          params: jasmine.objectContaining({
+          params: expect.objectContaining({
             consumer: "test-consumer",
             stream: "test-stream",
             date: testDate.toISOString(),
@@ -287,19 +322,19 @@ describe("ChangeConsumerPositionComponent", () => {
 
   describe("isValidData()", () => {
     it("should return true for invalid data", () => {
-      expect(component.isValidData([])).toBeFalse();
+      expect(component.isValidData([])).toBe(false);
     });
 
     it("should return false for invalid data", () => {
-      expect(component.isValidData(null)).toBeFalse();
+      expect(component.isValidData(null)).toBe(false);
     });
 
     it("should return false for invalid data", () => {
-      expect(component.isValidData(undefined)).toBeFalse();
+      expect(component.isValidData(undefined)).toBe(false);
     });
 
     it("should return false for invalid data", () => {
-      expect(component.isValidData({})).toBeFalse();
+      expect(component.isValidData({})).toBe(false);
     });
 
     it("should return true for valid data", () => {
@@ -331,7 +366,7 @@ describe("ChangeConsumerPositionComponent", () => {
           ],
         },
       };
-      expect(component.isValidData(data)).toBeTrue();
+      expect(component.isValidData(data)).toBe(true);
     });
   });
 
@@ -339,15 +374,15 @@ describe("ChangeConsumerPositionComponent", () => {
     it("should unsubscribe from all subscriptions", () => {
       component.ngOnDestroy();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           type: ConsumerPositionActions.resetConsumerPositionData.type,
         })
       );
     });
 
     it("should complete the destroy$ subject", () => {
-      spyOn((component as any).destroy$, "next");
-      spyOn((component as any).destroy$, "complete");
+      vi.spyOn((component as any).destroy$, "next");
+      vi.spyOn((component as any).destroy$, "complete");
       component.ngOnDestroy();
       expect((component as any).destroy$.next).toHaveBeenCalled();
       expect((component as any).destroy$.complete).toHaveBeenCalled();
@@ -359,11 +394,11 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm
         .get("position.value")
         ?.setValue(CHANGE_CONSUMER_POSITION_LABELS.POSITION.BEGINNING.VALUE);
-      matDialogSpy.open.and.returnValue({
+      matDialogSpy.open.mockReturnValue({
         afterClosed: () => of({ continue: true }),
       } as any);
-      component.focusMatSelect = { focus: jasmine.createSpy("focus") } as any;
-      spyOn(component, "changePosition");
+      component.focusMatSelect = { focus: vi.fn() } as any;
+      vi.spyOn(component, "changePosition");
     });
 
     it("should open confirmation modal and call changePosition method to change position to beginning of the stream", () => {
@@ -372,9 +407,9 @@ describe("ChangeConsumerPositionComponent", () => {
       ).get("value")?.value;
       component.showConfirmationModal();
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType: CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE,
             message:
               CHANGE_CONSUMER_POSITION_LABELS.BEGINNING_END_CONFIRM_MESSAGE.replace(
@@ -399,9 +434,9 @@ describe("ChangeConsumerPositionComponent", () => {
 
       component.showConfirmationModal();
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType: CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE,
             message:
               CHANGE_CONSUMER_POSITION_LABELS.BEGINNING_END_CONFIRM_MESSAGE.replace(
@@ -425,9 +460,9 @@ describe("ChangeConsumerPositionComponent", () => {
 
       component.showConfirmationModal();
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType: CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE,
             message: CHANGE_CONSUMER_POSITION_LABELS.OFFSET_CONFIRM_MESSAGE,
             title: CHANGE_CONSUMER_POSITION_LABELS.CONSUMER_POSITION_LABEL,
@@ -442,12 +477,15 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm
         .get("position.value")
         ?.setValue(CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE);
-      component.consumerPositionForm.get("position")?.get("after")?.setValue(new Date('2024-01-01T00:00:00Z'));
+      component.consumerPositionForm
+        .get("position")
+        ?.get("after")
+        ?.setValue(new Date("2024-01-01T00:00:00Z"));
       component.showConfirmationModal();
       expect(matDialogSpy.open).toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType: CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE,
             message: CHANGE_CONSUMER_POSITION_LABELS.DATE_CONFIRM_MESSAGE,
             title: CHANGE_CONSUMER_POSITION_LABELS.CONSUMER_POSITION_LABEL,
@@ -462,16 +500,19 @@ describe("ChangeConsumerPositionComponent", () => {
       component.consumerPositionForm
         .get("position.value")
         ?.setValue(CHANGE_CONSUMER_POSITION_LABELS.POSITION.DATE.VALUE);
-        component.consumerPositionForm.get("position")?.get("after")?.setValue('');
-    
-      matDialogSpy.open.and.returnValue({
+      component.consumerPositionForm
+        .get("position")
+        ?.get("after")
+        ?.setValue("");
+
+      matDialogSpy.open.mockReturnValue({
         afterClosed: () => of({ continue: false }),
       } as any);
       component.showConfirmationModal();
       expect(matDialogSpy.open).not.toHaveBeenCalledWith(
-        jasmine.any(Function),
-        jasmine.objectContaining({
-          data: jasmine.objectContaining({
+        expect.any(Function),
+        expect.objectContaining({
+          data: expect.objectContaining({
             operationType: CHANGE_CONSUMER_POSITION_LABELS.OPERATION_TYPE,
             message: CHANGE_CONSUMER_POSITION_LABELS.DATE_CONFIRM_MESSAGE,
             title: CHANGE_CONSUMER_POSITION_LABELS.CONSUMER_POSITION_LABEL,
@@ -488,7 +529,7 @@ describe("ChangeConsumerPositionComponent", () => {
         isClosed: true,
         event: {},
       };
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
 
@@ -505,8 +546,8 @@ describe("ChangeConsumerPositionComponent", () => {
     });
 
     it("should dispatch fetchStreams action when streams data is not loaded", () => {
-      storeSpy.select.and.returnValue(of(false));
-      storeSpy.pipe.and.returnValue(of(false));
+      storeSpy.select.mockReturnValue(of(false));
+      storeSpy.pipe.mockReturnValue(of(false));
       component.ngOnInit();
       expect(storeSpy.dispatch).toHaveBeenCalledWith(
         StreamActions.fetchStreams()
@@ -514,8 +555,8 @@ describe("ChangeConsumerPositionComponent", () => {
     });
 
     it("should not dispatch fetchStreams action when streams data is already loaded", () => {
-      storeSpy.select.and.returnValue(of(true));
-      storeSpy.pipe.and.returnValue(of(true));
+      storeSpy.select.mockReturnValue(of(true));
+      storeSpy.pipe.mockReturnValue(of(true));
       component.ngOnInit();
       expect(storeSpy.dispatch).not.toHaveBeenCalledWith(
         StreamActions.fetchStreams()
@@ -546,11 +587,11 @@ describe("ChangeConsumerPositionComponent", () => {
         event: {},
       };
       component.fetchStreamsError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
       component.ngOnInit();
-      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(component.isChangeConsumerPositionDisabled).toBe(true);
       expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
         details: {
@@ -562,18 +603,19 @@ describe("ChangeConsumerPositionComponent", () => {
 
     it("should handle when error object is not available in fetchStreamsError$", () => {
       const mockError = new HttpErrorResponse({
-       status: 500, statusText: "Server Error" 
+        status: 500,
+        statusText: "Server Error",
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,
         event: {},
       };
       component.fetchStreamsError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
       component.ngOnInit();
-      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(component.isChangeConsumerPositionDisabled).toBe(true);
       expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
         details: {
@@ -606,12 +648,12 @@ describe("ChangeConsumerPositionComponent", () => {
         event: {},
       };
       component.fetchConsumersError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
 
       component.ngOnInit();
-      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(component.isChangeConsumerPositionDisabled).toBe(true);
       expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
         details: {
@@ -623,19 +665,20 @@ describe("ChangeConsumerPositionComponent", () => {
 
     it("should handle when error object is not available in fetchConsumersError", () => {
       const mockError = new HttpErrorResponse({
-        status: 404, statusText: "Not Found",
+        status: 404,
+        statusText: "Not Found",
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,
         event: {},
       };
       component.fetchConsumersError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
 
       component.ngOnInit();
-      expect(component.isChangeConsumerPositionDisabled).toBeTrue();
+      expect(component.isChangeConsumerPositionDisabled).toBe(true);
       expect(sharedMethodServiceSpy.showActionErrorModal).toHaveBeenCalledWith({
         type: ERROR_TYPES.SERVER_ERROR,
         details: {
@@ -654,7 +697,7 @@ describe("ChangeConsumerPositionComponent", () => {
         event: {},
       };
       component.changeConsumerPositionError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
 
@@ -669,16 +712,17 @@ describe("ChangeConsumerPositionComponent", () => {
       });
     });
 
-     it("should handle when error object is not available in changeConsumerPositionError", () => {
+    it("should handle when error object is not available in changeConsumerPositionError", () => {
       const mockError = new HttpErrorResponse({
-        status: 400, statusText: "Bad Request",
+        status: 400,
+        statusText: "Bad Request",
       });
       const mockModalResponse: ErrorModalClosedInfo = {
         isClosed: true,
         event: {},
       };
       component.changeConsumerPositionError$ = of(mockError);
-      sharedMethodServiceSpy.showActionErrorModal.and.returnValue(
+      sharedMethodServiceSpy.showActionErrorModal.mockReturnValue(
         of(mockModalResponse)
       );
 
@@ -704,8 +748,8 @@ describe("ChangeConsumerPositionComponent", () => {
     });
 
     it("should cleanup subscriptions on destroy", () => {
-      const nextSpy = spyOn(component["destroy$"], "next");
-      const completeSpy = spyOn(component["destroy$"], "complete");
+      const nextSpy = vi.spyOn(component["destroy$"], "next");
+      const completeSpy = vi.spyOn(component["destroy$"], "complete");
       component.ngOnDestroy();
       expect(nextSpy).toHaveBeenCalled();
       expect(completeSpy).toHaveBeenCalled();

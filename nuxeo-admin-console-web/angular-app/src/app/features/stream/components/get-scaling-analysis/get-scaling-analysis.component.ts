@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { Subject, takeUntil } from "rxjs";
 import { SharedMethodsService } from "../../../../shared/services/shared-methods.service";
 import { StreamService } from "../../services/stream.service";
@@ -14,19 +14,18 @@ import { HttpErrorResponse } from "@angular/common/http";
   selector: "app-get-scaling-analysis",
   templateUrl: "./get-scaling-analysis.component.html",
   styleUrls: ["./get-scaling-analysis.component.scss"],
+  standalone: false
 })
 export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
-  scalingAnalysisData: any;
+  private sharedService = inject(SharedMethodsService);
+  private streamService = inject(StreamService);
+  scalingAnalysisData: unknown;
   destroy$: Subject<void> = new Subject<void>();
   readonly GET_SCALING_ANALYSIS_LABELS = GET_SCALING_ANALYSIS_LABELS;
   readonly MAIN_TAB_LABELS = MAIN_TAB_LABELS;
   isDataLoaded = false;
   isError = false;
   readonly GENERIC_API_LABELS = GENERIC_API_LABELS;
-  constructor(
-    private sharedService: SharedMethodsService,
-    private streamService: StreamService
-  ) {}
 
   ngOnInit() {
     this.loadJsonData();
@@ -57,7 +56,7 @@ export class GetScalingAnalysisComponent implements OnInit, OnDestroy {
       });
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
     return true;

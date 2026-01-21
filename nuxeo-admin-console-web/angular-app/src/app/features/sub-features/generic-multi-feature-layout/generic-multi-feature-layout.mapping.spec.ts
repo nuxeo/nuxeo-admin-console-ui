@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import {
   FEATURES,
   getFeatureKeyByValue,
@@ -9,8 +11,10 @@ import { THUMBNAIL_GENERATION_LABELS } from "../../thumbnail-generation/thumbnai
 import { PICTURE_RENDITIONS_LABELS } from "../../pictures/pictures-renditions.constants";
 import { VIDEO_RENDITIONS_LABELS } from "../../video-renditions-generation/video-renditions-generation.constants";
 import { FULLTEXT_REINDEX_LABELS } from "../../fulltext-reindex/fulltext-reindex.constants";
-
 describe("generic-multi-feature-layout.mapping", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   describe("getFeatureKeyByValue", () => {
     it("should return correct key for each feature value", () => {
       expect(getFeatureKeyByValue("elasticsearch-reindex")).toBe(
@@ -49,7 +53,13 @@ describe("generic-multi-feature-layout.mapping", () => {
           ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL
         );
         expect(
-          (result.data as { queryParam: { query: string } }).queryParam.query
+          (
+            result.data as {
+              queryParam: {
+                query: string;
+              };
+            }
+          ).queryParam.query
         ).toBe(ELASTIC_SEARCH_LABELS.DOCUMENT_QUERY);
       });
 
@@ -64,7 +74,13 @@ describe("generic-multi-feature-layout.mapping", () => {
           ELASTIC_SEARCH_LABELS.REINDEX_BUTTON_LABEL
         );
         expect(
-          (result.data as { queryParam: { query: string } }).queryParam.query
+          (
+            result.data as {
+              queryParam: {
+                query: string;
+              };
+            }
+          ).queryParam.query
         ).toBe(ELASTIC_SEARCH_LABELS.FOLDER_QUERY);
       });
 
@@ -82,7 +98,13 @@ describe("generic-multi-feature-layout.mapping", () => {
           ELASTIC_SEARCH_LABELS.NXQL_QUERY_DEFAULT_VALUE
         );
         expect(
-          (result.data as { queryParam: { query: string } }).queryParam.query
+          (
+            result.data as {
+              queryParam: {
+                query: string;
+              };
+            }
+          ).queryParam.query
         ).toBe(ELASTIC_SEARCH_LABELS.NXQL_QUERY);
       });
 
@@ -105,11 +127,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(THUMBNAIL_GENERATION_LABELS.DOCUMENT_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -124,11 +157,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           THUMBNAIL_GENERATION_LABELS.THUMBNAIL_GENERATION_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(THUMBNAIL_GENERATION_LABELS.FOLDER_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -144,11 +188,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           THUMBNAIL_GENERATION_LABELS.NXQL_QUERY_DEFAULT_VALUE
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(THUMBNAIL_GENERATION_LABELS.NXQL_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -171,11 +226,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(PICTURE_RENDITIONS_LABELS.DOCUMENT_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -188,11 +254,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           PICTURE_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(PICTURE_RENDITIONS_LABELS.FOLDER_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -208,11 +285,22 @@ describe("generic-multi-feature-layout.mapping", () => {
           PICTURE_RENDITIONS_LABELS.NXQL_QUERY_DEFAULT_VALUE
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(PICTURE_RENDITIONS_LABELS.NXQL_QUERY);
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -235,21 +323,40 @@ describe("generic-multi-feature-layout.mapping", () => {
           VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(VIDEO_RENDITIONS_LABELS.DOCUMENT_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]
         ).toBe("{conversionNames}");
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]
         ).toBe("{recomputeAllVideoInfo}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -264,21 +371,40 @@ describe("generic-multi-feature-layout.mapping", () => {
           VIDEO_RENDITIONS_LABELS.RENDITIONS_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(VIDEO_RENDITIONS_LABELS.FOLDER_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]
         ).toBe("{conversionNames}");
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]
         ).toBe("{recomputeAllVideoInfo}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -296,21 +422,40 @@ describe("generic-multi-feature-layout.mapping", () => {
           VIDEO_RENDITIONS_LABELS.NXQL_QUERY_DEFAULT_VALUE
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(VIDEO_RENDITIONS_LABELS.NXQL_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.CONVERSION_NAME_KEY]
         ).toBe("{conversionNames}");
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[VIDEO_RENDITIONS_LABELS.RECOMPUTE_ALL_VIDEO_INFO_KEY]
         ).toBe("{recomputeAllVideoInfo}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -331,16 +476,31 @@ describe("generic-multi-feature-layout.mapping", () => {
           FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(FULLTEXT_REINDEX_LABELS.DOCUMENT_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            FULLTEXT_REINDEX_LABELS.FORCE
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[FULLTEXT_REINDEX_LABELS.FORCE]
         ).toBe("{force}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -353,16 +513,31 @@ describe("generic-multi-feature-layout.mapping", () => {
           FULLTEXT_REINDEX_LABELS.REINDEX_BUTTON_LABEL
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(FULLTEXT_REINDEX_LABELS.FOLDER_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            FULLTEXT_REINDEX_LABELS.FORCE
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[FULLTEXT_REINDEX_LABELS.FORCE]
         ).toBe("{force}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 
@@ -378,16 +553,31 @@ describe("generic-multi-feature-layout.mapping", () => {
           FULLTEXT_REINDEX_LABELS.NXQL_QUERY_DEFAULT_VALUE
         );
         expect(
-          (result.data as { bodyParam: { query: string } }).bodyParam.query
+          (
+            result.data as {
+              bodyParam: {
+                query: string;
+              };
+            }
+          ).bodyParam.query
         ).toBe(FULLTEXT_REINDEX_LABELS.NXQL_QUERY);
         expect(
-          (result.data as { bodyParam: { [key: string]: string } }).bodyParam[
-            FULLTEXT_REINDEX_LABELS.FORCE
-          ]
+          (
+            result.data as {
+              bodyParam: {
+                [key: string]: string;
+              };
+            }
+          ).bodyParam[FULLTEXT_REINDEX_LABELS.FORCE]
         ).toBe("{force}");
         expect(
-          (result.data as { requestHeaders: { [key: string]: string } })
-            .requestHeaders["Content-Type"]
+          (
+            result.data as {
+              requestHeaders: {
+                [key: string]: string;
+              };
+            }
+          ).requestHeaders["Content-Type"]
         ).toBe("application/x-www-form-urlencoded");
       });
 

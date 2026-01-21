@@ -1,14 +1,32 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CommonService } from "./common.service";
 import { TestBed } from "@angular/core/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
+import { Observable } from "rxjs";
 
 describe("CommonService", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let service: CommonService;
   let router: Router;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [CommonService] });
+    TestBed.configureTestingModule({
+      imports: [],
+      providers: [
+        CommonService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    });
     service = TestBed.inject(CommonService);
     router = TestBed.inject(Router);
   });
@@ -21,10 +39,8 @@ describe("CommonService", () => {
     expect(service.loadApp).toBeInstanceOf(EventEmitter<boolean>);
   });
 
- 
-
   it("should navigate to /bulk-action-monitoring with the correct commandId", () => {
-    spyOn(router, "navigate");
+    vi.spyOn(router, "navigate");
     const commandId = "12345";
     service.redirectToBulkActionMonitoring(commandId);
     expect(router.navigate).toHaveBeenCalledWith([
@@ -34,8 +50,46 @@ describe("CommonService", () => {
   });
 
   it("should navigate to /probes", () => {
-    spyOn(router, "navigate");
+    vi.spyOn(router, "navigate");
     service.redirectToProbesDetails();
     expect(router.navigate).toHaveBeenCalledWith(["/probes"]);
+  });
+
+  it("should call networkService.makeHttpRequest with GET_CONFIGURATION_DETAILS endpoint", async () => {
+    const mockResponse = {
+      serverVersion: "2025.0",
+      environment: "production",
+    };
+
+    vi.spyOn(service["networkService"], "makeHttpRequest").mockReturnValue(
+      new Observable((subscriber) => {
+        subscriber.next(mockResponse);
+        subscriber.complete();
+      })
+    );
+
+    return new Promise<void>((resolve) => {
+      service.getConfigurationDetails().subscribe({
+        next: (response) => {
+          expect(
+            service["networkService"].makeHttpRequest
+          ).toHaveBeenCalledWith("GET_CONFIGURATION_DETAILS");
+          expect(response).toEqual(mockResponse);
+          resolve();
+        },
+      });
+    });
+  });
+
+  it("should return an observable from getConfigurationDetails", () => {
+    vi.spyOn(service["networkService"], "makeHttpRequest").mockReturnValue(
+      new Observable((subscriber) => {
+        subscriber.next({});
+        subscriber.complete();
+      })
+    );
+
+    const result = service.getConfigurationDetails();
+    expect(result).toBeInstanceOf(Observable);
   });
 });

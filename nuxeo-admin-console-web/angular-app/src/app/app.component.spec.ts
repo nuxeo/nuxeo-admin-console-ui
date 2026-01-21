@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MatDialogModule } from "@angular/material/dialog";
 import { AppComponent } from "./app.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -23,6 +25,9 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 
 describe("AppComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   const mockActivatedRoute = {
@@ -33,7 +38,9 @@ describe("AppComponent", () => {
     },
   };
 
-  let store: MockStore<{ auth: AuthStateInterface }>;
+  let store: MockStore<{
+    auth: AuthStateInterface;
+  }>;
   const initialAuthState: AuthStateInterface = {
     isSubmitting: false,
     currentUser: {
@@ -93,7 +100,9 @@ describe("AppComponent", () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
-    spyOn(component["nuxeoJsClientService"], "connect").and.stub();
+    vi.spyOn(component["nuxeoJsClientService"], "connect").mockImplementation(
+      () => {}
+    );
   });
 
   it("should test if component is created", () => {
@@ -102,8 +111,8 @@ describe("AppComponent", () => {
 
   describe("ngOnInit", () => {
     it("should initiate JS client and subscribe to currentUser$", () => {
-      spyOn(component["nuxeoJsClientService"], "initiateJSClient");
-      spyOn(component.currentUser$, "subscribe").and.callThrough();
+      vi.spyOn(component["nuxeoJsClientService"], "initiateJSClient");
+      vi.spyOn(component.currentUser$, "subscribe");
       component.ngOnInit();
       expect(
         component["nuxeoJsClientService"].initiateJSClient
@@ -112,8 +121,8 @@ describe("AppComponent", () => {
     });
 
     it("should open the warning dialog if warning preference is not set", () => {
-      spyOn(component.dialogService, "open");
-      spyOn(component.persistenceService, "get").and.returnValue(null);
+      vi.spyOn(component.dialogService, "open");
+      vi.spyOn(component.persistenceService, "get").mockReturnValue(null);
       component.ngOnInit();
       expect(component.persistenceService.get).toHaveBeenCalled();
       expect(component.dialogService.open).toHaveBeenCalledWith(
@@ -123,8 +132,8 @@ describe("AppComponent", () => {
     });
 
     it("should not open the warning dialog if warning preference is set", () => {
-      spyOn(component.dialogService, "open");
-      spyOn(component.persistenceService, "get").and.returnValue("true");
+      vi.spyOn(component.dialogService, "open");
+      vi.spyOn(component.persistenceService, "get").mockReturnValue("true");
       component.ngOnInit();
       expect(component.persistenceService.get).toHaveBeenCalled();
       expect(component.dialogService.open).not.toHaveBeenCalled();
@@ -144,7 +153,7 @@ describe("AppComponent", () => {
 
   describe("onSignOut", () => {
     it("should dispatch signOut action", () => {
-      spyOn(store, "dispatch");
+      vi.spyOn(store, "dispatch");
       component.onSignOut();
       expect(store.dispatch).toHaveBeenCalledWith(authActions.signOut());
     });
@@ -187,14 +196,14 @@ describe("AppComponent", () => {
 
   describe("ngOnDestroy", () => {
     it("should complete the destroy$ subject", () => {
-      spyOn(component["destroy$"], "next").and.callThrough();
-      spyOn(component["destroy$"], "complete").and.callThrough();
+      vi.spyOn(component["destroy$"], "next");
+      vi.spyOn(component["destroy$"], "complete");
       component.ngOnDestroy();
       expect(component["destroy$"].next).toHaveBeenCalled();
       expect(component["destroy$"].complete).toHaveBeenCalled();
     });
 
-    it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", (done) => {
+    it("should allow subscriptions using takeUntil(destroy$) to be unsubscribed", async () => {
       let unsubscribed = false;
       component["destroy$"].subscribe({
         complete: () => {
@@ -202,8 +211,7 @@ describe("AppComponent", () => {
         },
       });
       component.ngOnDestroy();
-      expect(unsubscribed).toBeTrue();
-      done();
+      expect(unsubscribed).toBe(true);
     });
   });
 });

@@ -1,7 +1,11 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import * as Actions from "./actions";
 import { HttpErrorResponse } from "@angular/common/http";
-
 describe("Change Consumer Position Actions", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   it("should create onChangeConsumerPosition action", () => {
     const consumerPosition = "latest";
     const params = { stream: "test-stream", consumer: "test-consumer" };

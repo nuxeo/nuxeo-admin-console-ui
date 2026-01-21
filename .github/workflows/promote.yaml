@@ -212,8 +212,19 @@ jobs:
           fi
           echo "✅ Version successfully converted to: $V25_VERSION"
           
-          # Set final version without beta
-          VERSION=$(echo "$V25_VERSION" | sed -e 's/-beta.[0-9]*//')
+          # Set final version based on release type
+          if [ "${{ github.event.inputs.isMinorRelease }}" = "true" ]; then
+            # Minor release: just remove beta suffix
+            VERSION=$(echo "$V25_VERSION" | sed -e 's/-beta.[0-9]*//')
+            echo "Minor release: $VERSION"
+          else
+            # Major release: remove beta AND bump minor version
+            VERSION=$(echo "$V25_VERSION" | sed -e 's/-beta.[0-9]*//')
+            echo "Initial VERSION: $VERSION"
+            NEW_VERSION=$(npx semver -i minor $VERSION)
+            VERSION=$NEW_VERSION
+            echo "Major release: bumped to $VERSION"
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
           # Debug all version variables

@@ -63,10 +63,19 @@ export const appRoutes: Route[] = [
   },
   {
     path: "stream-management",
+    title: routeTitle.STREAM_MANAGEMENT,
       loadChildren: () =>
         import(
           "./features/stream/stream.module"
         ).then((m) => m.StreamModule),
+    },
+    {
+      path: "configuration-properties",
+      title: routeTitle.CONFIGURATION_DETAILS,
+        loadChildren: () =>
+          import(
+            "./features/configuration-details/configuration-details.module"
+          ).then((m) => m.ConfigurationDetailsModule),
     },
   { path: "**", redirectTo: "" },
 ];

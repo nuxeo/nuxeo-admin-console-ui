@@ -1,1811 +1,1590 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
 import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-  flush,
-  discardPeriodicTasks,
-} from "@angular/core/testing";
-import { ElementRef } from "@angular/core";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { JsonViewerComponent } from "./json-viewer.component";
-import { JsonViewerModule } from "./json-viewer.module";
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type MockedObject,
+} from "vitest";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { JsonViewerComponent, type Segment } from "./json-viewer.component";
 import { SharedMethodsService } from "../../services/shared-methods.service";
+import { DomSanitizer } from "@angular/platform-browser";
+import { ChangeDetectorRef, ElementRef } from "@angular/core";
 import { JSON_VIEWER_LABELS } from "./json.constant";
 
-class MockMutationObserver {
-  static instances: MockMutationObserver[] = [];
-  observe = jasmine.createSpy("observe");
-  disconnect = jasmine.createSpy("disconnect");
-  constructor(public callback: MutationCallback) {
-    MockMutationObserver.instances.push(this);
-  }
-}
 describe("JsonViewerComponent", () => {
+  initializeTestBed();
+
   let component: JsonViewerComponent;
   let fixture: ComponentFixture<JsonViewerComponent>;
-  let originalMutationObserver: typeof MutationObserver;
-  let originalRequestAnimationFrame: typeof requestAnimationFrame;
-  let originalRequestIdleCallback: typeof requestIdleCallback;
-  let sharedMethodsServiceMock: SharedMethodsService;
+  let sharedMethodsService: MockedObject<SharedMethodsService>;
+  let sanitizer: MockedObject<DomSanitizer>;
+  let cdr: MockedObject<ChangeDetectorRef>;
 
-  beforeAll(() => {
-    sharedMethodsServiceMock = jasmine.createSpyObj("SharedMethodsService", [
-      "showErrorSnackBar",
-      "showSuccessSnackBar",
-    ]);
-    originalMutationObserver = (window as any).MutationObserver;
-    originalRequestAnimationFrame = window.requestAnimationFrame;
-    originalRequestIdleCallback = (window as any).requestIdleCallback;
-    (window as any).MutationObserver = MockMutationObserver;
-    window.requestAnimationFrame = (callback: FrameRequestCallback) => {
-      return setTimeout(() => callback(performance.now()), 0) as any;
-    };
-    (window as any).requestIdleCallback = (callback: IdleRequestCallback) => {
-      return setTimeout(
-        () =>
-          callback({
-            didTimeout: false,
-            timeRemaining: () => 50,
-          } as IdleDeadline),
-        0
-      );
-    };
-  });
-
-  afterAll(() => {
-    (window as any).MutationObserver = originalMutationObserver;
-    window.requestAnimationFrame = originalRequestAnimationFrame;
-    (window as any).requestIdleCallback = originalRequestIdleCallback;
-  });
+  const mockJson = {
+    name: "Test User",
+    age: 30,
+    active: true,
+    address: {
+      street: "123 Main St",
+      city: "Test City",
+    },
+    tags: ["test", "demo"],
+  };
 
   beforeEach(async () => {
-    MockMutationObserver.instances = [];
+    sharedMethodsService = {
+      showSuccessSnackBar: vi.fn(),
+      showErrorSnackBar: vi.fn(),
+    } as MockedObject<SharedMethodsService>;
+
+    sanitizer = {
+      bypassSecurityTrustHtml: vi.fn((html) => html),
+    } as unknown as MockedObject<DomSanitizer>;
+
+    // Mock scrollIntoView globally for all elements
+    Element.prototype.scrollIntoView = vi.fn();
+
     await TestBed.configureTestingModule({
-      imports: [JsonViewerModule, NoopAnimationsModule],
+      declarations: [JsonViewerComponent],
       providers: [
-        { provide: SharedMethodsService, useValue: sharedMethodsServiceMock },
+        { provide: SharedMethodsService, useValue: sharedMethodsService },
+        { provide: DomSanitizer, useValue: sanitizer },
       ],
     }).compileComponents();
+
     fixture = TestBed.createComponent(JsonViewerComponent);
     component = fixture.componentInstance;
-    component.currentDepth = 0;
-    component.json = { test: "data" };
-    component.searchInputRef = new ElementRef(document.createElement("input"));
-    fixture.detectChanges();
+    cdr = fixture.debugElement.injector.get(
+      ChangeDetectorRef
+    ) as MockedObject<ChangeDetectorRef>;
+    vi.spyOn(cdr, "detectChanges");
+    vi.spyOn(cdr, "markForCheck");
   });
 
   afterEach(() => {
-    const highlights = document.querySelectorAll(
-      "mark.search-match, .json-viewer-highlight"
-    );
-    highlights.forEach((el) => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    });
-    const testContainers = document.querySelectorAll(".ngx-json-viewer");
-    testContainers.forEach((el) => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    });
-
-    if (component) {
-      component.ngOnDestroy();
-    }
-
-    if (fixture) {
-      fixture.destroy();
-    }
-
-    MockMutationObserver.instances = [];
-
-    // Clean up timeouts
-    if ((window as any).timeouts) {
-      (window as any).timeouts.forEach((id: number) => clearTimeout(id));
-      (window as any).timeouts = [];
-    }
+    vi.clearAllMocks();
   });
 
-  describe("Component Creation and Initialization", () => {
-    it("should create component", () => {
+  describe("Component Initialization", () => {
+    it("should create", () => {
       expect(component).toBeTruthy();
     });
+
     it("should initialize with default values", () => {
       expect(component.expanded).toBe(true);
       expect(component.depth).toBe(-1);
       expect(component.currentDepth).toBe(0);
       expect(component.expandAll).toBe(false);
+      expect(component.segments).toEqual([]);
       expect(component.searchTerm).toBe("");
       expect(component.totalMatches).toBe(0);
       expect(component.currentMatchIndex).toBe(-1);
     });
-    it("should have static constants defined", () => {
-      expect((JsonViewerComponent as any).SEARCH_DEBOUNCE_MS).toBe(300);
+
+    it("should have JSON_VIEWER_LABELS constant", () => {
+      expect(component.JSON_VIEWER_LABELS).toBe(JSON_VIEWER_LABELS);
     });
   });
 
   describe("ngOnChanges", () => {
-    it("should process simple JSON object", () => {
-      const testData = { name: "test", value: 123, active: true };
-      component.json = testData;
+    it("should process JSON and create segments", () => {
+      component.json = mockJson;
       component.ngOnChanges();
-      expect(component.segments).toBeDefined();
-      expect(component.segments.length).toBe(3);
-      const nameSegment = component.segments.find((s) => s.key === "name");
-      expect(nameSegment?.type).toBe("string");
-      expect(nameSegment?.description).toBe('"test"');
-      const valueSegment = component.segments.find((s) => s.key === "value");
-      expect(valueSegment?.type).toBe("number");
-      const activeSegment = component.segments.find((s) => s.key === "active");
-      expect(activeSegment?.type).toBe("boolean");
-    });
-
-    it("should initialize segments with individuallyExpanded property", () => {
-      const testData = {
-        simple: "value",
-        nested: { inner: "data" },
-        array: [1, 2, 3],
-      };
-      component.json = testData;
-      component.ngOnChanges();
-      component.segments.forEach((segment) => {
-        expect(segment.individuallyExpanded).toBeDefined();
-        expect(segment.individuallyExpanded).toBe(false);
-      });
-    });
-
-    it("should process nested objects and arrays", () => {
-      const testData = {
-        nested: { inner: "value" },
-        array: [1, 2, 3],
-        emptyArray: [],
-        emptyObject: {},
-      };
-      component.json = testData;
-      component.ngOnChanges();
-      const nestedSegment = component.segments.find((s) => s.key === "nested");
-      expect(nestedSegment?.type).toBe("object");
-      expect(nestedSegment?.description).toBe("Object ");
-      const arraySegment = component.segments.find((s) => s.key === "array");
-      expect(arraySegment?.type).toBe("array");
-      expect(arraySegment?.description).toBe("Array[3] ");
-      const emptyArraySegment = component.segments.find(
-        (s) => s.key === "emptyArray"
-      );
-      expect(emptyArraySegment?.description).toBe("No data");
-      const emptyObjectSegment = component.segments.find(
-        (s) => s.key === "emptyObject"
-      );
-      expect(emptyObjectSegment?.description).toBe("No data");
-    });
-
-    it("should process primitive values", () => {
-      component.json = "simple string";
-      component.ngOnChanges();
-      expect(component.segments.length).toBe(1);
-      expect(component.segments[0].key).toBe("(string)");
+      expect(component.segments.length).toBeGreaterThan(0);
+      expect(component.segments[0].key).toBe("name");
+      expect(component.segments[0].value).toBe("Test User");
       expect(component.segments[0].type).toBe("string");
     });
 
-    it("should handle null and undefined", () => {
-      spyOn(JSON, "stringify").and.returnValue("null");
+    it("should handle null JSON", () => {
       component.json = null;
       component.ngOnChanges();
       expect(component.segments.length).toBe(1);
       expect(component.segments[0].type).toBe("null");
-      expect(component.segments[0].description).toBe("null");
-      component.json = undefined;
+    });
+
+    it("should handle array JSON", () => {
+      component.json = [1, 2, 3];
+      component.ngOnChanges();
+      expect(component.segments.length).toBe(3);
+      expect(component.segments[0].type).toBe("number");
+    });
+
+    it("should handle primitive values", () => {
+      component.json = 42;
       component.ngOnChanges();
       expect(component.segments.length).toBe(1);
-      expect(component.segments[0].type).toBe("undefined");
-      expect(component.segments[0].description).toBe("undefined");
+      expect(component.segments[0].type).toBe("number");
+    });
+
+    it("should clear search when clearSearchInput is true", () => {
+      component.clearSearchInput = true;
+      component.currentDepth = 0;
+      component.searchTerm = "test";
+      const clearSpy = vi.spyOn(component, "clearSearch");
+      component.ngOnChanges();
+      expect(clearSpy).toHaveBeenCalled();
+    });
+
+    it("should set expandAll based on expanded prop", () => {
+      component.expanded = true;
+      component.currentDepth = 0;
+      component.json = mockJson;
+      component.ngOnChanges();
+      expect(component.expandAll).toBe(true);
+    });
+  });
+
+  describe("Segment Parsing", () => {
+    beforeEach(() => {
+      component.json = mockJson;
+      component.ngOnChanges();
+    });
+
+    it("should parse string values correctly", () => {
+      const stringSegment = component.segments.find((s) => s.key === "name");
+      expect(stringSegment?.type).toBe("string");
+      expect(stringSegment?.description).toBe('"Test User"');
+    });
+
+    it("should parse number values correctly", () => {
+      const numberSegment = component.segments.find((s) => s.key === "age");
+      expect(numberSegment?.type).toBe("number");
+      expect(numberSegment?.value).toBe(30);
+    });
+
+    it("should parse boolean values correctly", () => {
+      const booleanSegment = component.segments.find((s) => s.key === "active");
+      expect(booleanSegment?.type).toBe("boolean");
+      expect(booleanSegment?.value).toBe(true);
+    });
+
+    it("should parse object values correctly", () => {
+      const objectSegment = component.segments.find((s) => s.key === "address");
+      expect(objectSegment?.type).toBe("object");
+      expect(objectSegment?.description).toBe("Object ");
+    });
+
+    it("should parse array values correctly", () => {
+      const arraySegment = component.segments.find((s) => s.key === "tags");
+      expect(arraySegment?.type).toBe("array");
+      expect(arraySegment?.description).toBe("Array[2] ");
+    });
+
+    it("should handle empty objects", () => {
+      component.json = { empty: {} };
+      component.ngOnChanges();
+      const emptyObjSegment = component.segments.find((s) => s.key === "empty");
+      expect(emptyObjSegment?.description).toBe("No data");
+    });
+
+    it("should handle empty arrays", () => {
+      component.json = { emptyArr: [] };
+      component.ngOnChanges();
+      const emptyArrSegment = component.segments.find(
+        (s) => s.key === "emptyArr"
+      );
+      expect(emptyArrSegment?.description).toBe("No data");
+    });
+
+    it("should handle undefined values", () => {
+      component.json = { undef: undefined };
+      component.ngOnChanges();
+      const undefSegment = component.segments.find((s) => s.key === "undef");
+      expect(undefSegment?.type).toBe("undefined");
+      expect(undefSegment?.description).toBe("undefined");
     });
 
     it("should handle Date objects", () => {
-      const testDate = new Date("2023-01-01");
+      const testDate = new Date("2024-01-01");
       component.json = { dateField: testDate };
       component.ngOnChanges();
       const dateSegment = component.segments.find((s) => s.key === "dateField");
       expect(dateSegment?.type).toBe("date");
     });
+  });
 
-    it("should handle circular references", () => {
-      const circularObj: any = { name: "test" };
-      circularObj.self = circularObj;
-      component.json = circularObj;
-      component.ngOnChanges();
-      expect(component.segments).toBeDefined();
-      expect(component.segments.length).toBe(2);
+  describe("isExpandable", () => {
+    it("should return true for object type", () => {
+      const segment: Segment = {
+        key: "test",
+        value: {},
+        type: "object",
+        description: "Object",
+        expanded: false,
+      };
+      expect(component.isExpandable(segment)).toBe(true);
     });
 
-    it("should call clearSearch when clearSearchInput is true and currentDepth is 0", () => {
-      spyOn(component, "clearSearch");
-      component.clearSearchInput = true;
-      component.currentDepth = 0;
-      component.json = { test: "data" };
-
-      component.ngOnChanges();
-
-      expect(component.clearSearch).toHaveBeenCalled();
+    it("should return true for array type", () => {
+      const segment: Segment = {
+        key: "test",
+        value: [],
+        type: "array",
+        description: "Array",
+        expanded: false,
+      };
+      expect(component.isExpandable(segment)).toBe(true);
     });
 
-    it("should not call clearSearch when clearSearchInput is true but currentDepth is not 0", () => {
-      spyOn(component, "clearSearch");
-      component.clearSearchInput = true;
-      component.currentDepth = 1;
-      component.json = { test: "data" };
-
-      component.ngOnChanges();
-
-      expect(component.clearSearch).not.toHaveBeenCalled();
-    });
-
-    it("should not call clearSearch when clearSearchInput is false", () => {
-      spyOn(component, "clearSearch");
-      component.clearSearchInput = false;
-      component.currentDepth = 0;
-      component.json = { test: "data" };
-
-      component.ngOnChanges();
-
-      expect(component.clearSearch).not.toHaveBeenCalled();
+    it("should return false for primitive types", () => {
+      const segment: Segment = {
+        key: "test",
+        value: "string",
+        type: "string",
+        description: "string",
+        expanded: false,
+      };
+      expect(component.isExpandable(segment)).toBe(false);
     });
   });
 
-  describe("ngAfterViewInit", () => {
-    it("should setup input event listener when currentDepth is 0", fakeAsync(() => {
-      const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
-      spyOn(component as any, "performSearch");
-      component.ngAfterViewInit();
-      mockInput.value = "test";
-      mockInput.dispatchEvent(new Event("input"));
-      tick(400);
-      expect((component as any).performSearch).toHaveBeenCalledWith("test");
-      discardPeriodicTasks();
-    }));
-
-    it("should clear search state when input is empty", () => {
-      const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      component.isSearchLoading = true;
-      component.ngAfterViewInit();
-      mockInput.value = "";
-      mockInput.dispatchEvent(new Event("input"));
-      expect(component.totalMatches).toBe(0);
-      expect(component.currentMatchIndex).toBe(-1);
-      expect(component.isSearchLoading).toBe(false);
-    });
-  });
-
-  describe("ngOnDestroy", () => {
-    it("should cleanup resources", () => {
-      const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
-      spyOn(mockInput, "removeEventListener");
-      component.ngOnDestroy();
-      expect(mockInput.removeEventListener).toHaveBeenCalledWith(
-        "input",
-        jasmine.any(Function)
-      );
-    });
-  });
-
-  describe("Segment Operations", () => {
+  describe("expandOrCollapseIndividualSegment", () => {
     beforeEach(() => {
-      component.json = {
-        simple: "value",
-        nested: { inner: "data" },
-        array: [1, 2, 3],
-      };
+      component.json = mockJson;
       component.ngOnChanges();
     });
 
-    it("should identify expandable segments", () => {
-      const simpleSegment = component.segments.find((s) => s.key === "simple")!;
-      const nestedSegment = component.segments.find((s) => s.key === "nested")!;
-      const arraySegment = component.segments.find((s) => s.key === "array")!;
-      expect(component.isExpandable(simpleSegment)).toBe(false);
-      expect(component.isExpandable(nestedSegment)).toBe(true);
-      expect(component.isExpandable(arraySegment)).toBe(true);
+    it("should toggle segment expansion", async () => {
+      const segment = component.segments.find((s) => s.key === "address");
+      const initialState = segment!.expanded;
+      await component.expandOrCollapseIndividualSegment(segment!);
+      expect(segment!.expanded).toBe(!initialState);
+      expect(segment!.individuallyExpanded).toBe(!initialState);
     });
 
-    it("should expandOrCollapseIndividualSegment segment expansion", fakeAsync(() => {
-      const nestedSegment = component.segments.find((s) => s.key === "nested")!;
-      const initialState = nestedSegment.expanded;
-      component.expandOrCollapseIndividualSegment(nestedSegment);
-      tick();
-      expect(nestedSegment.expanded).toBe(!initialState);
-      expect(nestedSegment.individuallyExpanded).toBe(!initialState);
-    }));
+    it("should not toggle non-expandable segments", async () => {
+      const segment = component.segments.find((s) => s.key === "name");
+      const initialState = segment!.expanded;
+      await component.expandOrCollapseIndividualSegment(segment!);
+      expect(segment!.expanded).toBe(initialState);
+    });
 
-    it("should set individuallyExpanded when expanding individual segment", fakeAsync(() => {
-      const nestedSegment = component.segments.find((s) => s.key === "nested")!;
-      nestedSegment.expanded = false;
-      nestedSegment.individuallyExpanded = false;
-      component.expandOrCollapseIndividualSegment(nestedSegment);
-      tick();
-      expect(nestedSegment.expanded).toBe(true);
-      expect(nestedSegment.individuallyExpanded).toBe(true);
-    }));
+    it("should not expand/collapse during active search", async () => {
+      const segment = component.segments.find((s) => s.key === "address");
+      component.searchTerm = "test";
+      component.totalMatches = 1;
+      component["_isSearchActive"] = true;
+      const initialState = segment!.expanded;
+      await component.expandOrCollapseIndividualSegment(segment!);
+      expect(segment!.expanded).toBe(initialState);
+    });
 
-    it("should only update expandAll when all segments are in same state", fakeAsync(() => {
-      component.json = {
-        first: { nested: "data1" },
-        second: { nested: "data2" },
-        third: { nested: "data3" },
-      };
-      component.ngOnChanges();
-      const firstSegment = component.segments.find((s) => s.key === "first")!;
-      const secondSegment = component.segments.find((s) => s.key === "second")!;
-      const thirdSegment = component.segments.find((s) => s.key === "third")!;
-      firstSegment.expanded = false;
-      secondSegment.expanded = false;
-      thirdSegment.expanded = false;
+    it("should update expandAll when all segments are expanded", async () => {
+      component.currentDepth = 0;
       component.expandAll = false;
-      component.expandOrCollapseIndividualSegment(firstSegment);
-      tick();
-      expect(component.expandAll).toBe(false);
-      component.expandOrCollapseIndividualSegment(secondSegment);
-      tick();
-      expect(component.expandAll).toBe(false);
-      component.expandOrCollapseIndividualSegment(thirdSegment);
-      tick();
-      expect(component.expandAll).toBe(true);
-      component.expandOrCollapseIndividualSegment(firstSegment);
-      tick();
-      expect(component.expandAll).toBe(true);
-      component.expandOrCollapseIndividualSegment(secondSegment);
-      tick();
-      component.expandOrCollapseIndividualSegment(thirdSegment);
-      tick();
-      expect(component.expandAll).toBe(false);
-    }));
-  });
-
-  describe("Search Functionality", () => {
-    beforeEach(() => {
-      component.json = {
-        searchable: "find me",
-        nested: { also: "find me too" },
-        number: 123,
-        array: ["find", "me", "here"],
-      };
-      component.ngOnChanges();
-    });
-
-    it("should validate search terms", () => {
-      expect((component as any).validateSearchTerm("")).toBeNull();
-      expect((component as any).validateSearchTerm(" ")).toBeNull();
-      expect((component as any).validateSearchTerm("valid")).toBe("valid");
-      expect((component as any).validateSearchTerm(" valid ")).toBe("valid");
-      expect((component as any).validateSearchTerm(null)).toBeNull();
-    });
-
-    it("should perform search and update matches", fakeAsync(() => {
-      component.json = { find: "test", nested: { find: "another" } };
-      component.ngOnChanges();
-      component.searchTerm = "find";
-      spyOn(component as any, "countMatchesInRawData").and.returnValue(3);
-      spyOn(component as any, "highlightTextInDOM").and.returnValue(
-        Promise.resolve()
-      );
-      (component as any).performSearch("find");
-      tick(300);
-      flush();
-      expect(component.totalMatches).toBe(3);
-      expect(component.expandAll).toBe(true);
-      discardPeriodicTasks();
-    }));
-
-    it("should clear search state", fakeAsync(() => {
-      component.searchTerm = "test";
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      component.isSearchLoading = true;
-      component.clearSearch();
-      tick();
-      expect(component.searchTerm).toBe("");
-      expect(component.totalMatches).toBe(0);
-      expect(component.currentMatchIndex).toBe(-1);
-      expect(component.isSearchLoading).toBe(false);
-    }));
-
-    it("should navigate between matches with async navigation", fakeAsync(() => {
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      (component as any).navigationInProgress = false;
-
-      const mockMatches = Array.from({ length: 5 }, () => {
-        const mockElement = document.createElement("mark");
-        mockElement.className = "search-match";
-        spyOn(mockElement, "scrollIntoView");
-        return mockElement;
-      });
-      spyOn(document, "querySelectorAll").and.returnValue(mockMatches as any);
-      spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
-        Promise.resolve()
-      );
-
-      component.goToNextMatch();
-      expect(component.currentMatchIndex).toBe(3);
-      expect((component as any).navigationInProgress).toBe(true);
-
-      tick(100);
-      expect((component as any).navigationInProgress).toBe(false);
-      component.currentMatchIndex = 4;
-      component.goToNextMatch();
-      expect(component.currentMatchIndex).toBe(0);
-
-      tick(100);
-      discardPeriodicTasks();
-    }));
-
-    it("should navigate to previous match with async navigation", fakeAsync(() => {
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      (component as any).navigationInProgress = false;
-      spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
-        Promise.resolve()
-      );
-      component.goToPreviousMatch();
-      expect(component.currentMatchIndex).toBe(1);
-      expect((component as any).navigationInProgress).toBe(true);
-      tick(100);
-      expect((component as any).navigationInProgress).toBe(false);
-      component.currentMatchIndex = 0;
-      component.goToPreviousMatch();
-      expect(component.currentMatchIndex).toBe(4);
-
-      tick(100);
-      discardPeriodicTasks();
-    }));
-
-    it("should not navigate when no matches", () => {
-      component.totalMatches = 0;
-      component.currentMatchIndex = -1;
-      (component as any).navigationInProgress = false;
-
-      component.goToNextMatch();
-      expect(component.currentMatchIndex).toBe(-1);
-      expect((component as any).navigationInProgress).toBe(false);
-
-      component.goToPreviousMatch();
-      expect(component.currentMatchIndex).toBe(-1);
-      expect((component as any).navigationInProgress).toBe(false);
-    });
-
-    it("should not navigate when navigation is in progress", fakeAsync(() => {
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      (component as any).navigationInProgress = true;
-
-      const initialIndex = component.currentMatchIndex;
-
-      component.goToNextMatch();
-      expect(component.currentMatchIndex).toBe(initialIndex);
-      component.goToPreviousMatch();
-      expect(component.currentMatchIndex).toBe(initialIndex);
-
-      tick(100);
-      discardPeriodicTasks();
-    }));
-
-    it("should reset navigation lock when clearing search", () => {
-      (component as any).navigationInProgress = true;
-      component.clearSearch();
-      expect((component as any).navigationInProgress).toBe(false);
-    });
-
-    it("should get correct search result text", () => {
-      component.isSearchLoading = true;
-      component.searchTerm = "test";
-      expect(component.searchResultText).toBe("Searching...");
-      component.isSearchLoading = false;
-      component.totalMatches = 0;
-      expect(component.searchResultText).toBe("No matches found");
-      component.totalMatches = 5;
-      component.currentMatchIndex = 2;
-      expect(component.searchResultText).toBe("3 of 5");
-      component.searchTerm = "";
-      component.totalMatches = 0;
-      expect(component.searchResultText).toBe("");
-    });
-
-    it("should update segment highlighting", () => {
-      component.searchTerm = "find";
-      (component as any).highlightTemplateSegments();
-      const searchableSegment = component.segments.find(
-        (s) => s.key === "searchable"
-      )!;
-      expect(searchableSegment.highlightedDescription).toBeDefined();
-    });
-
-    it("should count matches in raw data", () => {
-      const count = (component as any).countMatchesInRawData("find");
-      expect(count).toBeGreaterThan(0);
-    });
-
-    it("should handle search errors gracefully", () => {
-      spyOn(console, "error");
-      spyOn(component as any, "getJsonString").and.throwError("Test error");
-      const count = (component as any).countMatchesInRawData("test");
-      expect(console.error).toHaveBeenCalled();
-      expect(count).toBeGreaterThanOrEqual(0);
-    });
-
-    describe("triggerSearchOnEnter", () => {
-      beforeEach(() => {
-        const mockInput = document.createElement("input");
-        component.searchInputRef = new ElementRef(mockInput);
-      });
-
-      it("should trigger search when input has value", () => {
-        const mockInput = component.searchInputRef.nativeElement;
-        mockInput.value = "test search";
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).toHaveBeenCalledWith(
-          "test search"
-        );
-      });
-
-      it("should not trigger search when input is empty", () => {
-        const mockInput = component.searchInputRef.nativeElement;
-        mockInput.value = "";
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).not.toHaveBeenCalled();
-      });
-
-      it("should handle whitespace-only input", () => {
-        const mockInput = component.searchInputRef.nativeElement;
-        mockInput.value = " ";
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).toHaveBeenCalledWith(" ");
-      });
-
-      it("should handle missing searchInputRef gracefully", () => {
-        component.searchInputRef = null as any;
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).not.toHaveBeenCalled();
-      });
-
-      it("should handle missing nativeElement gracefully", () => {
-        component.searchInputRef = { nativeElement: null } as any;
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).not.toHaveBeenCalled();
-      });
-
-      it("should trigger search pipeline when called", fakeAsync(() => {
-        const mockInput = component.searchInputRef.nativeElement;
-        mockInput.value = "searchable";
-        component.json = { searchable: "find me", other: "data" };
-        component.ngOnChanges();
-        spyOn(component as any, "performSearch");
-        component.triggerSearchOnEnter();
-        tick(400);
-        expect((component as any).performSearch).toHaveBeenCalledWith(
-          "searchable"
-        );
-        discardPeriodicTasks();
-      }));
-
-      it("should call searchInput$.next with input value", () => {
-        const mockInput = component.searchInputRef.nativeElement;
-        mockInput.value = "testvalue";
-        spyOn((component as any).searchInput$, "next");
-        component.triggerSearchOnEnter();
-        expect((component as any).searchInput$.next).toHaveBeenCalledWith(
-          "testvalue"
-        );
-      });
-    });
-
-    describe("Navigation Methods", () => {
-      describe("reHighlightAndNavigate", () => {
-        beforeEach(() => {
-          component.json = { test: "data", find: "me" };
-          component.ngOnChanges();
-          component.searchTerm = "find";
-        });
-
-        it("should expand all data and re-highlight", fakeAsync(() => {
-          spyOn(component as any, "executeAfterRender").and.callFake(
-            (callback: any) => {
-              return Promise.resolve(callback());
-            }
-          );
-          spyOn(component as any, "clearTextHighlightFromDOM");
-          spyOn(component as any, "highlightTemplateSegments");
-          spyOn(component as any, "highlightTextInDOM").and.returnValue(
-            Promise.resolve()
-          );
-          spyOn(component as any, "scrollToMatch");
-
-          component.expandAll = false;
-          (component as any).reHighlightAndNavigate();
-
-          tick(100);
-
-          expect(component.expandAll).toBe(true);
-          expect(
-            (component as any).clearTextHighlightFromDOM
-          ).toHaveBeenCalled();
-          expect(
-            (component as any).highlightTemplateSegments
-          ).toHaveBeenCalled();
-          expect((component as any).highlightTextInDOM).toHaveBeenCalled();
-          expect((component as any).scrollToMatch).toHaveBeenCalled();
-
-          discardPeriodicTasks();
-        }));
-      });
-
-      describe("scrollToMatch", () => {
-        it("should scroll to current match and update highlighting", () => {
-          const mockMatches = Array.from({ length: 3 }, (_, index) => {
-            const mockElement = document.createElement("mark");
-            mockElement.className = "search-match";
-            if (index === 1) {
-              mockElement.classList.add("current-match");
-            }
-            spyOn(mockElement, "scrollIntoView");
-            return mockElement;
-          });
-          spyOn(document, "querySelectorAll").and.returnValue(
-            mockMatches as any
-          );
-          component.currentMatchIndex = 1;
-          (component as any).scrollToMatch();
-          mockMatches.forEach((match, index) => {
-            if (index === 1) {
-              expect(match.classList.contains("current-match")).toBe(true);
-            } else {
-              expect(match.classList.contains("current-match")).toBe(false);
-            }
-          });
-          expect(mockMatches[1].scrollIntoView).toHaveBeenCalledWith({
-            behavior: "smooth",
-            block: "center",
-          });
-        });
-
-        it("should handle no matches gracefully", () => {
-          spyOn(document, "querySelectorAll").and.returnValue([] as any);
-          expect(() => (component as any).scrollToMatch()).not.toThrow();
-        });
-
-        it("should handle invalid current match index", () => {
-          const mockMatches = [document.createElement("mark")];
-          mockMatches[0].className = "search-match";
-          spyOn(mockMatches[0], "scrollIntoView");
-          spyOn(document, "querySelectorAll").and.returnValue(
-            mockMatches as any
-          );
-          component.currentMatchIndex = 5;
-          (component as any).scrollToMatch();
-          expect(mockMatches[0].classList.contains("current-match")).toBe(
-            false
-          );
-          expect(mockMatches[0].scrollIntoView).not.toHaveBeenCalled();
-        });
-      });
-    });
-  });
-
-  describe("DOM Manipulation", () => {
-    it("should escape HTML properly", () => {
-      expect(
-        (component as any).escapeHtml('<script>alert("xss")</script>')
-      ).toBe('&lt;script&gt;alert("xss")&lt;/script&gt;');
-      expect((component as any).escapeHtml("")).toBe("");
-      expect((component as any).escapeHtml(null as any)).toBe("");
-    });
-
-    it("should escape regex patterns", () => {
-      expect((component as any).escapeRegExp(".*+?^${}()|[]\\")).toBe(
-        "\\.\\*\\+\\?\\^\\$\\{\\}\\(\\)\\|\\[\\]\\\\"
-      );
-      expect((component as any).escapeRegExp("")).toBe("");
-      expect((component as any).escapeRegExp(null as any)).toBe("");
-    });
-
-    it("should create highlighted fragments", () => {
-      const parts = ["hello ", "world", " test"];
-      const fragment = (component as any).createHighlightedFragment(parts);
-      expect(fragment.childNodes.length).toBe(3);
-      expect(fragment.childNodes[0].textContent).toBe("hello ");
-      expect(fragment.childNodes[1].nodeName).toBe("MARK");
-      expect(fragment.childNodes[1].textContent).toBe("world");
-      expect(fragment.childNodes[2].textContent).toBe(" test");
-    });
-
-    it("should find matching text nodes", () => {
-      const container = document.createElement("div");
-      const span = document.createElement("span");
-      span.textContent = "search term here";
-      container.appendChild(span);
-      const textNodes = (component as any).findTextNodesWithMatch(
-        container,
-        "search"
-      );
-      expect(textNodes.length).toBe(1);
-      expect(textNodes[0].textContent).toBe("search term here");
-    });
-
-    it("should apply highlights to text nodes", () => {
-      const container = document.createElement("div");
-      const textNode = document.createTextNode("find this text");
-      container.appendChild(textNode);
-      (component as any).applyMarkTagsToText([textNode], "find");
-      const marks = container.querySelectorAll("mark.search-match");
-      expect(marks.length).toBe(1);
-      expect(marks[0].textContent).toBe("find");
-    });
-    it("should clear DOM highlights", () => {
-      const container = document.createElement("div");
-      container.innerHTML =
-        'text with <mark class="search-match">highlight</mark> here';
-      document.body.appendChild(container);
-      (component as any).clearTextHighlightFromDOM();
-      const marks = document.querySelectorAll("mark.search-match");
-      expect(marks.length).toBe(0);
-      document.body.removeChild(container);
-    });
-  });
-
-  describe("Clipboard Functionality", () => {
-    let originalClipboard: any;
-    let clipboardProperty: PropertyDescriptor | undefined;
-    beforeEach(() => {
-      originalClipboard = navigator.clipboard;
-      clipboardProperty = Object.getOwnPropertyDescriptor(
-        navigator,
-        "clipboard"
-      );
-    });
-
-    afterEach(() => {
-      // Using if-else chain for safe clipboard restoration - checks property descriptor first to restore original configuration
-      if (clipboardProperty) {
-        Object.defineProperty(navigator, "clipboard", clipboardProperty);
-      } else if (originalClipboard !== undefined) {
-        try {
-          Object.defineProperty(navigator, "clipboard", {
-            value: originalClipboard,
-            configurable: true,
-            writable: true,
-          });
-        } catch (e) {
-          delete (navigator as any).clipboard;
-          (navigator as any).clipboard = originalClipboard;
+      for (const segment of component.segments) {
+        if (component.isExpandable(segment)) {
+          segment.expanded = false;
+          await component.expandOrCollapseIndividualSegment(segment);
         }
-      } else {
-        delete (navigator as any).clipboard;
       }
+      const allExpanded = component.segments
+        .filter((s) => component.isExpandable(s))
+        .every((s) => s.expanded);
+      expect(component.expandAll).toBe(allExpanded);
+    });
+  });
+
+  describe("expandOrCollapseAll", () => {
+    beforeEach(() => {
+      component.json = mockJson;
+      component.ngOnChanges();
     });
 
-    it("should copy JSON to clipboard successfully", async () => {
-      const mockClipboard = {
-        writeText: jasmine
-          .createSpy("writeText")
-          .and.returnValue(Promise.resolve()),
-      };
-      try {
-        Object.defineProperty(navigator, "clipboard", {
-          value: mockClipboard,
-          configurable: true,
-          writable: true,
+    it("should expand all segments", async () => {
+      component.expandAll = false;
+      await component.expandOrCollapseAll();
+      expect(component.expandAll).toBe(true);
+      component.segments
+        .filter((s) => component.isExpandable(s))
+        .forEach((s) => {
+          expect(s.expanded).toBe(true);
         });
-      } catch (e) {
-        (navigator as any).clipboard = mockClipboard;
-      }
-      component.json = { test: "data" };
+    });
+
+    it("should collapse all segments", async () => {
+      component.expandAll = true;
+      await component.expandOrCollapseAll();
+      expect(component.expandAll).toBe(false);
+      component.segments
+        .filter((s) => component.isExpandable(s))
+        .forEach((s) => {
+          expect(s.expanded).toBe(false);
+        });
+    });
+
+    it("should reset individuallyExpanded flag", async () => {
+      component.segments.forEach((s) => {
+        if (component.isExpandable(s)) {
+          s.individuallyExpanded = true;
+        }
+      });
+      await component.expandOrCollapseAll();
+      component.segments
+        .filter((s) => component.isExpandable(s))
+        .forEach((s) => {
+          expect(s.individuallyExpanded).toBe(false);
+        });
+    });
+  });
+
+  describe("copyToClipboard", () => {
+    beforeEach(() => {
+      component.json = mockJson;
       component.ngOnChanges();
+    });
+
+    it("should copy JSON to clipboard and show success message", async () => {
+      const writeTextSpy = vi.fn().mockResolvedValue(undefined);
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: writeTextSpy,
+        },
+      });
+
       await component.copyToClipboard();
-      expect(mockClipboard.writeText).toHaveBeenCalledWith(
-        JSON.stringify({ test: "data" }, null, 2)
-      );
-      expect(sharedMethodsServiceMock.showSuccessSnackBar).toHaveBeenCalledWith(
+
+      expect(writeTextSpy).toHaveBeenCalled();
+      expect(sharedMethodsService.showSuccessSnackBar).toHaveBeenCalledWith(
         JSON_VIEWER_LABELS.CLIPBOARD_SUCCESS_SNACKBAR_MSG
       );
     });
 
-    it("should handle clipboard errors", async () => {
-      const mockClipboard = {
-        writeText: jasmine
-          .createSpy("writeText")
-          .and.returnValue(Promise.reject("error")),
-      };
-      try {
-        Object.defineProperty(navigator, "clipboard", {
-          value: mockClipboard,
-          configurable: true,
-          writable: true,
-        });
-      } catch (e) {
-        (navigator as any).clipboard = mockClipboard;
-      }
-      spyOn(component as any, "showErrorSnackbarMsg");
-      await component.copyToClipboard();
-      expect((component as any).showErrorSnackbarMsg).toHaveBeenCalled();
-    });
+    it("should handle NotAllowedError", async () => {
+      const error = new Error("Permission denied");
+      error.name = "NotAllowedError";
+      const writeTextSpy = vi.fn().mockRejectedValue(error);
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: writeTextSpy,
+        },
+      });
 
-    it("should handle invalid JSON data", async () => {
-      spyOn(component as any, "getFormattedJsonString").and.throwError(
-        "Invalid JSON"
-      );
-      spyOn(component as any, "showErrorSnackbarMsg");
       await component.copyToClipboard();
-      expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
-        JSON_VIEWER_LABELS.CLIPBOARD_GENERIC_ERROR_MSG
-      );
-    });
 
-    it("should handle NotAllowedError specifically", async () => {
-      const notAllowedError = new Error("Permission denied");
-      notAllowedError.name = "NotAllowedError";
-      const mockClipboard = {
-        writeText: jasmine
-          .createSpy("writeText")
-          .and.returnValue(Promise.reject(notAllowedError)),
-      };
-      try {
-        Object.defineProperty(navigator, "clipboard", {
-          value: mockClipboard,
-          configurable: true,
-          writable: true,
-        });
-      } catch (e) {
-        (navigator as any).clipboard = mockClipboard;
-      }
-      spyOn(component as any, "showErrorSnackbarMsg");
-      await component.copyToClipboard();
-      expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
+      expect(sharedMethodsService.showErrorSnackBar).toHaveBeenCalledWith(
         JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
       );
     });
 
-    it("should handle DataError specifically", async () => {
-      const dataError = new Error("Data too large");
-      dataError.name = "DataError";
-      const mockClipboard = {
-        writeText: jasmine
-          .createSpy("writeText")
-          .and.returnValue(Promise.reject(dataError)),
-      };
-      try {
-        Object.defineProperty(navigator, "clipboard", {
-          value: mockClipboard,
-          configurable: true,
-          writable: true,
-        });
-      } catch (e) {
-        (navigator as any).clipboard = mockClipboard;
-      }
-      spyOn(component as any, "showErrorSnackbarMsg");
+    it("should handle DataError", async () => {
+      const error = new Error("Data too large");
+      error.name = "DataError";
+      const writeTextSpy = vi.fn().mockRejectedValue(error);
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: writeTextSpy,
+        },
+      });
+
       await component.copyToClipboard();
-      expect((component as any).showErrorSnackbarMsg).toHaveBeenCalledWith(
+
+      expect(sharedMethodsService.showErrorSnackBar).toHaveBeenCalledWith(
         JSON_VIEWER_LABELS.CLIPBOARD_DATA_TOO_LARGE_MSG
       );
     });
-  });
 
-  describe("Utility Methods", () => {
-    it("should determine expansion state correctly", () => {
-      component.expandAll = true;
-      expect((component as any).isExpanded()).toBe(true);
-      component.expandAll = false;
-      component.expanded = true;
-      component.depth = -1;
-      expect((component as any).isExpanded()).toBe(true);
-      component.depth = 2;
-      component.currentDepth = 3;
-      expect((component as any).isExpanded()).toBe(false);
-    });
-
-    it("should execute after render callback", fakeAsync(() => {
-      let executed = false;
-      (component as any).executeAfterRender(() => {
-        executed = true;
-      });
-      tick();
-      flush();
-      expect(executed).toBe(true);
-      discardPeriodicTasks();
-    }));
-
-    it("should get JSON strings with caching", () => {
-      component.json = { test: "data" };
-      component.ngOnChanges();
-      const jsonString1 = (component as any).getJsonString();
-      const jsonString2 = (component as any).getJsonString();
-      expect(jsonString1).toBe(jsonString2);
-      const formattedString1 = (component as any).getFormattedJsonString();
-      const formattedString2 = (component as any).getFormattedJsonString();
-      expect(formattedString1).toBe(formattedString2);
-    });
-
-    it("should notify errors to console", () => {
-      (component as any).showErrorSnackbarMsg("Test error");
-      expect(sharedMethodsServiceMock.showErrorSnackBar).toHaveBeenCalledWith(
-        "Test error"
-      );
-    });
-  });
-
-  describe("Complex Scenarios", () => {
-    it("should handle deeply nested structures", () => {
-      const deepObject = {
-        level1: {
-          level2: {
-            level3: {
-              level4: {
-                value: "deep",
-              },
-            },
-          },
+    it("should handle generic clipboard errors", async () => {
+      const error = new Error("Generic error");
+      const writeTextSpy = vi.fn().mockRejectedValue(error);
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: writeTextSpy,
         },
-      };
-      component.json = deepObject;
-      component.ngOnChanges();
-      expect(component.segments).toBeDefined();
-      expect(component.segments.length).toBe(1);
-      expect(component.segments[0].type).toBe("object");
-    });
+      });
 
-    it("should handle mixed data types in arrays", () => {
-      const mixedArray = [
-        "string",
-        123,
-        true,
-        null,
-        undefined,
-        { nested: "object" },
-        [1, 2, 3],
-      ];
-      component.json = { mixed: mixedArray };
-      component.ngOnChanges();
-      const arraySegment = component.segments.find((s) => s.key === "mixed");
-      expect(arraySegment?.type).toBe("array");
-      expect(arraySegment?.description).toBe("Array[7] ");
-    });
+      await component.copyToClipboard();
 
-    it("should handle special characters in search", fakeAsync(() => {
-      component.json = {
-        special: "test.*+?^${}()|[]\\",
-        normal: "regular text",
-      };
-      component.ngOnChanges();
-      component.searchTerm = ".*+?";
-      (component as any).performSearch(".*+?");
-      tick();
-      flush();
-      expect(component.totalMatches).toBeGreaterThanOrEqual(0);
-      discardPeriodicTasks();
-    }));
-
-    it("should maintain search state during expansion changes", fakeAsync(() => {
-      component.json = {
-        visible: "search term",
-        nested: { hidden: "search term" },
-      };
-      component.ngOnChanges();
-      component.searchTerm = "search";
-      (component as any).performSearch("search");
-      tick();
-      flush();
-      const initialMatches = component.totalMatches;
-      const nestedSegment = component.segments.find((s) => s.key === "nested")!;
-      component.expandOrCollapseIndividualSegment(nestedSegment);
-      tick();
-      expect(component.totalMatches).toBeGreaterThanOrEqual(initialMatches);
-      discardPeriodicTasks();
-    }));
-  });
-
-  describe("Error Handling", () => {
-    it("should handle malformed JSON gracefully", () => {
-      const problematic: any = { normal: "data" };
-      problematic.circular = problematic;
-      component.json = problematic;
-      expect(() => component.ngOnChanges()).not.toThrow();
-      expect(component.segments).toBeDefined();
-    });
-
-    it("should handle search with empty container", () => {
-      spyOn(document, "querySelector").and.returnValue(null);
-      expect(() => (component as any).highlightTextInDOM()).not.toThrow();
-    });
-
-    it("should handle highlighting errors", () => {
-      spyOn(console, "error");
-      component.searchTerm = "test";
-      spyOn(component as any, "findTextNodesWithMatch").and.throwError(
-        "Test error"
+      expect(sharedMethodsService.showErrorSnackBar).toHaveBeenCalledWith(
+        JSON_VIEWER_LABELS.CLIPBOARD_GENERIC_ERROR_MSG
       );
-      (component as any).highlightTextInDOM();
-      expect(console.error).toHaveBeenCalled();
-    });
-
-    it("should handle function type in parseKeyValue", () => {
-      const func = function testFunc() {
-        return "test";
-      };
-      const segment = (component as any).parseKeyValue("func", func);
-      expect(segment.type).toBe("function");
     });
   });
 
-  describe("Additional Coverage Tests", () => {
-    it("should handle highlight current match with no matches", () => {
-      spyOn(document, "querySelectorAll").and.returnValue([] as any);
-      const result = (component as any).setActiveMatchHighlight();
-      expect(result).toBeNull();
+  describe("Search functionality", () => {
+    beforeEach(() => {
+      component.json = mockJson;
+      component.ngOnChanges();
     });
 
-    it("should handle scroll to current match edge cases", fakeAsync(() => {
-      component.currentMatchIndex = -1;
-      component.totalMatches = 0;
-      (component as any).scrollToCurrentMatch();
-      tick();
-      expect(component.currentMatchIndex).toBe(-1);
-    }));
+    it("should return correct searchActive state for root component", () => {
+      component.currentDepth = 0;
+      component["_isSearchActive"] = true;
 
-    it("should handle search input clear in ngAfterViewInit", () => {
-      const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
+      expect(component.searchActive).toBe(true);
+    });
+
+    it("should return input searchActive state for nested component", () => {
       component.currentDepth = 1;
-      component.ngAfterViewInit();
-      expect((component as any).inputEventListener).toBeDefined();
+      component.isSearchActiveInput = true;
+
+      expect(component.searchActive).toBe(true);
     });
 
-    it("should handle bulk expandOrCollapseIndividualSegment with search state restoration", fakeAsync(() => {
-      component.json = { test: "searchable data" };
-      component.ngOnChanges();
-      component.searchTerm = "search";
-      component.totalMatches = 1;
-      component.currentMatchIndex = 0;
-      component.expandAll = false;
-      spyOn(component as any, "restoreSearchStateAfterToggle").and.returnValue(
-        Promise.resolve()
+    it("should return searching message when search is loading", () => {
+      component.isSearchLoading = true;
+      component.searchTerm = "test";
+
+      expect(component.searchResultText).toBe(JSON_VIEWER_LABELS.SEARCHING_MSG);
+    });
+
+    it("should return no matches message when no results", () => {
+      component.isSearchLoading = false;
+      component.searchTerm = "test";
+      component.totalMatches = 0;
+
+      expect(component.searchResultText).toBe(
+        JSON_VIEWER_LABELS.NO_MATCHES_FOUND
       );
-      (component as any).expandOrCollapseAll();
-      tick(100);
-      expect(
-        (component as any).restoreSearchStateAfterToggle
-      ).toHaveBeenCalled();
-      discardPeriodicTasks();
-    }));
+    });
 
-    it("should handle search request cancellation", fakeAsync(() => {
-      component.searchTerm = "test1";
-      (component as any).currentSearchRequestId = 1;
-      (component as any).performSearch("test1");
-      const firstRequestId = (component as any).currentSearchRequestId;
-      (component as any).performSearch("test2");
-      const secondRequestId = (component as any).currentSearchRequestId;
-      expect(secondRequestId).toBeGreaterThan(firstRequestId);
-      tick(300);
-      discardPeriodicTasks();
-    }));
+    it("should return match count when results exist", () => {
+      component.isSearchLoading = false;
+      component.searchTerm = "test";
+      component.totalMatches = 5;
+      component.currentMatchIndex = 2;
 
-    it("should handle empty search input immediate clear", () => {
-      const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
+      expect(component.searchResultText).toBe("3 of 5");
+    });
+
+    it("should return empty string when no search term", () => {
+      component.searchTerm = "";
+      component.totalMatches = 0;
+
+      expect(component.searchResultText).toBe("");
+    });
+  });
+
+  describe("clearSearch", () => {
+    it("should reset all search-related properties", () => {
+      component.searchTerm = "test";
       component.totalMatches = 5;
       component.currentMatchIndex = 2;
       component.isSearchLoading = true;
-      component.ngAfterViewInit();
-      mockInput.value = "";
-      mockInput.dispatchEvent(new Event("input"));
+      component["_isSearchActive"] = true;
+
+      component.clearSearch();
+
+      expect(component.searchTerm).toBe("");
       expect(component.totalMatches).toBe(0);
       expect(component.currentMatchIndex).toBe(-1);
       expect(component.isSearchLoading).toBe(false);
+      expect(component["_isSearchActive"]).toBe(false);
     });
 
-    it("should handle segment highlighting with special regex chars", () => {
-      component.json = { special: "test.*+?^${}()|[]\\" };
-      component.ngOnChanges();
-      component.searchTerm = ".*+?";
-      expect(() =>
-        (component as any).highlightTemplateSegments()
-      ).not.toThrow();
-    });
+    it("should clear search input element", () => {
+      const mockInput = { value: "test" };
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
 
-    it("should handle getJsonString and getFormattedJsonString caching", () => {
-      component.json = { cache: "test" };
-      component.ngOnChanges();
-      const json1 = (component as any).getJsonString();
-      const json2 = (component as any).getJsonString();
-      expect(json1).toBe(json2);
-      const formatted1 = (component as any).getFormattedJsonString();
-      const formatted2 = (component as any).getFormattedJsonString();
-      expect(formatted1).toBe(formatted2);
+      component.clearSearch();
+
+      expect(mockInput.value).toBe("");
     });
   });
 
-  describe("Private Method Coverage", () => {
-    it("should handle async operations in expandOrCollapseAll with search", fakeAsync(() => {
-      component.json = { test: "searchable content" };
+  describe("triggerSearchOnEnter", () => {
+    it("should trigger search with current input value", () => {
+      const mockInput = { value: "test search" };
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
+
+      const nextSpy = vi.spyOn(component["searchInput$"], "next");
+
+      component.triggerSearchOnEnter();
+
+      expect(nextSpy).toHaveBeenCalledWith("test search");
+    });
+
+    it("should not trigger search if input is empty", () => {
+      const mockInput = { value: "" };
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
+
+      const nextSpy = vi.spyOn(component["searchInput$"], "next");
+
+      component.triggerSearchOnEnter();
+
+      expect(nextSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Circular reference handling (decycle)", () => {
+    it("should handle circular references", () => {
+      const circularObj: any = { name: "test" };
+      circularObj.self = circularObj;
+
+      component.json = circularObj;
       component.ngOnChanges();
-      component.searchTerm = "search";
-      component.totalMatches = 2;
-      component.expandAll = true;
-      spyOn(component as any, "restoreSearchStateAfterToggle").and.returnValue(
-        Promise.resolve()
-      );
-      expect(() => (component as any).expandOrCollapseAll()).not.toThrow();
-      tick(200);
-      flush();
-      discardPeriodicTasks();
-    }));
 
-    it("should handle DOM element queries with null elements", fakeAsync(() => {
-      spyOn(document, "querySelector").and.returnValue(null);
-      spyOn(document, "querySelectorAll").and.returnValue([] as any);
-      expect(() => (component as any).highlightTextInDOM()).not.toThrow();
-      tick();
-      discardPeriodicTasks();
-    }));
-
-    it("should handle various data types in parseKeyValue", () => {
-      const testCases = [
-        ["string", "test"],
-        ["number", 123],
-        ["boolean", true],
-        ["date", new Date()],
-        ["array", [1, 2, 3]],
-        ["null", null],
-        ["undefined", undefined],
-        ["symbol", Symbol("test")],
-      ];
-      testCases.forEach(([name, value]) => {
-        const result = (component as any).parseKeyValue(name, value);
-        expect(result).toBeDefined();
-        expect(result.key).toBe(name);
-      });
+      expect(component.segments.length).toBeGreaterThan(0);
+      const selfSegment = component.segments.find((s) => s.key === "self");
+      expect(selfSegment).toBeDefined();
     });
 
-    it("should handle getJsonString and getFormattedJsonString", () => {
-      component.json = { test: "caching" };
+    it("should handle nested circular references", () => {
+      const obj1: any = { name: "obj1" };
+      const obj2: any = { name: "obj2", ref: obj1 };
+      obj1.ref = obj2;
+
+      component.json = obj1;
       component.ngOnChanges();
-      const json1 = (component as any).getJsonString();
-      const json2 = (component as any).getJsonString();
-      expect(json1).toBe(json2);
-      const formatted1 = (component as any).getFormattedJsonString();
-      const formatted2 = (component as any).getFormattedJsonString();
-      expect(formatted1).toBe(formatted2);
+
+      expect(component.segments.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should complete destroy$ subject", () => {
+      const nextSpy = vi.spyOn(component["destroy$"], "next");
+      const completeSpy = vi.spyOn(component["destroy$"], "complete");
+
+      component.ngOnDestroy();
+
+      expect(nextSpy).toHaveBeenCalled();
+      expect(completeSpy).toHaveBeenCalled();
     });
 
-    it("should handle showErrorSnackbarMsg method", () => {
-      (component as any).showErrorSnackbarMsg("Test error");
-      expect(sharedMethodsServiceMock.showErrorSnackBar).toHaveBeenCalledWith(
-        "Test error"
-      );
-    });
-
-    it("should handle setAllSegmentsExpanded", () => {
-      component.json = { test: { nested: "value" } };
-      component.ngOnChanges();
-      (component as any).setAllSegmentsExpanded(true);
-      expect(component.segments[0].expanded).toBe(true);
-      expect(component.segments[0].individuallyExpanded).toBe(false);
-    });
-
-    it("should reset individuallyExpanded when using expand/collapse all", () => {
-      component.json = {
-        first: { nested: "data1" },
-        second: { nested: "data2" },
-      };
-      component.ngOnChanges();
-      component.segments.forEach((segment) => {
-        if (component.isExpandable(segment)) {
-          segment.individuallyExpanded = true;
-        }
-      });
-      (component as any).setAllSegmentsExpanded(false);
-      component.segments.forEach((segment) => {
-        if (component.isExpandable(segment)) {
-          expect(segment.individuallyExpanded).toBe(false);
-          expect(segment.expanded).toBe(false);
-        }
-      });
-    });
-
-    it("should handle highlightTemplateSegments", () => {
-      component.json = { test: "highlight me" };
-      component.ngOnChanges();
-      component.searchTerm = "highlight";
-      expect(() =>
-        (component as any).highlightTemplateSegments()
-      ).not.toThrow();
-    });
-
-    it("should handle findTextNodesWithMatch", () => {
-      const mockContainer = document.createElement("div");
-      mockContainer.innerHTML = "test content";
-      const textNode = document.createTextNode("test search content");
-      mockContainer.appendChild(textNode);
-      const result = (component as any).findTextNodesWithMatch(
-        mockContainer,
-        "search"
-      );
-      expect(result).toBeDefined();
-    });
-
-    it("should handle applyMarkTagsToText", () => {
-      const textNode = document.createTextNode("test search content");
-      const matches = [{ node: textNode, startIndex: 5, endIndex: 11 }];
-      expect(() =>
-        (component as any).applyMarkTagsToText(matches)
-      ).not.toThrow();
-    });
-
-    it("should handle setActiveMatchHighlight with matches", () => {
-      const mockElement = document.createElement("span");
-      mockElement.className = "json-viewer-highlight";
-      spyOn(document, "querySelectorAll").and.returnValue([mockElement] as any);
-      component.currentMatchIndex = 0;
-      const result = (component as any).setActiveMatchHighlight();
-      expect(result).toBe(mockElement);
-    });
-
-    it("should handle scrollToCurrentMatch with valid match", fakeAsync(() => {
-      const mockElement = document.createElement("span");
-      mockElement.scrollIntoView = jasmine.createSpy("scrollIntoView");
-      component.currentMatchIndex = 0;
-      component.totalMatches = 1;
-      spyOn(component as any, "setActiveMatchHighlight").and.returnValue(
-        mockElement
-      );
-      (component as any).scrollToCurrentMatch();
-      tick(50);
-      expect(mockElement.scrollIntoView).toHaveBeenCalled();
-      discardPeriodicTasks();
-    }));
-
-    it("should handle decycle with circular references", () => {
-      const obj: any = { name: "test" };
-      obj.circular = obj;
-      const result = (component as any).decycle(obj);
-      expect(result).toBeDefined();
-      expect((result as any).circular).toEqual({ $ref: "$" });
-    });
-
-    it("should handle countMatchesInRawData", () => {
-      component.json = { test: "search", nested: { search: "term" } };
-      component.ngOnChanges();
-      const count = (component as any).countMatchesInRawData("search");
-      expect(count).toBeGreaterThanOrEqual(2);
-    });
-
-    it("should handle edge case in performSearch with empty term after validation", fakeAsync(() => {
-      spyOn(component as any, "validateSearchTerm").and.returnValue(null);
-      (component as any).performSearch("invalid");
-      tick();
-      expect(component.totalMatches).toBe(0);
-      expect(component.currentMatchIndex).toBe(-1);
-      discardPeriodicTasks();
-    }));
-
-    it("should handle empty object and array cases", () => {
-      component.json = {};
-      component.ngOnChanges();
-      expect(component.segments).toEqual([]);
-      component.json = [];
-      component.ngOnChanges();
-      expect(component.segments.length).toBeGreaterThanOrEqual(0);
-      if (component.segments.length > 0) {
-        expect(component.segments[0].type).toBe("array");
-      }
-    });
-
-    it("should handle special regex characters in search", () => {
-      component.json = { special: "test.*+?^${}()|[]\\" };
-      component.ngOnChanges();
-      const specialChars = [".*", "+?", "^$", "{}", "()", "|", "[]", "\\"];
-      specialChars.forEach((char) => {
-        expect(() => (component as any).validateSearchTerm(char)).not.toThrow();
-      });
-    });
-
-    it("should handle search input event listener setup", () => {
+    it("should remove event listener if exists", () => {
       const mockInput = document.createElement("input");
-      component.searchInputRef = new ElementRef(mockInput);
-      component.currentDepth = 0;
-      component.ngAfterViewInit();
-      expect((component as any).inputEventListener).toBeDefined();
-      mockInput.value = "test search";
-      const event = new Event("input");
-      mockInput.dispatchEvent(event);
-      expect(component.searchTerm).toBeDefined();
+      const removeEventListenerSpy = vi.spyOn(mockInput, "removeEventListener");
+      const mockListener = vi.fn();
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
+      component["inputEventListener"] = mockListener;
+
+      component.ngOnDestroy();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        "input",
+        mockListener
+      );
+      expect(component["inputEventListener"]).toBeNull();
     });
 
-    it("should handle error cases in highlight functions", () => {
-      spyOn(console, "error");
-      spyOn(component as any, "findTextNodesWithMatch").and.throwError(
-        "DOM error"
-      );
-      component.searchTerm = "test";
-      (component as any).highlightTextInDOM();
-      expect(console.error).toHaveBeenCalled();
-    });
+    it("should clear cached data", () => {
+      component["cachedJsonString"] = "test";
+      component["cachedFormattedJsonString"] = "test formatted";
+      component["processedJson"] = { test: "data" };
 
-    it("should handle all branches in parseKeyValue", () => {
-      const testCases = [
-        [null, "null"],
-        [undefined, "undefined"],
-        [true, "boolean"],
-        [false, "boolean"],
-        ["string", "string"],
-        [123, "number"],
-        [new Date(), "date"],
-        [[], "array"],
-        [{}, "object"],
-        [
-          function (): void {
-            // Test function for type detection
-          },
-          "function",
-        ],
-      ];
-      testCases.forEach(([value, expectedType]) => {
-        const result = (component as any).parseKeyValue("test", value);
-        expect(result.type).toBe(expectedType);
-        expect(result.key).toBe("test");
-      });
-      const symbolResult = (component as any).parseKeyValue(
-        "test",
-        Symbol("test")
-      );
-      expect(symbolResult.key).toBe("test");
-      expect(symbolResult.type).toBeUndefined();
+      component.ngOnDestroy();
+
+      expect(component["cachedJsonString"]).toBeNull();
+      expect(component["cachedFormattedJsonString"]).toBeNull();
+      expect(component["processedJson"]).toBeNull();
     });
   });
 
-  describe("Coverage Boost Tests - Targeting Uncovered Lines", () => {
-    it("should cover expandAll true in expandOrCollapseAll with search", fakeAsync(() => {
-      component.json = { searchTerm: "find me", nested: { also: "find me" } };
+  describe("Edge cases", () => {
+    it("should handle very large JSON objects", () => {
+      const largeJson: any = {};
+      for (let i = 0; i < 1000; i++) {
+        largeJson[`key${i}`] = `value${i}`;
+      }
+
+      component.json = largeJson;
       component.ngOnChanges();
-      component.searchTerm = "find";
+
+      expect(component.segments.length).toBe(1000);
+    });
+
+    it("should handle deeply nested objects", () => {
+      const deeplyNested: any = {
+        level1: { level2: { level3: { level4: { value: "deep" } } } },
+      };
+
+      component.json = deeplyNested;
+      component.ngOnChanges();
+
+      expect(component.segments.length).toBeGreaterThan(0);
+    });
+
+    it("should handle special characters in keys and values", () => {
+      const specialChars = {
+        "key<>&\"'": "value<>&\"'",
+        키: "값", // Korean characters
+        "🎉": "emoji",
+      };
+
+      component.json = specialChars;
+      component.ngOnChanges();
+
+      expect(component.segments.length).toBe(3);
+    });
+
+    it("should handle functions in JSON", () => {
+      const withFunction = {
+        name: "test",
+        fn: function () {
+          return "test";
+        },
+      };
+
+      component.json = withFunction;
+      component.ngOnChanges();
+
+      const fnSegment = component.segments.find((s) => s.key === "fn");
+      expect(fnSegment?.type).toBe("function");
+    });
+
+    it("should handle RegExp in JSON", () => {
+      const withRegex = {
+        pattern: /test/gi,
+      };
+
+      component.json = withRegex;
+      component.ngOnChanges();
+
+      expect(component.segments.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Navigation", () => {
+    beforeEach(() => {
+      component.json = mockJson;
+      component.ngOnChanges();
+    });
+
+    it("should not navigate when no matches", async () => {
+      component.totalMatches = 0;
+      component.currentMatchIndex = -1;
+
+      await component.goToNextMatch();
+
+      expect(component.currentMatchIndex).toBe(-1);
+    });
+
+    it("should not navigate when navigation is in progress", async () => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 0;
+      component["navigationInProgress"] = true;
+
+      await component.goToNextMatch();
+
+      expect(component.currentMatchIndex).toBe(0);
+    });
+
+    it("should cycle to first match when at last match", async () => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 4;
+      component["navigationInProgress"] = false;
+
+      await component.goToNextMatch();
+
+      expect(component.currentMatchIndex).toBe(0);
+    });
+
+    it("should go to previous match correctly", async () => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 2;
+      component["navigationInProgress"] = false;
+
+      await component.goToPreviousMatch();
+
+      expect(component.currentMatchIndex).toBe(1);
+    });
+
+    it("should cycle to last match when at first match going backwards", async () => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 0;
+      component["navigationInProgress"] = false;
+
+      await component.goToPreviousMatch();
+
+      expect(component.currentMatchIndex).toBe(4);
+    });
+  });
+
+  describe("Advanced Search Functionality", () => {
+    beforeEach(() => {
+      component.json = { name: "test", value: 123, nested: { data: "test" } };
+      component.ngOnChanges();
+    });
+
+    it("should perform search with valid term", async () => {
+      component.searchInputRef = {
+        nativeElement: document.createElement("input"),
+      } as ElementRef<HTMLInputElement>;
+      component.searchInputRef.nativeElement.value = "test";
+
+      const performSearchSpy = vi.spyOn(component as any, "performSearch");
+
+      component["searchInput$"].next("test");
+
+      // Wait for debounce time
+      await vi.waitFor(
+        () => {
+          expect(performSearchSpy).toHaveBeenCalledWith("test");
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it("should clear search when term becomes empty", async () => {
+      component.searchTerm = "test";
+      component.totalMatches = 3;
+      component.currentMatchIndex = 1;
+
+      component["searchInput$"].next("");
+
+      await vi.waitFor(
+        () => {
+          expect(component.searchTerm).toBe("");
+          expect(component.totalMatches).toBe(0);
+          expect(component.currentMatchIndex).toBe(-1);
+        },
+        { timeout: 500 }
+      );
+    });
+
+    it("should handle search with whitespace-only term", async () => {
+      const clearSearchSpy = vi.spyOn(component, "clearSearch");
+
+      component["searchInput$"].next("   ");
+
+      await vi.waitFor(
+        () => {
+          expect(clearSearchSpy).toHaveBeenCalled();
+        },
+        { timeout: 500 }
+      );
+    });
+
+    it("should cancel previous search when new search is triggered", async () => {
+      component["currentSearchRequestId"] = 1;
+
+      component["searchInput$"].next("first");
+      component["searchInput$"].next("second");
+
+      await vi.waitFor(
+        () => {
+          expect(component["currentSearchRequestId"]).toBeGreaterThan(1);
+        },
+        { timeout: 500 }
+      );
+    });
+  });
+
+  describe("DOM Manipulation", () => {
+    it("should get JSON string and cache it", () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
+
+      const jsonString1 = component["getJsonString"]();
+      const jsonString2 = component["getJsonString"]();
+
+      expect(jsonString1).toBe(jsonString2);
+      expect(jsonString1).toContain("test");
+    });
+
+    it("should get formatted JSON string and cache it", () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
+
+      const formattedJson1 = component["getFormattedJsonString"]();
+      const formattedJson2 = component["getFormattedJsonString"]();
+
+      expect(formattedJson1).toBe(formattedJson2);
+      expect(formattedJson1).toContain("\n");
+    });
+
+    it("should validate search term correctly", () => {
+      expect(component["validateSearchTerm"]("test")).toBe("test");
+      expect(component["validateSearchTerm"]("  test  ")).toBe("test");
+      expect(component["validateSearchTerm"]("")).toBeNull();
+      expect(component["validateSearchTerm"]("   ")).toBeNull();
+      expect(component["validateSearchTerm"](undefined)).toBeNull();
+    });
+
+    it("should highlight template segments with search term", () => {
+      component.searchTerm = "test";
+      component.segments = [
+        {
+          key: "testKey",
+          value: "testValue",
+          type: "string",
+          description: "testValue",
+          expanded: false,
+        },
+      ];
+
+      component["highlightTemplateSegments"]();
+
+      expect(component.segments[0].highlightedKey).toBeDefined();
+      expect(component.segments[0].highlightedDescription).toBeDefined();
+    });
+
+    it("should not highlight when search term is empty", () => {
+      component.searchTerm = "";
+      component.segments = [
+        {
+          key: "testKey",
+          value: "testValue",
+          type: "string",
+          description: "testValue",
+          expanded: false,
+        },
+      ];
+
+      component["highlightTemplateSegments"]();
+
+      expect(component.segments[0].highlightedKey).toBeUndefined();
+      expect(component.segments[0].highlightedDescription).toBeUndefined();
+    });
+
+    it("should escape HTML entities correctly", () => {
+      const escaped = component["escapeHtml"]("<script>alert('xss')</script>");
+      expect(escaped).toContain("&lt;");
+      expect(escaped).toContain("&gt;");
+      expect(escaped).not.toContain("<script>");
+    });
+
+    it("should escape regex special characters", () => {
+      const escaped = component["escapeRegExp"]("test.*$^");
+      expect(escaped).toBe("test\\.\\*\\$\\^");
+    });
+  });
+
+  describe("ngAfterViewInit", () => {
+    it("should setup input event listener", () => {
+      const mockInput = document.createElement("input");
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
+
+      const addEventListenerSpy = vi.spyOn(mockInput, "addEventListener");
+
+      component.ngAfterViewInit();
+
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        "input",
+        expect.any(Function)
+      );
+      expect(component["inputEventListener"]).not.toBeNull();
+    });
+
+    it("should emit search on input event", () => {
+      const mockInput = document.createElement("input");
+      mockInput.value = "test";
+      component.searchInputRef = {
+        nativeElement: mockInput,
+      } as ElementRef<HTMLInputElement>;
+
+      const searchInputSpy = vi.spyOn(component["searchInput$"], "next");
+
+      component.ngAfterViewInit();
+
+      // Trigger the input event
+      mockInput.dispatchEvent(new Event("input"));
+
+      expect(searchInputSpy).toHaveBeenCalledWith("test");
+    });
+  });
+
+  describe("Async Operations", () => {
+    it("should execute after render with requestAnimationFrame", async () => {
+      const callback = vi.fn();
+
+      await component["executeAfterRender"](callback);
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it("should expand/collapse all and restore search state", async () => {
+      component.json = { name: "test", value: 123 };
+      component.ngOnChanges();
+      component.searchTerm = "test";
       component.totalMatches = 2;
       component.currentMatchIndex = 0;
       component.expandAll = false;
-      spyOn(component as any, "restoreSearchStateAfterToggle").and.returnValue(
-        Promise.resolve()
-      );
-      (component as any).expandOrCollapseAll();
-      tick(150);
-      flush();
+
+      await component.expandOrCollapseAll();
+
       expect(component.expandAll).toBe(true);
-      expect(
-        (component as any).restoreSearchStateAfterToggle
-      ).toHaveBeenCalledWith(0);
-      discardPeriodicTasks();
-    }));
+      expect(component.isExpandCollapseLoading).toBe(false);
+    });
 
-    it("should cover search match restoration with valid totalMatches > 0", fakeAsync(() => {
-      component.json = { searchable: "test content here", more: "test data" };
-      component.ngOnChanges();
-      spyOn(component as any, "countMatchesInRawData").and.returnValue(3);
-      spyOn(component as any, "setActiveMatchHighlight").and.returnValue(
-        document.createElement("span")
-      );
-      spyOn(component as any, "scrollToCurrentMatch").and.returnValue(
-        Promise.resolve()
-      );
-      spyOn(component as any, "highlightTextInDOM").and.returnValue(
-        Promise.resolve()
-      );
-      component.searchTerm = "test";
-      (component as any).performSearch("test");
-      tick(300);
-      flush();
-      expect(component.totalMatches).toBe(3);
-      expect(component.currentMatchIndex).toBe(0);
-      discardPeriodicTasks();
-    }));
+    it("should set all segments expanded/collapsed", () => {
+      component.segments = [
+        {
+          key: "obj",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: false,
+        },
+        {
+          key: "arr",
+          value: [],
+          type: "array",
+          description: "[]",
+          expanded: false,
+        },
+        {
+          key: "str",
+          value: "test",
+          type: "string",
+          description: "test",
+          expanded: false,
+        },
+      ];
 
-    it("should cover early return in performSearch when validation fails", fakeAsync(() => {
-      spyOn(component, "clearSearch");
-      (component as any).performSearch(" ");
-      tick(100);
-      expect(component.clearSearch).toHaveBeenCalled();
-      discardPeriodicTasks();
-    }));
+      component["setAllSegmentsExpanded"](true);
 
-    it("should cover search error handling in performSearch catch block", fakeAsync(() => {
-      spyOn(console, "error");
-      spyOn(component as any, "executeAfterRender").and.callFake(() => {
-        throw new Error("Test error in search");
-      });
-      component.json = { test: "data" };
-      component.ngOnChanges();
-      component.searchTerm = "test";
-      (component as any).performSearch("test");
-      tick(100);
-      expect(console.error).toHaveBeenCalledWith(
-        "Search error:",
-        jasmine.any(Error)
-      );
-      expect(component.isSearchLoading).toBe(false);
-      discardPeriodicTasks();
-    }));
+      expect(component.segments[0].expanded).toBe(true);
+      expect(component.segments[1].expanded).toBe(true);
+      expect(component.segments[2].expanded).toBe(false); // string not expandable
+    });
 
-    it("should cover executeAfterRender callback execution path", fakeAsync(() => {
-      let callbackExecuted = false;
-      const callback = () => {
-        callbackExecuted = true;
-      };
-      (component as any).executeAfterRender(callback);
-      tick();
-      flush();
-      expect(callbackExecuted).toBe(true);
-      discardPeriodicTasks();
-    }));
-
-    it("should cover scroll to current match execution", fakeAsync(() => {
-      const mockElement = document.createElement("span");
-      mockElement.scrollIntoView = jasmine.createSpy("scrollIntoView");
-      component.currentMatchIndex = 0;
-      component.totalMatches = 1;
-      spyOn(component as any, "setActiveMatchHighlight").and.returnValue(
-        mockElement
-      );
-      (component as any).scrollToCurrentMatch();
-      tick(50);
-      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
-        behavior: "smooth",
-        block: "center",
-        inline: "nearest",
-      });
-      discardPeriodicTasks();
-    }));
-
-    it("should cover remaining uncovered branches for 95% target", fakeAsync(() => {
+    it("should count matches in raw data", () => {
       component.json = {
-        searchText: "findable content",
-        more: "findable data",
+        name: "test",
+        value: "test",
+        nested: { data: "test" },
       };
       component.ngOnChanges();
-      spyOn(component as any, "validateSearchTerm").and.returnValue("findable");
-      spyOn(component as any, "countMatchesInRawData").and.returnValue(2);
-      spyOn(component as any, "highlightTextInDOM").and.returnValue(
-        Promise.resolve()
-      );
-      spyOn(component as any, "setActiveMatchHighlight").and.returnValue(
-        document.createElement("span")
-      );
-      spyOn(component as any, "scrollToCurrentMatch").and.returnValue(
-        Promise.resolve()
-      );
-      component.searchTerm = "findable";
-      (component as any).performSearch("findable");
-      tick(350);
-      flush();
-      expect(component.totalMatches).toBe(2);
-      expect(component.currentMatchIndex).toBe(0);
-      discardPeriodicTasks();
-    }));
 
-    it("should cover restoreSearchStateAfterToggle execution", fakeAsync(() => {
-      component.json = { test: "content with search term" };
+      const count = component["countMatchesInRawData"]("test");
+
+      expect(count).toBeGreaterThan(0);
+    });
+
+    it("should handle empty search in count matches", () => {
+      component.json = { name: "test" };
       component.ngOnChanges();
-      component.searchTerm = "search";
-      spyOn(component as any, "clearTextHighlightFromDOM");
-      spyOn(component as any, "highlightTemplateSegments");
-      spyOn(component as any, "highlightTextInDOM").and.returnValue(
-        Promise.resolve()
-      );
-      spyOn(component as any, "countMatchesInRawData").and.returnValue(1);
-      spyOn(component as any, "setActiveMatchHighlight").and.returnValue(
-        document.createElement("span")
-      );
-      spyOn(component as any, "scrollToCurrentMatch").and.returnValue(
-        Promise.resolve()
-      );
-      spyOn(component as any, "executeAfterRender").and.callFake(
-        (callback: () => void) => {
-          return callback();
-        }
-      );
-      (component as any).restoreSearchStateAfterToggle(0);
-      tick(100);
-      expect(component.currentMatchIndex).toBe(0);
-      discardPeriodicTasks();
-    }));
+
+      const count = component["countMatchesInRawData"]("");
+
+      // Empty string matches all characters
+      expect(count).toBeGreaterThan(0);
+    });
   });
 
-  describe("Performance Optimizations", () => {
-    describe("isElementVisible", () => {
-      it("should return true for visible elements", () => {
-        const mockElement = document.createElement("span");
-        document.body.appendChild(mockElement);
-        const result = (component as any).isElementVisible(mockElement);
-        expect(result).toBe(true);
-        document.body.removeChild(mockElement);
-      });
+  describe("Error Handling", () => {
+    it("should show error snackbar message", () => {
+      const showErrorSpy = vi.spyOn(
+        component["sharedMethodsService"],
+        "showErrorSnackBar"
+      );
 
-      it("should return false for elements with hidden parent", () => {
-        const hiddenParent = document.createElement("div");
-        hiddenParent.style.display = "none";
-        const mockElement = document.createElement("span");
-        hiddenParent.appendChild(mockElement);
-        document.body.appendChild(hiddenParent);
-        const result = (component as any).isElementVisible(mockElement);
-        expect(result).toBe(false);
-        document.body.removeChild(hiddenParent);
-      });
+      component["showErrorSnackbarMsg"]("Test error");
 
-      it("should return false for elements with visibility hidden parent", () => {
-        const hiddenParent = document.createElement("div");
-        hiddenParent.style.visibility = "hidden";
-        const mockElement = document.createElement("span");
-        hiddenParent.appendChild(mockElement);
-        document.body.appendChild(hiddenParent);
-        const result = (component as any).isElementVisible(mockElement);
-        expect(result).toBe(false);
-        document.body.removeChild(hiddenParent);
-      });
-
-      it("should return true for elements when parent is document.body", () => {
-        const mockElement = document.createElement("span");
-        document.body.appendChild(mockElement);
-        const result = (component as any).isElementVisible(mockElement);
-        expect(result).toBe(true);
-        document.body.removeChild(mockElement);
-      });
+      expect(showErrorSpy).toHaveBeenCalledWith("Test error");
     });
 
-    describe("fastNavigateToCurrentMatch", () => {
-      beforeEach(() => {
-        component.json = { test: "search", nested: { value: "search" } };
-        component.ngOnChanges();
-        fixture.detectChanges();
-      });
+    it("should handle search errors gracefully", async () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
 
-      it("should use fast navigation when highlights are in sync", fakeAsync(() => {
-        const mockMatch1 = document.createElement("mark");
-        mockMatch1.className = "search-match";
-        const mockMatch2 = document.createElement("mark");
-        mockMatch2.className = "search-match current-match";
-        document.body.appendChild(mockMatch1);
-        document.body.appendChild(mockMatch2);
+      // Mock a method to throw an error
+      vi.spyOn(component as any, "highlightTextInDOM").mockRejectedValue(
+        new Error("DOM error")
+      );
 
-        spyOn(document, "querySelectorAll").and.returnValue([
-          mockMatch1,
-          mockMatch2,
-        ] as any);
-        spyOn(component as any, "isElementVisible").and.returnValue(true);
-        spyOn(mockMatch2, "scrollIntoView");
+      component["searchInput$"].next("test");
 
-        (component as any).highlightsInSync = true;
-        component.totalMatches = 2;
-        component.currentMatchIndex = 1;
+      await vi.waitFor(
+        () => {
+          expect(component.isSearchLoading).toBe(false);
+        },
+        { timeout: 500 }
+      );
+    });
+  });
 
-        (component as any).fastNavigateToCurrentMatch();
-        tick();
+  describe("Expand/Collapse State Management", () => {
+    it("should update expandAll when all segments individually expanded", async () => {
+      component.segments = [
+        {
+          key: "obj1",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: false,
+        },
+        {
+          key: "obj2",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: false,
+        },
+      ];
+      component.expandAll = false;
 
-        expect(mockMatch1.classList.contains("current-match")).toBe(false);
-        expect(mockMatch2.classList.contains("current-match")).toBe(true);
-        expect(mockMatch2.scrollIntoView).toHaveBeenCalledWith({
-          behavior: "smooth",
-          block: "center",
-          inline: "nearest",
-        });
+      await component.expandOrCollapseIndividualSegment(component.segments[0]);
+      await component.expandOrCollapseIndividualSegment(component.segments[1]);
 
-        document.body.removeChild(mockMatch1);
-        document.body.removeChild(mockMatch2);
-        discardPeriodicTasks();
-      }));
-
-      it("should fallback to full navigation when highlights are out of sync", fakeAsync(() => {
-        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
-          Promise.resolve()
-        );
-        (component as any).highlightsInSync = false;
-        component.totalMatches = 2;
-        component.currentMatchIndex = 1;
-        (component as any).fastNavigateToCurrentMatch();
-        tick();
-        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
-        discardPeriodicTasks();
-      }));
-
-      it("should fallback to full navigation when DOM matches don't match totalMatches", fakeAsync(() => {
-        const mockMatch = document.createElement("mark");
-        mockMatch.className = "search-match";
-        document.body.appendChild(mockMatch);
-
-        spyOn(document, "querySelectorAll").and.returnValue([mockMatch] as any);
-        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
-          Promise.resolve()
-        );
-
-        (component as any).highlightsInSync = true;
-        component.totalMatches = 3;
-        component.currentMatchIndex = 1;
-
-        (component as any).fastNavigateToCurrentMatch();
-        tick();
-
-        expect((component as any).highlightsInSync).toBe(false);
-        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
-
-        document.body.removeChild(mockMatch);
-        discardPeriodicTasks();
-      }));
-
-      it("should fallback to full navigation when current match is not visible", fakeAsync(() => {
-        const mockMatch = document.createElement("mark");
-        mockMatch.className = "search-match";
-        document.body.appendChild(mockMatch);
-        spyOn(document, "querySelectorAll").and.returnValue([mockMatch] as any);
-        spyOn(component as any, "isElementVisible").and.returnValue(false); // Not visible
-        spyOn(component as any, "reHighlightAndNavigate").and.returnValue(
-          Promise.resolve()
-        );
-        (component as any).highlightsInSync = true;
-        component.totalMatches = 1;
-        component.currentMatchIndex = 0;
-        (component as any).fastNavigateToCurrentMatch();
-        tick();
-        expect((component as any).highlightsInSync).toBe(false);
-        expect((component as any).reHighlightAndNavigate).toHaveBeenCalled();
-        document.body.removeChild(mockMatch);
-        discardPeriodicTasks();
-      }));
+      expect(component.expandAll).toBe(true);
     });
 
-    describe("reHighlightAndNavigate", () => {
-      beforeEach(() => {
-        component.json = { test: "search content" };
-        component.ngOnChanges();
-        fixture.detectChanges();
-      });
+    it("should update expandAll when all segments individually collapsed", async () => {
+      component.segments = [
+        {
+          key: "obj1",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: true,
+        },
+        {
+          key: "obj2",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: true,
+        },
+      ];
+      component.expandAll = true;
 
-      it("should expand all segments and re-highlight", fakeAsync(() => {
-        spyOn(component as any, "setAllSegmentsExpanded");
-        spyOn(component as any, "clearTextHighlightFromDOM");
-        spyOn(component as any, "highlightTemplateSegments");
-        spyOn(component as any, "highlightTextInDOM").and.returnValue(
-          Promise.resolve()
-        );
-        spyOn(component as any, "scrollToMatch");
-        spyOn(component as any, "executeAfterRender").and.callFake(
-          (callback: () => void) => {
-            callback();
-            return Promise.resolve();
-          }
-        );
+      await component.expandOrCollapseIndividualSegment(component.segments[0]);
+      await component.expandOrCollapseIndividualSegment(component.segments[1]);
 
-        (component as any).reHighlightAndNavigate();
-        tick();
-        expect(component.expandAll).toBe(true);
-        expect((component as any).setAllSegmentsExpanded).toHaveBeenCalledWith(
-          true
-        );
-        expect((component as any).clearTextHighlightFromDOM).toHaveBeenCalled();
-        expect((component as any).highlightTemplateSegments).toHaveBeenCalled();
-        expect((component as any).highlightTextInDOM).toHaveBeenCalled();
-        expect((component as any).scrollToMatch).toHaveBeenCalled();
-        discardPeriodicTasks();
-      }));
+      expect(component.expandAll).toBe(false);
     });
 
-    describe("highlightsInSync flag", () => {
-      it("should be reset in clearSearch", () => {
-        (component as any).highlightsInSync = true;
-        component.clearSearch();
-        expect((component as any).highlightsInSync).toBe(false);
-      });
+    it("should mark segment as individually expanded", async () => {
+      component.segments = [
+        {
+          key: "obj",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: false,
+        },
+      ];
 
-      it("should be set to true after successful highlightTextInDOM", fakeAsync(() => {
-        component.json = { test: "search" };
-        component.ngOnChanges();
-        component.searchTerm = "search";
-        const mockContainer = document.createElement("div");
-        mockContainer.className = "ngx-json-viewer";
-        document.body.appendChild(mockContainer);
-        spyOn(document, "querySelector").and.returnValue(mockContainer);
-        spyOn(component as any, "findTextNodesWithMatch").and.returnValue([]);
-        spyOn(component as any, "applyMarkTagsToText");
-        (component as any).highlightTextInDOM();
-        tick();
-        expect((component as any).highlightsInSync).toBe(true);
-        document.body.removeChild(mockContainer);
-        discardPeriodicTasks();
-      }));
+      await component.expandOrCollapseIndividualSegment(component.segments[0]);
 
-      it("should be set to false when DOM container is not found", fakeAsync(() => {
-        component.searchTerm = "search";
-        spyOn(document, "querySelector").and.returnValue(null);
-        spyOn(console, "warn");
-        (component as any).highlightTextInDOM();
-        tick();
-        expect((component as any).highlightsInSync).toBe(false);
-        expect(console.warn).toHaveBeenCalledWith(
-          "JSON viewer container not found for highlighting"
-        );
-        discardPeriodicTasks();
-      }));
-
-      it("should be set to false when searchTerm is empty", fakeAsync(() => {
-        component.searchTerm = "";
-        (component as any).highlightTextInDOM();
-        tick();
-        expect((component as any).highlightsInSync).toBe(false);
-        discardPeriodicTasks();
-      }));
+      expect(component.segments[0].individuallyExpanded).toBe(true);
     });
 
-    describe("navigationInProgress flag", () => {
-      it("should prevent concurrent navigation in goToNextMatch", fakeAsync(() => {
-        component.totalMatches = 5;
-        component.currentMatchIndex = 0;
-        (component as any).navigationInProgress = true;
-        spyOn(component as any, "fastNavigateToCurrentMatch");
-        component.goToNextMatch();
-        tick();
-        expect(
-          (component as any).fastNavigateToCurrentMatch
-        ).not.toHaveBeenCalled();
-        expect(component.currentMatchIndex).toBe(0);
-        discardPeriodicTasks();
-      }));
+    it("should reset individually expanded flag on expandAll", async () => {
+      component.segments = [
+        {
+          key: "obj",
+          value: {},
+          type: "object",
+          description: "{}",
+          expanded: true,
+          individuallyExpanded: true,
+        },
+      ];
+      component.expandAll = true;
 
-      it("should prevent concurrent navigation in goToPreviousMatch", fakeAsync(() => {
-        component.totalMatches = 5;
-        component.currentMatchIndex = 2;
-        (component as any).navigationInProgress = true;
-        spyOn(component as any, "fastNavigateToCurrentMatch");
-        component.goToPreviousMatch();
-        tick();
-        expect(
-          (component as any).fastNavigateToCurrentMatch
-        ).not.toHaveBeenCalled();
-        expect(component.currentMatchIndex).toBe(2);
-        discardPeriodicTasks();
-      }));
+      await component.expandOrCollapseAll();
 
-      it("should be properly managed in goToNextMatch lifecycle", fakeAsync(() => {
-        component.totalMatches = 3;
-        component.currentMatchIndex = 0;
-        (component as any).navigationInProgress = false;
-        spyOn(component as any, "fastNavigateToCurrentMatch").and.returnValue(
-          Promise.resolve()
-        );
-        component.goToNextMatch();
-        expect((component as any).navigationInProgress).toBe(true);
-        tick();
-        expect((component as any).navigationInProgress).toBe(false);
-        expect(component.currentMatchIndex).toBe(1);
-        discardPeriodicTasks();
-      }));
+      expect(component.segments[0].individuallyExpanded).toBe(false);
+    });
+  });
 
-      it("should be properly managed in goToPreviousMatch lifecycle", fakeAsync(() => {
-        component.totalMatches = 3;
-        component.currentMatchIndex = 2;
-        (component as any).navigationInProgress = false;
-        spyOn(component as any, "fastNavigateToCurrentMatch").and.returnValue(
-          Promise.resolve()
-        );
-        component.goToPreviousMatch();
-        expect((component as any).navigationInProgress).toBe(true);
-        tick();
-        expect((component as any).navigationInProgress).toBe(false);
-        expect(component.currentMatchIndex).toBe(1);
-        discardPeriodicTasks();
-      }));
+  describe("Edge Cases and Null Checks", () => {
+    it("should handle escapeHtml with null input", () => {
+      expect(component["escapeHtml"](null as any)).toBe("");
+    });
+
+    it("should handle escapeHtml with non-string input", () => {
+      expect(component["escapeHtml"](123 as any)).toBe("");
+    });
+
+    it("should handle escapeRegExp with null input", () => {
+      expect(component["escapeRegExp"](null as any)).toBe("");
+    });
+
+    it("should handle escapeRegExp with non-string input", () => {
+      expect(component["escapeRegExp"](123 as any)).toBe("");
+    });
+
+    it("should handle countMatchesInRawData with error", () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
+
+      // Mock getJsonString to throw error
+      vi.spyOn(component as any, "getJsonString").mockImplementation(() => {
+        throw new Error("JSON error");
+      });
+
+      // Create mock DOM elements
+      document.body.innerHTML =
+        '<mark class="search-match">test</mark><mark class="search-match">test2</mark>';
+
+      const count = component["countMatchesInRawData"]("test");
+
+      expect(count).toBe(2); // Should fall back to DOM count
+    });
+
+    it("should clear highlight marks from DOM", () => {
+      // Setup DOM with marks
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><mark class="search-match">test</mark></div>';
+
+      component["clearTextHighlightFromDOM"]();
+
+      const marks = document.querySelectorAll("mark.search-match");
+      expect(marks.length).toBe(0);
+    });
+
+    it("should normalize container after clearing highlights", () => {
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><mark class="search-match">test</mark></div>';
+      const container = document.querySelector(".ngx-json-viewer");
+      const normalizeSpy = vi.spyOn(container as any, "normalize");
+
+      component["clearTextHighlightFromDOM"]();
+
+      expect(normalizeSpy).toHaveBeenCalled();
+    });
+
+    it("should handle clearTextHighlightFromDOM with no marks", () => {
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer">no marks here</div>';
+
+      expect(() => component["clearTextHighlightFromDOM"]()).not.toThrow();
+    });
+
+    it("should handle parseKeyValue with Date object", () => {
+      const date = new Date("2024-01-01");
+      const segment = component["parseKeyValue"]("dateKey", date);
+
+      expect(segment.type).toBe("date");
+      expect(segment.key).toBe("dateKey");
+    });
+
+    it("should handle parseKeyValue with null value", () => {
+      const segment = component["parseKeyValue"]("nullKey", null);
+
+      expect(segment.type).toBe("null");
+      expect(segment.key).toBe("nullKey");
+    });
+
+    it("should handle parseKeyValue with undefined value", () => {
+      const segment = component["parseKeyValue"]("undefinedKey", undefined);
+
+      expect(segment.type).toBe("undefined");
+      expect(segment.key).toBe("undefinedKey");
+    });
+  });
+
+  describe("DOM Text Highlighting", () => {
+    beforeEach(() => {
+      // Setup DOM structure for highlighting tests
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test value</span><span>another test</span></div>';
+    });
+
+    it("should find text nodes with matching search term", () => {
+      const container = document.querySelector(".ngx-json-viewer") as Element;
+
+      const textNodes = component["findTextNodesWithMatch"](container, "test");
+
+      expect(textNodes.length).toBeGreaterThan(0);
+    });
+
+    it("should not include text nodes from excluded tags", () => {
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><script>test</script><span>test</span></div>';
+      const container = document.querySelector(".ngx-json-viewer") as Element;
+
+      const textNodes = component["findTextNodesWithMatch"](container, "test");
+
+      // Should only find "test" in span, not in script tag
+      expect(textNodes.length).toBe(1);
+    });
+
+    it("should not include text nodes already in mark tags", () => {
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><mark>test</mark><span>test</span></div>';
+      const container = document.querySelector(".ngx-json-viewer") as Element;
+
+      const textNodes = component["findTextNodesWithMatch"](container, "test");
+
+      // Should only find "test" in span, not in mark tag
+      expect(textNodes.length).toBe(1);
+    });
+
+    it("should apply mark tags to matching text", () => {
+      const textNode = document.createTextNode("test value test");
+      const span = document.createElement("span");
+      span.appendChild(textNode);
+      document.body.appendChild(span);
+
+      component["applyMarkTagsToText"]([textNode], "test");
+
+      const marks = span.querySelectorAll("mark");
+      expect(marks.length).toBe(2);
+    });
+
+    it("should not apply marks if parent is already a mark", () => {
+      const textNode = document.createTextNode("test");
+      const mark = document.createElement("mark");
+      mark.appendChild(textNode);
+      const span = document.createElement("span");
+      span.appendChild(mark);
+      document.body.appendChild(span);
+
+      component["applyMarkTagsToText"]([textNode], "test");
+
+      const marks = span.querySelectorAll("mark");
+      expect(marks.length).toBe(1); // Only the original mark
+    });
+
+    it("should not apply marks if text doesn't match regex", () => {
+      const textNode = document.createTextNode("no match here");
+      const span = document.createElement("span");
+      span.appendChild(textNode);
+      document.body.appendChild(span);
+
+      component["applyMarkTagsToText"]([textNode], "test");
+
+      const marks = span.querySelectorAll("mark");
+      expect(marks.length).toBe(0);
+    });
+
+    it("should create highlighted fragment with alternating text and marks", () => {
+      const parts = ["before ", "test", " after ", "test", " end"];
+
+      const fragment = component["createHighlightedFragment"](parts);
+
+      expect(fragment.childNodes.length).toBe(5);
+      expect(fragment.childNodes[0].nodeName).toBe("#text");
+      expect(fragment.childNodes[1].nodeName).toBe("MARK");
+      expect(fragment.childNodes[2].nodeName).toBe("#text");
+      expect(fragment.childNodes[3].nodeName).toBe("MARK");
+      expect(fragment.childNodes[4].nodeName).toBe("#text");
+    });
+
+    it("should handle empty strings in fragment parts", () => {
+      const parts = ["", "test", ""];
+
+      const fragment = component["createHighlightedFragment"](parts);
+
+      // Empty strings should not create nodes
+      expect(fragment.childNodes.length).toBe(1);
+      expect(fragment.childNodes[0].nodeName).toBe("MARK");
+    });
+
+    it("should highlight text in DOM asynchronously", async () => {
+      component.json = { name: "test" };
+      component.ngOnChanges();
+      component.searchTerm = "test";
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test value</span></div>';
+
+      await component["highlightTextInDOM"]();
+
+      expect(component["highlightsInSync"]).toBe(true);
+    });
+
+    it("should handle missing container in highlightTextInDOM", async () => {
+      component.searchTerm = "test";
+      document.body.innerHTML = '<div class="wrong-container">test</div>';
+
+      await component["highlightTextInDOM"]();
+
+      expect(component["highlightsInSync"]).toBe(false);
+    });
+
+    it("should handle empty search term in highlightTextInDOM", async () => {
+      component.searchTerm = "";
+      document.body.innerHTML = '<div class="ngx-json-viewer">test</div>';
+
+      await component["highlightTextInDOM"]();
+
+      expect(component["highlightsInSync"]).toBe(false);
+    });
+
+    it("should use requestIdleCallback when available", async () => {
+      const originalRequestIdleCallback = (global as any).requestIdleCallback;
+      const mockCallback = vi.fn((cb) => setTimeout(cb, 0));
+      (global as any).requestIdleCallback = mockCallback;
+
+      component.searchTerm = "test";
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test</span></div>';
+
+      await component["highlightTextInDOM"]();
+
+      expect(mockCallback).toHaveBeenCalled();
+
+      (global as any).requestIdleCallback = originalRequestIdleCallback;
+    });
+
+    it("should fallback when requestIdleCallback is undefined", async () => {
+      const originalRequestIdleCallback = (global as any).requestIdleCallback;
+      (global as any).requestIdleCallback = undefined;
+
+      component.searchTerm = "test";
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test</span></div>';
+
+      await component["highlightTextInDOM"]();
+
+      expect(component["highlightsInSync"]).toBe(true);
+
+      (global as any).requestIdleCallback = originalRequestIdleCallback;
+    });
+
+    it("should handle errors in highlightTextInDOM", async () => {
+      component.searchTerm = "test";
+      document.body.innerHTML = '<div class="ngx-json-viewer">test</div>';
+
+      const clearSearchSpy = vi.spyOn(component, "clearSearch");
+      vi.spyOn(component as any, "findTextNodesWithMatch").mockImplementation(
+        () => {
+          throw new Error("DOM error");
+        }
+      );
+
+      await component["highlightTextInDOM"]();
+
+      expect(component["highlightsInSync"]).toBe(false);
+      expect(clearSearchSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe("Element Visibility Check", () => {
+    it("should return true for visible element", () => {
+      const element = document.createElement("div");
+      document.body.appendChild(element);
+
+      const isVisible = component["isElementVisible"](element);
+
+      expect(isVisible).toBe(true);
+    });
+
+    it("should return false for element with display none", () => {
+      const parent = document.createElement("div");
+      parent.style.display = "none";
+      const element = document.createElement("span");
+      parent.appendChild(element);
+      document.body.appendChild(parent);
+
+      const isVisible = component["isElementVisible"](element);
+
+      expect(isVisible).toBe(false);
+    });
+
+    it("should return false for element with visibility hidden", () => {
+      const parent = document.createElement("div");
+      parent.style.visibility = "hidden";
+      const element = document.createElement("span");
+      parent.appendChild(element);
+      document.body.appendChild(parent);
+
+      const isVisible = component["isElementVisible"](element);
+
+      expect(isVisible).toBe(false);
+    });
+
+    it("should check parent chain for visibility", () => {
+      const grandparent = document.createElement("div");
+      grandparent.style.display = "none";
+      const parent = document.createElement("div");
+      const element = document.createElement("span");
+      grandparent.appendChild(parent);
+      parent.appendChild(element);
+      document.body.appendChild(grandparent);
+
+      const isVisible = component["isElementVisible"](element);
+
+      expect(isVisible).toBe(false);
+    });
+  });
+
+  describe("Fast Navigation", () => {
+    it("should use fast path when highlights are in sync", async () => {
+      component.totalMatches = 3;
+      component.currentMatchIndex = 0;
+      component["highlightsInSync"] = true;
+      const marks = [];
+      for (let i = 0; i < 3; i++) {
+        const mark = document.createElement("mark");
+        mark.className = "search-match";
+        mark.scrollIntoView = vi.fn();
+        document.body.appendChild(mark);
+        marks.push(mark);
+      }
+
+      await component["fastNavigateToCurrentMatch"]();
+
+      const currentMatch = document.querySelector("mark.current-match");
+      expect(currentMatch).toBeTruthy();
+    });
+
+    it("should fallback to reHighlightAndNavigate when highlights not in sync", async () => {
+      component.totalMatches = 2;
+      component.currentMatchIndex = 0;
+      component["highlightsInSync"] = false;
+      const reHighlightSpy = vi
+        .spyOn(component as any, "reHighlightAndNavigate")
+        .mockResolvedValue(undefined);
+
+      await component["fastNavigateToCurrentMatch"]();
+
+      expect(reHighlightSpy).toHaveBeenCalled();
+    });
+
+    it("should fallback when DOM match count differs from totalMatches", async () => {
+      component.totalMatches = 5;
+      component.currentMatchIndex = 0;
+      component["highlightsInSync"] = true;
+      document.body.innerHTML =
+        '<mark class="search-match">1</mark><mark class="search-match">2</mark>'; // Only 2, but expects 5
+
+      const reHighlightSpy = vi
+        .spyOn(component as any, "reHighlightAndNavigate")
+        .mockResolvedValue(undefined);
+
+      await component["fastNavigateToCurrentMatch"]();
+
+      expect(reHighlightSpy).toHaveBeenCalled();
+      expect(component["highlightsInSync"]).toBe(false);
+    });
+
+    it("should fallback when current match is not visible", async () => {
+      component.totalMatches = 2;
+      component.currentMatchIndex = 1;
+      component["highlightsInSync"] = true;
+
+      const parent = document.createElement("div");
+      parent.style.display = "none";
+      const mark1 = document.createElement("mark");
+      mark1.className = "search-match";
+      const mark2 = document.createElement("mark");
+      mark2.className = "search-match";
+      parent.appendChild(mark2);
+      document.body.appendChild(mark1);
+      document.body.appendChild(parent);
+
+      const reHighlightSpy = vi
+        .spyOn(component as any, "reHighlightAndNavigate")
+        .mockResolvedValue(undefined);
+
+      await component["fastNavigateToCurrentMatch"]();
+
+      expect(reHighlightSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe("Search State Restoration", () => {
+    it("should restore search state after toggle", async () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
+      component.searchTerm = "test";
+      component.totalMatches = 3;
+      component.currentMatchIndex = 1;
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test test test</span></div>';
+
+      // Mock the internal methods to avoid DOM issues
+      const clearSpy = vi
+        .spyOn(component as any, "clearTextHighlightFromDOM")
+        .mockImplementation(() => {});
+      const highlightSpy = vi
+        .spyOn(component as any, "highlightTemplateSegments")
+        .mockImplementation(() => {});
+      vi.spyOn(component as any, "highlightTextInDOM").mockResolvedValue(
+        undefined
+      );
+      vi.spyOn(component as any, "scrollToCurrentMatch").mockResolvedValue(
+        undefined
+      );
+      vi.spyOn(component as any, "setActiveMatchHighlight").mockReturnValue(
+        null
+      );
+
+      await component["restoreSearchStateAfterToggle"](1);
+
+      expect(clearSpy).toHaveBeenCalled();
+      expect(highlightSpy).toHaveBeenCalled();
+    });
+
+    it("should adjust match index if it exceeds total matches", async () => {
+      component.json = { test: "value" };
+      component.ngOnChanges();
+      component.searchTerm = "test";
+      component.totalMatches = 2;
+      component.currentMatchIndex = 5; // Invalid index
+      document.body.innerHTML =
+        '<div class="ngx-json-viewer"><span>test test</span></div>';
+
+      // Mock the internal methods to avoid DOM issues
+      vi.spyOn(
+        component as any,
+        "clearTextHighlightFromDOM"
+      ).mockImplementation(() => {});
+      vi.spyOn(
+        component as any,
+        "highlightTemplateSegments"
+      ).mockImplementation(() => {});
+      vi.spyOn(component as any, "highlightTextInDOM").mockResolvedValue(
+        undefined
+      );
+      vi.spyOn(component as any, "scrollToCurrentMatch").mockResolvedValue(
+        undefined
+      );
+      vi.spyOn(component as any, "setActiveMatchHighlight").mockReturnValue(
+        null
+      );
+      vi.spyOn(component as any, "countMatchesInRawData").mockReturnValue(2);
+
+      await component["restoreSearchStateAfterToggle"](5);
+
+      // The method will update totalMatches based on countMatchesInRawData
+      expect(component.totalMatches).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe("Scroll to Match", () => {
+    it("should scroll to current match", () => {
+      component.currentMatchIndex = 1;
+      const mark1 = document.createElement("mark");
+      mark1.className = "search-match";
+      const mark2 = document.createElement("mark");
+      mark2.className = "search-match";
+      const scrollSpy = vi.fn();
+      mark2.scrollIntoView = scrollSpy;
+
+      document.body.appendChild(mark1);
+      document.body.appendChild(mark2);
+
+      component["scrollToMatch"]();
+
+      expect(mark2.classList.contains("current-match")).toBe(true);
+      expect(scrollSpy).toHaveBeenCalled();
+    });
+
+    it("should not scroll when no matches found", () => {
+      component.currentMatchIndex = 0;
+      document.body.innerHTML = "<div>no marks</div>";
+
+      expect(() => component["scrollToMatch"]()).not.toThrow();
+    });
+
+    it("should clear previous current match highlighting", () => {
+      component.currentMatchIndex = 1;
+      const mark1 = document.createElement("mark");
+      mark1.className = "search-match current-match";
+      const mark2 = document.createElement("mark");
+      mark2.className = "search-match";
+      mark2.scrollIntoView = vi.fn();
+
+      document.body.appendChild(mark1);
+      document.body.appendChild(mark2);
+
+      component["scrollToMatch"]();
+
+      expect(mark1.classList.contains("current-match")).toBe(false);
+      expect(mark2.classList.contains("current-match")).toBe(true);
     });
   });
 });

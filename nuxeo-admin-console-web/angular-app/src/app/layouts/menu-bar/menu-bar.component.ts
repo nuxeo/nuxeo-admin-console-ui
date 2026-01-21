@@ -3,7 +3,8 @@ import { ADMIN_MENU, Menu } from "./menu-bar.constants";
 @Component({
   selector: "menu-bar",
   templateUrl: "./menu-bar.component.html",
-  styleUrls: ['./menu-bar.component.scss']
+  styleUrls: ['./menu-bar.component.scss'],
+  standalone: false
 })
 export class MenuBarComponent {
   menu: Menu[] = ADMIN_MENU;

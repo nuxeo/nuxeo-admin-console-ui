@@ -1,5 +1,5 @@
 import { versionInfo } from "./../../../../shared/types/version-info.interface";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { Store, select } from "@ngrx/store";
 import { Observable, Subject, takeUntil } from "rxjs";
 import * as HomeActions from "../../store/actions";
@@ -14,8 +14,12 @@ import { SharedMethodsService } from "../../../../shared/services/shared-methods
   selector: "registration-version",
   templateUrl: "./registration-version.component.html",
   styleUrls: ["./registration-version.component.scss"],
+  standalone: false
 })
 export class RegistrationVersionComponent implements OnInit, OnDestroy {
+  private store =
+    inject<Store<{ home: HomeState; instanceInfo: InstanceState }>>(Store);
+  private sharedMethodsService = inject(SharedMethodsService);
   versionInfo$: Observable<versionInfo>;
   error$: Observable<HttpErrorResponse | null>;
   versionInformation: versionInfo | null = null;
@@ -26,10 +30,7 @@ export class RegistrationVersionComponent implements OnInit, OnDestroy {
   instanceInformation: InstanceInfo | null = null;
   INSTANCE_INFO_LABEL = INSTANCE_INFO_LABELS;
   INSTANCE_INFO_DATA_LABELS = INSTANCE_INFO_DATA_LABELS;
-  constructor(
-    private store: Store<{ home: HomeState; instanceInfo: InstanceState }>,
-    private sharedMethodsService: SharedMethodsService
-  ) {
+  constructor() {
     this.versionInfo$ = this.store.pipe(
       select((state) => state.home?.versionInfo)
     );

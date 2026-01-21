@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import {
   CONSUMER_THREAD_POOL_LABELS,
   STREAM_LABELS,
@@ -30,8 +30,18 @@ import { StreamService } from "../../services/stream.service";
   selector: "app-consumer-thread-pool",
   templateUrl: "./consumer-thread-pool.component.html",
   styleUrls: ["./consumer-thread-pool.component.scss"],
+  standalone: false
 })
 export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
+  private store = inject<
+    Store<{
+      streams: StreamsState;
+      consumerThreadPool: ConsumerThreadPoolState;
+    }>
+  >(Store);
+  private fb = inject(FormBuilder);
+  dialogService = inject(MatDialog);
+  private streamService = inject(StreamService);
   GENERIC_LABELS = GENERIC_LABELS;
   streams: Stream[] = [];
   consumers: { stream: string; consumer: string }[] = [];
@@ -57,15 +67,7 @@ export class ConsumerThreadPoolComponent implements OnInit, OnDestroy  {
   isStopConsumerThreadPoolSuccess$!: Observable<ConsumerThreadPoolState>;
   isStopConsumerThreadPoolFailure$!: Observable<HttpErrorResponse | null>;
   isStartStopConsumerThreadBtnDisabled = false;
-  constructor(
-    private store: Store<{
-      streams: StreamsState;
-      consumerThreadPool: ConsumerThreadPoolState;
-    }>,
-    private fb: FormBuilder,
-    public dialogService: MatDialog,
-    private streamService: StreamService
-  ) {
+  constructor() {
     this.streamForm = this.fb.group({
       stream: ["", Validators.required],
       consumer: ["", Validators.required],

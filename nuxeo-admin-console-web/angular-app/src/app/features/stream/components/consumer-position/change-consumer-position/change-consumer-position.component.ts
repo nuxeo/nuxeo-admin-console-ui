@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import {
   ERROR_TYPES,
@@ -33,8 +33,18 @@ import { ErrorModalClosedInfo } from "../../../../../shared/types/common.interfa
   selector: "change-consumer-position",
   templateUrl: "./change-consumer-position.component.html",
   styleUrls: ["./change-consumer-position.component.scss"],
+  standalone: false
 })
 export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      streams: StreamsState;
+      consumerPosition: ChangeConsumerPositionState;
+    }>
+  >(Store);
+  dialogService = inject(MatDialog);
+  private sharedMethodService = inject(SharedMethodsService);
   consumerPositionForm: FormGroup;
   GENERIC_LABELS = GENERIC_LABELS;
   STREAM_LABELS = STREAM_LABELS;
@@ -60,15 +70,8 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     | undefined = undefined;
   @ViewChild("focusMatSelect")
   focusMatSelect!: MatSelect;
-  constructor(
-    private fb: FormBuilder,
-    private store: Store<{
-      streams: StreamsState;
-      consumerPosition: ChangeConsumerPositionState;
-    }>,
-    public dialogService: MatDialog,
-    private sharedMethodService: SharedMethodsService
-  ) {
+  clearSearchInput = false;
+  constructor() {
     this.consumerPositionForm = this.fb.group({
       stream: ["", Validators.required],
       consumer: ["", Validators.required],
@@ -141,20 +144,15 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isChangeConsumerPositionDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -180,20 +178,15 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.isChangeConsumerPositionDisabled = true;
-          this.sharedMethodService
-            .showActionErrorModal({
-              type: ERROR_TYPES.SERVER_ERROR,
-              details: {
-                status: (error?.error as HttpErrorResponse)?.status || error.status,
-                message: (error?.error as HttpErrorResponse)?.message || error.message,
-              },
-            })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              if (this.focusMatSelect) {
-                this.focusMatSelect.focus();
-              }
-            });
+          this.sharedMethodService.showActionErrorModal({
+            type: ERROR_TYPES.SERVER_ERROR,
+            details: {
+              status:
+                (error?.error as HttpErrorResponse)?.status || error.status,
+              message:
+                (error?.error as HttpErrorResponse)?.message || error.message,
+            },
+          });
         }
       });
 
@@ -202,6 +195,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .subscribe((error) => {
         if (error) {
           this.consumerPositionData = [];
+          this.clearSearchInput = false;
           this.sharedMethodService
             .showActionErrorModal({
               type: ERROR_TYPES.SERVER_ERROR,
@@ -223,6 +217,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if (this.isValidData(data)) {
+          this.clearSearchInput = false;
           this.consumerPositionData = data;
           this.sharedMethodService.showSuccessSnackBar(
             CHANGE_CONSUMER_POSITION_LABELS.SUCCESS_SNACKBAR_MESSAGE
@@ -280,6 +275,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
   }
 
   changePosition() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let params: any = {
       consumer:
         this.consumerPositionForm.controls[
@@ -329,7 +325,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
     );
   }
 
-  isValidData(data: any): boolean {
+  isValidData(data: unknown): boolean {
     //display consumer position data container if data is available else hide.
     if (!data) return false;
     if (Object.keys(data).length === 0) return false;
@@ -385,6 +381,7 @@ export class ChangeConsumerPositionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if (data?.continue) {
+          this.clearSearchInput = true;
           this.changePosition();
         }
         if (this.focusMatSelect) {

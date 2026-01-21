@@ -1,16 +1,37 @@
-import { ErrorModalComponent } from '../error-modal/error-modal.component';
-import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { ErrorModalComponent } from "../error-modal/error-modal.component";
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { CommonModule } from "@angular/common";
-import { ErrorDetails } from '../../generic-multi-feature-layout.interface';
-import { ERROR_MESSAGES, ERROR_TYPES } from '../../generic-multi-feature-layout.constants';
-import { ErrorModalData } from '../../../../../shared/types/common.interface';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ErrorDetails } from "../../generic-multi-feature-layout.interface";
+import {
+  ERROR_MESSAGES,
+  ERROR_TYPES,
+} from "../../generic-multi-feature-layout.constants";
+import { ErrorModalData } from "../../../../../shared/types/common.interface";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+
 describe("ErrorModalComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: ErrorModalComponent;
   let fixture: ComponentFixture<ErrorModalComponent>;
-  let dialogRef: jasmine.SpyObj<MatDialogRef<ErrorModalComponent>>;
+  let dialogRef: MockedObject<MatDialogRef<ErrorModalComponent>>;
   const exampleErrorDetails: ErrorDetails = {
     type: ERROR_TYPES.NO_DOCUMENT_ID_FOUND,
     details: {
@@ -41,7 +62,9 @@ describe("ErrorModalComponent", () => {
   };
 
   beforeEach(() => {
-    const dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
+    const dialogRefSpy = {
+      close: vi.fn().mockName("MatDialogRef.close"),
+    };
     TestBed.configureTestingModule({
       declarations: [ErrorModalComponent],
       imports: [CommonModule, MatDialogModule],
@@ -49,12 +72,12 @@ describe("ErrorModalComponent", () => {
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-       schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ErrorModalComponent);
     component = fixture.componentInstance;
-    dialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<
+    dialogRef = TestBed.inject(MatDialogRef) as MockedObject<
       MatDialogRef<ErrorModalComponent>
     >;
   });
@@ -98,7 +121,7 @@ describe("ErrorModalComponent", () => {
     });
 
     it("should return default error message if no error data", () => {
-      component.data = defaultErrorData;
+      component.data = undefined as any;
       expect(component.getCustomErrorMessage()).toBe(
         ERROR_MESSAGES.UNKNOWN_ERROR_MESSAGE
       );

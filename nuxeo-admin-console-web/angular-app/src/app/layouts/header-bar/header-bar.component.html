@@ -7,9 +7,11 @@
   </div>
 
   <div>
-    <span *ngIf="displayName" class="header-bar__branding__username">
+    @if (displayName) {
+    <span class="header-bar__branding__username">
       {{ displayName }}
     </span>
+    }
     <button mat-stroked-button (click)="onSignOut()" aria-label="Logout" class="logout-btn">
       <mat-icon fontSet="material-symbols-outlined">logout</mat-icon> {{ LOGOUT }}
     </button>

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { map, Observable } from "rxjs";
 import { UserInterface } from "../../shared/types/user.interface";
 import { AuthUserResponseInterface } from "../types/authResponse.interface";
@@ -9,9 +9,7 @@ import { NetworkService } from "../../shared/services/network.service";
   providedIn: "root",
 })
 export class AuthService {
-  constructor(
-    private networkService: NetworkService
-  ) {}
+  private networkService = inject(NetworkService);
 
   getCurrentUser(): Observable<UserInterface> {
     return this.networkService

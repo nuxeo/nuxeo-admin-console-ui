@@ -2,7 +2,7 @@ import { VIDEO_RENDITIONS_LABELS } from "./../../../../video-renditions-generati
 import { FULLTEXT_REINDEX_LABELS } from "src/app/features/fulltext-reindex/fulltext-reindex.constants";
 import { REST_END_POINTS } from "./../../../../../shared/constants/rest-end-ponts.constants";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -48,8 +48,19 @@ import {
   selector: "nxql-tab",
   templateUrl: "./nxql-tab.component.html",
   styleUrls: ["./nxql-tab.component.scss"],
+  standalone: false
 })
 export class NXQLTabComponent implements OnInit, OnDestroy {
+  dialogService = inject(MatDialog);
+  private fb = inject(FormBuilder);
+  private store = inject<
+    Store<{
+      nxqlAction: NXQLActionState;
+    }>
+  >(Store);
+  private nuxeoJSClientService = inject(NuxeoJSClientService);
+  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
+  private sanitizer = inject(DomSanitizer);
   inputForm: FormGroup;
   spinnerVisible = false;
   userInput = "";
@@ -80,14 +91,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
   requestQuery = "";
   private destroy$: Subject<void> = new Subject<void>();
 
-  constructor(
-    public dialogService: MatDialog,
-    private fb: FormBuilder,
-    private store: Store<{ nxqlAction: NXQLActionState }>,
-    private nuxeoJSClientService: NuxeoJSClientService,
-    private genericMultiFeatureUtilitiesService: GenericMultiFeatureUtilitiesService,
-    private sanitizer: DomSanitizer
-  ) {
+  constructor() {
     this.inputForm = this.fb.group({
       inputIdentifier: ["", Validators.required],
       force: [false],
@@ -337,6 +341,10 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             })
           );
         }
+      })
+      .catch(() => {
+        // Handle any unhandled errors from the error processing chain
+        // This prevents unhandled promise rejections
       });
   }
 

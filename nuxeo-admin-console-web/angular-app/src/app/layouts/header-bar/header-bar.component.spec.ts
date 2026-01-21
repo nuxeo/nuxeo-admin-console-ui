@@ -1,9 +1,11 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HeaderBarComponent } from "./header-bar.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { provideMockStore, MockStore } from "@ngrx/store/testing";
 import { NuxeoJSClientService } from "../../shared/services/nuxeo-js-client.service";
 import { Router } from "@angular/router";
-import { RouterTestingModule } from '@angular/router/testing';
+import { RouterTestingModule } from "@angular/router/testing";
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
@@ -13,8 +15,10 @@ import { CommonModule } from "@angular/common";
 import { UserInterface } from "../../shared/types/user.interface";
 import { authActions } from "../../auth/store/actions";
 import { MatIconModule } from "@angular/material/icon";
-
 describe("HeaderBarComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: HeaderBarComponent;
   let fixture: ComponentFixture<HeaderBarComponent>;
   let store: MockStore;
@@ -24,20 +28,24 @@ describe("HeaderBarComponent", () => {
     auth: {
       isSubmitting: false,
       currentUser: {
-        id: 'Administrator', isAdministrator: false, properties: {
+        id: "Administrator",
+        isAdministrator: false,
+        properties: {
           firstName: "nco",
           lastName: "admin",
           email: "nco-admin@nuxeo.com",
-          username: "Administrator"
-        }
+          username: "Administrator",
+        },
       },
       isLoading: false,
-      validationErrors: null
-    }
+      validationErrors: null,
+    },
   };
 
   beforeEach(async () => {
-    const nuxeoJsClientServiceSpy = jasmine.createSpyObj('nuxeoJSClientService', ['getBaseUrl']);
+    const nuxeoJsClientServiceSpy = {
+      getBaseUrl: vi.fn().mockName("nuxeoJSClientService.getBaseUrl"),
+    };
 
     await TestBed.configureTestingModule({
       declarations: [HeaderBarComponent],
@@ -45,7 +53,7 @@ describe("HeaderBarComponent", () => {
         CommonModule,
         MatToolbarModule,
         RouterTestingModule,
-        MatIconModule
+        MatIconModule,
       ],
       providers: [
         provideMockStore({ initialState: initialAuthState }),
@@ -66,76 +74,76 @@ describe("HeaderBarComponent", () => {
 
   it("should initialize displayName based on currentUser properties", () => {
     const currentUser: UserInterface = {
-      id: 'Administrator',
+      id: "Administrator",
       isAdministrator: false,
       properties: {
         firstName: "nco",
         lastName: "admin",
         email: "nco-admin@nuxeo.com",
-        username: "nco-admin"
-      }
+        username: "nco-admin",
+      },
     };
     store.setState({
       auth: {
         ...initialAuthState.auth,
-        currentUser
-      }
+        currentUser,
+      },
     });
     fixture.detectChanges();
-    expect(component.displayName).toBe('nco admin');
+    expect(component.displayName).toBe("nco admin");
   });
 
   it("should set displayName to username if firstName and lastName are not available", () => {
     const currentUser: UserInterface = {
-      id: 'Administrator',
+      id: "Administrator",
       isAdministrator: false,
       properties: {
         firstName: "",
         lastName: "",
         email: "nco-admin@nuxeo.com",
-        username: "nco-admin"
-      }
+        username: "nco-admin",
+      },
     };
     store.setState({
       auth: {
         ...initialAuthState.auth,
-        currentUser
-      }
+        currentUser,
+      },
     });
     fixture.detectChanges();
-    expect(component.displayName).toBe('nco-admin');
+    expect(component.displayName).toBe("nco-admin");
   });
 
   it("should set displayName to firstName if lastName is not available", () => {
     const currentUser: UserInterface = {
-      id: 'Administrator',
+      id: "Administrator",
       isAdministrator: false,
       properties: {
         firstName: "nco",
         lastName: "",
         email: "nco-admin@nuxeo.com",
-        username: "nco-admin"
-      }
+        username: "nco-admin",
+      },
     };
     store.setState({
       auth: {
         ...initialAuthState.auth,
-        currentUser
-      }
+        currentUser,
+      },
     });
     fixture.detectChanges();
-    expect(component.displayName).toBe('nco');
+    expect(component.displayName).toBe("nco");
   });
-  
+
   it("should navigate to home on navigateToHome call", () => {
-    spyOn(router, 'navigate');
+    vi.spyOn(router, "navigate");
     component.navigateToHome();
-    expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    expect(router.navigate).toHaveBeenCalledWith(["/home"]);
   });
 
   describe("onSignOut", () => {
     it("should dispatch signOut action", () => {
-      spyOn(store, "dispatch");
+      vi.spyOn(store, "dispatch");
       component.onSignOut();
       expect(store.dispatch).toHaveBeenCalledWith(authActions.signOut());
     });

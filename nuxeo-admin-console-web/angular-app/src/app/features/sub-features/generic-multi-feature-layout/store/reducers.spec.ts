@@ -1,3 +1,5 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { describe, expect, it } from "vitest";
 import {
   documentActionReducer,
   folderActionReducer,
@@ -8,8 +10,10 @@ import {
 } from "./reducers";
 import { HttpErrorResponse } from "@angular/common/http";
 import * as FeatureActions from "./actions";
-
 describe("DocumentActionReducer", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   it("should return initial state", () => {
     const state = documentActionReducer(undefined, { type: "" });
     expect(state).toEqual(initialDocumentState);
@@ -20,7 +24,7 @@ describe("DocumentActionReducer", () => {
       requestUrl: "query",
       requestParams: {},
       featureEndpoint: "/document",
-      requestHeaders: {}
+      requestHeaders: {},
     });
     const state = documentActionReducer(initialDocumentState, action);
     expect(state.error).toBeNull();
@@ -66,7 +70,7 @@ describe("FolderActionReducer", () => {
       requestUrl: "query",
       requestParams: {},
       featureEndpoint: "/folder",
-      requestHeaders: {}
+      requestHeaders: {},
     });
     const state = folderActionReducer(initialFolderActionState, action);
     expect(state.error).toBeNull();
@@ -110,7 +114,7 @@ describe("NXQLActionReducer", () => {
       requestUrl: "SELECT * FROM NXQL",
       requestParams: {},
       featureEndpoint: "/nxql",
-      requestHeaders: {}
+      requestHeaders: {},
     });
     const state = nxqlActionReducer(initialNXQLActionState, action);
     expect(state.error).toBeNull();

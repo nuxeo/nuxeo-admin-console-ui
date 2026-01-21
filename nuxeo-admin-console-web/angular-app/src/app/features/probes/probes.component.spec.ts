@@ -1,3 +1,12 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ProbesComponent } from "./probes.component";
 import { StoreModule } from "@ngrx/store";
@@ -5,7 +14,7 @@ import {
   ProbeDataReducer,
   ProbeState,
 } from "../sub-features/probes-data/store/reducers";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatCardModule } from "@angular/material/card";
 import { CommonModule } from "@angular/common";
@@ -17,34 +26,43 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { Subscription } from "rxjs";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { initialState } from "../home/store/reducers";
-import { HttpErrorResponse } from "@angular/common/http";
+import {
+  HttpErrorResponse,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 import { SharedMethodsService } from "../../shared/services/shared-methods.service";
 import { PROBES_LABELS } from "../sub-features/probes-data/probes-data.constants";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import * as ProbeActions from "../sub-features/probes-data/store/actions";
 describe("ProbesComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: ProbesComponent;
   let fixture: ComponentFixture<ProbesComponent>;
-  let store: MockStore<{ probes: ProbeState }>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let sharedMethodsService: jasmine.SpyObj<SharedMethodsService>;
+  let store: MockStore<{
+    probes: ProbeState;
+  }>;
+  let snackBar: MockedObject<MatSnackBar>;
+  let sharedMethodsService: MockedObject<SharedMethodsService>;
 
   beforeEach(async () => {
-    snackBar = jasmine.createSpyObj("MatSnackBar", ["openFromComponent"]);
-    sharedMethodsService = jasmine.createSpyObj("SharedMethodsService", [
-      "showSuccessSnackBar",
-      "showErrorSnackBar",
-    ]);
+    snackBar = {
+      openFromComponent: vi.fn().mockName("MatSnackBar.openFromComponent"),
+    } as any;
+    sharedMethodsService = {
+      showSuccessSnackBar: vi
+        .fn()
+        .mockName("SharedMethodsService.showSuccessSnackBar"),
+      showErrorSnackBar: vi
+        .fn()
+        .mockName("SharedMethodsService.showErrorSnackBar"),
+    } as any;
     await TestBed.configureTestingModule({
       declarations: [ProbesComponent, ProbesDataComponent],
-      providers: [
-        { provide: MatSnackBar, useValue: snackBar },
-        provideMockStore({ initialState: { probes: initialState } }),
-        { provide: SharedMethodsService, useValue: sharedMethodsService },
-      ],
       imports: [
         StoreModule.forRoot({ probes: ProbeDataReducer }),
-        HttpClientTestingModule,
         CommonModule,
         MatCardModule,
         MatSnackBarModule,
@@ -52,6 +70,13 @@ describe("ProbesComponent", () => {
         BrowserAnimationsModule,
         MatPaginatorModule,
         MatTooltipModule,
+      ],
+      providers: [
+        { provide: MatSnackBar, useValue: snackBar },
+        provideMockStore({ initialState: { probes: initialState } }),
+        { provide: SharedMethodsService, useValue: sharedMethodsService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
@@ -84,7 +109,7 @@ describe("ProbesComponent", () => {
   });
 
   it("should dispatch '[Admin] Launch All Probes' when launchAllProbes is called", () => {
-    const dispatchSpy = spyOn(component["store"], "dispatch");
+    const dispatchSpy = vi.spyOn(component["store"], "dispatch");
     component.launchAllProbes();
     expect(dispatchSpy).toHaveBeenCalledWith(ProbeActions.launchAllProbes());
   });
@@ -94,9 +119,9 @@ describe("ProbesComponent", () => {
   });
 
   it("should have fetchProbesSubscription as Subscription", () => {
-    expect(
-      component.fetchProbesSubscription instanceof Subscription
-    ).toBeTrue();
+    expect(component.fetchProbesSubscription instanceof Subscription).toBe(
+      true
+    );
   });
 
   it("should show error snackBar when launchAllProbes fails", () => {
@@ -143,7 +168,7 @@ describe("ProbesComponent", () => {
       },
     });
     fixture.detectChanges();
-    expect(component.isCheckAllProbesBtnDisabled).toBeTrue();
+    expect(component.isCheckAllProbesBtnDisabled).toBe(true);
   });
 
   it("should update isCheckAllProbesBtnDisabled to false when loadProbesData$ emits a success", () => {
@@ -185,15 +210,14 @@ describe("ProbesComponent", () => {
       },
     });
     fixture.detectChanges();
-    expect(component.isCheckAllProbesBtnDisabled).toBeFalse();
+    expect(component.isCheckAllProbesBtnDisabled).toBe(false);
   });
 
   it("should reset launchAllProbes state on destroy", () => {
-    const dispatchSpy = spyOn(store, "dispatch");
+    const dispatchSpy = vi.spyOn(store, "dispatch");
     component.ngOnDestroy();
     expect(dispatchSpy).toHaveBeenCalledWith({
       type: "[Admin] Reset Launch All Probes State",
     });
   });
-  
 });

@@ -1,33 +1,44 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ProbesSummaryComponent } from './probes-summary.component';
-import {  StoreModule } from '@ngrx/store';
-import { ProbeDataReducer } from '../../../sub-features/probes-data/store/reducers';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
-import { By } from '@angular/platform-browser';
-import { ProbesDataComponent } from '../../../sub-features/probes-data/components/probes-data.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { beforeEach, describe, expect, it } from "vitest";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ProbesSummaryComponent } from "./probes-summary.component";
+import { StoreModule } from "@ngrx/store";
+import { ProbeDataReducer } from "../../../sub-features/probes-data/store/reducers";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatCardModule } from "@angular/material/card";
+import { CommonModule } from "@angular/common";
+import { By } from "@angular/platform-browser";
+import { ProbesDataComponent } from "../../../sub-features/probes-data/components/probes-data.component";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatTableModule } from "@angular/material/table";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
+describe("ProbesSummaryComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
 
-describe('ProbesSummaryComponent', () => {
   let component: ProbesSummaryComponent;
   let fixture: ComponentFixture<ProbesSummaryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProbesSummaryComponent, ProbesDataComponent], 
+      declarations: [ProbesSummaryComponent, ProbesDataComponent],
       imports: [
-        StoreModule.forRoot({ probes: ProbeDataReducer }), 
-        HttpClientTestingModule,
+        StoreModule.forRoot({ probes: ProbeDataReducer }),
         CommonModule,
         MatCardModule,
         MatSnackBarModule,
         MatTableModule,
         BrowserAnimationsModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+      ],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
@@ -44,7 +55,8 @@ describe('ProbesSummaryComponent', () => {
     const probesDataElement = fixture.debugElement.query(
       By.directive(ProbesDataComponent)
     );
-    const probesDataComponent = probesDataElement.componentInstance as ProbesDataComponent;
+    const probesDataComponent =
+      probesDataElement.componentInstance as ProbesDataComponent;
     expect(probesDataComponent.summary).toBe(true);
   });
 });

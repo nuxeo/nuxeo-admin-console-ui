@@ -1,8 +1,23 @@
-import { GenericModalComponent } from './generic-modal.component';
-import { GENERIC_LABELS } from './../../generic-multi-feature-layout.constants';
-import { GenericModalData } from './../../generic-multi-feature-layout.interface';
-import { CommonService } from './../../../../../shared/services/common.service';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { GenericModalComponent } from "./generic-modal.component";
+import { GENERIC_LABELS } from "./../../generic-multi-feature-layout.constants";
+import { GenericModalData } from "./../../generic-multi-feature-layout.interface";
+import { CommonService } from "./../../../../../shared/services/common.service";
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+} from "@angular/material/dialog";
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
@@ -12,14 +27,16 @@ import { CommonModule } from "@angular/common";
 import { provideMockStore } from "@ngrx/store/testing";
 import { StoreModule } from "@ngrx/store";
 import { EventEmitter } from "@angular/core";
-import { Router } from "@angular/router"; 
-
+import { Router } from "@angular/router";
 describe("GenericModalComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: GenericModalComponent;
   let fixture: ComponentFixture<GenericModalComponent>;
   let dialogRef: MatDialogRef<GenericModalComponent>;
-  let router: jasmine.SpyObj<Router>; 
-  let commonService: jasmine.SpyObj<CommonService>;
+  let router: MockedObject<Router>;
+  let commonService: MockedObject<CommonService>;
 
   class CommonServiceStub {
     loadApp = new EventEmitter<boolean>();
@@ -40,13 +57,15 @@ describe("GenericModalComponent", () => {
   };
 
   beforeEach(async () => {
-    const matDialogRefSpy = jasmine.createSpyObj("MatDialogRef", [
-      "afterClosed",
-      "continue",
-      "close",
-    ]);
+    const matDialogRefSpy = {
+      afterClosed: vi.fn().mockName("MatDialogRef.afterClosed"),
+      continue: vi.fn().mockName("MatDialogRef.continue"),
+      close: vi.fn().mockName("MatDialogRef.close"),
+    };
 
-    router = jasmine.createSpyObj("Router", ["navigate"]);
+    router = {
+      navigate: vi.fn().mockName("Router.navigate"),
+    } as any;
 
     await TestBed.configureTestingModule({
       declarations: [GenericModalComponent],
@@ -71,11 +90,11 @@ describe("GenericModalComponent", () => {
     component = fixture.componentInstance;
     commonService = TestBed.inject(
       CommonService
-    ) as jasmine.SpyObj<CommonService>;
+    ) as MockedObject<CommonService>;
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it("should create the component", () => {
@@ -98,14 +117,12 @@ describe("GenericModalComponent", () => {
   });
 
   it("should display a JavaScript alert indicating action ID has been copied to clipboard", async () => {
-    const clipboardWriteTextSpy = jasmine
-      .createSpy("writeText")
-      .and.returnValue(Promise.resolve());
+    const clipboardWriteTextSpy = vi.fn().mockReturnValue(Promise.resolve());
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: clipboardWriteTextSpy },
       writable: true,
     });
-    const alertSpy = spyOn(window, "alert");
+    const alertSpy = vi.spyOn(window, "alert");
 
     await component.copyActionId();
 
@@ -118,13 +135,13 @@ describe("GenericModalComponent", () => {
   });
 
   it("should navigate to the bulk action monitoring page with URL parameter and close the dialog when 'See Status' is clicked", async () => {
-    const closeDialogSpy = dialogRef.close as jasmine.Spy;
-    spyOn(commonService, "redirectToBulkActionMonitoring");
+    const closeDialogSpy = dialogRef.close as Mock;
+    vi.spyOn(commonService, "redirectToBulkActionMonitoring");
     await component.seeStatus();
     expect(commonService.redirectToBulkActionMonitoring).toHaveBeenCalledWith(
       component.data.commandId
     );
-    expect(closeDialogSpy).toHaveBeenCalled(); 
+    expect(closeDialogSpy).toHaveBeenCalled();
   });
 
   it("should emit continue: true & commandId when user chooses to continue", () => {

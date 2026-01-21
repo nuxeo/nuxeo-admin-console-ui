@@ -1,11 +1,15 @@
+import { initializeTestBed } from "src/test-helpers"; //This import must be the first import in the file.
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ConsumerPositionComponent } from "./consumer-position.component";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Subject } from "rxjs";
 import { MAIN_TAB_LABELS } from "../../stream.constants";
 import { MatTabsModule } from "@angular/material/tabs";
-
 describe("ConsumerPositionComponent", () => {
+  // Initialize TestBed for component testing
+  initializeTestBed();
+
   let component: ConsumerPositionComponent;
   let fixture: ComponentFixture<ConsumerPositionComponent>;
   let routerMock: any;
@@ -16,7 +20,7 @@ describe("ConsumerPositionComponent", () => {
     eventsSubject = new Subject<any>();
 
     routerMock = {
-      navigate: jasmine.createSpy("navigate"),
+      navigate: vi.fn(),
       events: eventsSubject.asObservable(),
     };
 
@@ -50,8 +54,8 @@ describe("ConsumerPositionComponent", () => {
     component.ngOnInit();
     expect(routerMock.navigate).toHaveBeenCalledWith(
       [
-        MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS
-          .CHANGE_CONSUMER_POSITION.ROUTE_LABEL,
+        MAIN_TAB_LABELS.CONSUMER_POSITION.SUB_TAB_LABELS.GET_CONSUMER_POSITION
+          .ROUTE_LABEL,
       ],
       { relativeTo: activatedRouteMock }
     );
@@ -68,7 +72,7 @@ describe("ConsumerPositionComponent", () => {
         ],
       },
     };
-    spyOn(component, "syncTabIndexFromRoute");
+    vi.spyOn(component, "syncTabIndexFromRoute");
     component.ngOnInit();
     expect(component.syncTabIndexFromRoute).toHaveBeenCalled();
   });
@@ -146,14 +150,14 @@ describe("ConsumerPositionComponent", () => {
         ],
       },
     };
-    spyOn(component, "syncTabIndexFromRoute");
+    vi.spyOn(component, "syncTabIndexFromRoute");
     component.ngOnInit();
     eventsSubject.next(new NavigationEnd(1, "/test", "/test"));
     expect(component.syncTabIndexFromRoute).toHaveBeenCalled();
   });
 
   it("should complete destroy$ on ngOnDestroy", () => {
-    const spy = spyOn(component.destroy$, "complete").and.callThrough();
+    const spy = vi.spyOn(component.destroy$, "complete");
     component.ngOnDestroy();
     expect(spy).toHaveBeenCalled();
   });
