@@ -15,13 +15,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!-- 
+
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.util.*" %>
+<%@ page import="java.io.*" %>
 
 <%
   String context = request.getContextPath();
 %> 
--->
 <%
     try {
         Class.forName("jakarta.servlet.http.HttpServletResponse");
@@ -71,19 +72,47 @@ limitations under the License.
   resp.setHeader("Content-Security-Policy", newCspHeader);
 %>
 
+<%
+  // ---- Discover hashed Angular assets ----
+  File baseDir = new File(application.getRealPath("/nuxeoadmin"));
+
+  String mainJs = null;
+  String polyfillsJs = null;
+  String stylesCss = null;
+
+  for (File f : baseDir.listFiles()) {
+      String name = f.getName();
+
+      if (name.startsWith("main-") && name.endsWith(".js")) {
+          mainJs = name;
+      } else if (name.startsWith("polyfills-") && name.endsWith(".js")) {
+          polyfillsJs = name;
+      } else if (name.startsWith("styles-") && name.endsWith(".css")) {
+          stylesCss = name;
+      }
+  }
+
+  if (mainJs == null || polyfillsJs == null || stylesCss == null) {
+      throw new RuntimeException("Angular build files not found in /nuxeoadmin");
+  }
+%>
+
 <!DOCTYPE html>
 <html lang="">
 
 <head>
   <meta charset="utf-8" />
   <title>Admin Console</title>
-  <base href="/" />
+  <base href="<%= context %>/nuxeoadmin/" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="<%= context %>/nuxeoadmin/<%= stylesCss %>" nonce="<%= NX_NONCE_VALUE %>" />
 </head>
 
 <body>
   <app baseUrl="<%= context %>" ngCspNonce="<%= NX_NONCE_VALUE %>"></app>
+  <script type="module" src="<%= context %>/nuxeoadmin/<%= polyfillsJs %>" nonce="<%= NX_NONCE_VALUE %>"></script>
+  <script type="module" src="<%= context %>/nuxeoadmin/<%= mainJs %>" nonce="<%= NX_NONCE_VALUE %>"></script>
 </body>
 
 </html>

@@ -72,7 +72,7 @@
                     <outputDirectory>${project.build.directory}/classes/web/nuxeo.war/nuxeoadmin/</outputDirectory>
                     <resources>
                         <resource>
-                            <directory> ${project.basedir}/${angular.project.location}/dist/admin_console_ui</directory>
+                            <directory> ${project.basedir}/${angular.project.location}/dist/admin_console_ui/browser</directory>
                         </resource>
                     </resources>
                 </configuration>

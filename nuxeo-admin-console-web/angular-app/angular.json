@@ -29,6 +29,7 @@
           },
           "configurations": {
             "production": {
+              "index": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.development.ts",
