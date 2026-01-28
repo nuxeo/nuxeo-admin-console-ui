@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: nuxeo-admin-console-web/angular-app
-        run: npm ci
+        run: npm install
 
       - name: Run tests with coverage
         working-directory: nuxeo-admin-console-web/angular-app
