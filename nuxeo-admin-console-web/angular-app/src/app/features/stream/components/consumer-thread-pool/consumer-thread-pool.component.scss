@@ -24,6 +24,7 @@
 
 .input-field.consumer-field {
   width: 350px;
+  max-height: 40px;
 }
 
 .consumer-thread-pool-btn-container__button {
@@ -64,6 +65,3 @@
   padding-left: 2px;
 }
 
-.input-field.consumer-field {
-  max-height: 40px;
-}

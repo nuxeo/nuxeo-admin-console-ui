@@ -16,7 +16,7 @@
                 {{BULK_ACTION_LABELS.ADDITIONAL_INFORMATION}}
             </p>
             <div class="bulk-action-details-container">
-                <table mat-table [dataSource]="additionalInfoDataSrc" class="mat-elevation-z0">
+                <table mat-table [dataSource]="additionalInfoDataSrc" class="mat-elevation-z0" aria-label="Bulk action monitoring details">
                     <ng-container matColumnDef="scrollStart">
                         <th mat-header-cell *matHeaderCellDef> <strong>{{ BULK_ACTION_LABELS.SCROLL_START }}</strong>
                         </th>
