@@ -617,7 +617,7 @@ export class JsonViewerComponent
       const currentMatch = allMatches[safeIndex];
       currentMatch.classList.add("current-match");
       // Force reflow to ensure CSS changes are applied before scrolling
-      void (currentMatch as HTMLElement).offsetHeight;
+      getComputedStyle(currentMatch as HTMLElement).height;
 
       return currentMatch;
     }
@@ -826,7 +826,7 @@ export class JsonViewerComponent
 
   private escapeRegExp(string: string): string {
     if (!string || typeof string !== "string") return "";
-    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   }
 
   private parseKeyValue(key: string, value: unknown): Segment {
