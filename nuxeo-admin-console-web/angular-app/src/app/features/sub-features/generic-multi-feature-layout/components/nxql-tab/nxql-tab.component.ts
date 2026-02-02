@@ -396,7 +396,7 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
         this.decodedUserInput = decodeURIComponent(query).replaceAll(
-          "\\'",
+          String.raw`\'`,
           "%5C%27"
         );
         const featureKey = getFeatureKeyByValue(
