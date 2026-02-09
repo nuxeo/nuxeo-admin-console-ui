@@ -8,7 +8,7 @@
   #requiredField {
     font-size: 14px;
     color: rgb(218, 21, 0);
-    font-family: "Open Sans";
+    font-family: "Open Sans" , sans-serif;
     line-height: 1;
   }
   .label {
@@ -70,10 +70,6 @@
   margin-top: 3px;
 }
 
-.conversion-helper-text {
-  font-size: 14px;
-  margin-top: -15px;
-}
 
 @media (max-width: 1024px) {
   .nxql-tab-container {

@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, NgZone, inject } from "@angular/core";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { Subject } from "rxjs";
 import { debounceTime, takeUntil } from "rxjs/operators";
 import { SharedMethodsService } from "../../services/shared-methods.service";
@@ -12,8 +11,8 @@ export interface Segment {
   description: string;
   expanded: boolean;
   individuallyExpanded?: boolean; // Track if this segment was expanded individually
-  highlightedKey?: SafeHtml | string;
-  highlightedDescription?: SafeHtml | string;
+  highlightedKey?: string;
+  highlightedDescription?: string;
 }
 
 @Component({
@@ -26,7 +25,6 @@ export interface Segment {
 export class JsonViewerComponent
   implements OnChanges, OnDestroy, AfterViewInit
 {
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly sharedMethodsService = inject(SharedMethodsService);
@@ -320,11 +318,12 @@ export class JsonViewerComponent
       );
     } catch (error) {
       // Handling both JSON serialization errors and clipboard API errors uniformly
-      if (error instanceof Error && error.name === "NotAllowedError") {
+      const errorName = (error as Error)?.name;
+      if (errorName === "NotAllowedError") {
         this.showErrorSnackbarMsg(
           JSON_VIEWER_LABELS.CLIPBOARD_ACCESS_DENIED_MSG
         );
-      } else if (error instanceof Error && error.name === "DataError") {
+      } else if (errorName === "DataError") {
         this.showErrorSnackbarMsg(
           JSON_VIEWER_LABELS.CLIPBOARD_DATA_TOO_LARGE_MSG
         );
@@ -617,7 +616,8 @@ export class JsonViewerComponent
     if (safeIndex >= 0 && safeIndex < allMatches.length) {
       const currentMatch = allMatches[safeIndex];
       currentMatch.classList.add("current-match");
-      (currentMatch as HTMLElement).offsetHeight;
+      // Force reflow to ensure CSS changes are applied before scrolling
+      getComputedStyle(currentMatch as HTMLElement).height;
 
       return currentMatch;
     }
@@ -650,22 +650,18 @@ export class JsonViewerComponent
         const desc = String(segment.description || "");
 
         segment.highlightedKey = key.toLowerCase().includes(searchLower)
-          ? this.sanitizer.bypassSecurityTrustHtml(
-              this.escapeHtml(key).replace(
-                searchRegex,
-                '<mark class="search-match">$1</mark>'
-              )
+          ? this.escapeHtml(key).replace(
+              searchRegex,
+              '<mark class="search-match">$1</mark>',
             )
           : key;
 
         segment.highlightedDescription = desc
           .toLowerCase()
           .includes(searchLower)
-          ? this.sanitizer.bypassSecurityTrustHtml(
-              this.escapeHtml(desc).replace(
-                searchRegex,
-                '<mark class="search-match">$1</mark>'
-              )
+          ? this.escapeHtml(desc).replace(
+              searchRegex,
+              '<mark class="search-match">$1</mark>',
             )
           : desc;
       });
@@ -830,7 +826,7 @@ export class JsonViewerComponent
 
   private escapeRegExp(string: string): string {
     if (!string || typeof string !== "string") return "";
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   }
 
   private parseKeyValue(key: string, value: unknown): Segment {
@@ -871,7 +867,7 @@ export class JsonViewerComponent
             segment.value.length === 0
               ? "No data"
               : `Array[${segment.value.length}] `;
-        } else if (segment.value instanceof Date) {
+        } else if (Object.prototype.toString.call(segment.value) === "[object Date]") {
           segment.type = "date";
         } else {
           segment.type = "object";
@@ -907,14 +903,15 @@ export class JsonViewerComponent
     const objects = new WeakMap<object, string>();
 
     const derez = (value: unknown, path: string): unknown => {
+      const typeTag = Object.prototype.toString.call(value);
       if (
         typeof value === "object" &&
         value !== null &&
-        !(value instanceof Boolean) &&
-        !(value instanceof Date) &&
-        !(value instanceof Number) &&
-        !(value instanceof RegExp) &&
-        !(value instanceof String)
+        typeTag !== "[object Boolean]" &&
+        typeTag !== "[object Date]" &&
+        typeTag !== "[object Number]" &&
+        typeTag !== "[object RegExp]" &&
+        typeTag !== "[object String]"
       ) {
         const oldPath = objects.get(value);
         if (oldPath !== undefined) {

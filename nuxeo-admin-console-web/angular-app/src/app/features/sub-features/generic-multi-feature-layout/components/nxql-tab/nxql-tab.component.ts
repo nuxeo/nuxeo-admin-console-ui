@@ -330,7 +330,9 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             err as { response: { json: () => Promise<unknown> } }
           ).response.json();
         } else {
-          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+          return Promise.reject(
+            new Error(ERROR_MODAL_LABELS.UNEXPECTED_ERROR)
+          );
         }
       })
       .then((errorJson: unknown) => {
@@ -393,8 +395,8 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
-        this.decodedUserInput = decodeURIComponent(query).replace(
-          /\\'/g,
+        this.decodedUserInput = decodeURIComponent(query).replaceAll(
+          String.raw`\'`,
           "%5C%27"
         );
         const featureKey = getFeatureKeyByValue(
