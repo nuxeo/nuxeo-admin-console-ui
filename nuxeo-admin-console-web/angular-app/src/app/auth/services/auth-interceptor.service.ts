@@ -10,10 +10,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<T>> {
     const req = request.clone({
-      setHeaders: {
-        //TODO: Remove this once proper authentication & login flow is implemented
-        Authorization: "Basic " + btoa("Administrator:Administrator"),
-      },
+      withCredentials: true,
     });
     return next.handle(req);
   }
