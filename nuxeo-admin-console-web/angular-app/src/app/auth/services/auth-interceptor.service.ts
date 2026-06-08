@@ -10,6 +10,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<T>> {
     const req = request.clone({
+      //Allow browser to send cookies to the server
       withCredentials: true,
     });
     return next.handle(req);
