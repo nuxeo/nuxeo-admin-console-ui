@@ -1,5 +1,7 @@
 <div class="local-packages">
+  @if (isDataLoaded && !isError && hasPackages()) {
   <h5 class="local-packages__title">{{ LOCAL_PACKAGES_LABELS.TITLE }}</h5>
+  }
 
   <!-- Loading State -->
   @if (!isDataLoaded && !isError) {
