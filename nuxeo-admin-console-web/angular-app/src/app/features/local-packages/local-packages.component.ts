@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/internal/operators/takeUntil";
+import { Subject, takeUntil } from "rxjs";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
 import {
