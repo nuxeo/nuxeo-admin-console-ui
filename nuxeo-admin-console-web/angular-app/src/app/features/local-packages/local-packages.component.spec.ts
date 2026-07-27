@@ -9,6 +9,7 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatTableModule } from "@angular/material/table";
 import { MatCardModule } from "@angular/material/card";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { CommonModule } from "@angular/common";
 import {
   HttpErrorResponse,
   provideHttpClient,
