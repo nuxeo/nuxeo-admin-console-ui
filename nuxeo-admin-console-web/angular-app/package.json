@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href=/nuxeo/nuxeoadmin/",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "vitest run --coverage",
     "test:watch": "vitest",

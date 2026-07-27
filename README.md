@@ -96,7 +96,7 @@ The application will be available at **http://localhost:4200/**
 | Command         | Description                                                 |
 |-----------------|-------------------------------------------------------------|
 | `npm start`     | Start development server on http://localhost:4200           |
-| `npm run build` | Build production bundle with base href `/nuxeo/nuxeoadmin/` |
+| `npm run build` | Build the production bundle (base href is resolved at runtime from the servlet context path, so it works with any custom `org.nuxeo.ecm.contextPath`) |
 | `npm run watch` | Build in watch mode for development                         |
 | `npm test`      | Run unit tests with Vitest and generate coverage report     |
 | `npm run test:ui` | Run tests with Vitest UI (interactive browser interface)  |
@@ -213,7 +213,7 @@ This will build the `nuxeo-admin-console-package/target/nuxeo-admin-console-pack
 
 **Build Process:**
 1. Compiles the Angular application with production optimizations
-2. Bundles all assets with base href `/nuxeo/nuxeoadmin/`
+2. Bundles all assets without a fixed base href — `index.jsp` computes the `<base href>` and asset URLs at request time from `request.getContextPath()`, so the package works whether Nuxeo is deployed under the default `/nuxeo` context path or a custom one (`org.nuxeo.ecm.contextPath` in `nuxeo.conf`)
 3. Packages everything into a Nuxeo-compatible marketplace `.zip` file
 
 ### Understanding the Build Chain
