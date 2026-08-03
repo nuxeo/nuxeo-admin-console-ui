@@ -79,7 +79,7 @@ jobs:
           }
 
           STATUS_JSON=$(api "${SONARCLOUD_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}") || STATUS_JSON=''
-          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
+          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_lines,new_coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
 
           GATE_STATUS=$(echo "$STATUS_JSON" | jq -r '.projectStatus.status // "UNKNOWN"' 2>/dev/null || echo 'UNKNOWN')
 
@@ -91,6 +91,7 @@ jobs:
               2>/dev/null || echo '-'
           }
 
+          NEW_LINES=$(measure new_lines)
           NEW_COVERAGE=$(measure new_coverage)
           NEW_VIOLATIONS=$(measure new_violations)
           NEW_DUPLICATION=$(measure new_duplicated_lines_density)
@@ -129,6 +130,14 @@ jobs:
             echo "| **Duplicated lines** | $(fmt '%' "$NEW_DUPLICATION") |"
             echo "| **Security hotspots reviewed** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
             echo
+
+            # SonarCloud omits new_coverage / new_duplicated_lines_density entirely when
+            # a PR adds no analysable lines. Say why the table is empty rather than
+            # leaving "n/a" looking like a broken lookup.
+            if [ "$NEW_LINES" = "-" ] || [ "$NEW_LINES" = "0" ]; then
+              echo 'ℹ️ This pull request adds no new analysable lines of code, so SonarCloud reports no new-code coverage or duplication figures.'
+              echo
+            fi
 
             FAILED_CONDITIONS=$(echo "$STATUS_JSON" | jq -r '
               [.projectStatus.conditions[]? | select(.status == "ERROR")
