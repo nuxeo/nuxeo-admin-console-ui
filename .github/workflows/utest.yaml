@@ -134,12 +134,8 @@ jobs:
           {
             if [ "$FAILED" = true ]; then
               echo "## ❌ Test Coverage Failed"
-              echo
-              echo "Some coverage metrics are below the **${THRESHOLD}%** threshold."
             else
               echo "## ✅ Test Coverage Passed"
-              echo
-              echo "All coverage metrics meet the **${THRESHOLD}%** threshold."
             fi
             echo
             echo '| Metric (overall) | Coverage | Status | Threshold |'

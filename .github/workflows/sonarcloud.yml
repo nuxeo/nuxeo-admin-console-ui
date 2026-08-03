@@ -106,44 +106,40 @@ jobs:
           {
             echo '<!-- sonarcloud-analysis-report -->'
             echo
+            # The heading and the table already state the result, so only the
+            # non-passing cases get a line of prose, and only to say what to do next.
             case "$GATE_STATUS" in
               OK)
                 echo '## ✅ SonarCloud Quality Gate Passed'
-                echo
-                echo 'The analysis of the new code in this pull request meets every quality gate condition.'
                 ;;
               ERROR)
                 echo '## ❌ SonarCloud Quality Gate Failed'
                 echo
-                echo 'The new code in this pull request does not meet the quality gate. This check is blocking.'
+                echo 'This check is blocking. Fix the failing conditions below before merging.'
                 ;;
               *)
                 echo '## ⚠️ SonarCloud Quality Gate Status Unavailable'
                 echo
-                echo 'The quality gate result could not be retrieved. The analysis may have failed before'
-                echo 'reaching SonarCloud — check the job logs for details.'
+                echo 'The analysis may have failed before reaching SonarCloud — check the job logs.'
                 ;;
             esac
             echo
-            # The scope column is explicit on every row: the quality gate only
-            # judges new code, so presenting an overall figure without saying so
-            # would read as if the whole project were being gated.
-            echo '| Metric | Scope | Value |'
-            echo '|--------|-------|-------|'
-            echo "| **Coverage** | New code (gated) | $(fmt '%' "$NEW_COVERAGE") |"
-            echo "| **Coverage** | Whole project (informational) | $(fmt '%' "$OVERALL_COVERAGE") |"
-            echo "| **Issues** | New code (gated) | $(fmt '' "$NEW_VIOLATIONS") |"
-            echo "| **Duplicated lines** | New code (gated) | $(fmt '%' "$NEW_DUPLICATION") |"
-            echo "| **Security hotspots reviewed** | New code (gated) | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
-            echo
-            echo "Whole-project coverage is shown for context only — this quality gate judges new code. The 80% overall threshold is enforced separately by the \`utest\` check."
+            # Scope is carried in the row label rather than a column: it varies on
+            # one row only, so a column would repeat the same value four times.
+            echo '| Metric | Value |'
+            echo '|--------|-------|'
+            echo "| **Coverage (new code)** | $(fmt '%' "$NEW_COVERAGE") |"
+            echo "| **Coverage (overall)** | $(fmt '%' "$OVERALL_COVERAGE") |"
+            echo "| **New issues** | $(fmt '' "$NEW_VIOLATIONS") |"
+            echo "| **Duplicated lines (new code)** | $(fmt '%' "$NEW_DUPLICATION") |"
+            echo "| **Security hotspots reviewed (new code)** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
             echo
 
             # SonarCloud omits new_coverage / new_duplicated_lines_density entirely when
             # a PR adds no analysable lines. Say why the table is empty rather than
             # leaving "n/a" looking like a broken lookup.
             if [ "$NEW_LINES" = "-" ] || [ "$NEW_LINES" = "0" ]; then
-              echo 'ℹ️ This pull request adds no new analysable lines of code, so SonarCloud reports no new-code coverage or duplication figures.'
+              echo 'ℹ️ No new analysable lines in this pull request, so new-code metrics are empty.'
               echo
             fi
 
