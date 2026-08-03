@@ -61,6 +61,12 @@ export const ADMIN_MENU: Menu[] = [
     path: "configuration-properties",
     isSelected: false,
   },
+  {
+    id: 10,
+    name: "Bundles",
+    path: "bundles",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
@@ -72,4 +78,5 @@ export const ROUTES_TITLE = {
   PICTURE_RENDITIONS: "Picture Renditions",
   STREAM_MANAGEMENT: "Stream Management",
   CONFIGURATION_DETAILS: "Configuration Properties",
+  BUNDLES: "Bundles",
 };
