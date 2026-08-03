@@ -50,6 +50,12 @@ jobs:
       # it the step only proves the report was uploaded, never that it passed.
       # `continue-on-error` keeps the job alive so the summary comment is still posted;
       # the "Enforce quality gate result" step below turns a red gate into a red job.
+      #
+      # The pull request parameters are passed explicitly rather than left to the
+      # scanner's autodetection, which was recording every pull request against
+      # `main`. The gate was therefore measuring new code as the diff against
+      # `main` even for pull requests targeting `dev`, counting anything already
+      # merged to `dev` as new. Same shape as nuxeo-web-ui's sonar.yaml.
       - name: SonarCloud Scan
         id: sonar-scan
         continue-on-error: true
@@ -58,8 +64,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          # Not github.workspace: our Angular app lives in a subdirectory.
           projectBaseDir: nuxeo-admin-console-web/angular-app
-          args: -Dsonar.qualitygate.wait=true
+          args: >
+            -Dsonar.qualitygate.wait=true
+            ${{ github.event_name == 'pull_request' &&
+              format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}',
+                github.event.pull_request.number,
+                github.event.pull_request.head.ref,
+                github.event.pull_request.base.ref)
+              || format('-Dsonar.branch.name={0}', github.ref_name) }}
 
       - name: Build SonarCloud summary
         id: sonar-summary
