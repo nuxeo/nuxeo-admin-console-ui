@@ -15,11 +15,17 @@ permissions:
   pull-requests: write
   contents: read
 
+env:
+  # Deliberately not named SONAR_HOST_URL: that variable is consumed by
+  # sonarqube-scan-action and setting it would change how the scanner is configured.
+  SONARCLOUD_URL: https://sonarcloud.io
+  SONAR_PROJECT_KEY: nuxeo_nuxeo-admin-console-ui
+
 jobs:
   sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,10 +45,156 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm test
 
+      # `sonar.qualitygate.wait=true` makes the scanner block until SonarCloud has
+      # finished computing the quality gate and exit non-zero when it fails. Without
+      # it the step only proves the report was uploaded, never that it passed.
+      # `continue-on-error` keeps the job alive so the summary comment is still posted;
+      # the "Enforce quality gate result" step below turns a red gate into a red job.
       - name: SonarCloud Scan
+        id: sonar-scan
+        continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: nuxeo-admin-console-web/angular-app
+          args: -Dsonar.qualitygate.wait=true
+
+      - name: Build SonarCloud summary
+        id: sonar-summary
+        if: always() && github.event_name == 'pull_request'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          SCAN_OUTCOME: ${{ steps.sonar-scan.outcome }}
+        run: |
+          set -uo pipefail
+
+          DASHBOARD_URL="${SONARCLOUD_URL}/summary/new_code?id=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}"
+          BODY_FILE="$RUNNER_TEMP/sonar-comment.md"
+
+          api() {
+            curl -sS -u "${SONAR_TOKEN}:" "$1"
+          }
+
+          STATUS_JSON=$(api "${SONARCLOUD_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}") || STATUS_JSON=''
+          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
+
+          GATE_STATUS=$(echo "$STATUS_JSON" | jq -r '.projectStatus.status // "UNKNOWN"' 2>/dev/null || echo 'UNKNOWN')
+
+          # SonarCloud returns new-code measures either under `period.value` or the
+          # legacy `periods[0].value`; fall back to the plain value as a last resort.
+          measure() {
+            echo "$MEASURES_JSON" | jq -r --arg m "$1" \
+              '(.component.measures[]? | select(.metric == $m) | .period.value // .periods[0].value // .value) // "-"' \
+              2>/dev/null || echo '-'
+          }
+
+          NEW_COVERAGE=$(measure new_coverage)
+          NEW_VIOLATIONS=$(measure new_violations)
+          NEW_DUPLICATION=$(measure new_duplicated_lines_density)
+          HOTSPOTS_REVIEWED=$(measure new_security_hotspots_reviewed)
+
+          fmt() {
+            if [ -z "$2" ] || [ "$2" = "-" ] || [ "$2" = "null" ]; then echo "_n/a_"; else echo "$2$1"; fi
+          }
+
+          {
+            echo '<!-- sonarcloud-analysis-report -->'
+            echo
+            case "$GATE_STATUS" in
+              OK)
+                echo '## ✅ SonarCloud Quality Gate Passed'
+                echo
+                echo 'The analysis of the new code in this pull request meets every quality gate condition.'
+                ;;
+              ERROR)
+                echo '## ❌ SonarCloud Quality Gate Failed'
+                echo
+                echo 'The new code in this pull request does not meet the quality gate. This check is blocking.'
+                ;;
+              *)
+                echo '## ⚠️ SonarCloud Quality Gate Status Unavailable'
+                echo
+                echo 'The quality gate result could not be retrieved. The analysis may have failed before'
+                echo 'reaching SonarCloud — check the job logs for details.'
+                ;;
+            esac
+            echo
+            echo '| Metric (new code) | Value |'
+            echo '|-------------------|-------|'
+            echo "| **Coverage** | $(fmt '%' "$NEW_COVERAGE") |"
+            echo "| **New issues** | $(fmt '' "$NEW_VIOLATIONS") |"
+            echo "| **Duplicated lines** | $(fmt '%' "$NEW_DUPLICATION") |"
+            echo "| **Security hotspots reviewed** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
+            echo
+
+            FAILED_CONDITIONS=$(echo "$STATUS_JSON" | jq -r '
+              [.projectStatus.conditions[]? | select(.status == "ERROR")
+                | "- `\(.metricKey)`: **\(.actualValue)** (fails when \(.comparator | ascii_downcase | sub("^lt$"; "<") | sub("^gt$"; ">")) **\(.errorThreshold)**)"]
+              | join("\n")' 2>/dev/null || echo '')
+
+            if [ -n "$FAILED_CONDITIONS" ]; then
+              echo '### 🔧 Failing conditions'
+              echo
+              echo "$FAILED_CONDITIONS"
+              echo
+            fi
+
+            # The gate can be green while the scan step still failed (scanner crash,
+            # upload error, wait timeout). Say so, otherwise the red check looks unexplained.
+            if [ "$GATE_STATUS" = "OK" ] && [ "$SCAN_OUTCOME" != "success" ]; then
+              echo '> ⚠️ The quality gate passed but the scan step itself failed. Check the job logs.'
+              echo
+            fi
+
+            echo "📊 [View the full analysis on SonarCloud]($DASHBOARD_URL)"
+          } > "$BODY_FILE"
+
+          echo "body_file=$BODY_FILE" >> "$GITHUB_OUTPUT"
+          echo "gate_status=$GATE_STATUS" >> "$GITHUB_OUTPUT"
+          cat "$BODY_FILE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment PR with SonarCloud results
+        if: always() && github.event_name == 'pull_request' && steps.sonar-summary.outputs.body_file != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('${{ steps.sonar-summary.outputs.body_file }}', 'utf8');
+
+            // Find existing bot comment to update instead of creating new ones
+            const botCommentIdentifier = '<!-- sonarcloud-analysis-report -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(comment =>
+              comment.user.type === 'Bot' && comment.body.includes(botCommentIdentifier)
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Enforce quality gate result
+        if: steps.sonar-scan.outcome != 'success'
+        run: |
+          echo "❌ SonarCloud analysis did not pass: the quality gate failed or the scan itself errored."
+          echo "See the summary comment on the pull request and the 'SonarCloud Scan' step logs above."
+          exit 1
