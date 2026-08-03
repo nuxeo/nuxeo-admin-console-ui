@@ -33,10 +33,8 @@
       <h2>{{ BUNDLES_LABELS.DISTRIBUTION_TITLE }}</h2>
       <dl class="bundles__summary">
         @for (field of distributionSummary; track field.label) {
-        <div class="bundles__summary-item">
-          <dt>{{ field.label }}</dt>
-          <dd>{{ field.value }}</dd>
-        </div>
+        <dt>{{ field.label }}</dt>
+        <dd>{{ field.value }}</dd>
         }
       </dl>
     </mat-card-content>
@@ -51,7 +49,7 @@
         <mat-form-field appearance="outline" class="input-field bundles__filter">
           <mat-label>{{ BUNDLES_LABELS.FILTER_LABEL }}</mat-label>
           <input matInput id="bundles-filter" type="text" [placeholder]="BUNDLES_LABELS.FILTER_PLACEHOLDER"
-            (input)="applyFilter($event)" />
+            [attr.aria-label]="BUNDLES_LABELS.FILTER_LABEL" (input)="applyFilter($event)" />
         </mat-form-field>
       </div>
 
