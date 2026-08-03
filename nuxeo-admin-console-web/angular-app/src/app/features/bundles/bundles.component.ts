@@ -25,8 +25,8 @@ import { ERROR_TYPES } from "../sub-features/generic-multi-feature-layout/generi
   standalone: false,
 })
 export class BundlesComponent implements OnInit, OnDestroy {
-  private bundlesService = inject(BundlesService);
-  private sharedService = inject(SharedMethodsService);
+  private readonly bundlesService = inject(BundlesService);
+  private readonly sharedService = inject(SharedMethodsService);
   BUNDLES_LABELS = BUNDLES_LABELS;
   columnsToDisplay = BUNDLES_TABLE_COLUMNS;
   pageSize = BUNDLES_PAGE_SIZE;

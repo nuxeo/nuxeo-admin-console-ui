@@ -8,7 +8,7 @@ import { NetworkService } from "../../../shared/services/network.service";
   providedIn: "root",
 })
 export class BundlesService {
-  private networkService = inject(NetworkService);
+  private readonly networkService = inject(NetworkService);
 
   getDistributionInfo(): Observable<DistributionResponse> {
     return this.networkService.makeHttpRequest<DistributionResponse>(
