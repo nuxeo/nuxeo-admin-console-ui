@@ -1,0 +1,23 @@
+<!--
+  THROWAWAY FILE - DO NOT MERGE.
+
+  Exists only to prove that a failing SonarCloud quality gate turns the
+  SonarCloud Scan check red and still posts the summary comment (NAC-468).
+
+  The inputs below deliberately violate Web:InputWithoutLabelCheck (a MAJOR
+  bug affecting reliability), which pushes new_reliability_rating past the
+  quality gate condition. This file is referenced by nothing.
+-->
+<div class="gate-check">
+  <h2>Gate check</h2>
+
+  <form>
+    <input type="text" name="firstname" />
+    <input type="text" name="lastname" id="lastname" />
+    <textarea name="notes" rows="3"></textarea>
+    <select name="kind">
+      <option value="a">A</option>
+      <option value="b">B</option>
+    </select>
+  </form>
+</div>
