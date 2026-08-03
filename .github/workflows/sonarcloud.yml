@@ -79,7 +79,7 @@ jobs:
           }
 
           STATUS_JSON=$(api "${SONARCLOUD_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}") || STATUS_JSON=''
-          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_lines,new_coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
+          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_lines,new_coverage,coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
 
           GATE_STATUS=$(echo "$STATUS_JSON" | jq -r '.projectStatus.status // "UNKNOWN"' 2>/dev/null || echo 'UNKNOWN')
 
@@ -93,6 +93,8 @@ jobs:
 
           NEW_LINES=$(measure new_lines)
           NEW_COVERAGE=$(measure new_coverage)
+          # Overall coverage has no new-code period, so `measure` falls through to `.value`.
+          OVERALL_COVERAGE=$(measure coverage)
           NEW_VIOLATIONS=$(measure new_violations)
           NEW_DUPLICATION=$(measure new_duplicated_lines_density)
           HOTSPOTS_REVIEWED=$(measure new_security_hotspots_reviewed)
@@ -123,12 +125,18 @@ jobs:
                 ;;
             esac
             echo
-            echo '| Metric (new code) | Value |'
-            echo '|-------------------|-------|'
-            echo "| **Coverage** | $(fmt '%' "$NEW_COVERAGE") |"
-            echo "| **New issues** | $(fmt '' "$NEW_VIOLATIONS") |"
-            echo "| **Duplicated lines** | $(fmt '%' "$NEW_DUPLICATION") |"
-            echo "| **Security hotspots reviewed** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
+            # The scope column is explicit on every row: the quality gate only
+            # judges new code, so presenting an overall figure without saying so
+            # would read as if the whole project were being gated.
+            echo '| Metric | Scope | Value |'
+            echo '|--------|-------|-------|'
+            echo "| **Coverage** | New code (gated) | $(fmt '%' "$NEW_COVERAGE") |"
+            echo "| **Coverage** | Whole project (informational) | $(fmt '%' "$OVERALL_COVERAGE") |"
+            echo "| **Issues** | New code (gated) | $(fmt '' "$NEW_VIOLATIONS") |"
+            echo "| **Duplicated lines** | New code (gated) | $(fmt '%' "$NEW_DUPLICATION") |"
+            echo "| **Security hotspots reviewed** | New code (gated) | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
+            echo
+            echo "Whole-project coverage is shown for context only — this quality gate judges new code. The 80% overall threshold is enforced separately by the \`utest\` check."
             echo
 
             # SonarCloud omits new_coverage / new_duplicated_lines_density entirely when
