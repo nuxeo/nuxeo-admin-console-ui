@@ -79,7 +79,7 @@ jobs:
           }
 
           STATUS_JSON=$(api "${SONARCLOUD_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}") || STATUS_JSON=''
-          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_lines,new_coverage,coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
+          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_coverage,coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
 
           GATE_STATUS=$(echo "$STATUS_JSON" | jq -r '.projectStatus.status // "UNKNOWN"' 2>/dev/null || echo 'UNKNOWN')
 
@@ -91,7 +91,6 @@ jobs:
               2>/dev/null || echo '-'
           }
 
-          NEW_LINES=$(measure new_lines)
           NEW_COVERAGE=$(measure new_coverage)
           # Overall coverage has no new-code period, so `measure` falls through to `.value`.
           OVERALL_COVERAGE=$(measure coverage)
@@ -99,18 +98,26 @@ jobs:
           NEW_DUPLICATION=$(measure new_duplicated_lines_density)
           HOTSPOTS_REVIEWED=$(measure new_security_hotspots_reviewed)
 
+          # Single definition of "SonarCloud did not report this measure", so the
+          # explanatory note below fires on exactly the values that render as n/a.
+          missing() {
+            [ -z "$1" ] || [ "$1" = "-" ] || [ "$1" = "null" ]
+          }
+
           fmt() {
-            if [ -z "$2" ] || [ "$2" = "-" ] || [ "$2" = "null" ]; then echo "_n/a_"; else echo "$2$1"; fi
+            if missing "$2"; then echo "_n/a_"; else echo "$2$1"; fi
           }
 
           {
             echo '<!-- sonarcloud-analysis-report -->'
             echo
-            # The heading and the table already state the result, so only the
-            # non-passing cases get a line of prose, and only to say what to do next.
+            # Each heading gets one line of prose and no more: what the result
+            # means when it passes, what to do next when it does not.
             case "$GATE_STATUS" in
               OK)
                 echo '## ✅ SonarCloud Quality Gate Passed'
+                echo
+                echo 'The analysis of the new code in this pull request meets every quality gate condition.'
                 ;;
               ERROR)
                 echo '## ❌ SonarCloud Quality Gate Failed'
@@ -135,11 +142,13 @@ jobs:
             echo "| **Security hotspots reviewed (new code)** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
             echo
 
-            # SonarCloud omits new_coverage / new_duplicated_lines_density entirely when
-            # a PR adds no analysable lines. Say why the table is empty rather than
-            # leaving "n/a" looking like a broken lookup.
-            if [ "$NEW_LINES" = "-" ] || [ "$NEW_LINES" = "0" ]; then
-              echo 'ℹ️ No new analysable lines in this pull request, so new-code metrics are empty.'
+            # Keyed off the coverage value rather than new_lines: a PR whose new
+            # lines are all uncoverable (templates, config) has new_lines > 0 yet
+            # still no new_coverage, and a bare n/a reads as a broken lookup.
+            # Deliberately says nothing about duplication, which SonarCloud does
+            # report for those same files and so is usually present here.
+            if missing "$NEW_COVERAGE"; then
+              echo 'ℹ️ No new-code coverage to report — this pull request adds no coverable lines (either none at all, or only files like templates and config).'
               echo
             fi
 
