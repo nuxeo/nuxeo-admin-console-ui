@@ -96,7 +96,7 @@ The application will be available at **http://localhost:4200/**
 | Command         | Description                                                 |
 |-----------------|-------------------------------------------------------------|
 | `npm start`     | Start development server on http://localhost:4200           |
-| `npm run build` | Build the production bundle (base href is resolved at runtime from the servlet context path, so it works with any custom `org.nuxeo.ecm.contextPath`) |
+| `npm run build` | Build the production bundle (when served via the marketplace package, `index.jsp` resolves the base href at request time from the servlet context path, so it works with any custom `org.nuxeo.ecm.contextPath`) |
 | `npm run watch` | Build in watch mode for development                         |
 | `npm test`      | Run unit tests with Vitest and generate coverage report     |
 | `npm run test:ui` | Run tests with Vitest UI (interactive browser interface)  |
