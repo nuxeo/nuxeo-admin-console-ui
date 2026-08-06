@@ -2,13 +2,18 @@
   background-color: #f4f4f4;
   margin: 0px;
   padding: 20px;
-  min-height: 100%;
+  /* Fills the content area below the header bar so the single-block states can
+  centre against it, while still growing for the taller data state. */
+  min-height: 85vh;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 
   h1 {
     font-size: 20px;
     font-weight: 500;
     width: fit-content;
+    flex-shrink: 0;
   }
 
   h2 {
@@ -119,6 +124,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 1;
   width: 100%;
   text-align: center;
   padding: 20px;

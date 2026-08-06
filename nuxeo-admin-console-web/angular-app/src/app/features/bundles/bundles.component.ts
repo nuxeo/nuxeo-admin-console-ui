@@ -97,7 +97,6 @@ export class BundlesComponent implements OnInit, OnDestroy {
       { label: fields.APPLICATION_VERSION, value: data?.applicationVersion },
       { label: fields.DISTRIBUTION_NAME, value: data?.distributionName },
       { label: fields.DISTRIBUTION_VERSION, value: data?.distributionVersion },
-      { label: fields.DISTRIBUTION_DATE, value: data?.distributionDate },
     ].map((field) => ({
       label: field.label,
       value: field.value || BUNDLES_LABELS.NOT_AVAILABLE,

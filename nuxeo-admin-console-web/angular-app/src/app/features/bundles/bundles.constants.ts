@@ -15,7 +15,6 @@ export const BUNDLES_LABELS = {
     APPLICATION_VERSION: "Application version",
     DISTRIBUTION_NAME: "Distribution name",
     DISTRIBUTION_VERSION: "Distribution version",
-    DISTRIBUTION_DATE: "Distribution date",
   },
   COLUMN_HEADERS: {
     NAME: "Name",

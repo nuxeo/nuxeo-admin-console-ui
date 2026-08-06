@@ -115,7 +115,6 @@ describe("BundlesComponent", () => {
       { label: fields.APPLICATION_VERSION, value: "2025.1.0" },
       { label: fields.DISTRIBUTION_NAME, value: "server" },
       { label: fields.DISTRIBUTION_VERSION, value: "2025.1.0" },
-      { label: fields.DISTRIBUTION_DATE, value: "2025-01-15 10:23" },
     ]);
   });
 
