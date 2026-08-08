@@ -12,14 +12,7 @@ on:
     types: [opened, synchronize, reopened]
 
 permissions:
-  pull-requests: write
   contents: read
-
-env:
-  # Deliberately not named SONAR_HOST_URL: that variable is consumed by
-  # sonarqube-scan-action and setting it would change how the scanner is configured.
-  SONARCLOUD_URL: https://sonarcloud.io
-  SONAR_PROJECT_KEY: nuxeo_nuxeo-admin-console-ui
 
 jobs:
   sonarcloud:
@@ -46,19 +39,16 @@ jobs:
         run: npm test
 
       # `sonar.qualitygate.wait=true` makes the scanner block until SonarCloud has
-      # finished computing the quality gate and exit non-zero when it fails. Without
-      # it the step only proves the report was uploaded, never that it passed.
-      # `continue-on-error` keeps the job alive so the summary comment is still posted;
-      # the "Enforce quality gate result" step below turns a red gate into a red job.
+      # finished computing the quality gate and exit non-zero when it fails, so a red
+      # gate turns this job -- and the required "SonarCloud Scan" check -- red.
+      # SonarCloud's GitHub App posts the gate result and new-code metrics on the
+      # pull request itself, so no comment is built here.
       #
       # The pull request parameters are passed explicitly rather than left to the
       # scanner's autodetection, which was recording every pull request against
-      # `main`. The gate was therefore measuring new code as the diff against
-      # `main` even for pull requests targeting `dev`, counting anything already
-      # merged to `dev` as new. Same shape as nuxeo-web-ui's sonar.yaml.
+      # `main`. The gate was therefore measuring new code as the diff against `main`
+      # even for pull requests targeting `dev`. Same shape as nuxeo-web-ui's sonar.yaml.
       - name: SonarCloud Scan
-        id: sonar-scan
-        continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,163 +64,3 @@ jobs:
                 github.event.pull_request.head.ref,
                 github.event.pull_request.base.ref)
               || format('-Dsonar.branch.name={0}', github.ref_name) }}
-
-      - name: Build SonarCloud summary
-        id: sonar-summary
-        if: always() && github.event_name == 'pull_request'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          SCAN_OUTCOME: ${{ steps.sonar-scan.outcome }}
-        run: |
-          set -uo pipefail
-
-          DASHBOARD_URL="${SONARCLOUD_URL}/summary/new_code?id=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}"
-          BODY_FILE="$RUNNER_TEMP/sonar-comment.md"
-
-          api() {
-            curl -sS -u "${SONAR_TOKEN}:" "$1"
-          }
-
-          STATUS_JSON=$(api "${SONARCLOUD_URL}/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}") || STATUS_JSON=''
-          MEASURES_JSON=$(api "${SONARCLOUD_URL}/api/measures/component?component=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}&metricKeys=new_coverage,coverage,new_violations,new_duplicated_lines_density,new_security_hotspots_reviewed") || MEASURES_JSON=''
-
-          GATE_STATUS=$(echo "$STATUS_JSON" | jq -r '.projectStatus.status // "UNKNOWN"' 2>/dev/null || echo 'UNKNOWN')
-
-          # SonarCloud returns new-code measures either under `period.value` or the
-          # legacy `periods[0].value`; fall back to the plain value as a last resort.
-          measure() {
-            echo "$MEASURES_JSON" | jq -r --arg m "$1" \
-              '(.component.measures[]? | select(.metric == $m) | .period.value // .periods[0].value // .value) // "-"' \
-              2>/dev/null || echo '-'
-          }
-
-          NEW_COVERAGE=$(measure new_coverage)
-          # Overall coverage has no new-code period, so `measure` falls through to `.value`.
-          OVERALL_COVERAGE=$(measure coverage)
-          NEW_VIOLATIONS=$(measure new_violations)
-          NEW_DUPLICATION=$(measure new_duplicated_lines_density)
-          HOTSPOTS_REVIEWED=$(measure new_security_hotspots_reviewed)
-
-          # Single definition of "SonarCloud did not report this measure", so the
-          # explanatory note below fires on exactly the values that render as n/a.
-          missing() {
-            [ -z "$1" ] || [ "$1" = "-" ] || [ "$1" = "null" ]
-          }
-
-          fmt() {
-            if missing "$2"; then echo "_n/a_"; else echo "$2$1"; fi
-          }
-
-          {
-            echo '<!-- sonarcloud-analysis-report -->'
-            echo
-            # Each heading gets one line of prose and no more: what the result
-            # means when it passes, what to do next when it does not.
-            case "$GATE_STATUS" in
-              OK)
-                echo '## ✅ SonarCloud Quality Gate Passed'
-                echo
-                echo 'The analysis of the new code in this pull request meets every quality gate condition.'
-                ;;
-              ERROR)
-                echo '## ❌ SonarCloud Quality Gate Failed'
-                echo
-                echo 'This check is blocking. Fix the failing conditions below before merging.'
-                ;;
-              *)
-                echo '## ⚠️ SonarCloud Quality Gate Status Unavailable'
-                echo
-                echo 'The analysis may have failed before reaching SonarCloud — check the job logs.'
-                ;;
-            esac
-            echo
-            # Scope is carried in the row label rather than a column: it varies on
-            # one row only, so a column would repeat the same value four times.
-            echo '| Metric | Value |'
-            echo '|--------|-------|'
-            echo "| **Coverage (new code)** | $(fmt '%' "$NEW_COVERAGE") |"
-            echo "| **Coverage (overall)** | $(fmt '%' "$OVERALL_COVERAGE") |"
-            echo "| **New issues** | $(fmt '' "$NEW_VIOLATIONS") |"
-            echo "| **Duplicated lines (new code)** | $(fmt '%' "$NEW_DUPLICATION") |"
-            echo "| **Security hotspots reviewed (new code)** | $(fmt '%' "$HOTSPOTS_REVIEWED") |"
-            echo
-
-            # Keyed off the coverage value rather than new_lines: a PR whose new
-            # lines are all uncoverable (templates, config) has new_lines > 0 yet
-            # still no new_coverage, and a bare n/a reads as a broken lookup.
-            # Deliberately says nothing about duplication, which SonarCloud does
-            # report for those same files and so is usually present here.
-            if missing "$NEW_COVERAGE"; then
-              echo 'ℹ️ No new-code coverage to report — this pull request adds no coverable lines (either none at all, or only files like templates and config).'
-              echo
-            fi
-
-            FAILED_CONDITIONS=$(echo "$STATUS_JSON" | jq -r '
-              [.projectStatus.conditions[]? | select(.status == "ERROR")
-                | "- `\(.metricKey)`: **\(.actualValue)** (fails when \(.comparator | ascii_downcase | sub("^lt$"; "<") | sub("^gt$"; ">")) **\(.errorThreshold)**)"]
-              | join("\n")' 2>/dev/null || echo '')
-
-            if [ -n "$FAILED_CONDITIONS" ]; then
-              echo '### 🔧 Failing conditions'
-              echo
-              echo "$FAILED_CONDITIONS"
-              echo
-            fi
-
-            # The gate can be green while the scan step still failed (scanner crash,
-            # upload error, wait timeout). Say so, otherwise the red check looks unexplained.
-            if [ "$GATE_STATUS" = "OK" ] && [ "$SCAN_OUTCOME" != "success" ]; then
-              echo '> ⚠️ The quality gate passed but the scan step itself failed. Check the job logs.'
-              echo
-            fi
-
-            echo "📊 [View the full analysis on SonarCloud]($DASHBOARD_URL)"
-          } > "$BODY_FILE"
-
-          echo "body_file=$BODY_FILE" >> "$GITHUB_OUTPUT"
-          echo "gate_status=$GATE_STATUS" >> "$GITHUB_OUTPUT"
-          cat "$BODY_FILE" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Comment PR with SonarCloud results
-        if: always() && github.event_name == 'pull_request' && steps.sonar-summary.outputs.body_file != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('${{ steps.sonar-summary.outputs.body_file }}', 'utf8');
-
-            // Find existing bot comment to update instead of creating new ones
-            const botCommentIdentifier = '<!-- sonarcloud-analysis-report -->';
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const existingComment = comments.find(comment =>
-              comment.user.type === 'Bot' && comment.body.includes(botCommentIdentifier)
-            );
-
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-            }
-
-      - name: Enforce quality gate result
-        if: steps.sonar-scan.outcome != 'success'
-        run: |
-          echo "❌ SonarCloud analysis did not pass: the quality gate failed or the scan itself errored."
-          echo "See the summary comment on the pull request and the 'SonarCloud Scan' step logs above."
-          exit 1
