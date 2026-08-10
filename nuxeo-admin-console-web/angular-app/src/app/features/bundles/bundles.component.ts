@@ -40,12 +40,11 @@ export class BundlesComponent implements OnInit, OnDestroy {
   isDataLoaded = false;
   isError = false;
 
-  /* The table is rendered conditionally, so the paginator is only available
-  once the data has been fetched successfully. */
-  @ViewChild(MatPaginator) set tablePaginator(paginator: MatPaginator) {
-    if (paginator) {
-      this.bundlesData.paginator = paginator;
-    }
+  /* The table is rendered conditionally, so Angular calls this setter with the
+  paginator when the table mounts and with null when it is torn down. Assigning
+  unconditionally keeps the data source from holding on to a destroyed instance. */
+  @ViewChild(MatPaginator) set tablePaginator(paginator: MatPaginator | null) {
+    this.bundlesData.paginator = paginator;
   }
 
   constructor() {

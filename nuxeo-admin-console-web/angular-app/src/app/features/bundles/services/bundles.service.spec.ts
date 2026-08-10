@@ -13,9 +13,14 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { of } from "rxjs";
 import { BundlesService } from "./bundles.service";
 import { NetworkService } from "../../../shared/services/network.service";
-import { REST_END_POINTS } from "../../../shared/constants/rest-end-ponts.constants";
+import {
+  REST_END_POINTS,
+  REST_END_POINT_CONFIG,
+} from "../../../shared/constants/rest-end-ponts.constants";
+import { DistributionResponse } from "../../../shared/types/bundles.interface";
 
 describe("BundlesService", () => {
   // Initialize TestBed for component testing
@@ -52,5 +57,18 @@ describe("BundlesService", () => {
     expect(networkService.makeHttpRequest).toHaveBeenCalledWith(
       REST_END_POINTS.GET_DISTRIBUTION_INFO
     );
+  });
+
+  it("should resolve GET_DISTRIBUTION_INFO to GET /management/distribution", () => {
+    expect(REST_END_POINT_CONFIG.GET_DISTRIBUTION_INFO).toEqual({
+      endpoint: "/management/distribution",
+      method: "GET",
+    });
+  });
+
+  it("should return the observable produced by NetworkService", () => {
+    const response$ = of({ bundles: [] } as DistributionResponse);
+    networkService.makeHttpRequest.mockReturnValue(response$);
+    expect(service.getDistributionInfo()).toBe(response$);
   });
 });

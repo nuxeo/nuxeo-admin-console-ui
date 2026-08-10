@@ -23,6 +23,12 @@ export const BUNDLES_LABELS = {
   },
   WARNINGS_TITLE: "Warnings ({count})",
   ERRORS_TITLE: "Errors ({count})",
+  ARIA_LABELS: {
+    BUNDLES_TABLE: "Bundles table",
+    SELECT_PAGE: "Select page",
+    WARNINGS_REGION: "Bundle warnings",
+    ERRORS_REGION: "Bundle errors",
+  },
 };
 
 export const BUNDLES_TABLE_COLUMNS = ["name", "version", "revision"];

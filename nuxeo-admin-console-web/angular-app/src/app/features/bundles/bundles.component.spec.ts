@@ -24,7 +24,10 @@ import { Subject, of, throwError } from "rxjs";
 import { BundlesComponent } from "./bundles.component";
 import { BundlesService } from "./services/bundles.service";
 import { BUNDLES_LABELS } from "./bundles.constants";
-import { DistributionResponse } from "../../shared/types/bundles.interface";
+import {
+  BundleInfo,
+  DistributionResponse,
+} from "../../shared/types/bundles.interface";
 import { SharedMethodsService } from "../../shared/services/shared-methods.service";
 import { ERROR_TYPES } from "../sub-features/generic-multi-feature-layout/generic-multi-feature-layout.constants";
 
@@ -34,7 +37,6 @@ const mockDistribution: DistributionResponse = {
   applicationVersion: "2025.1.0",
   distributionName: "server",
   distributionVersion: "2025.1.0",
-  distributionDate: "2025-01-15 10:23",
   bundles: [
     { name: "org.nuxeo.ecm.core", version: "2025.1.0", revision: "abc1234" },
     { name: "org.nuxeo.ecm.platform.picture.core", version: "2025.1.0" },
@@ -119,24 +121,84 @@ describe("BundlesComponent", () => {
   });
 
   it("should fall back to a placeholder for missing distribution details", () => {
-    const summary = component.buildDistributionSummary(
-      {} as DistributionResponse
-    );
+    const summary = component.buildDistributionSummary({});
     summary.forEach((field) => {
       expect(field.value).toBe(BUNDLES_LABELS.NOT_AVAILABLE);
     });
   });
 
   it("should treat a response without bundles as no data", () => {
-    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(
-      of({} as DistributionResponse)
-    );
+    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(of({}));
     component.getBundles();
     expect(component.isDataLoaded).toBe(true);
     expect(component.bundlesData.data).toEqual([]);
     expect(component.warnings).toEqual([]);
     expect(component.errors).toEqual([]);
     expect(component.hasBundles()).toBe(false);
+  });
+
+  it("should render the loading state until a response arrives", () => {
+    const response$ = new Subject<DistributionResponse>();
+    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(
+      response$.asObservable()
+    );
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector(".loading-container")
+    ).toBeTruthy();
+    expect(fixture.nativeElement.querySelector(".bundles__summary")).toBeNull();
+    expect(fixture.nativeElement.querySelector(".error-container")).toBeNull();
+    response$.complete();
+  });
+
+  it("should render the error state and re-fetch when Retry is clicked", () => {
+    const getSpy = vi
+      .spyOn(bundlesService, "getDistributionInfo")
+      .mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500 }))
+      );
+    vi.spyOn(sharedService, "showActionErrorModal").mockReturnValue(
+      of(undefined)
+    );
+    fixture.detectChanges();
+    const errorContainer =
+      fixture.nativeElement.querySelector(".error-container");
+    expect(errorContainer).toBeTruthy();
+    expect(component.isError).toBe(true);
+
+    getSpy.mockReturnValue(of(mockDistribution));
+    const retryButton: HTMLButtonElement =
+      errorContainer.querySelector("button");
+    retryButton.click();
+    fixture.detectChanges();
+    expect(getSpy).toHaveBeenCalledTimes(2);
+    expect(component.isError).toBe(false);
+    expect(fixture.nativeElement.querySelector(".error-container")).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(".bundles__summary")
+    ).toBeTruthy();
+  });
+
+  it("should show the no-data message inside the card when the response has no bundles", () => {
+    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(
+      of({
+        applicationName: "Nuxeo Platform",
+        applicationVersion: "2025.1.0",
+        distributionName: "server",
+        distributionVersion: "2025.1.0",
+        bundles: [],
+        warnings: [{ message: "A component was overridden" }],
+        errors: [{ message: "A contribution failed to load" }],
+      })
+    );
+    fixture.detectChanges();
+    const host = fixture.nativeElement;
+    expect(host.querySelector(".no-data-container")).toBeTruthy();
+    expect(host.querySelector("table")).toBeNull();
+    // The distribution, warnings and errors still render alongside "no bundles".
+    expect(host.querySelector(".bundles__summary")).toBeTruthy();
+    expect(host.querySelector(".bundles__messages--warning")).toBeTruthy();
+    expect(host.querySelector(".bundles__messages--error")).toBeTruthy();
   });
 
   it("should show the error modal when fetching the distribution fails", () => {
@@ -218,6 +280,23 @@ describe("BundlesComponent", () => {
     ]);
   });
 
+  it("should only match the columns shown in the table, not other server fields", () => {
+    /* A bundle carrying a server-sent field the table does not display: the
+    default MatTableDataSource predicate would concatenate it and match, so this
+    proves the custom predicate is in effect. */
+    component.bundlesData.data = [
+      {
+        name: "org.nuxeo.ecm.core",
+        version: "2025.1.0",
+        description: "hidden-searchable-term",
+      } as unknown as BundleInfo,
+    ];
+    component.applyFilter({
+      target: { value: "hidden-searchable-term" },
+    } as unknown as Event);
+    expect(component.bundlesData.filteredData).toEqual([]);
+  });
+
   it("should report when no bundle matches the applied filter", () => {
     component.getBundles();
     component.applyFilter({ target: { value: "unknown" } } as unknown as Event);
@@ -250,5 +329,19 @@ describe("BundlesComponent", () => {
     component.ngOnDestroy();
     expect(nextSpy).toHaveBeenCalled();
     expect(completeSpy).toHaveBeenCalled();
+  });
+
+  it("should stop applying distribution responses after ngOnDestroy", () => {
+    /* Emitting through the mocked service after teardown proves the takeUntil
+    is wired: without it, this late emission would populate the table. */
+    const response$ = new Subject<DistributionResponse>();
+    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(
+      response$.asObservable()
+    );
+    component.getBundles();
+    component.ngOnDestroy();
+    response$.next(mockDistribution);
+    expect(component.bundlesData.data).toEqual([]);
+    expect(component.isDataLoaded).toBe(false);
   });
 });
