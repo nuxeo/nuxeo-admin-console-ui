@@ -208,7 +208,7 @@ describe("BundlesComponent", () => {
     fixture.detectChanges();
     const host = fixture.nativeElement;
     const emptyMessages = host.querySelectorAll(".bundles__empty-messages");
-    expect(emptyMessages.length).toBe(2);
+    expect(emptyMessages).toHaveLength(2);
     expect(emptyMessages[0].textContent).toContain(
       BUNDLES_LABELS.NO_WARNINGS_MSG
     );
