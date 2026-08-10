@@ -12,14 +12,13 @@ on:
     types: [opened, synchronize, reopened]
 
 permissions:
-  pull-requests: write
   contents: read
 
 jobs:
   sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,10 +38,29 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm test
 
+      # `sonar.qualitygate.wait=true` makes the scanner block until SonarCloud has
+      # finished computing the quality gate and exit non-zero when it fails, so a red
+      # gate turns this job -- and the required "SonarCloud Scan" check -- red.
+      # SonarCloud's GitHub App posts the gate result and new-code metrics on the
+      # pull request itself, so no comment is built here.
+      #
+      # The pull request parameters are passed explicitly rather than left to the
+      # scanner's autodetection, which was recording every pull request against
+      # `main`. The gate was therefore measuring new code as the diff against `main`
+      # even for pull requests targeting `dev`. Same shape as nuxeo-web-ui's sonar.yaml.
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          # Not github.workspace: our Angular app lives in a subdirectory.
           projectBaseDir: nuxeo-admin-console-web/angular-app
+          args: >
+            -Dsonar.qualitygate.wait=true
+            ${{ github.event_name == 'pull_request' &&
+              format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}',
+                github.event.pull_request.number,
+                github.event.pull_request.head.ref,
+                github.event.pull_request.base.ref)
+              || format('-Dsonar.branch.name={0}', github.ref_name) }}
