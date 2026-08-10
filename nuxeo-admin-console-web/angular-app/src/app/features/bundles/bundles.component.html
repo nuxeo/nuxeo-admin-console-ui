@@ -103,30 +103,34 @@
     }
   </mat-card>
 
-  @if (warnings.length > 0) {
   <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.WARNINGS_REGION">
     <mat-card-content>
       <h2>{{ buildLabelWithCount(BUNDLES_LABELS.WARNINGS_TITLE, warnings.length) }}</h2>
+      @if (warnings.length > 0) {
       <ul class="bundles__messages bundles__messages--warning">
         @for (warning of warnings; track $index) {
         <li>{{ warning?.message }}</li>
         }
       </ul>
+      } @else {
+      <p class="bundles__empty-messages">{{ BUNDLES_LABELS.NO_WARNINGS_MSG }}</p>
+      }
     </mat-card-content>
   </mat-card>
-  }
 
-  @if (errors.length > 0) {
   <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.ERRORS_REGION">
     <mat-card-content>
       <h2>{{ buildLabelWithCount(BUNDLES_LABELS.ERRORS_TITLE, errors.length) }}</h2>
+      @if (errors.length > 0) {
       <ul class="bundles__messages bundles__messages--error">
         @for (error of errors; track $index) {
         <li>{{ error?.message }}</li>
         }
       </ul>
+      } @else {
+      <p class="bundles__empty-messages">{{ BUNDLES_LABELS.NO_ERRORS_MSG }}</p>
+      }
     </mat-card-content>
   </mat-card>
-  }
   }
 </div>

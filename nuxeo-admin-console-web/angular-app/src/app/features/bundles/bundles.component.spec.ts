@@ -201,6 +201,24 @@ describe("BundlesComponent", () => {
     expect(host.querySelector(".bundles__messages--error")).toBeTruthy();
   });
 
+  it("should always render the warnings and errors cards with a placeholder when empty", () => {
+    vi.spyOn(bundlesService, "getDistributionInfo").mockReturnValue(
+      of({ bundles: mockDistribution.bundles, warnings: [], errors: [] })
+    );
+    fixture.detectChanges();
+    const host = fixture.nativeElement;
+    const emptyMessages = host.querySelectorAll(".bundles__empty-messages");
+    expect(emptyMessages.length).toBe(2);
+    expect(emptyMessages[0].textContent).toContain(
+      BUNDLES_LABELS.NO_WARNINGS_MSG
+    );
+    expect(emptyMessages[1].textContent).toContain(
+      BUNDLES_LABELS.NO_ERRORS_MSG
+    );
+    expect(host.querySelector(".bundles__messages--warning")).toBeNull();
+    expect(host.querySelector(".bundles__messages--error")).toBeNull();
+  });
+
   it("should show the error modal when fetching the distribution fails", () => {
     const mockError = new HttpErrorResponse({
       error: { status: 500, message: "Server error" },

@@ -84,6 +84,12 @@
     margin: 0;
   }
 
+  &__empty-messages {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+
   &__messages {
     margin: 0;
     padding-left: 20px;

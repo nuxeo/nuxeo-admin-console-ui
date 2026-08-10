@@ -23,6 +23,8 @@ export const BUNDLES_LABELS = {
   },
   WARNINGS_TITLE: "Warnings ({count})",
   ERRORS_TITLE: "Errors ({count})",
+  NO_WARNINGS_MSG: "No warnings reported.",
+  NO_ERRORS_MSG: "No errors reported.",
   ARIA_LABELS: {
     BUNDLES_TABLE: "Bundles table",
     SELECT_PAGE: "Select page",
