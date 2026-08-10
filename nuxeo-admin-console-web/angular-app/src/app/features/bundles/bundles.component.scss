@@ -142,6 +142,10 @@ it centres within the card rather than filling the page. */
   text-align: center;
   padding: 20px;
   box-sizing: border-box;
+
+  h3 {
+    margin: 0;
+  }
 }
 
 .error-container h3,
@@ -178,11 +182,5 @@ it centres within the card rather than filling the page. */
 .error-container {
   h3 {
     margin-bottom: 1.5rem;
-  }
-}
-
-.no-data-container {
-  h3 {
-    margin: 0;
   }
 }

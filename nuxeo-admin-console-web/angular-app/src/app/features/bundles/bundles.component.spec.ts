@@ -254,17 +254,17 @@ describe("BundlesComponent", () => {
       target: { value: "  PICTURE  " },
     } as unknown as Event);
     expect(component.bundlesData.filteredData).toEqual([
-      mockDistribution.bundles[1],
+      mockDistribution.bundles![1],
     ]);
 
     component.applyFilter({ target: { value: "abc1234" } } as unknown as Event);
     expect(component.bundlesData.filteredData).toEqual([
-      mockDistribution.bundles[0],
+      mockDistribution.bundles![0],
     ]);
 
     component.applyFilter({ target: { value: "2025.1.0" } } as unknown as Event);
     expect(component.bundlesData.filteredData).toEqual(
-      mockDistribution.bundles
+      mockDistribution.bundles!
     );
   });
 
@@ -276,7 +276,7 @@ describe("BundlesComponent", () => {
     input.dispatchEvent(new Event("input"));
     fixture.detectChanges();
     expect(component.bundlesData.filteredData).toEqual([
-      mockDistribution.bundles[1],
+      mockDistribution.bundles![1],
     ]);
   });
 
