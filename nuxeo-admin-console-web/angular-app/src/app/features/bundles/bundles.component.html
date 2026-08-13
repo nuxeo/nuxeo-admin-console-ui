@@ -94,7 +94,7 @@
       </div>
       }
     </mat-card-content>
-    @if (hasBundles()) {
+    @if (hasBundles() && hasFilteredBundles()) {
     <mat-card-footer>
       <mat-paginator [length]="bundlesData.filteredData.length" [pageSize]="pageSize"
         [pageSizeOptions]="pageSizeOptions" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.SELECT_PAGE">
