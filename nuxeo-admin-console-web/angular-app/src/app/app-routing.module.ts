@@ -77,6 +77,14 @@ export const appRoutes: Route[] = [
             "./features/configuration-details/configuration-details.module"
           ).then((m) => m.ConfigurationDetailsModule),
     },
+    {
+      path: "local-packages",
+      title: routeTitle.LOCAL_PACKAGES,
+      loadChildren: () =>
+        import("./features/local-packages/local-packages.module").then(
+          (m) => m.LocalPackagesModule
+        ),
+    },
   { path: "**", redirectTo: "" },
 ];
 
