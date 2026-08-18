@@ -1,0 +1,136 @@
+<div class="bundles">
+  <h1 id="page-title">{{ BUNDLES_LABELS.TITLE }}</h1>
+
+  <!-- Loading State -->
+  @if (!isDataLoaded && !isError) {
+  <div class="loading-container" aria-live="polite">
+    <mat-spinner [diameter]="50"></mat-spinner>
+    <p>{{ BUNDLES_LABELS.LOADING_MSG }}</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (isError) {
+  <div class="error-container" aria-live="polite">
+    <h3>{{ BUNDLES_LABELS.API_FAILURE_MESSAGE }}</h3>
+    <button mat-raised-button color="primary" (click)="getBundles()">
+      {{ BUNDLES_LABELS.RETRY_BTN_LABEL }}
+    </button>
+  </div>
+  }
+
+  <!-- Loaded State: the distribution identity, warnings and errors are shown
+  whenever a response arrives, even if it carries no bundles. -->
+  @if (isDataLoaded && !isError) {
+  <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.DISTRIBUTION_TITLE">
+    <mat-card-content>
+      <h2>{{ BUNDLES_LABELS.DISTRIBUTION_TITLE }}</h2>
+      <dl class="bundles__summary">
+        @for (field of distributionSummary; track field.label) {
+        <dt>{{ field.label }}</dt>
+        <dd>{{ field.value }}</dd>
+        }
+      </dl>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.TITLE">
+    <mat-card-content>
+      @if (hasBundles()) {
+      <div class="bundles__table-header">
+        <h2>
+          {{ buildLabelWithCount(BUNDLES_LABELS.BUNDLES_COUNT, bundlesData.filteredData.length) }}
+        </h2>
+        <mat-form-field appearance="outline" class="input-field bundles__filter">
+          <mat-label>{{ BUNDLES_LABELS.FILTER_LABEL }}</mat-label>
+          <input matInput id="bundles-filter" type="text" [placeholder]="BUNDLES_LABELS.FILTER_PLACEHOLDER"
+            [attr.aria-label]="BUNDLES_LABELS.FILTER_LABEL" (input)="applyFilter($event)" />
+        </mat-form-field>
+      </div>
+
+      <div class="bundles__table-container">
+        <table mat-table [dataSource]="bundlesData" class="mat-elevation-z0"
+          [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.BUNDLES_TABLE">
+          <ng-container matColumnDef="name" sticky>
+            <th mat-header-cell *matHeaderCellDef>
+              <strong>{{ BUNDLES_LABELS.COLUMN_HEADERS.NAME }}</strong>
+            </th>
+            <td mat-cell *matCellDef="let bundle">
+              <span>{{ bundle?.name }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="version">
+            <th mat-header-cell *matHeaderCellDef>
+              <strong>{{ BUNDLES_LABELS.COLUMN_HEADERS.VERSION }}</strong>
+            </th>
+            <td mat-cell *matCellDef="let bundle">
+              <span>{{ bundle?.version || BUNDLES_LABELS.NOT_AVAILABLE }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="revision">
+            <th mat-header-cell *matHeaderCellDef>
+              <strong>{{ BUNDLES_LABELS.COLUMN_HEADERS.REVISION }}</strong>
+            </th>
+            <td mat-cell *matCellDef="let bundle">
+              <span>{{ bundle?.revision || BUNDLES_LABELS.NOT_AVAILABLE }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+        </table>
+
+        @if (!hasFilteredBundles()) {
+        <p class="bundles__no-match" aria-live="polite">
+          {{ BUNDLES_LABELS.NO_MATCHING_BUNDLES_MSG }}
+        </p>
+        }
+      </div>
+      } @else {
+      <div class="no-data-container">
+        <h3>{{ BUNDLES_LABELS.NO_DATA_MSG }}</h3>
+      </div>
+      }
+    </mat-card-content>
+    @if (hasBundles() && hasFilteredBundles()) {
+    <mat-card-footer>
+      <mat-paginator [length]="bundlesData.filteredData.length" [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.SELECT_PAGE">
+      </mat-paginator>
+    </mat-card-footer>
+    }
+  </mat-card>
+
+  <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.WARNINGS_REGION">
+    <mat-card-content>
+      <h2>{{ buildLabelWithCount(BUNDLES_LABELS.WARNINGS_TITLE, warnings.length) }}</h2>
+      @if (warnings.length > 0) {
+      <ul class="bundles__messages bundles__messages--warning">
+        @for (warning of warnings; track $index) {
+        <li>{{ warning?.message }}</li>
+        }
+      </ul>
+      } @else {
+      <p class="bundles__empty-messages">{{ BUNDLES_LABELS.NO_WARNINGS_MSG }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="bundles__card" role="region" [attr.aria-label]="BUNDLES_LABELS.ARIA_LABELS.ERRORS_REGION">
+    <mat-card-content>
+      <h2>{{ buildLabelWithCount(BUNDLES_LABELS.ERRORS_TITLE, errors.length) }}</h2>
+      @if (errors.length > 0) {
+      <ul class="bundles__messages bundles__messages--error">
+        @for (error of errors; track $index) {
+        <li>{{ error?.message }}</li>
+        }
+      </ul>
+      } @else {
+      <p class="bundles__empty-messages">{{ BUNDLES_LABELS.NO_ERRORS_MSG }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+  }
+</div>
