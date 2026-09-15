@@ -51,16 +51,16 @@ import {
   standalone: false
 })
 export class NXQLTabComponent implements OnInit, OnDestroy {
-  dialogService = inject(MatDialog);
-  private fb = inject(FormBuilder);
-  private store = inject<
+  readonly dialogService = inject(MatDialog);
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject<
     Store<{
       nxqlAction: NXQLActionState;
     }>
   >(Store);
-  private nuxeoJSClientService = inject(NuxeoJSClientService);
-  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
-  private sanitizer = inject(DomSanitizer);
+  private readonly nuxeoJSClientService = inject(NuxeoJSClientService);
+  private readonly genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
+  private readonly sanitizer = inject(DomSanitizer);
   inputForm: FormGroup;
   spinnerVisible = false;
   userInput = "";

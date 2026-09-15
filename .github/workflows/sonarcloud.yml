@@ -53,14 +53,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          # The action interpolates `args` into the body of a bash `run:` step, so
+          # anything expanded there becomes shell source: a branch named `x$(...)`
+          # would execute. The event values are therefore carried as environment
+          # variables and read back below as quoted shell expansions.
+          PR_KEY: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          BRANCH_NAME: ${{ github.ref_name }}
         with:
           # Not github.workspace: our Angular app lives in a subdirectory.
           projectBaseDir: nuxeo-admin-console-web/angular-app
           args: >
             -Dsonar.qualitygate.wait=true
             ${{ github.event_name == 'pull_request' &&
-              format('-Dsonar.pullrequest.key={0} -Dsonar.pullrequest.branch={1} -Dsonar.pullrequest.base={2}',
-                github.event.pull_request.number,
-                github.event.pull_request.head.ref,
-                github.event.pull_request.base.ref)
-              || format('-Dsonar.branch.name={0}', github.ref_name) }}
+              '-Dsonar.pullrequest.key="$PR_KEY" -Dsonar.pullrequest.branch="$PR_BRANCH" -Dsonar.pullrequest.base="$PR_BASE"'
+              || '-Dsonar.branch.name="$BRANCH_NAME"' }}

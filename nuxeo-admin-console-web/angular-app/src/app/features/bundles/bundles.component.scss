@@ -154,13 +154,13 @@ it centres within the card rather than filling the page. */
   padding: 20px;
   box-sizing: border-box;
 
-  h3 {
+  h2 {
     margin: 0;
   }
 }
 
-.error-container h3,
-.no-data-container h3 {
+.error-container h2,
+.no-data-container h2 {
   font-weight: 500;
   font-size: 18px;
   color: #666;
@@ -191,7 +191,7 @@ it centres within the card rather than filling the page. */
 }
 
 .error-container {
-  h3 {
+  h2 {
     margin-bottom: 1.5rem;
   }
 }

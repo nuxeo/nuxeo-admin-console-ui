@@ -28,7 +28,6 @@ $type-colors: (
 
      .segment-main {
         word-wrap: break-word;
-        word-break: break-word;
         overflow-wrap: break-word;
         position: relative;
         line-height: 1.3;
@@ -62,7 +61,6 @@ $type-colors: (
 
       .segment-value {
         color: var(--ngx-json-value, #000);
-        word-break: break-word;
         overflow-wrap: break-word;
         max-width: 100%;
       }
