@@ -51,16 +51,16 @@ import {
   standalone: false
 })
 export class NXQLTabComponent implements OnInit, OnDestroy {
-  dialogService = inject(MatDialog);
-  private fb = inject(FormBuilder);
-  private store = inject<
+  readonly dialogService = inject(MatDialog);
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject<
     Store<{
       nxqlAction: NXQLActionState;
     }>
   >(Store);
-  private nuxeoJSClientService = inject(NuxeoJSClientService);
-  private genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
-  private sanitizer = inject(DomSanitizer);
+  private readonly nuxeoJSClientService = inject(NuxeoJSClientService);
+  private readonly genericMultiFeatureUtilitiesService = inject(GenericMultiFeatureUtilitiesService);
+  private readonly sanitizer = inject(DomSanitizer);
   inputForm: FormGroup;
   spinnerVisible = false;
   userInput = "";
@@ -330,7 +330,9 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
             err as { response: { json: () => Promise<unknown> } }
           ).response.json();
         } else {
-          return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+          return Promise.reject(
+            new Error(ERROR_MODAL_LABELS.UNEXPECTED_ERROR)
+          );
         }
       })
       .then((errorJson: unknown) => {
@@ -393,8 +395,8 @@ export class NXQLTabComponent implements OnInit, OnDestroy {
           /default-domain/workspaces/ws1/Harry%5C%27s-file
           Other special characters are encoded by default by nuxeo js client, but not single quote */
       try {
-        this.decodedUserInput = decodeURIComponent(query).replace(
-          /\\'/g,
+        this.decodedUserInput = decodeURIComponent(query).replaceAll(
+          String.raw`\'`,
           "%5C%27"
         );
         const featureKey = getFeatureKeyByValue(

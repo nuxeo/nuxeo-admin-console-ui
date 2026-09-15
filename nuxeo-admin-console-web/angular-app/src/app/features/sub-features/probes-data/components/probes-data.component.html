@@ -12,7 +12,7 @@
           'table-container-detail': !summary
         }"
       >
-        <table mat-table [dataSource]="probesData" class="mat-elevation-z0">
+        <table mat-table [dataSource]="probesData" class="mat-elevation-z0" aria-label="Probes Data Table">
           <ng-container matColumnDef="probe">
             @if (isColumnVisible('probe')) {
             <th mat-header-cell *matHeaderCellDef sticky>

@@ -9,6 +9,7 @@ import {
 } from "../generic-multi-feature-layout.constants";
 import { FormControl, FormGroup } from "@angular/forms";
 import { RequestParamType } from "../generic-multi-feature-layout.interface";
+import { fail } from "node:assert";
 describe("GenericMultiFeatureUtilitiesService", () => {
   // Initialize TestBed for component testing
   initializeTestBed();
@@ -225,18 +226,18 @@ describe("GenericMultiFeatureUtilitiesService", () => {
       expect(result).toEqual(jsonResult);
     });
 
-    it("should reject with UNEXPECTED_ERROR when error does not have response.json", async () => {
-      const err = new Error("Mock error");
-      vi.spyOn(service, "checkIfResponseHasError").mockReturnValue(false);
+    it("should reject with an error if the error does not have a response", async () => {
+      const err = { message: "Some error" };
 
-      try {
-        await service.handleError(err);
-        throw new Error("Promise should have been rejected");
-      } catch (e) {
-        expect(e).toBeDefined();
-        expect(e).toBeTruthy();
-        expect(e).toBe(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
-      }
+      await service
+        .handleError(err)
+        .then(() => {
+          fail("Expected promise to be rejected");
+        })
+        .catch((error) => {
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toBe(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+        });
     });
   });
 });

@@ -181,7 +181,7 @@ export class GenericMultiFeatureUtilitiesService {
         err as { response: { json: () => Promise<unknown> } }
       ).response.json();
     } else {
-      return Promise.reject(ERROR_MODAL_LABELS.UNEXPECTED_ERROR);
+      return Promise.reject(new Error(ERROR_MODAL_LABELS.UNEXPECTED_ERROR));
     }
   }
 

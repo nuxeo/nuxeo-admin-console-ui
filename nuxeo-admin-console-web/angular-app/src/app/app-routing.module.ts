@@ -77,6 +77,12 @@ export const appRoutes: Route[] = [
             "./features/configuration-details/configuration-details.module"
           ).then((m) => m.ConfigurationDetailsModule),
     },
+    {
+      path: "bundles",
+      title: routeTitle.BUNDLES,
+      loadChildren: () =>
+        import("./features/bundles/bundles.module").then((m) => m.BundlesModule),
+    },
   { path: "**", redirectTo: "" },
 ];
 

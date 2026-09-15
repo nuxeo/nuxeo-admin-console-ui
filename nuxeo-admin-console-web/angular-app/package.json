@@ -1,10 +1,10 @@
 {
   "name": "nuxeo-admin-console-ui",
-  "version": "23.1.1-SNAPSHOT",
+  "version": "23.2.1-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href=/nuxeo/nuxeoadmin/",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
