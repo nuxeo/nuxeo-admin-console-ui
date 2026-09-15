@@ -12,7 +12,7 @@
   <!-- Error State -->
   @if (isError) {
   <div class="error-container" aria-live="polite">
-    <h3>{{ BUNDLES_LABELS.API_FAILURE_MESSAGE }}</h3>
+    <h2>{{ BUNDLES_LABELS.API_FAILURE_MESSAGE }}</h2>
     <button mat-raised-button color="primary" (click)="getBundles()">
       {{ BUNDLES_LABELS.RETRY_BTN_LABEL }}
     </button>
@@ -90,7 +90,7 @@
       </div>
       } @else {
       <div class="no-data-container">
-        <h3>{{ BUNDLES_LABELS.NO_DATA_MSG }}</h3>
+        <h2>{{ BUNDLES_LABELS.NO_DATA_MSG }}</h2>
       </div>
       }
     </mat-card-content>
