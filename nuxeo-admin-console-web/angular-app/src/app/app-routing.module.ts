@@ -85,6 +85,12 @@ export const appRoutes: Route[] = [
           (m) => m.LocalPackagesModule
         ),
     },
+    {
+      path: "bundles",
+      title: routeTitle.BUNDLES,
+      loadChildren: () =>
+        import("./features/bundles/bundles.module").then((m) => m.BundlesModule),
+    },
   { path: "**", redirectTo: "" },
 ];
 

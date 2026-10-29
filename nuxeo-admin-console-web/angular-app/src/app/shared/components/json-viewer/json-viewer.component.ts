@@ -47,8 +47,8 @@ export class JsonViewerComponent
   private processedJson: unknown = null;
   private cachedJsonString: string | null = null;
   private cachedFormattedJsonString: string | null = null;
-  private destroy$ = new Subject<void>();
-  private searchInput$ = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
+  private readonly searchInput$ = new Subject<string>();
   private currentSearchRequestId = 0;
   private inputEventListener: ((event: Event) => void) | null = null;
   private navigationInProgress = false; // Lock to prevent overlapping navigation

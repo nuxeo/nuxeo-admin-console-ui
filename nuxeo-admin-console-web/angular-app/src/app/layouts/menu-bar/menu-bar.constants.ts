@@ -67,6 +67,12 @@ export const ADMIN_MENU: Menu[] = [
     path: "local-packages",
     isSelected: false,
   },
+  {
+    id: 11,
+    name: "Bundles",
+    path: "bundles",
+    isSelected: false,
+  },
 ];
 
 export const ROUTES_TITLE = {
@@ -79,4 +85,5 @@ export const ROUTES_TITLE = {
   STREAM_MANAGEMENT: "Stream Management",
   CONFIGURATION_DETAILS: "Configuration Properties",
   LOCAL_PACKAGES: "Local Packages",
+  BUNDLES: "Bundles",
 };

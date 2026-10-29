@@ -3,8 +3,6 @@ name: Unit-test
 permissions:
   # Read access for code checkout and test execution
   contents: read
-  # Write access needed to post PR comments with coverage results
-  pull-requests: write
   
 on:
   pull_request:
@@ -88,6 +86,11 @@ jobs:
           # Check if coverage summary exists
           if [ ! -f coverage/admin_console_ui/coverage-summary.json ]; then
             echo "❌ Coverage report not found"
+            {
+              echo '## ❌ Test Coverage'
+              echo
+              echo "No coverage report was produced at \`coverage/admin_console_ui/coverage-summary.json\`."
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
           
@@ -105,26 +108,40 @@ jobs:
           # Check if any coverage is below threshold
           THRESHOLD=80
           FAILED=false
+          TABLE_ROWS=""
           
-          if (( $(echo "$STATEMENTS < $THRESHOLD" | bc -l) )); then
-            echo "statements_failed=true" >> $GITHUB_OUTPUT
-            FAILED=true
-          fi
+          # Gates one metric and collects its row for the job summary. Runs in the
+          # current shell, so assignments to FAILED / TABLE_ROWS are visible below.
+          check_metric() {
+            local label="$1" key="$2" value="$3"
+            if (( $(echo "$value < $THRESHOLD" | bc -l) )); then
+              echo "${key}_failed=true" >> $GITHUB_OUTPUT
+              FAILED=true
+              TABLE_ROWS="${TABLE_ROWS}| **${label}** | ${value}% | ❌ Failed | ${THRESHOLD}% |"$'\n'
+            else
+              TABLE_ROWS="${TABLE_ROWS}| **${label}** | ${value}% | ✅ Passed | ${THRESHOLD}% |"$'\n'
+            fi
+          }
           
-          if (( $(echo "$BRANCHES < $THRESHOLD" | bc -l) )); then
-            echo "branches_failed=true" >> $GITHUB_OUTPUT
-            FAILED=true
-          fi
+          check_metric Statements statements "$STATEMENTS"
+          check_metric Branches branches "$BRANCHES"
+          check_metric Functions functions "$FUNCTIONS"
+          check_metric Lines lines "$LINES"
           
-          if (( $(echo "$FUNCTIONS < $THRESHOLD" | bc -l) )); then
-            echo "functions_failed=true" >> $GITHUB_OUTPUT
-            FAILED=true
-          fi
-          
-          if (( $(echo "$LINES < $THRESHOLD" | bc -l) )); then
-            echo "lines_failed=true" >> $GITHUB_OUTPUT
-            FAILED=true
-          fi
+          # Overall coverage is reported in the job summary rather than as a PR
+          # comment: the SonarCloud workflow already posts a single summary comment
+          # that carries both new-code and overall coverage.
+          {
+            if [ "$FAILED" = true ]; then
+              echo "## ❌ Test Coverage Failed"
+            else
+              echo "## ✅ Test Coverage Passed"
+            fi
+            echo
+            echo '| Metric (overall) | Coverage | Status | Threshold |'
+            echo '|------------------|----------|--------|-----------|'
+            printf '%s' "$TABLE_ROWS"
+          } >> "$GITHUB_STEP_SUMMARY"
           
           if [ "$FAILED" = true ]; then
             echo "coverage_passed=false" >> $GITHUB_OUTPUT
@@ -132,95 +149,6 @@ jobs:
           else
             echo "coverage_passed=true" >> $GITHUB_OUTPUT
           fi
-
-      - name: Comment PR with coverage results
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const statements = '${{ steps.coverage-check.outputs.statements }}';
-            const branches = '${{ steps.coverage-check.outputs.branches }}';
-            const functions = '${{ steps.coverage-check.outputs.functions }}';
-            const lines = '${{ steps.coverage-check.outputs.lines }}';
-            const coveragePassed = '${{ steps.coverage-check.outputs.coverage_passed }}' === 'true';
-            const threshold = 80;
-            
-            const statementsFailed = '${{ steps.coverage-check.outputs.statements_failed }}' === 'true';
-            const branchesFailed = '${{ steps.coverage-check.outputs.branches_failed }}' === 'true';
-            const functionsFailed = '${{ steps.coverage-check.outputs.functions_failed }}' === 'true';
-            const linesFailed = '${{ steps.coverage-check.outputs.lines_failed }}' === 'true';
-            
-            const getIcon = (value, failed) => {
-              if (failed) return '❌';
-              return parseFloat(value) >= 90 ? '✅' : '⚠️';
-            };
-            
-            // Find existing bot comment to update instead of creating new ones
-            const botCommentIdentifier = '<!-- vitest-coverage-report -->';
-            const comments = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            
-            const existingComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && comment.body.includes(botCommentIdentifier)
-            );
-            
-            let comment = botCommentIdentifier + '\n\n';
-            
-            // Show coverage status
-            if (coveragePassed) {
-              comment += `## ✅ Test Coverage Passed\n\n`;
-              comment += `All coverage metrics meet the **${threshold}%** threshold!\n\n`;
-            } else {
-              comment += `## ❌ Test Coverage Failed\n\n`;
-              comment += `Some coverage metrics are below the **${threshold}%** threshold.\n\n`;
-            }
-            
-            comment += `| Metric | Coverage | Status | Threshold |\n`;
-            comment += `|--------|----------|--------|----------|\n`;
-            comment += `| **Statements** | ${statements}% | ${getIcon(statements, statementsFailed)} ${statementsFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
-            comment += `| **Branches** | ${branches}% | ${getIcon(branches, branchesFailed)} ${branchesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
-            comment += `| **Functions** | ${functions}% | ${getIcon(functions, functionsFailed)} ${functionsFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n`;
-            comment += `| **Lines** | ${lines}% | ${getIcon(lines, linesFailed)} ${linesFailed ? 'Failed' : 'Passed'} | ${threshold}% |\n\n`;
-            
-            if (!coveragePassed) {
-              comment += `### 🔧 Action Required\n\n`;
-              comment += `Please add tests to improve coverage for the following metrics:\n\n`;
-              if (statementsFailed) {
-                comment += `- **Statements**: Currently ${statements}%, needs ${(threshold - parseFloat(statements)).toFixed(2)}% more coverage\n`;
-              }
-              if (branchesFailed) {
-                comment += `- **Branches**: Currently ${branches}%, needs ${(threshold - parseFloat(branches)).toFixed(2)}% more coverage\n`;
-              }
-              if (functionsFailed) {
-                comment += `- **Functions**: Currently ${functions}%, needs ${(threshold - parseFloat(functions)).toFixed(2)}% more coverage\n`;
-              }
-              if (linesFailed) {
-                comment += `- **Lines**: Currently ${lines}%, needs ${(threshold - parseFloat(lines)).toFixed(2)}% more coverage\n`;
-              }
-              comment += `\n📊 View detailed coverage report in the build artifacts.\n`;
-            } else {
-              comment += `🎉 Great job maintaining high test coverage!\n`;
-            }
-            
-            // Update existing comment or create new one
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body: comment
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: comment
-              });
-            }
 
       - name: Fail workflow if coverage failed
         if: steps.coverage-check.outputs.coverage_passed != 'true'

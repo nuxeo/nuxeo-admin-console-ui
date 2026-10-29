@@ -25,6 +25,7 @@ export const REST_END_POINTS = {
   GET_STREAM_PROCESSOR_INFO: "GET_STREAM_PROCESSOR_INFO",
   GET_CONFIGURATION_DETAILS: "GET_CONFIGURATION_DETAILS",
   GET_LOCAL_PACKAGES: "GET_LOCAL_PACKAGES",
+  GET_DISTRIBUTION_INFO: "GET_DISTRIBUTION_INFO",
 } as const;
 
 type RestEndpointKey = keyof typeof REST_END_POINTS;
@@ -142,6 +143,11 @@ export const REST_END_POINT_CONFIG: Record<
 
   GET_LOCAL_PACKAGES: {
     endpoint: "/management/distribution/packages",
+    method: "GET",
+  },
+
+  GET_DISTRIBUTION_INFO: {
+    endpoint: "/management/distribution",
     method: "GET",
   },
 };
