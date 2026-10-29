@@ -63,6 +63,12 @@ export const ADMIN_MENU: Menu[] = [
   },
   {
     id: 10,
+    name: "Local Packages",
+    path: "local-packages",
+    isSelected: false,
+  },
+  {
+    id: 11,
     name: "Bundles",
     path: "bundles",
     isSelected: false,
@@ -78,5 +84,6 @@ export const ROUTES_TITLE = {
   PICTURE_RENDITIONS: "Picture Renditions",
   STREAM_MANAGEMENT: "Stream Management",
   CONFIGURATION_DETAILS: "Configuration Properties",
+  LOCAL_PACKAGES: "Local Packages",
   BUNDLES: "Bundles",
 };
